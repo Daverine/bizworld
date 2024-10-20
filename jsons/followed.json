@@ -1,0 +1,122 @@
+[
+    {
+        "type": "business",
+        "bizLogo": "/images/logo-sq.png",
+        "bizName": "Emmadave Computer Technology Services",
+        "bizUrl": "https://www.edtech.com",
+        "location": {
+            "address": "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun State",
+            "url": "https://goo.gl/maps/y9ExQLSq37FL6EHm6"
+        },
+        "verified": true,
+        "mainCategory": "Computer repair services",
+        "rating": { "rate": 3.5, "raters": 30 },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    },
+    {
+        "type": "business",
+        "bizLogo": "/images/logo-sq.png",
+        "bizName": "Emmadave Computer Technology Services",
+        "bizUrl": "https://www.edtech.com",
+        "location": {
+            "address": "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun State",
+            "url": "https://goo.gl/maps/y9ExQLSq37FL6EHm6"
+        },
+        "verified": true,
+        "mainCategory": "Computer repair services",
+        "rating": { "rate": 3.5, "raters": 30 },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    },
+    {
+        "type": "business",
+        "bizLogo": "/images/logo-sq.png",
+        "bizName": "Emmadave Computer Technology Services",
+        "bizUrl": "https://www.edtech.com",
+        "location": {
+            "address": "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun State",
+            "url": "https://goo.gl/maps/y9ExQLSq37FL6EHm6"
+        },
+        "verified": true,
+        "mainCategory": "Computer repair services",
+        "rating": { "rate": 3.5, "raters": 30 },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    },
+    {
+        "type": "business",
+        "bizLogo": "/images/logo-sq.png",
+        "bizName": "Emmadave Computer Technology Services",
+        "bizUrl": "https://www.edtech.com",
+        "location": {
+            "address": "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun State",
+            "url": "https://goo.gl/maps/y9ExQLSq37FL6EHm6"
+        },
+        "verified": true,
+        "mainCategory": "Computer repair services",
+        "rating": { "rate": 3.5, "raters": 30 },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    },
+    {
+        "type": "business",
+        "bizLogo": "/images/logo-sq.png",
+        "bizName": "Emmadave Computer Technology Services",
+        "bizUrl": "https://www.edtech.com",
+        "location": {
+            "address": "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun State",
+            "url": "https://goo.gl/maps/y9ExQLSq37FL6EHm6"
+        },
+        "verified": true,
+        "mainCategory": "Computer repair services",
+        "rating": { "rate": 3.5, "raters": 30 },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    }
+]
