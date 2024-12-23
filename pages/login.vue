@@ -15,7 +15,7 @@ const userStore = useUserStore();
       </div>
     </div>
   </header>
-  <div class="flexbox equal-cols" style="gap: 1.5rem; max-width: 650px; margin: 2rem auto;">
+  <div class="flexbox flex-items-to-basis equal-cols" style="gap: 1.5rem; max-width: 650px; margin: 2rem auto;">
     <div class="col" style="background-image: linear-gradient(rgb(48 187 48), rgb(10 81 194));"></div>
     <div class="col">
       <div class="header" style="margin-bottom: 1rem;">

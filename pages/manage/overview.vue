@@ -93,41 +93,39 @@ definePageMeta({layout: 'manage', auth: true, });
                 <button class="button open-modal" data-target="marketplan">Market plans</button>
             </div>
         </section>
-        <Teleport to="body">
-            <Modal id="marketplan">
-                <div class="dialog self-scroll padded">
-                    <div class="note">
-                        <div class="content">
-                            <div class="small heading">Standard</div>
-                            <div style="display: flex; gap: 1rem;">
-                                <div class="centered" style="flex: 0 0 auto;">
-                                    <div class="h1">$5</div>
-                                    <div class="small">per month</div>
-                                </div>
-                                <div>
-                                    <p>Bizworld free plan enable you to create a maximum of one microsite for free on
-                                        our platform and also enables you to post a maximum of 10 products and services.
-                                    </p>
-                                </div>
+        <Modal id="marketplan">
+            <div class="dialog self-scroll padded">
+                <div class="note">
+                    <div class="content">
+                        <div class="small heading">Standard</div>
+                        <div style="display: flex; gap: 1rem;">
+                            <div class="centered" style="flex: 0 0 auto;">
+                                <div class="h1">$5</div>
+                                <div class="small">per month</div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="note">
-                        <div class="content">
-                            <div class="small heading">Premium</div>
-                            <div style="display: flex; gap: 1rem;">
-                                <div><span class="h1">$0</span></div>
-                                <div>
-                                    <p>Bizworld free plan enable you to create a maximum of one microsite free of charge
-                                        on our platform and also enables you to post a maximum of 50 products and
-                                        services. This offer will do for small business.</p>
-                                </div>
+                            <div>
+                                <p>Bizworld free plan enable you to create a maximum of one microsite for free on
+                                    our platform and also enables you to post a maximum of 10 products and services.
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </Modal>
-        </Teleport>
+                <div class="note">
+                    <div class="content">
+                        <div class="small heading">Premium</div>
+                        <div style="display: flex; gap: 1rem;">
+                            <div><span class="h1">$0</span></div>
+                            <div>
+                                <p>Bizworld free plan enable you to create a maximum of one microsite free of charge
+                                    on our platform and also enables you to post a maximum of 50 products and
+                                    services. This offer will do for small business.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Modal>
         <section class="bizmsec">
             <div class="heading small">Business tools</div>
             <div class="grid menu 2-cols app-items rounded">

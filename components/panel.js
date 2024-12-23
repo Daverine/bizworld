@@ -7,7 +7,7 @@ export default {
 			EscTrack: undefined,
 			factory: {
 				namespace: 'panel',
-				toBeConsidered: ':scope .panel, :scope .pl-controls',
+				toBeConsidered: '.panel, .pl-controls',
 				toggler: '.open-panel',
 				toExcuseToggler: '.ex-open-panel',
 				setHighlightRange: true,
@@ -15,8 +15,8 @@ export default {
 				closeOnEsc: true,
 				closeOnWrapperClick: true,
 				dismissible: true,
-				dismisser: ':scope .exit-panel',
-				autoFocusEl: ':scope [pl-autofocus]',
+				dismisser: '.exit-panel',
+				autoFocusEl: '[pl-autofocus]',
 				commands: {
 					open: 'open panel',
 					close: 'close panel'
@@ -34,7 +34,8 @@ export default {
 	},
 	methods: {
 		panelClickFunc(e) {
-			if ((this.settings.closeOnWrapperClick && ![...this.e.pl.querySelectorAll(this.settings.toBeConsidered)].filter((el) => el.contains(e.target))[0]) || (this.settings.dismissible && e.target.closest(this.settings.dismisser))) this.showPanel = false;
+			if ((this.settings.closeOnWrapperClick && !e.target.closest(this.settings.toBeConsidered)) || (this.settings.dismissible && e.target.closest(this.settings.dismisser))) this.showPanel = false;
+			// if ((this.settings.closeOnWrapperClick && ![...this.e.pl.querySelectorAll(this.settings.toBeConsidered)].filter((el) => el.contains(e.target))[0]) || (this.settings.dismissible && [...this.e.pl.querySelectorAll(this.settings.dismisser)].filter((el) => el.contains(e.target))[0])) this.showPanel = false;
 		},
 		panelKbdFunc(e) {
 			// tab function in panel
@@ -78,13 +79,16 @@ export default {
 				if (typeof(this.settings.controller) === 'function') this.settings.controller(this.e.pl, this.settings);
 				document.addEventListener('keydown', this.panelKbdFunc);
 				this.e.pl.addEventListener('click', this.panelClickFunc);
-				if (this.settings.closeOnEsc) utils.trackEscOn(this.uniqueId), document.addEventListener('keyup', this.panelEscFunc);
+				if (this.settings.closeOnEsc) {
+					utils.trackEscOn(this.uniqueId);
+					document.addEventListener('keyup', this.panelEscFunc);
+				}
 				this.e.pl.classList.add('active');
 				setTimeout(() => {
 					if (typeof(this.settings.ready) === 'function') this.settings.ready(this.e.pl, this.settings);
 					this.e.pl.scrollTop = 0;
 
-					let autoFocusEl = [...this.e.pl.querySelectorAll(this.settings.autoFocusEl)][0];
+					let autoFocusEl = [...this.e.pl.querySelectorAll(`:scope ${this.settings.autoFocusEl}`)][0];
 					if (autoFocusEl) autoFocusEl.focus();
 					else this.e.pl.focus();
 				}, this.settings.inDuration);

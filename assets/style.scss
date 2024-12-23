@@ -1,8 +1,8 @@
 :root {
 	--default-radius: 0.5em;
 	--site-logo-filter: invert(0);
-	--container-text: 700px;
-	--container: 90rem;
+	// --container-text: 700px;
+	// --container: 90rem;
 }
 
 @mixin light-mode() {
@@ -71,6 +71,7 @@
 	position: relative;
 	min-height: 70vh;
 	max-width: 1440px;
+	margin: 0rem auto;
 }
 
 .sidemenu {

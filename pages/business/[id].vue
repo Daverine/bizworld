@@ -144,6 +144,11 @@ const details = ref({
 const divider = useTemplateRef('divider');
 const dgContent = useTemplateRef('dgContent');
 const activeFixedMenu = ref(false);
+const feedStore = useFeedStore();
+
+onMounted(() => feedStore.getUpdate());
+
+
 
 function nextOpenDay(hours) {
   let
@@ -183,416 +188,371 @@ function handleScroll() {
   else { activeFixedMenu.value = false; }
 }
 
-onUpdated(() => {
-  if (props.details) dgContent.value.dispatchEvent(new Event("scroll"))
-});
 </script>
 
 <template>
-  <main class="container-md">
-    <header class="flexbox flex-column" style="gap: 1rem;">
-      <div class="dm-header a-block flexbox padded" :class="{ active: activeFixedMenu }">
-        <div class="content h6 semibold 0-margined truncate">Business page summary</div>
-        <button class="button">Visit Business Page</button>
-      </div>
-      <div class="dm-display" style="position: relative; padding-top: calc(100% / 5 * 2);">
-        <img class="image"
-          style="position: absolute; height: 100%; width: 100%; object-fit: cover; top: 0px; left: 0px;"
-          :src="details.coverPic" alt="Business page cover picture" />
-      </div>
-      <div class="flexbox dm-gap" style="gap: 2rem;">
-        <div class="dm-logo" style="position: relative; width: max-content; line-height: 0;">
-          <img class="logo image circular"
-            style="width: 8rem; height: 8rem; object-fit: contain; border: 2px solid gray;" :src="details.logo"
+  <main class="grid-layout">
+    <header class="fluid grid-layout" style="padding-top: 0.5rem;">
+      <div class="flexbox dm-gap" style="align-items: center; gap: 1rem;">
+        <div class="dm-logo flex-none" style="position: relative; width: max-content; line-height: 0;">
+          <img class="logo image" style="width: 5rem; height: 5rem; object-fit: contain;" :src="details.logo"
             alt="Business Logo" />
           <SvgIcon v-if="details.verified" name="verified_sp" v-tooltip.unblocking data-tooltip="Verified"
-            style="position: absolute; bottom: 0px; right: 0px;" />
+            style="position: absolute; bottom: 0.5em; right: 0.5em;" />
         </div>
         <div class="dm-heading flexible">
-          <h3 class="dm-title">{{ details.bizName }}</h3>
+          <h5 class="dm-title">{{ details.bizName }}</h5>
           <div class="faint-text-v1">{{ details.mainCategory }}</div>
         </div>
-      </div>
-      <div class="dm-gap flexbox flex-separate">
-        <div class="semibold" v-tooltip.unblocking data-tooltip="Average Rate (Number of raters)">
-          <SvgIcon name="star_filled" class="yellow-text small r-spaced" />
-          <span>{{ `${(details.reviews.reduce((n, i) => n + i.rating, 0) / details.reviews.length).toFixed(1)}
-            (${details.reviews.length} reviews)` }}</span>
-        </div>
-        <div>
-          <span v-tooltip.unblocking
-            :data-tooltip="details.hours[new Date().getDay()][0] === -1 ? 'Did not open today at all.' : `Open today by ${to12hrsTime(details.hours[new Date().getDay()][0])} and closes by ${to12hrsTime(details.hours[new Date().getDay()][1])}.`">
-            <SvgIcon name="today" class="small r-spaced" />
-            <span class="semibold">
-              <template
-                v-if="details.hours[new Date().getDay()][0] === -1 || getMinutes(details.hours[new Date().getDay()][0]) > getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`) || getMinutes(details.hours[new Date().getDay()][1]) <= getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`)">
-                <span class="error-text">Closed. </span>
-                <span
-                  v-if="typeof (details.hours[new Date().getDay()][0]) === 'string' && getMinutes(details.hours[new Date().getDay()][0]) > getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`)">Opens
-                  {{ to12hrsTime(details.hours[new Date().getDay()][0]) }} Today</span>
-                <span v-else>
-                  Opens
-                  {{
-                    details.hours[new Date().getDay() === 6 ? 0 : new Date().getDay() + 1][0] !== -1
-                      ? `${to12hrsTime(details.hours[new Date().getDay() === 6 ? 0 : new Date().getDay() +
-                        1][0])}
-                  Tomorrow`
-                      : `${to12hrsTime(details.hours[nextOpenDay(details.hours)][0])} on
-                  ${whatDay(nextOpenDay(details.hours))}`
-                  }}
-                </span>
-              </template>
-              <template v-else>
-                <span
-                  v-if="getMinutes(details.hours[new Date().getDay()][1]) - getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`) <= 60"
-                  class="warning-text">Closes soon. </span>
-                <span v-else class="success-text">Open. </span>
-                <span>Closes {{ details.hours[new Date().getDay()][1] }}</span>
-              </template>
-            </span>
-          </span>
-          <SvgIcon name="info" class="mini l-spaced faint-text-v2" v-tooltip.unblocking
-            data-tooltip="Note that the given detail is generated using your system time relative to the Business location timezone." />
-        </div>
-      </div>
-      <div class="flexbox" style="gap: 0.5em;">
-        <button class="primary button">
-          <SvgIcon name="public" class="lead" /> Visit Business Page
-        </button>
-        <button class="flat button md-and-down-hidden">
+        <button class="flex-none flat button auto-l-margined md-and-down-hidden">
           <SvgIcon name="follow" class="lead" /> Follow
         </button>
-        <div style="display: flex; gap: 1em; margin-left: auto;">
-          <button class="flat circular button" v-tooltip.unblocking data-tooltip="Save card">
-            <SvgIcon name="bookmark_add" />
-          </button>
-          <Dropdown :options="{ directionPriority: { x: 'left', y: 'top' } }" v-tooltip.unblocking
-            data-tooltip="More options" class="flat circular button">
-            <SvgIcon name="more_vert" />
-            <div class="drop menu">
-              <div class="item">
-                <SvgIcon name="follow" class="lead" /> Follow page
-              </div>
-              <div class="item">
-                <SvgIcon name="bookmark_add" class="lead" /> Save card
-              </div>
-              <div class="item">
-                <SvgIcon name="share" class="lead" /> Share
-              </div>
-              <div class="item">
-                <SvgIcon name="report" class="lead" /> Report page
-              </div>
-            </div>
-          </Dropdown>
-        </div>
       </div>
-      <hr ref="divider" />
-    </header>
-    <div class="content 0-padding">
-      <div style="padding: 1em 1.5em;">
-        <div>
-          <table class="dm-info table borderless">
-            <tbody>
-              <tr>
-                <td>
-                  <SvgIcon name="domain" />
-                </td>
-                <td>
-                  {{ details.description }}
-                  <a :href="`${details.bizUrl}/about_us`" target="_blank">Learn more.</a>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <SvgIcon name="location_on" />
-                </td>
-                <td>
-                  {{ `${details.location.address}, ${details.location.city}, ${details.location.state}.` }}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <SvgIcon name="call" />
-                </td>
-                <td>
-                  {{ details.contacts.tel }}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <SvgIcon name="public" />
-                </td>
-                <td class="link">
-                  <a :href="details.bizUrl" target="_blank">{{ details.bizUrl }}</a>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <SvgIcon name="today" />
-                </td>
-                <td>
-                  <table class="table selectable compact clear 0-margined">
-                    <tbody>
-                      <tr v-for="(hour, i) in details.hours" :key="i" :class="{ 'active': new Date().getDay() === i }">
-                        <td>{{ whatDay(i) }}</td>
-                        <td>
-                          {{ hour[0] === -1 ? 'Closed' : `${to12hrsTime(hour[0])} - ${to12hrsTime(hour[1])}` }}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <hr />
-        <div>
-          <div class="sub heading">Review Summary</div>
-          <div class="flexbox" style="flex-direction: row-reverse;">
-            <div class="col 6-width md-2-width">
-              <div class="centered"
-                :set="rating = (details.reviews.reduce((n, i) => n + i.rating, 0) / details.reviews.length).toFixed(1)">
-                <div class="semibold" style="font-size: 3em;">
-                  {{ (details.reviews.reduce((n, i) => n + i.rating, 0) / details.reviews.length).toFixed(1) }}
-                </div>
-                <div class="rating small yellow-text">
-                  <SvgIcon v-for="i in Math.floor(rating)" name="star_filled" />
-                  <SvgIcon v-if="rating - Math.floor(rating) >= 0.5" name="star_half" />
-                  <SvgIcon v-for="i in (5 - Math.round(rating))" name="star" />
-                </div>
-                <div>{{ `${details.reviews.length} reviews` }}</div>
-              </div>
+      <div class="sp-wrapper z-level-2 p-h fluid" style="margin-bottom: 1rem;">
+        <div v-scrollPin="{ topSpacing: 64, ancestorGuarded: false }" class="r-aligned menu" style="height: 3.5rem;">
+          <div class="container items">
+            <div class="xhover l-aligned item as-icon">
+              <img :src="details.logo" alt="site logo" class="show-onpinned logo-lg site-logo">
             </div>
-            <div class="col 6-width md-4-width">
-              <table class="table compact borderless 0-margined">
-                <tbody>
-                  <tr v-for="i in 5" :set="(n = 6 - i)">
-                    <td style="width: 15px;">{{ n }}</td>
-                    <td>
-                      <div class="progress-bar">
-                        <div class="determinate"
-                          :style="`width: ${details.reviews.filter((elem) => elem.rating === n).length * 100 / details.reviews.length}%;`">
-                        </div>
+            <div class="items md-and-down-hidden">
+              <div class="item">Home</div>
+              <div class="item">Feeds</div>
+              <div class="item">Products</div>
+              <div class="item">Services</div>
+              <div class="item">About Us</div>
+            </div>
+            <div class="item open-sidepanel md-and-up-hidden" data-target="bizsidepanel">
+              <SvgIcon name="menu" class="lead" />
+              Menu
+                <SidePanel class="right" id="bizsidepanel">
+                  <div class="padded panel">
+                    <div class="vertical menu">
+                      <div class="centered item exit-sidepanel">
+                        <SvgIcon name="arrow_back" />
                       </div>
-                    </td>
-                    <td style="width: 15px; text-align: right;">
-                      {{ `(${details.reviews.filter((elem) => elem.rating === n).length})` }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="centered small semibold italic">
-            Patronize {{ details.bizName }} to write a review.
-            <button class="button">
-              <SvgIcon name="rate_review" class="lead" />
-              Write a review
-            </button>
-          </div>
-        </div>
-        <hr />
-        <div>
-          <div class="dm-gap">
-            <div class="sub heading">Latest Reviews</div>
-          </div>
-          <div class="dm-reviews">
-            <div v-for="a in Math.min(5, details.reviews.length)" class="dm-review"
-              :set="review = details.reviews[a - 1]">
-              <header>
-                <div class="avatar circular image" style="background-color: var(--on-surface-v1);">
-                </div>
-                <div class="content">
-                  <div class="bold">{{ review.username }}</div>
-                  <div class="flexbox flex-wrap flex-separate" style="gap: 0.5em;">
-                    <div class="rating mini yellow-text" :set="rating = review.rating">
-                      <SvgIcon v-for="i in Math.floor(rating)" name="star_filled" />
-                      <SvgIcon v-if="rating - Math.floor(rating) >= 0.5" name="star_half" />
-                      <SvgIcon v-for="i in (5 - Math.round(rating))" name="star" />
+                      <router-link to="/" class="xhover centered item exit-sidepanel">
+                        <img :src="details.logo" alt="site logo" class="logo-lg site-logo">
+                      </router-link>
+                      <div class="item">Home</div>
+                      <div class="item">Feeds</div>
+                      <div class="item">Products</div>
+                      <div class="item">Services</div>
+                      <div class="item">About Us</div>
                     </div>
-                    <div>Render Time here.</div>
+                    <hr />
+                    <footer style="margin-top: auto;">
+                      <Shareables name="color_scheme" />
+                      <Shareables name="copyright" />
+                    </footer>
                   </div>
+                </SidePanel>
+            </div>
+            <Dropdown :options="{ directionPriority: { x: 'left' } }" v-tooltip.unblocking data-tooltip="More options"
+              class="item">
+              <SvgIcon name="more_horiz" />
+              <div class="drop menu">
+                <div class="item">
+                  <SvgIcon name="follow" class="lead" /> Follow page
                 </div>
-                <Dropdown>
-                  <SvgIcon name="more_vert" />
-                  <div class="drop menu small">
-                    <div class="item">
-                      <SvgIcon name="flag" class="lead" /> Report
-                    </div>
-                  </div>
-                </Dropdown>
-              </header>
-              <article>{{ review.review }}</article>
-            </div>
-            <div v-if="details.reviews.length > 5" class="centered">
-              <a href="#" class="flat primary button">More reviews ({{ details.reviews.length - 5 }})</a>
-            </div>
+                <div class="item">
+                  <SvgIcon name="bookmark_add" class="lead" /> Save card
+                </div>
+                <div class="item">
+                  <SvgIcon name="share" class="lead" /> Share
+                </div>
+                <div class="item">
+                  <SvgIcon name="report" class="lead" /> Report page
+                </div>
+              </div>
+            </Dropdown>
           </div>
         </div>
       </div>
+    </header>
+    <div class="dm-display" style="position: relative; padding-top: calc(100% / 6 * 2);">
+      <img class="image open-lightbox" data-target="lightbox1" :data-lightbox="details.coverPic" style="position: absolute; height: 100%; width: 100%; object-fit: cover; top: 0px; left: 0px;"
+        :src="details.coverPic" alt="Business page cover picture" />
+      <Lightbox id="lightbox1" />
     </div>
-    <div class="footer auto-t-bordered flexbox" style="gap: 0.5em;">
-      <button class="primary button">
-        <SvgIcon name="public" class="lead" /> Visit Business Page
-      </button>
-      <button class="flat button md-and-down-hidden">
-        <SvgIcon name="follow" class="lead" /> Follow
-      </button>
-      <div style="display: flex; gap: 1em; margin-left: auto;">
-        <button class="flat circular button" v-tooltip.unblocking data-tooltip="Save card">
-          <SvgIcon name="bookmark_add" />
-        </button>
-        <Dropdown :options="{ directionPriority: { x: 'left', y: 'top' } }" v-tooltip.unblocking
-          data-tooltip="More options" class="flat circular button">
-          <SvgIcon name="more_vert" />
-          <div class="drop menu">
-            <div class="item">
-              <SvgIcon name="follow" class="lead" /> Follow page
-            </div>
-            <div class="item">
-              <SvgIcon name="bookmark_add" class="lead" /> Save card
-            </div>
-            <div class="item">
-              <SvgIcon name="share" class="lead" /> Share
-            </div>
-            <div class="item">
-              <SvgIcon name="report" class="lead" /> Report page
+    <div class="flexbox guttered flex-wrap" style="align-items: center; padding: 1rem;">
+      <SvgIcon class="flex-none" name="domain" />
+      <div class="flexible">
+        {{ details.description }}
+        <a :href="`${details.bizUrl}/about_us`" target="_blank">Learn more.</a>
+      </div>
+      <button class="flex-none auto-l-margined primary compact button">Contact Us</button>
+    </div>
+    <div class="flexbox guttered flex-wrap surface-v1-bg" style="align-items: center; padding: 1rem;">
+      <SvgIcon class="flex-none" name="today" />
+      <div class="flexible">
+        <span v-tooltip.unblocking
+          :data-tooltip="details.hours[new Date().getDay()][0] === -1 ? 'Did not open today at all.' : `Open today by ${to12hrsTime(details.hours[new Date().getDay()][0])} and closes by ${to12hrsTime(details.hours[new Date().getDay()][1])}.`">
+          <span>We are currently
+            <template
+              v-if="details.hours[new Date().getDay()][0] === -1 || getMinutes(details.hours[new Date().getDay()][0]) > getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`) || getMinutes(details.hours[new Date().getDay()][1]) <= getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`)">
+              <span class="error-text">closed. </span>
+              <span
+                v-if="typeof (details.hours[new Date().getDay()][0]) === 'string' && getMinutes(details.hours[new Date().getDay()][0]) > getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`)">
+                Opens {{ to12hrsTime(details.hours[new Date().getDay()][0]) }} Today.
+              </span>
+              <span v-else>
+                We'll open
+                {{
+                  details.hours[new Date().getDay() === 6 ? 0 : new Date().getDay() + 1][0] !== -1
+                    ? `${to12hrsTime(details.hours[new Date().getDay() === 6 ? 0 : new Date().getDay() + 1][0])} Tomorrow. `
+                    : `${to12hrsTime(details.hours[nextOpenDay(details.hours)][0])} on
+                ${whatDay(nextOpenDay(details.hours))}. `
+                }}
+              </span>
+            </template>
+            <template v-else>
+              <span
+                v-if="getMinutes(details.hours[new Date().getDay()][1]) - getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`) <= 60"
+                class="warning-text">Closes soon. </span>
+              <span v-else class="success-text">Open. </span>
+              <span>Closes {{ details.hours[new Date().getDay()][1] }}. </span>
+            </template>
+          </span>
+          <a href="#">Check our business hours</a>
+        </span>
+        <SvgIcon name="info" class="mini l-spaced faint-text-v2" v-tooltip.unblocking
+          data-tooltip="Note that the given detail is generated using your device time relative to the Business location timezone." />
+      </div>
+      <button class="flex-none auto-l-margined compact button">Shedule Visit</button>
+    </div>
+    <section>
+      <div class="heading" style="padding: 1rem;">
+        New and Trending products
+      </div>
+      <div class="flexbox guttered flex-wrap align-center">
+        <PageProduct class="flex-none" />
+        <PageProduct class="flex-none" />
+        <PageProduct class="flex-none" />
+        <PageProduct class="flex-none" />
+        <PageProduct class="flex-none" />
+        <PageProduct class="flex-none" />
+        <PageProduct class="flex-none" />
+        <PageProduct class="flex-none" />
+        <PageProduct class="flex-none" />
+        <PageProduct class="flex-none" />
+      </div>
+    </section>
+    <section>
+      <div class="heading" style="padding: 1rem;">
+        Our services
+      </div>
+      <div class="flexbox guttered flex-wrap align-center">
+        <PageService class="flex-none" />
+        <PageService class="flex-none" />
+        <PageService class="flex-none" />
+        <PageService class="flex-none" />
+      </div>
+    </section>
+    <section class="posts-sec">
+      <div class="biz-pin sp-wrapper">
+        <div v-scrollPin="{ topSpacing: 136, bottomSpacing: 16, ancestorGuarded: true }" class="page-aside centered">
+          <div class="dm-logo flex-none" style="position: relative; width: max-content; line-height: 0;">
+            <img class="logo image" style="width: 5rem; height: 5rem; object-fit: contain;" :src="details.logo"
+              alt="Business Logo" />
+            <SvgIcon v-if="details.verified" name="verified_sp" v-tooltip.unblocking data-tooltip="Verified"
+              style="position: absolute; bottom: 0.5em; right: 0.5em;" />
+          </div>
+          <h6 class="dm-title centered">{{ details.bizName }}</h6>
+          <div class="faint-text-v1">{{ details.mainCategory }}</div>
+          <p>
+            <span v-tooltip.unblocking
+              :data-tooltip="details.hours[new Date().getDay()][0] === -1 ? 'Did not open today at all.' : `Open today by ${to12hrsTime(details.hours[new Date().getDay()][0])} and closes by ${to12hrsTime(details.hours[new Date().getDay()][1])}.`">
+              <span>We are currently
+                <template
+                  v-if="details.hours[new Date().getDay()][0] === -1 || getMinutes(details.hours[new Date().getDay()][0]) > getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`) || getMinutes(details.hours[new Date().getDay()][1]) <= getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`)">
+                  <span class="error-text">closed. </span>
+                  <span
+                    v-if="typeof (details.hours[new Date().getDay()][0]) === 'string' && getMinutes(details.hours[new Date().getDay()][0]) > getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`)">
+                    Opens {{ to12hrsTime(details.hours[new Date().getDay()][0]) }} Today.
+                  </span>
+                  <span v-else>
+                    We'll open
+                    {{
+                      details.hours[new Date().getDay() === 6 ? 0 : new Date().getDay() + 1][0] !== -1
+                        ? `${to12hrsTime(details.hours[new Date().getDay() === 6 ? 0 : new Date().getDay() + 1][0])}
+                    Tomorrow. `
+                        : `${to12hrsTime(details.hours[nextOpenDay(details.hours)][0])} on
+                    ${whatDay(nextOpenDay(details.hours))}. `
+                    }}
+                  </span>
+                </template>
+                <template v-else>
+                  <span
+                    v-if="getMinutes(details.hours[new Date().getDay()][1]) - getMinutes(`${new Date().getHours()}:${new Date().getMinutes()}`) <= 60"
+                    class="warning-text">Closes soon. </span>
+                  <span v-else class="success-text">Open. </span>
+                  <span>Closes {{ details.hours[new Date().getDay()][1] }}. </span>
+                </template>
+              </span>
+              <a href="#">Check our business hours</a>
+            </span>
+            <SvgIcon name="info" class="mini l-spaced faint-text-v2" v-tooltip.unblocking
+              data-tooltip="Note that the given detail is generated using your device time relative to the Business location timezone." />
+          </p>
+          <div class="flexbox guttered">
+            <button class="primary button">Contact Us</button>
+            <button class="button">View Location</button>
+          </div>
+        </div>
+      </div>
+      <div class="posts-main">
+        <div class="heading">Updates from us</div>
+        <FeedCard v-for="(feed, i) in feedStore.feeds" :key="i" :details="feed" />
+        <button class="fluid button" style="max-width: 500px;">View more posts</button>
+      </div>
+    </section>
+    <section class="centered" style="padding: 6.25rem;">
+      <h3>Thanks for visiting our website.</h3>
+      <p class="container-text huge semibold">We hope you got what you’re looking for. You can make inquiries if not. We
+        hope to see you soon.</p>
+      <button class="secondary button" style="margin-top: 1rem;">Start Chat</button>
+    </section>
+    <footer class="fluid grid-layout surface-v3-bg" style="padding: 4rem 0rem;">
+      <div class="footer-main">
+        <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem;">
+          <div class="dm-logo flex-none" style="position: relative; width: max-content; line-height: 0;">
+            <img class="logo image" style="width: 4rem; height: 4rem; object-fit: contain;" :src="details.logo"
+              alt="Business Logo" />
+            <SvgIcon v-if="details.verified" name="verified_sp" v-tooltip.unblocking data-tooltip="Verified"
+              class="mini" style="position: absolute; bottom: 0.5em; right: 0.5em;" />
+          </div>
+          <h6 class="dm-title">{{ details.bizName }}</h6>
+          <!-- <div class="faint-text-v1">{{ details.mainCategory }}</div> -->
+          <div class="flexible">
+            {{ details.description }}
+            <a :href="`${details.bizUrl}/about_us`" target="_blank">Learn more.</a>
+          </div>
+          <div>
+            <div class="bold" style="margin-bottom: 0.75rem;">Earned barges on Bizword</div>
+            <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+              <div class="ft-badge">
+                <Badges name="verified" style="font-size: 3rem;" />
+                <div class="semibold">Verified</div>
+              </div>
+              <div class="ft-badge">
+                <Badges name="escrow" style="font-size: 3rem;" />
+                <div class="semibold">Trade Assurance</div>
+              </div>
+              <div class="ft-badge">
+                <Badges name="5years" style="font-size: 3rem;" />
+                <div class="semibold">Sustainable</div>
+              </div>
             </div>
           </div>
-        </Dropdown>
+        </div>
+        <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem;">
+          <div class="bold">Menus</div>
+          <div class="text vertical menu">
+            <NuxtLink class="item">Home</NuxtLink>
+            <NuxtLink class="item">Feeds</NuxtLink>
+            <NuxtLink class="item">Products</NuxtLink>
+            <NuxtLink class="item">Services</NuxtLink>
+            <NuxtLink class="item">About us</NuxtLink>
+          </div>
+        </div>
+        <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem;">
+          <div class="bold">Contact Us</div>
+          <div>
+            <p>Start chat with us directly from here.</p>
+            <button class="secondary button">Start Chat</button>
+          </div>
+          <div>
+            <div class="bold">Telephone</div>
+            <p>{{ details.contacts.tel }}</p>
+          </div>
+          <div>
+            <div class="bold">Our physical location</div>
+            <p>{{ `${details.location.address}, ${details.location.city}, ${details.location.state}.` }}</p>
+          </div>
+        </div>
+        <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem;">
+          <div class="bold nowrap-text">Social media</div>
+          <div class="vertical text menu">
+            <a class="item" href="#">Facebook</a>
+            <a class="item" href="#">Instagram</a>
+            <a class="item" href="#">Twitter</a>
+            <a class="item" href="#">LinkedIn</a>
+            <a class="item" href="#">Youtube</a>
+          </div>
+        </div>
       </div>
-    </div>
+    </footer>
   </main>
 </template>
 
-<!-- <style lang="scss">
-.dm-header {
-  position: absolute;
-  width: 100%;
-  align-items: center;
-  background-color: transparent;
-  z-index: var(--z-level-3);
-  transition: background-color ease 250ms;
-
-  &.active {
-    background-color: var(--surface);
-    box-shadow: var(--z-depth-2);
-  }
-
-  &>.content {
-    transition: opacity ease 250ms;
-  }
-
-  &:not(.active)>.content {
-    opacity: 0;
-  }
-
-  &>.trailing.icon {
-    height: 2em !important;
-    width: 2em !important;
-  }
-
-  &:not(.active)>.trailing.icon {
-    background-color: var(--surface) !important;
-    box-shadow: var(--z-depth-1);
-  }
+<style lang="scss">
+.show-onpinned {
+  opacity: 0;
+  transition: all 100ms ease;
 }
 
-.dm-display {
-  position: relative;
-  width: 100%;
-  max-width: var(--display-width);
-  flex: 0 0 auto;
-  border-radius: inherit !important;
+.pinned .show-onpinned {
+  opacity: 1;
+}
 
-  .dm-media {
-    position: relative;
-    width: 100%;
-    height: 0rem;
+.posts-sec {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto;
+  gap: 1rem;
+  margin-top: 5rem;
 
-    canvas,
-    .dm-dps {
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      top: 0px;
-      left: 0px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
+  @media only screen and (max-width : 1000px) {
+    grid-template-columns: 1fr;
+
+    & > .biz-pin {
+      display: none;
     }
   }
+
 }
 
-.dm-gap {
+.posts-main {
   display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
   align-items: center;
+  flex-direction: column;
 }
 
-.dm-logo {
-  position: relative;
-  width: 4.25rem;
-  height: 4.25rem;
-  border-radius: 50%;
-  background-color: #fff;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  border: 2px solid gray;
+.page-aside {
+  display: flex;
+  border-radius: var(--sm-radius);
+  border: 1px solid var(--outline);
+  margin-left: auto;
+  margin-right: auto;
+  width: 20rem;
+  max-width: 100%;
+  padding: 1rem;
+  align-items: center;
+  flex-direction: column;
 }
 
-.dm-title {
-  font-size: 1.375em;
-  font-weight: var(--semibold-weight);
-  color: var(--on-surface);
-  line-height: 1.125 !important;
-  width: 100%;
-  padding-bottom: 0.125em;
-  margin: 0 0 0.125em !important;
-}
+.ft-badge {
+  filter: saturate(.1);
+  text-align: center;
+  color: transparent;
 
-.dm-info td {
-  vertical-align: top;
-
-  &:first-child>i.icon {
-    color: var(--primary);
+  &:hover {
+    filter: saturate(1);
+    color: inherit;
   }
 }
 
-.dm-review {
-  &>header {
-    display: flex;
-    gap: 1em;
-    align-items: center;
-    width: 100%;
+.footer-main {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(4, 1fr);
 
-    &>.avatar.image {
-      width: 2.5rem;
-      height: 2.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background-color: var(--surface-v5);
-    }
+  @media screen and (max-width: 960px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-    &>.content {
-      flex: 1 1 auto;
-    }
+  @media screen and (max-width: 550px) {
+    grid-template-columns: 1fr;
   }
 }
-
-.dm-heading {
-  width: calc(100% - 4.25rem - 0.5rem);
-}
-
-.dm-media {
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding-top: calc(100% / 9 * 5); // 9:5 aspect ratio
-}
-</style> -->
+</style>

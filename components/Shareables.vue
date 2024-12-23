@@ -146,7 +146,7 @@ const searchStore = useSearchStore();
             </template>
         </div>
     </template>
-    <div v-else-if="name === 'main_menu'" class="container items auto-margined"
+    <div v-else-if="name === 'main_menu'" class="container-lg items auto-margined"
         style="border-radius: var(--default-radius)">
         <div class="item as-icon open-sidepanel" v-tooltip.unblocking data-tooltip="Menu" data-target="msidepanel">
             <SvgIcon name="menu" />
@@ -155,8 +155,8 @@ const searchStore = useSearchStore();
             <img src="/images/logo_sqr.png" alt="site logo" class="logo-lg site-logo">
         </router-link>
         <form class="xhover adaptable item md-and-down-hidden" @submit.prevent="searchStore.triggerSearch()">
-            <label class="input fluid transparent"
-                style="max-width: var(--container-text); background-color: var(--surface-v4) !important;">
+            <label class="input container-text transparent"
+                style="background-color: var(--surface-v4) !important;">
                 <SvgIcon name="search" class="xhover" />
                 <input v-model="searchStore.searchBox" type="search" placeholder="Your search here." class="subject">
                 <button type="button" v-tooltip.unblocking data-tooltip="Scan Business QR" class="icon open-modal"
@@ -209,7 +209,7 @@ const searchStore = useSearchStore();
         <div class="menu" style="height: 64px;">
             <rc-shareables name="main_menu" />
         </div>
-        <div class="container md-and-up-hidden" style="padding-top: 0.5rem; padding-bottom: 0.5rem;">
+        <div class="container-lg md-and-up-hidden" style="padding-top: 0.5rem; padding-bottom: 0.5rem;">
             <form class="fluid" @submit.prevent="searchStore.triggerSearch()">
                 <label class="input fluid transparent" style="background-color: var(--surface-v4) !important;">
                     <SvgIcon name="search" class="xhover" />
@@ -228,7 +228,7 @@ const searchStore = useSearchStore();
             </form>
         </div>
         <div class="md-and-down-hidden" style="padding: 0em 0em 0.5em;">
-            <div class="container flexbox" style="gap: 0.5em;">
+            <div class="container-lg flexbox" style="gap: 0.5em;">
                 <div class="compact transparent button bold open-modal" data-target="explore-modal">
                     <SvgIcon name="manage_search" class="lead" /> Explore:
                 </div>

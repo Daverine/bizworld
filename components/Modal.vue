@@ -3,11 +3,12 @@
 
 	export default {
 		mixins: [panel],
+		inheritAttrs: false,
 		data() {
 			return {
 				default: {
 					namespace: 'modal',
-					toBeConsidered: ':scope .dialog, :scope .md-control',
+					toBeConsidered: '.dialog, .md-control',
 					toggler: '.open-modal',
 					toExcuseToggler: '.ex-open-modal',
 					setHighlightRange: true,
@@ -15,7 +16,7 @@
 					closeOnEsc: true,
 					closeOnWrapperClick: true,
 					dismissible: true,
-					autoFocusEl: ':scope [md-autofocus]',
+					autoFocusEl: '[md-autofocus]',
 					dismisser: '.exit-modal',
 					lockScreen: true,
 					inDuration: 500,
@@ -26,7 +27,9 @@
 	}
 </script>
 <template>
-	<div ref="panel" :id="id" class="modal" tabindex="-1">
-		<slot></slot>
-	</div>
+	<Teleport to="body" :disabled="!uniqueId">
+		<div ref="panel" :id="id" v-bind="$attrs" class="modal" tabindex="-1">
+			<slot></slot>
+		</div>
+	</Teleport>
 </template>

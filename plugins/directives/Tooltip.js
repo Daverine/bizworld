@@ -58,8 +58,8 @@ export function Tooltip() {
             },
             getCoords(e) {
                 return {
-                    x: e.type.indexOf("touch") > -1 ? e.touches[0].pageX : e.clientX,
-                    y: e.type.indexOf('touch') > -1 ? e.touches[0].pageY : e.clientY
+                    x: e.type.indexOf("touch") > -1 ? e.touches[0].clientX : e.clientX,
+                    y: e.type.indexOf('touch') > -1 ? e.touches[0].clientY : e.clientY
                 }
             },
             mousePosition(e) {

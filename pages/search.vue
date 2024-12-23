@@ -3,7 +3,7 @@ definePageMeta({layout: 'common'});
 const searchStore = useSearchStore();
 const route = useRoute();
 
-watch(() => route.query.q, () => document.title = `BizWorld | Search: ${route.query.q}`, { immediate: true });
+// watch(() => route.query.q, () => document.title = `BizWorld | Search: ${route.query.q}`, { immediate: true });
 onMounted(() => {
 	if (!searchStore.searchBox) {
 		searchStore.searchBox = route.query.q;
@@ -13,6 +13,7 @@ onMounted(() => {
 </script>
 
 <template>
+	<Title>BizWorld | Search: {{ route.query.q }}</Title>
 	<main class="flexible col" id="feed">
 		<div class="sp-wrapper fluid z-level-3 p-h" style="margin-bottom: 1rem;">
 			<IScroller v-scrollPin="{ topSpacing: 64, ancestorGuarded: true }">

@@ -4,9 +4,9 @@ export const utils = {
 			console.warn(`You can't get Track Escape without a TrackId`);
 			return;
 		}
-		
+
 		if (!window.lui_EscTracker) window.lui_EscTracker = [];
-		
+
 		if (window.lui_EscTracker.includes(trackId)) {
 			console.warn(`The passed trackId is been tracked already`, trackId);
 			return;
@@ -27,12 +27,12 @@ export const utils = {
 			window.lui_EscTracker = [];
 			return;
 		}
-		
+
 		if (!window.lui_EscTracker.includes(trackId) && !byForce) {
 			console.warn('The passed TrackId is not tracked', trackId);
 			return;
 		}
-		
+
 		if (window.lui_EscTracker.slice(-1)[0] === trackId || byForce) {
 			window.lui_EscTracker = window.lui_EscTracker.filter(el => el !== trackId);
 			return true;
@@ -51,9 +51,9 @@ export const utils = {
 			document.documentElement.style.overflow = 'hidden';
 			[...document.querySelectorAll('.respect-lock')].forEach(el => {
 				if (!el.lui) el.lui = {};
-            	el.lui.styleBeforeLock = el.getAttribute('style');
+				el.lui.styleBeforeLock = el.getAttribute('style');
 				el.style.maxWidth = `calc(100% - ${scrollBarWidth})`;
-				el.style.marginRight = scrollBarWidth; 
+				el.style.marginRight = scrollBarWidth;
 			});
 		}
 		if (!window.lui_ScrollLockers.includes(lockerId)) window.lui_ScrollLockers.push(lockerId);
@@ -61,7 +61,7 @@ export const utils = {
 	unlockWindowScroll(lockerId) {
 		if (window.lui_ScrollLockers && window.lui_ScrollLockers.includes(lockerId)) {
 			window.lui_ScrollLockers = window.lui_ScrollLockers.filter(el => el !== lockerId);
-			
+
 			if (!window.lui_ScrollLockers.length) {
 				document.documentElement.style.marginRight = null;
 				document.documentElement.style.overflow = null;
@@ -74,9 +74,9 @@ export const utils = {
 		}
 	},
 	getUniqueId(nameSpace) {
-		if (typeof(window.lui_uuid) !== 'number') window.lui_uuid = 0; 
+		if (typeof (window.lui_uuid) !== 'number') window.lui_uuid = 0;
 		window.lui_uuid++;
-		nameSpace = (nameSpace != undefined && typeof(nameSpace) === 'string')
+		nameSpace = (nameSpace != undefined && typeof (nameSpace) === 'string')
 			? nameSpace
 			: 'unique-id'
 
@@ -95,13 +95,13 @@ export const utils = {
 	offsetPos(el) {
 		let box = el.getBoundingClientRect(), docElem = document.documentElement;
 		return {
-		  top: box.top + window.scrollY - docElem.clientTop,
-		  left: box.left + window.scrollX - docElem.clientLeft
+			top: box.top + window.scrollY - docElem.clientTop,
+			left: box.left + window.scrollX - docElem.clientLeft
 		};
 	},
 	getParents(el, selector, until) {
 		if (until) {
-			if (typeof(until) == 'string') {
+			if (typeof (until) == 'string') {
 				until = [...document.querySelectorAll(until)].filter((elem) => elem.contains(el));
 				if (!until.length) return;
 				else until = until[0];
@@ -109,7 +109,7 @@ export const utils = {
 			else if (!until.contains(el)) until = document;
 		}
 		else until = document;
-		
+
 		let parents = [];
 
 		while ((el = el.parentNode) && el !== until) {
@@ -119,27 +119,27 @@ export const utils = {
 			}
 			parents.push(el);
 		}
-	
+
 		return parents;
 	},
 	nextAll(el) {
 		const nextElements = []
 		let nextElement = el
-		
-		while(nextElement.nextElementSibling) {
+
+		while (nextElement.nextElementSibling) {
 			nextElements.push(nextElement.nextElementSibling)
 			nextElement = nextElement.nextElementSibling
 		}
-		
+
 		return nextElements
 	},
-	triggerEvent(el, eventType) {
-		if (typeof eventType === 'string' && typeof el[eventType] === 'function') {
-			el[eventType]();
-		} else {
-			const event = typeof eventType === 'string' ? new Event(eventType, {bubbles: true}) : eventType;
-			el.dispatchEvent(event);
+	triggerEvent(el, eventType, customData) {
+		if (typeof eventType === 'string') {
+			if (customData !== undefined) el.dispatchEvent(new CustomEvent(eventType, { detail: customData }));
+			else if (typeof el[eventType] === 'function') el[eventType]();
+			else el.dispatchEvent(new Event(eventType, { bubbles: true }));
 		}
+		else el.dispatchEvent(eventType);
 	},
 	isObject(value) {
 		return (
@@ -150,29 +150,27 @@ export const utils = {
 	},
 	isClose(elem, selectors) {
 		function checkElem(elem) {
-			return typeof(elem) != 'undefined' && elem != null
+			return typeof (elem) != 'undefined' && elem != null
 		}
 
-		if (typeof(selectors) === 'string') {
+		if (typeof (selectors) === 'string') {
 			return checkElem(elem.closest(selectors));
 		}
 
 		let isClose = false;
 
 		// check if node is close to at-least one of the selector
-		selectors.forEach(function(node) {
+		selectors.forEach(function (node) {
 			isClose = checkElem(elem.closest(node));
 		});
 
 		return isClose;
 	},
 	focusRangeOnTab(range, e) {
-		let focusableElements = []; 
-		range.querySelectorAll('[href], button, input, textarea, select, details, object, [tabindex]:not([tabindex="-1"])')
-			.forEach(function(a) {
-				if (!a.hasAttribute('disabled') && !a.getAttribute('aria-hidden')) {
-					focusableElements.push(a);
-				}
+		let focusableElements = [];
+		[...range.querySelectorAll('[href], button, input, textarea, select, details, object, [tabindex]:not([tabindex="-1"])')]
+			.forEach(el => {
+				if (!el.hasAttribute('disabled') && !el.getAttribute('aria-hidden')) focusableElements.push(a);
 			});
 
 		if (focusableElements.length < 1) {
@@ -183,18 +181,18 @@ export const utils = {
 		let first = focusableElements[0],
 			last = focusableElements[focusableElements.length - 1];
 
-		if (document.activeElement === last && (!e.shiftKey && e.keyCode === 9)) {
+		if (document.activeElement === last && (!e.shiftKey && e.key === 'Tab')) {
 			e.preventDefault();
 			first.focus();
 		}
-		else if (document.activeElement === first && (e.shiftKey && e.keyCode === 9)) {
+		else if (document.activeElement === first && (e.shiftKey && e.key === 'Tab')) {
 			e.preventDefault();
-			last.focus()
+			last.focus();
 		}
 	},
 	setHighlightRange(el) {
 		let range, selection;
-	
+
 		if (document.body.createTextRange) {
 			range = document.body.createTextRange();
 			range.moveToElementText(el);
@@ -208,4 +206,9 @@ export const utils = {
 			selection.addRange(range);
 		}
 	},
+	afterNextRepaint(func) {
+		const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+		// requestAnimationFrame fires before repaint. So calling it twice makes it fire after a repaint.
+		requestAnimationFrame(() => requestAnimationFrame(func));
+	}
 }

@@ -1,241 +1,307 @@
-export function scrollPin() {
-    const dnm = function() {
-        return {
-            default: {
+export default {
+    mounted(el, binding) {
+        const settings = {
+            ...{
                 namespace: 'scrollPin',
                 className: 'pinned',
                 wrapper: '.sp-wrapper',
                 guardian: undefined,
-                autoContain: true,
+                autoContainMargins: true,
                 sticky: false,
                 ancestorGuarded: false,
                 topSpacing: 0,
                 bottomSpacing: 0,
-                streamSizeToParent: true,
+                pinPriority: 'top', // can either be a sting of top or bottom
+                streamHeightToWrapper: true,
                 pinned: undefined,
                 unpinned: undefined,
             },
-            initialize(el, binding) {
-                // adjust settings
-                this.el = el;
-                this.settings = utils.isObject(binding.value) ? { ...this.default, ...binding.value } : this.default;
-                this.settings.ancestorGuarded = this.settings.sticky ? true : this.settings.ancestorGuarded;
-                this.uniqueId = utils.getUniqueId(this.settings.namespace);
-                // cache current style attribute of the scrollPin element to be used for resetting during window resize.
-                this.initStyle = this.el.getAttribute('style');
-                this.prop = {}; this.tmp = {};
+            ...(utils.isObject(binding.value) ? binding.value : {})
+        };
+        const tmp = {
+            eBox: undefined,
+            pBox: undefined,
+            eOffset: undefined,
+            pOffset: undefined,
+            // cache current style attribute of the scrollPin element to be used for resetting during window resize.
+            initStyle: el.getAttribute('style'),
+            // get scrollPosition here
+            scrollPos: window.scrollY,
+            scrollDir: undefined,
+            pinnable: undefined,
+            currState: undefined,
+        };
+        let wrapper;
+        let guardian;
+        let sizeStreamId;
 
-                // bind all event methods to the correct 'this'
-                Object.keys(this).forEach(el => {
-                    if (typeof(this[el]) === 'function') {
-                        this[el] = this[el].bind(this);
-                    }
-                });
+        settings.ancestorGuarded = settings.sticky ? true : settings.ancestorGuarded;
+        settings.pinPriority = settings.pinPriority !== 'bottom' ? 'top' : 'bottom';
 
-                window.addEventListener('resize', this.getGeometry);
-                window.addEventListener('scroll', this.onScrollMtd);
-                this.el.addEventListener('stopScrollPin', this.stopScrollPin);
-                
-                if (this.settings.autoContain) this.el.classList.add('clearfix');
-                
-                if (this.settings.streamSizeToParent && this.el.parentNode.matches(this.settings.wrapper)) {
-                    this.wrapper = this.el.parentNode;
-                    this.wrapper.classList.add('clearfix');
-                    if (utils.getCssVal(this.wrapper, 'position') === 'static') this.wrapper.style.position = 'relative'; 
-                }
-                else this.settings.streamSizeToParent = false;
-                
-                // trigger a resize Method of windows used in scrollPin.
-                this.getGeometry();
+        window.addEventListener('resize', getGeometry);
+        window.addEventListener('scroll', onScrollMtd);
+        el.addEventListener('stopScrollPin', stopScrollPin);
 
-                // start parentSize streaming
-                if (this.settings.streamSizeToParent) {
-                    const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-                    this.sizeStreamId = requestAnimationFrame(this.streamCallback);
-                }
-            },
-            streamCallback() {
-                let elHeight = this.el.getBoundingClientRect().height, streamer;
-                
-                // let parent take scrollPin element height + the parent padding top and bottom as min-height
-                this.wrapper.style.minHeight = `${elHeight + this.getTB(this.wrapper, true) + this.getTB(this.wrapper)}px`;
-                if (elHeight && elHeight !== this.prop.eBox.height) {
-                    clearTimeout(streamer);
-                    if (this.prop.eBox.height !== elHeight) this.prop.eBox.height = elHeight;
-                    streamer = setTimeout(() => this.onScrollMtd('partial-reset'), 20);
-                }
-                if (this.settings.ancestorGuarded && this.guardian.getBoundingClientRect().height !== this.prop.pBox.height) {
-                    clearTimeout(streamer);
-                    streamer = setTimeout(() => this.getGeometry(), 20);
-                }
-                
-                const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-                this.sizeStreamId = requestAnimationFrame(this.streamCallback);
-            },
-            getGeometry() {
-                // reset scrollPin
-                this.el.classList.remove(this.settings.className);
-                if (this.initStyle) this.el.setAttribute('style', this.initStyle);
-                else this.el.removeAttribute('style');
-                this.currState = 'reset-state';
-                this.scrollPos = window.scrollY;
-                this.tmp.pinnable = true;
+        if (settings.autoContainMargins) el.classList.add('clearfix');
 
-                // get data
-                this.prop.eBox = JSON.parse(JSON.stringify(this.el.getBoundingClientRect()));
-                this.prop.eOffset = utils.offsetPos(this.el);
+        if (settings.streamHeightToWrapper && el.parentNode.matches(settings.wrapper)) {
+            wrapper = el.parentNode;
+            wrapper.classList.add('clearfix');
+            // ensure that the wrapper is a positioned Element
+            if (utils.getCssVal(wrapper, 'position') === 'static') wrapper.style.position = 'relative';
+        }
+        else settings.streamHeightToWrapper = false;
+
+        // trigger a resize Method of windows used in scrollPin to get the initial coords of scrollPin element.
+        getGeometry();
+
+        // start wrapperSize streaming
+        if (settings.streamHeightToWrapper) {
+            const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+            sizeStreamId = requestAnimationFrame(streamCallback);
+        }
+
+        function streamCallback() {
+            let elHeight = el.getBoundingClientRect().height;
+            let streamer;
+
+            // let parent take scrollPin element height + the parent padding top and bottom as min-height
+            wrapper.style.minHeight = `${elHeight + getTB(wrapper, true) + getTB(wrapper)}px`;
+            if (elHeight && elHeight !== tmp.eBox.height) {
+                clearTimeout(streamer);
+                if (tmp.eBox.height !== elHeight) tmp.eBox.height = elHeight;
+                streamer = setTimeout(() => onScrollMtd('partial-reset'), 20);
+            }
+            if (settings.ancestorGuarded && guardian.getBoundingClientRect().height !== tmp.pBox.height) {
+                clearTimeout(streamer);
+                streamer = setTimeout(() => getGeometry(), 20);
+            }
+
+            const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+            sizeStreamId = requestAnimationFrame(streamCallback);
+        }
+
+        function getGeometry() {
+            // reset scrollPin
+            el.classList.remove(settings.className);
+            if (tmp.initStyle) el.setAttribute('style', tmp.initStyle);
+            else el.removeAttribute('style');
+            tmp.currState = 'reset-state';
+            tmp.pinnable = true;
+
+            // get data
+            tmp.eBox = JSON.parse(JSON.stringify(el.getBoundingClientRect()));
+            tmp.eOffset = utils.offsetPos(el);
+            // determine if a scrollpin should be independent by element's height
+            settings.independent = tmp.eBox.height + settings.topSpacing >= window.innerHeight || tmp.eBox.height + settings.bottomSpacing > window.innerHeight;
+
+            // needed if pinned element needs to be contained inside one of it ancestor element's boundaries
+            if (settings.ancestorGuarded) {
+                guardian = settings.guardian && utils.getParents(el, settings.guardian)[0]
+                    ? utils.getParents(el, settings.guardian)[0]
+                    : settings.streamHeightToWrapper
+                        ? wrapper.parentNode
+                        : el.parentNode;
+
+                tmp.pBox = JSON.parse(JSON.stringify(guardian.getBoundingClientRect()));
+                tmp.pOffset = utils.offsetPos(guardian);
+
+                if (Math.max(tmp.eBox.height + settings.topSpacing, tmp.eBox.height + settings.bottomSpacing) > utils.contentSize(guardian).height) {
+                    tmp.pinnable = false;
+                    console.warn('a scrollPin element on this page is not currently pinnable.');
+                    return;
+                }
+            }
+
+            // trigger a scroll Method of windows used in scrollPin.
+            onScrollMtd();
+        }
+
+        function onScrollMtd(init) {
+            if (!tmp.pinnable) return;
+            // store previous scroll position to be used in independent scrollPin
+            let prevScrollPos = tmp.scrollPos;
+            tmp.scrollDir = tmp.scrollPos < window.scrollY ? 1 : tmp.scrollPos > window.scrollY ? -1 : 0;
+            tmp.scrollPos = window.scrollY;
+
+            let positionedParent = utils.getParents(el).filter(el => utils.getCssVal(el, 'position') !== 'static')[0] || document.body;
+            let ppOffset = utils.offsetPos(positionedParent);
+            let isIndependentBefore = settings.independent;
+            let prevState = tmp.currState;
+            // partial reset
+            if (init === 'partial-reset') {
                 // determine if a scrollpin should be independent by element's height
-                this.settings.independent = this.prop.eBox.height + this.settings.topSpacing >= window.innerHeight || this.prop.eBox.height + this.settings.bottomSpacing > window.innerHeight;
-                
-                // needed if pinned element needs to be contained inside the parent element's boundaries
-                if (this.settings.ancestorGuarded) {
-                    this.guardian = this.settings.guardian && utils.getParents(this.el, this.settings.guardian)[0]
-                        ? utils.getParents(this.el, this.settings.guardian)[0]
-                        : this.settings.streamSizeToParent
-                            ? this.wrapper.parentNode
-                            : this.el.parentNode;
-                    
-                    this.prop.pBox = JSON.parse(JSON.stringify(this.guardian.getBoundingClientRect()));
-                    this.prop.pOffset = utils.offsetPos(this.guardian);
+                settings.independent = tmp.eBox.height + settings.topSpacing >= window.innerHeight || tmp.eBox.height + settings.bottomSpacing > window.innerHeight;
+                tmp.currState = 'reset-state';
+                el.classList.remove(settings.className);
 
-                    if (this.prop.eBox.height + this.settings.topSpacing + this.settings.bottomSpacing > utils.contentSize(this.guardian).height) {
-                        this.tmp.pinnable = false;
-                        console.warn('a scrollPin element on this page is not currently pinnable.');
-                        return;
-                    }
+                if (isIndependentBefore && !settings.independent) {
+                    el.classList.add(settings.className);
+                    el.style.position = 'fixed';
+                    el.style.top = `${settings.topSpacing}px`;
+                    el.style.left = `${tmp.eOffset.left}px`;
+                    // fix for the use of relative width on the element.
+                    el.style.setProperty('width', `${tmp.eBox.width}px`, 'important');
+                    tmp.currState = 'top-pinned';
                 }
+            }
 
-                // trigger a scroll Method of windows used in scrollPin.
-                this.onScrollMtd();
-            },
-            onScrollMtd(init) {
-                if (!this.tmp.pinnable) return;
-                // store previous scroll position to be used in independent scrollPin
-                let prevScrollPos = this.tmp.scrollPos;
-                this.tmp.scrollDir = this.tmp.scrollPos < window.scrollY ? 1 : this.tmp.scrollPos > window.scrollY ? -1 : 0;
-                this.tmp.scrollPos = window.scrollY;
+            if (settings.independent) {
+                // dont change anyting if element is within free-zone area of moving in scroll-direction and it criteria of being in this zone is still meant.
+                if (tmp.currState === 'reset-state' && (prevState === 'dir-bottom-unpinned' || prevState === 'dir-top-unpinned') &&
+                    (
+                        (!settings.ancestorGuarded && document.body.getBoundingClientRect().height - tmp.scrollPos > tmp.eBox.height + settings.topSpacing) ||
+                        (settings.ancestorGuarded && tmp.pOffset.top + tmp.pBox.height - tmp.scrollPos > tmp.eBox.height + settings.topSpacing + getTB(guardian))
+                    ) && tmp.scrollPos >= tmp.eOffset.top - settings.topSpacing
+                ) { return; }
 
-                let
-                    offsetParent = utils.getParents(this.el).filter(el => utils.getCssVal(el, 'position') !== 'static')[0] || document.body,
-                    opOffset = utils.offsetPos(offsetParent),
-                    isIndependentBefore = this.settings.independent,
-                    prevState = this.currState
-                ;
-                // partial reset
-                if (init === 'partial-reset') {                    
-                    // determine if a scrollpin should be independent by element's height
-                    this.settings.independent = this.prop.eBox.height + this.settings.topSpacing >= window.innerHeight || this.prop.eBox.height + this.settings.bottomSpacing > window.innerHeight;
-                    this.currState = 'reset-state';
-                    this.el.classList.remove(this.settings.className);
+                // if (tmp.currState === 'reset-state' && prevState === 'dir-bottom-unpinned' &&
+                //     !(utils.offsetPos(el).top + tmp.eBox.height + settings.bottomSpacing <= tmp.scrollPos + window.innerHeight)) {
+                //     tmp.currState = 'dir-bottom-unpinned';
+                // }
+                // else if (tmp.currState === 'reset-state' && prevState === 'dir-top-unpinned' &&
+                //     !(utils.offsetPos(el).top > tmp.scrollPos + settings.topSpacing)) {
+                //     tmp.currState = 'dir-top-unpinned';
+                // }
 
-                    if (isIndependentBefore && !this.settings.independent) {
-                        this.el.classList.add(this.settings.className);
-                        this.el.style.position = 'fixed';
-                        this.el.style.top = `${this.settings.topSpacing}px`;
-                        this.el.style.left = `${this.prop.eOffset.left}px`;
-                        // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', `${this.prop.eBox.width}px`, 'important');
-                        this.currState = 'top-pinned';
-                    }
+                // pin the element at the bottom
+                // if element bottom and bottomSpacing is visible on the screen
+                // and the user is scrolling down
+                // and element is not parent-guilded
+                // or the parent bottom (excluding it bottom-padding and bottomSpacing) have not reach the screen bottom. 
+                else if (
+                    !el.classList.contains(settings.className) &&
+                    (
+                        (tmp.scrollDir === 1 && utils.offsetPos(el).top + tmp.eBox.height + settings.bottomSpacing <= tmp.scrollPos + window.innerHeight) ||
+                        (tmp.currState === 'reset-state' && ((!settings.ancestorGuarded && document.body.getBoundingClientRect().height - tmp.scrollPos <= tmp.eBox.height + settings.topSpacing) || (settings.ancestorGuarded && tmp.pOffset.top + tmp.pBox.height - tmp.scrollPos <= tmp.eBox.height + settings.topSpacing + getTB(guardian))))
+                    ) &&
+                    (!settings.ancestorGuarded || Math.ceil(tmp.pOffset.top + tmp.pBox.height - getTB(guardian)) >= tmp.scrollPos + window.innerHeight)
+                ) {
+                    el.classList.add(settings.className);
+                    el.style.position = 'fixed';
+                    el.style.top = `${window.innerHeight - tmp.eBox.height - settings.bottomSpacing}px`;
+                    el.style.left = `${tmp.eOffset.left}px`;
+                    // fix for the use of relative width on the element.
+                    el.style.setProperty('width', tmp.eBox.width + "px", "important");
+                    tmp.currState = 'bottom-pinned';
                 }
+                // pin the element at the top
+                // if element top and topSpacing is visible
+                // and the user is scrolling up
+                // while element have not reach its initial position
+                else if (
+                    !el.classList.contains(settings.className) &&
+                    (
+                        (tmp.scrollDir === -1 && utils.offsetPos(el).top > tmp.scrollPos + settings.topSpacing) ||
+                        (tmp.currState === 'reset-state' && ((!settings.ancestorGuarded && document.body.getBoundingClientRect().height - tmp.scrollPos > tmp.eBox.height + settings.topSpacing) || (settings.ancestorGuarded && tmp.pOffset.top + tmp.pBox.height - tmp.scrollPos > tmp.eBox.height + settings.topSpacing + getTB(guardian))))
+                    ) && tmp.scrollPos >= tmp.eOffset.top - settings.topSpacing
+                ) {
+                    el.classList.add(settings.className);
+                    el.style.position = 'fixed';
+                    el.style.top = `${settings.topSpacing}px`;
+                    el.style.left = `${tmp.eOffset.left}px`;
+                    // fix for the use of relative width on the element.
+                    el.style.setProperty('width', tmp.eBox.width + "px", "important");
+                    tmp.currState = 'top-pinned';
+                }
+                // unpin the element at bottom (from been pinned by pin1)
+                // if it is Guarded by it parent and it as reach it parent limit at the bottom.
+                else if (
+                    settings.ancestorGuarded &&
+                    tmp.pOffset.top + tmp.pBox.height - getTB(guardian) <= tmp.scrollPos + window.innerHeight - settings.bottomSpacing
+                ) {
+                    el.classList.remove(settings.className);
+                    el.style.position = 'absolute';
+                    el.style.top = `${tmp.pOffset.top + tmp.pBox.height - tmp.eBox.height - getTB(guardian) - ppOffset.top}px`;
+                    el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
+                    // fix for the use of relative width on the element.
+                    el.style.setProperty('width', tmp.eBox.width + "px", "important");
+                    tmp.currState = 'bottom-unpinned';
+                }
+                // unpin the element if the page scrolls to where the initial offset of the element is visible
+                else if (tmp.scrollPos + settings.topSpacing <= tmp.eOffset.top) {
+                    el.classList.remove(settings.className);
+                    el.style.position = 'absolute';
+                    el.style.top = `${tmp.eOffset.top - ppOffset.top}px`;
+                    el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
+                    // fix for the use of relative width on the element.
+                    el.style.setProperty('width', tmp.eBox.width + "px", "important");
+                    tmp.currState = 'top-unpinned';
+                }
+                // unpin element
+                // if element was pinned by pin1
+                // and the scroll direction for been pinned has changed
+                else if (tmp.currState === 'bottom-pinned' && tmp.scrollDir === -1) {
+                    el.classList.remove(settings.className);
+                    el.style.position = 'absolute';
+                    el.style.top = `${prevScrollPos + window.innerHeight - tmp.eBox.height - settings.bottomSpacing - ppOffset.top}px`;
+                    el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
+                    // fix for the use of relative width on the element.
+                    el.style.setProperty('width', tmp.eBox.width + "px", "important");
+                    tmp.currState = 'dir-bottom-unpinned';
+                }
+                // unpin element
+                // if element was pinned by pin2
+                // and the scroll direction for been pinned has changed
+                else if (tmp.currState === 'top-pinned' && tmp.scrollDir === 1) {
+                    el.classList.remove(settings.className);
+                    el.style.position = 'absolute';
+                    el.style.top = `${prevScrollPos + settings.topSpacing - ppOffset.top}px`;
+                    el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
+                    // fix for the use of relative width on the element.
+                    el.style.setProperty('width', tmp.eBox.width + "px", "important");
+                    tmp.currState = 'dir-top-unpinned';
+                }
+            }
+            else {
+                if (settings.pinPriority === 'bottom') {
+                    // pin element at the bottom if pinPriority is set to bottom
+                    // and element is not guarded by an ancestor
+                    // or if guarded, the guardian content-visible area on the screen can contain the pin element and it bottom space
+                    if (tmp.currState !== 'bottom-pinned' && (!settings.ancestorGuarded || (
+                        (tmp.pOffset.top < tmp.scrollPos || tmp.scrollPos + window.innerHeight - tmp.pOffset.top >= tmp.eBox.height + settings.bottomSpacing + getTB(guardian, true)) &&
+                        (tmp.pOffset.top + tmp.pBox.height - getTB(guardian) > tmp.scrollPos + window.innerHeight || tmp.scrollPos + window.innerHeight - tmp.pOffset.top - tmp.pBox.height + getTB(guardian) <= settings.bottomSpacing)
+                    ))) {
+                        el.classList.add(settings.className);
+                        el.style.position = 'fixed';
+                        el.style.top = `${window.innerHeight - tmp.eBox.height - settings.bottomSpacing}px`;
+                        el.style.left = `${tmp.eOffset.left}px`;
+                        // fix for the use of relative width on the element.
+                        el.style.setProperty('width', `${tmp.eBox.width}px`, 'important');
 
-                if (this.settings.independent) {
-                    if (this.currState === 'reset-state' && prevState === 'dir-bottom-unpinned' &&
-                        !(utils.offsetPos(this.el).top + this.prop.eBox.height + this.settings.bottomSpacing <= this.tmp.scrollPos + window.innerHeight)) {
-                        this.currState = 'dir-bottom-unpinned';
+                        tmp.currState = 'bottom-pinned';
                     }
-                    else if (this.currState === 'reset-state' && prevState === 'dir-top-unpinned' &&
-                        !(utils.offsetPos(this.el).top > this.tmp.scrollPos + this.settings.topSpacing)) {
-                        this.currState = 'dir-top-unpinned';
-                    }
-                    // pin the element at the bottom
-                    // if element bottom and bottomSpacing is visible on the screen
-                    // and the user is scrolling down
-                    // and element is not parent-guilded
-                    // or the parent bottom (excluding it bottom-padding and bottomSpacing) have not reach the screen bottom. 
-                    else if (
-                        !this.el.classList.contains(this.settings.className) &&
-                        (
-                            (this.tmp.scrollDir === 1 && utils.offsetPos(this.el).top + this.prop.eBox.height + this.settings.bottomSpacing <= this.tmp.scrollPos + window.innerHeight) ||
-                            (this.currState === 'reset-state' && (this.settings.ancestorGuarded && this.prop.pOffset.top + this.prop.pBox.height - this.tmp.scrollPos <= this.prop.eBox.height + this.settings.topSpacing + this.getTB(this.guardian) || !this.settings.ancestorGuarded && document.body.getBoundingClientRect().height - this.tmp.scrollPos <= this.prop.eBox.height + this.settings.topSpacing))
-                         ) &&
-                        (!this.settings.ancestorGuarded || Math.ceil(this.prop.pOffset.top + this.prop.pBox.height - this.getTB(this.guardian)) >= this.tmp.scrollPos + window.innerHeight)
-                    ) {
-                        this.el.classList.add(this.settings.className);
-                        this.el.style.position = 'fixed';
-                        this.el.style.top = `${window.innerHeight - this.prop.eBox.height - this.settings.bottomSpacing}px`;
-                        this.el.style.left = `${this.prop.eOffset.left}px`;
-                        // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', this.prop.eBox.width + "px", "important");
-                        this.currState = 'bottom-pinned';
-                    }
-                    // pin the element at the top
-                    // if element top and topSpacing is visible
-                    // and the user is scrolling up
-                    // while element have not reach its initial position
-                    else if (
-                        !this.el.classList.contains(this.settings.className) &&
-                        (   
-                            (this.tmp.scrollDir === -1 && utils.offsetPos(this.el).top > this.tmp.scrollPos + this.settings.topSpacing) ||
-                            this.currState === 'reset-state' && (this.settings.ancestorGuarded && this.prop.pOffset.top + this.prop.pBox.height - this.tmp.scrollPos > this.prop.eBox.height + this.settings.topSpacing + this.getTB(this.guardian) || !this.settings.ancestorGuarded && document.body.getBoundingClientRect().height - this.tmp.scrollPos > this.prop.eBox.height + this.settings.topSpacing)
-                        ) &&
-                        this.tmp.scrollPos >= this.prop.eOffset.top - this.settings.topSpacing
-                    ) {
-                        this.el.classList.add(this.settings.className);
-                        this.el.style.position = 'fixed';
-                        this.el.style.top = `${this.settings.topSpacing}px`;
-                        this.el.style.left = `${this.prop.eOffset.left}px`;
-                        // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', this.prop.eBox.width + "px", "important");
-                        this.currState = 'top-pinned';
-                    }
-                    // unpin the element at bottom (from been pinned by pin1)
-                    // if it is Guarded by it parent and it as reach it parent limit at the bottom.
-                    else if (
-                        this.settings.ancestorGuarded &&
-                        this.prop.pOffset.top + this.prop.pBox.height - this.getTB(this.guardian) <= this.tmp.scrollPos + window.innerHeight - this.settings.bottomSpacing
-                    ) {
-                        this.el.classList.remove(this.settings.className);
-                        this.el.style.position = 'absolute';
-                        this.el.style.top = `${this.prop.pOffset.top + this.prop.pBox.height - this.prop.eBox.height - this.getTB(this.guardian) - opOffset.top}px`;
-                        this.el.style.left = `${this.prop.eOffset.left - opOffset.left}px`;
-                        // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', this.prop.eBox.width + "px", "important");
-                        this.currState = 'bottom-unpinned';
-                    }
-                    // unpin the element if the page scrolls to where the initial offset of the element is visible
-                    else if (this.tmp.scrollPos + this.settings.topSpacing <= this.prop.eOffset.top) {
-                        this.el.classList.remove(this.settings.className);
-                        this.el.style.position = 'absolute';
-                        this.el.style.top = `${this.prop.eOffset.top - opOffset.top}px`;
-                        this.el.style.left = `${this.prop.eOffset.left - opOffset.left}px`;
-                        // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', this.prop.eBox.width + "px", "important");
-                        this.currState = 'top-unpinned';
-                    }
-                    // unpin element
-                    // if element was pinned by pin1
-                    // and the scroll direction for been pinned has changed
-                    else if (this.currState === 'bottom-pinned' && this.tmp.scrollDir === -1) {
-                        this.el.classList.remove(this.settings.className);
-                        this.el.style.position = 'absolute';
-                        this.el.style.top = `${prevScrollPos + window.innerHeight - this.prop.eBox.height - this.settings.bottomSpacing - opOffset.top}px`;
-                        this.el.style.left = `${this.prop.eOffset.left - opOffset.left}px`;
-                        // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', this.prop.eBox.width + "px", "important");
-                        this.currState = 'dir-bottom-unpinned';
-                    }
-                    // unpin element
-                    // if element was pinned by pin2
-                    // and the scroll direction for been pinned has changed
-                    else if (this.currState === 'top-pinned' && this.tmp.scrollDir === 1) {
-                        this.el.classList.remove(this.settings.className);
-                        this.el.style.position = 'absolute';
-                        this.el.style.top = `${prevScrollPos + this.settings.topSpacing - opOffset.top}px`;
-                        this.el.style.left = `${this.prop.eOffset.left - opOffset.left}px`;
-                        // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', this.prop.eBox.width + "px", "important");
-                        this.currState = 'dir-top-unpinned';
+                    else if (settings.ancestorGuarded) {
+                        // unpin element if user is scrolling down and have scrolled past the bottom of guardian element
+                        if (tmp.currState !== 'bottom-unpinned' && (
+                            tmp.pOffset.top + tmp.pBox.height < tmp.scrollPos + window.innerHeight &&
+                            tmp.scrollPos + window.innerHeight - tmp.pOffset.top - tmp.pBox.height + getTB(guardian) > settings.bottomSpacing
+                        )) {
+                            // tmp.scrollPos + window.innerHeight - tmp.pOffset.top - tmp.pBox.height + getTB(guardian) < settings.bottomSpacing
+                            el.classList.remove(settings.className);
+                            el.style.position = 'absolute';
+                            el.style.top = `${tmp.pOffset.top + tmp.pBox.height - tmp.eBox.height - getTB(guardian) - ppOffset.top}px`;
+                            // el.style.top = tmp.pBox.height - getTB(guardian) - tmp.eBox.height;
+                            el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
+                            // fix for the use of relative width on the element.
+                            el.style.setProperty('width', `${tmp.eBox.width}px`, 'important');
+
+                            tmp.currState = 'bottom-unpinned';
+                        }
+                        // unpin element if user is scrolling up and have scrolled past the top of guardian element
+                        else if (tmp.currState !== 'top-unpinned' && (
+                            tmp.pOffset.top > tmp.scrollPos &&
+                            tmp.scrollPos + window.innerHeight - tmp.pOffset.top < tmp.eBox.height + settings.bottomSpacing + getTB(guardian, true)
+                        )) {
+                            el.classList.remove(settings.className);
+                            el.style.position = 'absolute';
+                            el.style.top = `${tmp.pOffset.top + getTB(guardian, true) - ppOffset.top}px`;
+                            el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
+                            // fix for the use of relative width on the element.
+                            el.style.setProperty('width', `${tmp.eBox.width}px`, 'important');
+
+                            tmp.currState = 'top-unpinned';
+                        }
                     }
                 }
                 else {
@@ -243,110 +309,104 @@ export function scrollPin() {
                     // also if element is Guarded by parent, the parent must have enough visible area to contain the element and its top spacing
                     // and if element is sticky, then the user must be scrolling down \/ and the element must not be recently unpined by unpin2
                     if (
-                        (!this.settings.sticky || (this.tmp.scrollDir === 1 && this.currState !== 'bottom-unpinned')) &&
-                        this.tmp.scrollPos > this.prop.eOffset.top - this.settings.topSpacing &&
-                        (!this.settings.ancestorGuarded || this.prop.pOffset.top + this.prop.pBox.height - this.tmp.scrollPos > this.prop.eBox.height + this.settings.topSpacing + this.getTB(this.guardian)) &&
-                        !this.el.classList.contains(this.settings.className)
+                        (!settings.sticky || (tmp.scrollDir === 1 && tmp.currState !== 'bottom-unpinned')) &&
+                        tmp.scrollPos > tmp.eOffset.top - settings.topSpacing &&
+                        (!settings.ancestorGuarded || tmp.pOffset.top + tmp.pBox.height - tmp.scrollPos > tmp.eBox.height + settings.topSpacing + getTB(guardian)) &&
+                        !el.classList.contains(settings.className)
                     ) {
-                        this.el.classList.add(this.settings.className);
-                        this.el.style.position = 'fixed';
-                        this.el.style.top = `${this.settings.topSpacing}px`;
-                        this.el.style.left = `${this.prop.eOffset.left}px`;
+                        el.classList.add(settings.className);
+                        el.style.position = 'fixed';
+                        el.style.top = `${settings.topSpacing}px`;
+                        el.style.left = `${tmp.eOffset.left}px`;
                         // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', `${this.prop.eBox.width}px`, 'important');
+                        el.style.setProperty('width', `${tmp.eBox.width}px`, 'important');
 
-                        this.currState = 'top-pinned';
+                        tmp.currState = 'top-pinned';
                     }
                     // pin element at the bottom if element is sticky
                     // and was recently unpined by unpin2
                     // and the user is scrolling the page up /\
                     // also the parent of sticky has enough space in the viewport to contain the element
                     else if (
-                        this.settings.sticky && this.currState === 'bottom-unpinned' && this.tmp.scrollDir === -1 &&
-                        this.prop.pOffset.top + this.prop.pBox.height > this.tmp.scrollPos + window.innerHeight &&
-                        utils.offsetPos(this.el).top + this.prop.eBox.height + this.settings.bottomSpacing >= window.innerHeight + this.tmp.scrollPos &&
-                        !this.el.classList.contains(this.settings.className)
+                        settings.sticky && tmp.currState === 'bottom-unpinned' && tmp.scrollDir === -1 &&
+                        tmp.pOffset.top + tmp.pBox.height > tmp.scrollPos + window.innerHeight &&
+                        utils.offsetPos(el).top + tmp.eBox.height + settings.bottomSpacing >= window.innerHeight + tmp.scrollPos &&
+                        !el.classList.contains(settings.className)
                     ) {
-                        this.el.classList.add(this.settings.className);
-                        this.el.style.position = 'fixed';
-                        this.el.style.top = `${window.innerHeight - this.prop.eBox.height - this.settings.bottomSpacing}px`;
-                        this.el.style.left = `${this.prop.eOffset.left}px`;
+                        el.classList.add(settings.className);
+                        el.style.position = 'fixed';
+                        el.style.top = `${window.innerHeight - tmp.eBox.height - settings.bottomSpacing}px`;
+                        el.style.left = `${tmp.eOffset.left}px`;
                         // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', `${this.prop.eBox.width}px`, 'important');
+                        el.style.setProperty('width', `${tmp.eBox.width}px`, 'important');
 
-                        this.currState = 'bottom-pinned';
+                        tmp.currState = 'bottom-pinned';
                     }
                     // unpin the element if the page scrolls to where the initial offset of the element is visible
                     // but element must not be sticky
                     // else element must not be recently pined by pin2
                     // else user must be scrolling up /\ and must have scroll to the initial position of the element
                     else if (
-                        this.tmp.scrollPos + this.settings.topSpacing <= this.prop.eOffset.top &&
-                        (!this.settings.sticky || (this.currState !== 'bottom-pinned' || this.tmp.scrollDir === -1)) &&
-                        this.el.classList.contains(this.settings.className)
+                        tmp.scrollPos + settings.topSpacing <= tmp.eOffset.top &&
+                        (!settings.sticky || (tmp.currState !== 'bottom-pinned' || tmp.scrollDir === -1)) &&
+                        el.classList.contains(settings.className)
                     ) {
-                        this.el.classList.remove(this.settings.className);
-                        this.el.style.position = 'absolute';
-                        this.el.style.top = `${this.prop.eOffset.top - opOffset.top}px`;
-                        this.el.style.left = `${this.prop.eOffset.left - opOffset.left}px`;
+                        el.classList.remove(settings.className);
+                        el.style.position = 'absolute';
+                        el.style.top = `${tmp.eOffset.top - ppOffset.top}px`;
+                        el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
                         // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', `${this.prop.eBox.width}px`, 'important');
+                        el.style.setProperty('width', `${tmp.eBox.width}px`, 'important');
 
-                        this.currState = 'top-unpinned';
+                        tmp.currState = 'top-unpinned';
                     }
                     // unpin element and make it stay at the bottom of parent if it is parent-Guarded
                     // and the page has scrolled reaching or past the parent
                     // and if element was recently pinned by pin2, the user must be scrolling down \/ the page
                     // must have reach or scrolled the parent out of viewport
                     else if (
-                        this.settings.ancestorGuarded &&
-                        (this.tmp.scrollPos > this.prop.pOffset.top + this.prop.pBox.height - this.prop.eBox.height - this.settings.topSpacing - this.getTB(this.guardian) ||
-                            (this.currState === 'bottom-pinned' && this.tmp.scrollDir === 1 && this.prop.pOffset.top + this.prop.pBox.height < this.scrollPos + window.innerHeight)
-                        ) && (this.el.classList.contains(this.settings.className) || this.currState === 'reset-state')
+                        settings.ancestorGuarded &&
+                        (tmp.scrollPos > tmp.pOffset.top + tmp.pBox.height - tmp.eBox.height - settings.topSpacing - getTB(guardian) ||
+                            (tmp.currState === 'bottom-pinned' && tmp.scrollDir === 1 && tmp.pOffset.top + tmp.pBox.height < tmp.scrollPos + window.innerHeight)
+                        ) && (el.classList.contains(settings.className) || tmp.currState === 'reset-state')
                     ) {
-                        this.el.classList.remove(this.settings.className);
-                        this.el.style.position = 'absolute';
-                        this.el.style.top = `${this.prop.pOffset.top + this.prop.pBox.height - this.prop.eBox.height - this.getTB(this.guardian) - opOffset.top}px`;
-                        // this.el.style.top = this.prop.pBox.height - this.getTB(this.guardian) - this.prop.eBox.height;
-                        this.el.style.left = `${this.prop.eOffset.left - opOffset.left}px`;
+                        el.classList.remove(settings.className);
+                        el.style.position = 'absolute';
+                        el.style.top = `${tmp.pOffset.top + tmp.pBox.height - tmp.eBox.height - getTB(guardian) - ppOffset.top}px`;
+                        // el.style.top = tmp.pBox.height - getTB(guardian) - tmp.eBox.height;
+                        el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
                         // fix for the use of relative width on the element.
-                        this.el.style.setProperty('width', `${this.prop.eBox.width}px`, 'important');
+                        el.style.setProperty('width', `${tmp.eBox.width}px`, 'important');
 
-                        this.currState = 'bottom-unpinned';
+                        tmp.currState = 'bottom-unpinned';
                     }
                 }
-            },
-            stopScrollPin() {
-                // stop height streaming
-                const cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
-                cancelAnimationFrame(this.sizeStreamId);
-
-                // stop scrollPin events
-                window.removeEventListener('resize', this.getGeometry);
-                window.removeEventListener('scroll', this.onScrollMtd);
-                this.el.removeEventListener('stopScrollPin', this.stopScrollPin);
-                
-                // reset scrollPin element
-                this.el.classList.remove(this.settings.className);
-                if (this.initStyle) this.el.setAttribute('style', this.initStyle);
-                else this.el.removeAttribute('style');
-            },
-            // utility
-            getTB(el, top) {
-                if (top) return parseFloat(utils.getCssVal(el, 'padding-top')) + parseFloat(utils.getCssVal(el, 'border-top-width'));
-                return parseFloat(utils.getCssVal(el, 'padding-bottom')) + parseFloat(utils.getCssVal(el, 'border-bottom-width'));
             }
         }
-    };
-    
-    return {
-        mounted(el, binding) {
-            if (!el.lui) el.lui = {};
-            el.lui.scrollPin = dnm();
-            el.lui.scrollPin.initialize(el, binding);
-        },
-        unmounted(el) {
-            utils.triggerEvent(el, 'stopScrollPin');
+
+        function stopScrollPin() {
+            // stop height streaming
+            const cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+            cancelAnimationFrame(sizeStreamId);
+
+            // stop scrollPin events
+            window.removeEventListener('resize', getGeometry);
+            window.removeEventListener('scroll', onScrollMtd);
+            el.removeEventListener('stopScrollPin', stopScrollPin);
+
+            // reset scrollPin element
+            el.classList.remove(settings.className);
+            if (tmp.initStyle) el.setAttribute('style', tmp.initStyle);
+            else el.removeAttribute('style');
         }
-    };
+
+        // utility to get padding and border of either the top side or the bottom side of an element
+        function getTB(el, top) {
+            if (top) return parseFloat(utils.getCssVal(el, 'padding-top')) + parseFloat(utils.getCssVal(el, 'border-top-width'));
+            return parseFloat(utils.getCssVal(el, 'padding-bottom')) + parseFloat(utils.getCssVal(el, 'border-bottom-width'));
+        }
+    },
+    beforeUnmount(el) {
+        utils.triggerEvent(el, 'stopScrollPin');
+    }
 };

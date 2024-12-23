@@ -2,7 +2,7 @@
 defineProps(['details', 'isSaved']);
 </script>
 <template>
-	<div class="fluid item-card card open-modal" :class="isSaved ? 'sav' : ''" :data-type="details.cardType"
+	<NuxtLink :to="`/${details.cardType}/${details.cardId}`" class="fluid item-card card open-modal" :class="isSaved ? 'sav' : ''" :data-type="details.cardType"
 		data-target="sc-details">
 		<businessCard v-if="details.cardType === 'business'" :details="details" />
 		<productCard v-else-if="details.cardType === 'product'" :details="details" />
@@ -23,7 +23,7 @@ defineProps(['details', 'isSaved']);
 				</div>
 			</Dropdown>
 		</div>
-	</div>
+	</NuxtLink>
 </template>
 
 <style lang="scss">
@@ -41,6 +41,8 @@ defineProps(['details', 'isSaved']);
 	cursor: pointer;
 	position: relative;
 	border-radius: 0px;
+	color: inherit;
+	text-decoration: none !important;
 
 	&.sav {
 		padding-right: 2.5em;

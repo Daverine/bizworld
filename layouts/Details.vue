@@ -27,7 +27,7 @@ const searchStore = useSearchStore();
         </form>
       </div>
     </header>
-    <section id="firstSec" ref="main" class="csection flexbox">
+    <section id="firstSec" ref="main" class="csection">
       <slot />
     </section>
   </div>

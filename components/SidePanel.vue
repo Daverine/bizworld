@@ -3,11 +3,12 @@ import panel from './panel';
 
 export default {
 	mixins: [panel],
+	inheritAttrs: false,
 	data() {
 		return {
 			default: {
 				namespace: 'sidepanel',
-				toBeConsidered: ':scope .panel, :scope .sp-control',
+				toBeConsidered: '.panel, .sp-control',
 				toggler: '.open-sidepanel',
 				setHighlightRange: true,
 				setTabRange: true,
@@ -24,7 +25,9 @@ export default {
 }
 </script>
 <template>
-	<div ref="panel" class="sidepanel" :id="id" tabindex="-1">
-		<slot></slot>
-	</div>
+	<Teleport to="body" :disabled="!uniqueId">
+		<div ref="panel" class="sidepanel" v-bind="$attrs" :id="id" tabindex="-1">
+			<slot></slot>
+		</div>
+	</Teleport>
 </template>
