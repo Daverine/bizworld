@@ -272,7 +272,6 @@ function handleScroll() {
     <div class="dm-display" style="position: relative; padding-top: calc(100% / 6 * 2);">
       <img class="image open-lightbox" data-target="lightbox1" :data-lightbox="details.coverPic" style="position: absolute; height: 100%; width: 100%; object-fit: cover; top: 0px; left: 0px;"
         :src="details.coverPic" alt="Business page cover picture" />
-      <Lightbox id="lightbox1" />
     </div>
     <div class="flexbox guttered flex-wrap" style="align-items: center; padding: 1rem;">
       <SvgIcon class="flex-none" name="domain" />

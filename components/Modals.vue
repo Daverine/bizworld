@@ -701,4 +701,5 @@ function getScDetails(md, settings) {
       </div>
     </Modal>
   </template>
+  <Lightbox id="lightbox1" class="dark-mode" />
 </template>

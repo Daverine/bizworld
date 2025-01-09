@@ -56,7 +56,6 @@ const dnm = function () {
 
             // start wrapperSize streaming
             if (this.settings.streamHeightToWrapper) {
-                const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
                 this.sizeStreamId = requestAnimationFrame(this.streamCallback);
             }
         },
@@ -76,7 +75,6 @@ const dnm = function () {
                 streamer = setTimeout(() => this.getGeometry(), 20);
             }
 
-            const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
             this.sizeStreamId = requestAnimationFrame(this.streamCallback);
         },
         getGeometry() {

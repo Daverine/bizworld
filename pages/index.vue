@@ -6,7 +6,7 @@ const userStore = useUserStore();
 <template>
 	<header id="main-header">
 		<div class="transparent menu" style="height: 64px">
-			<div class="container items" style="border-radius: var(--default-radius)">
+			<div class="container-lg items" style="border-radius: var(--default-radius)">
 				<div class="item as-icon open-sidepanel" v-tooltip.unblocking data-tooltip="Menu"
 					data-target="msidepanel">
 					<SvgIcon name="menu" />
@@ -84,15 +84,9 @@ const userStore = useUserStore();
 					Search in: <span class="bold">Nigeria</span>.
 					<a href="#">Change Location</a>
 				</div>
-				<div class="flexbox equal-cols" style="gap: 16px; margin: 32px auto 0px; max-width: 300px">
-					<div class="col">
-						<button class="fluid button">SEARCH</button>
-					</div>
-					<div class="col">
-						<button type="button" class="fluid button open-modal" data-target="explore-modal">
-							EXPLORE
-						</button>
-					</div>
+				<div class="flexbox flex-items-to-basis" style="gap: 16px; margin: 32px auto 0px; max-width: 300px">
+					<button class="button">SEARCH</button>
+					<button type="button" class="button open-modal" data-target="explore-modal">EXPLORE</button>
 				</div>
 			</div>
 		</form>
@@ -144,7 +138,8 @@ const userStore = useUserStore();
 				</div>
 				<div class="col container-text big">
 					<div>
-						<h2><span class="primary-text">Explore</span> businesses around you without leaving <span class="primary-text">your spot</span></h2>
+						<h2><span class="primary-text">Explore</span> businesses around you without leaving <span
+								class="primary-text">your spot</span></h2>
 						<p>
 							You can browse for businesses based on listed categories of
 							commonly needed products and services. You can compare enterprises
@@ -180,7 +175,8 @@ const userStore = useUserStore();
 				</div>
 				<div class="col container-text big">
 					<div>
-						<h2><span class="primary-text">Know</span> their products and services <span class="primary-text">without asking</span></h2>
+						<h2><span class="primary-text">Know</span> their products and services <span
+								class="primary-text">without asking</span></h2>
 						<p>
 							<strong>BizWorld QR codes</strong> are a convenient way to access
 							information about businesses. These QR codes are often placed in

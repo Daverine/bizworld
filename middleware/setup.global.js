@@ -3,10 +3,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
         userStore = useUserStore(),
         searchStore = useSearchStore()
     ;
-    console.log(userStore.routeProceed);
     if (to.meta.auth && !userStore.auth) {
         userStore.routeProceed = to;
-        console.log('i got here');
         return navigateTo('/login');
     }
 

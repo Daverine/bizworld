@@ -1,37 +1,37 @@
-export function Collapsible() {
-    const dnm = {
-        toggleCollapsible(e, el) {
-            el = el || e.currentTarget;
+export default {
+    mounted(el) {
+        function toggleCollapsible(e) {
+            const collapsible = el.nextElementSibling.matches('.collapsible') ? el.nextElementSibling : null;
+            const accordion = el.getAttribute('data-collapsible');
 
-            const
-                collapsible = el.nextElementSibling.matches('.collapsible') ? el.nextElementSibling : null,
-                accordion = el.getAttribute('data-collapsible')
-            ;
+            if (e) el.classList.toggle('active');
 
-            if (e !== 'initialize') el.classList.toggle('active');
-            
             if (collapsible) {
                 if (el.classList.contains('active')) {
-                    collapsible.style.maxHeight = collapsible.scrollHeight + 'px';
-                    
+                    collapsible.style.height = collapsible.scrollHeight + 'px';
+
                     if (accordion) {
                         let activeElems = [...el.parentNode.querySelectorAll(`:scope > [data-collapsible='${accordion}']`)].filter(elem => elem.classList.contains('active') && elem !== el);
                         if (activeElems[0]) {
                             activeElems.forEach(el => el.dispatchEvent(new Event('click')));
                         }
                     }
+                    setTimeout(() => {
+                        collapsible.style.height = 'auto';
+                        utils.triggerEvent(window, 'resize');           
+                    }, utils.durationInMilliseconds(utils.getCssVal(collapsible, 'transition-duration')));
+                    
                 }
-                else collapsible.style.maxHeight = null;
+                else {
+                    collapsible.style.height = collapsible.scrollHeight + 'px';
+                    utils.afterNextRepaint(() => collapsible.style.height = null);
+                    setTimeout(() => utils.triggerEvent(window, 'resize'), utils.durationInMilliseconds(utils.getCssVal(collapsible, 'transition-duration')));
+
+                }
             }
         }
-    };
 
-    return {
-        mounted(el) {
-            dnm.toggleCollapsible('initialize', el);
-            el.addEventListener('click', dnm.toggleCollapsible);
-        },
-        updated(el) { dnm.toggleCollapsible('initialize', el); },
-        unmounted(el) { el.removeEventListener('click', dnm.toggleCollapsible); }
-    }
+        toggleCollapsible();
+        el.addEventListener('click', toggleCollapsible);
+    },
 }

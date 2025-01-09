@@ -5,7 +5,7 @@ const settings = {
     ...{
         namespace: 'carousel',
         autoSetup: true,
-        continuous: 'rewind', // can also be set to string 'rewind'
+        continuous: true, // can also be set to string 'rewind'
         slidesPerView: 1,
         sliderMove: 'slide', // can also be page to move all the slide in a view out on next or prev
         spaceBetween: '0.5rem',
@@ -25,9 +25,6 @@ const settings = {
         ],
         animation: 'slide',
         direction: 'horizontal',
-        autoCreatetracker: false,
-        track: 'default', // can also be the following: 'thumbnails', 'scroll'.
-        trackView: 'slide',
         transitionDuration: 500,
         autoslide: false,
         autoslideInterval: 5000,
@@ -39,7 +36,7 @@ const settings = {
     },
     ...props.options || {}
 };
-const tmp = {
+const tmp = reactive({
     newCoord: 0,
     startCoord: 0,
     endCoord: 0,
@@ -63,12 +60,14 @@ const tmp = {
     gestureEnd: undefined,
     stopAutoslider: undefined,
     gestureTarget: undefined,
+    resizeTimeout: undefined,
+    uniqueId: undefined,
     continuous: settings.continuous && settings.continuous !== 'rewind',
-};
-let uniqueId, changeInSlides, viewbox, slider, slides, currSlide, prevSlide, trackerCont, prevBtn, nextBtn, initialized;
+});
+let changeInSlides, viewbox, slider, slides, currSlide, prevSlide, trackerCont, prevBtn, nextBtn, initialized;
 
 onMounted(() => {
-    uniqueId = utils.getUniqueId(settings.namespace);
+    tmp.uniqueId = utils.getUniqueId(settings.namespace);
     viewbox = carousel.value.querySelector(':scope > .cs-viewbox');
 
     if (!viewbox) {
@@ -118,45 +117,44 @@ onBeforeUnmount(() => {
 });
 
 function sizeResponse() {
-    changeInSlides.disconnect();
-    stopAutoslider();
-    let mediaWidth = window.innerWidth;
-    // sort breakpoints by maxWidth and minWidth and then select the first breakpoint that matches the current media width
-    let matchedBreakpoints = settings.breakpoints.filter(el => (el.minWidth || el.maxWidth) && (!el.minWidth || el.minWidth <= mediaWidth) && (!el.maxWidth || el.maxWidth >= mediaWidth));
-    let breakpoint = matchedBreakpoints.filter(el => el.maxWidth).sort((a, b) => a.maxWidth - b.maxWidth)[0] || matchedBreakpoints.filter(el => el.minWidth).sort((a, b) => b.minWidth - a.minWidth)[0];
+    clearTimeout(tmp.resizeTimeout);
+    tmp.resizeTimeout = setTimeout(() => {
+        changeInSlides.disconnect();
+        stopAutoslider();
+        let mediaWidth = window.innerWidth;
+        // sort breakpoints by maxWidth and minWidth and then select the first breakpoint that matches the current media width
+        let matchedBreakpoints = settings.breakpoints.filter(el => (el.minWidth || el.maxWidth) && (!el.minWidth || el.minWidth <= mediaWidth) && (!el.maxWidth || el.maxWidth >= mediaWidth));
+        let breakpoint = matchedBreakpoints.filter(el => el.maxWidth).sort((a, b) => a.maxWidth - b.maxWidth)[0] || matchedBreakpoints.filter(el => el.minWidth).sort((a, b) => b.minWidth - a.minWidth)[0];
 
-    tmp.breakpoint = {
-        ...{
-            slidesPerView: settings.slidesPerView,
-            spaceBetween: settings.spaceBetween,
-        },
-        ...(breakpoint || {})
-    };
-    init();
-    changeInSlides.observe(carousel.value, { subtree: true, childList: true, });
+        tmp.breakpoint = {
+            ...{
+                slidesPerView: settings.slidesPerView,
+                spaceBetween: settings.spaceBetween,
+            },
+            ...(breakpoint || {})
+        };
+        init();
+        changeInSlides.observe(carousel.value, { subtree: true, childList: true, });
+    }, 350);
 }
 function init() {
-    slides = [...slider.querySelectorAll(`:scope > .cs-slide`)].filter(el => !el.matches(`[data-creator='${uniqueId}']`));
+    slides = [...slider.querySelectorAll(`:scope > .cs-slide`)].filter(el => !el.matches(`[data-creator='${tmp.uniqueId}']`));
     if (!slides[0]) return;
     slider.classList.add('ghost-walk');
 
     // Initialize carousel
     if (!initialized || tmp.slidesNo !== slides.length) {
-        [...carousel.value.querySelectorAll(`:scope [data-creator='${uniqueId}']`)].forEach(el => el.remove());
+        [...slider.querySelectorAll(`:scope [data-creator='${tmp.uniqueId}']`)].forEach(el => el.remove());
         slides.forEach((slide, index) => {
-            slide.setAttribute('data-csId', index + 1);
-
-            if (trackerCont && settings.autoCreatetracker) {
-                let tracker = document.createElement('button');
-                tracker.classList.add('cs-tracker');
-                tracker.setAttribute('data-csId', index + 1);
-                tracker.setAttribute('data-creator', uniqueId);
-                trackerCont.append(tracker);
-            }
+            slide.setAttribute('data-csid', index + 1);
 
             if (tmp.continuous) {
                 let slideClone = slide.cloneNode(true);
-                slideClone.setAttribute('data-creator', uniqueId);
+                slideClone.setAttribute('data-creator', tmp.uniqueId);
+                [...slideClone.querySelectorAll(':scope *')].forEach(el => {
+                    el.removeAttribute('data-lightbox');
+                    el.removeAttribute('data-find-lightbox-content');
+                });
                 slideClone.classList.remove('active');
                 slider.append(slideClone);
                 if (!index) slider.prepend(slideClone.cloneNode(true));
@@ -169,7 +167,7 @@ function init() {
     tmp.slidesNo = slides.length; // number of slides in the carousel
     // the 1-based index of the current slide
     tmp.currSlideNo = slides.filter(el => el.classList.contains('active'))[0]
-        ? Number(slides.filter(el => el.classList.contains('active'))[0].getAttribute('data-csId'))
+        ? Number(slides.filter(el => el.classList.contains('active'))[0].getAttribute('data-csid'))
         : 1;
     currSlide = slides[tmp.currSlideNo - 1];
     tmp.spaceBetween = typeof (tmp.breakpoint.spaceBetween) === 'number' ? `${tmp.breakpoint.spaceBetween}px` : tmp.breakpoint.spaceBetween;
@@ -187,7 +185,8 @@ function init() {
     tmp.maxExt = tmp.minExt - (tmp.slideSize * (tmp.slidesNo - tmp.slidesPerView));
 
     update();
-    setTimeout(() => { slider.classList.remove('ghost-walk'); }, 10);
+    utils.afterNextRepaint(() => slider.classList.remove('ghost-walk'));
+    // setTimeout(() => { slider.classList.remove('ghost-walk'); }, 10);
     if (settings.autoslide) startAutoslider();
 }
 function update(newSlideNo = tmp.currSlideNo) {
@@ -253,7 +252,7 @@ function dist(e) {
     return e.type.indexOf('touch') > -1 ? e.touches[0].clientX : e.clientX;
 }
 function gestureStart(e) {
-    if (tmp.slidesNo <= 1) return; // stop gesture if total number of slides is one or less;
+    if (e.type === 'mousedown' && e.button != 0) return; // stop gesture if total number of slides is one or less;
 
     if (settings.autoslide) stopAutoslider();
     tmp.gestureTarget = e.target;
@@ -279,6 +278,7 @@ function gestureStart(e) {
     }
 }
 function gestureMove(e) {
+    if (tmp.slidesNo <= 1) return;
     tmp.moveDir = tmp.endCoord > dist(e) ? 1 : tmp.endCoord < dist(e) ? -1 : tmp.moveDir;
     tmp.endCoord = dist(e);
     if (Math.abs(tmp.endCoord - tmp.startCoord) > 5) tmp.coordChange = true;
@@ -326,10 +326,14 @@ function gestureEnd(e) {
         else {
             tmp.newCoord = tmp.initCoord + changeExt;
             slider.style.transform = `translateX(${tmp.newCoord}px)`;
-            setTimeout(() => {
+            utils.afterNextRepaint(() => {
                 slider.classList.remove('swiping');
                 update(tmp.currSlideNo);
-            }, 20);
+            });
+            // setTimeout(() => {
+            //     slider.classList.remove('swiping');
+            //     update(tmp.currSlideNo);
+            // }, 20);
         }
     }
     else {
@@ -352,8 +356,12 @@ function prevSlides() {
     if (tmp.continuous && newSlideNo < 1) {
         slider.classList.add('ghost-walk');
         slider.style.transform = `translateX(${tmp.newCoord + tmp.minExt}px)`;
-        setTimeout(() => { slider.classList.remove('ghost-walk'); }, 10);
-        setTimeout(() => update(newSlideNo), 20);
+        utils.afterNextRepaint(() => {
+            slider.classList.remove('ghost-walk');
+            utils.afterNextRepaint(() => update(newSlideNo));
+        });
+        // setTimeout(() => { slider.classList.remove('ghost-walk'); }, 10);
+        // setTimeout(() => update(newSlideNo), 20);
     }
     else {
         if (settings.continuous && newSlideNo < 1) newSlideNo = tmp.slidesNo;
@@ -367,8 +375,12 @@ function nextSlides() {
     if (tmp.continuous && newSlideNo > tmp.slidesNo) {
         slider.classList.add('ghost-walk');
         slider.style.transform = `translateX(${tmp.newCoord - tmp.minExt}px)`;
-        setTimeout(() => { slider.classList.remove('ghost-walk'); }, 10);
-        setTimeout(() => update(newSlideNo), 20);
+        utils.afterNextRepaint(() => {
+            slider.classList.remove('ghost-walk');
+            utils.afterNextRepaint(() => update(newSlideNo));
+        });
+        // setTimeout(() => { slider.classList.remove('ghost-walk'); }, 10);
+        // setTimeout(() => update(newSlideNo), 20);
     }
     else {
         if (settings.continuous && newSlideNo > tmp.slidesNo) newSlideNo = 1;
@@ -393,10 +405,12 @@ function startAutoslider() {
         if (tmp.continuous && newSlideNo > tmp.slidesNo) {
             slider.classList.add('ghost-walk');
             slider.style.transform = `translateX(${tmp.newCoord - tmp.minExt}px)`;
-            setTimeout(() => slider.classList.remove('ghost-walk'), 10);
+            utils.afterNextRepaint(() => slider.classList.remove('ghost-walk'));
+            // setTimeout(() => slider.classList.remove('ghost-walk'), 10);
         }
         else if (!tmp.continuous && newSlideNo > tmp.slidesNo) newSlideNo = 1;
-        setTimeout(() => update(newSlideNo), 20);
+        utils.afterNextRepaint(() => update(newSlideNo));
+        // setTimeout(() => update(newSlideNo), 20);
     }, settings.autoslideInterval);
     tmp.autosliding = true;
 }
@@ -412,16 +426,19 @@ function stopAutoslider() {
                 <div class="cs-slider">
                     <slot></slot>
                 </div>
+                <div class="cs-controls">
+                    <button type="button" class="cs-nav cs-prev">
+                        <Icon mode="svg" name="material-symbols:chevron-left" class="icon" />
+                    </button>
+                    <button type="button" class="cs-nav cs-next">
+                        <Icon mode="svg" name="material-symbols:chevron-right" />
+                    </button>
+                </div>
             </div>
             <div class="cs-trackers">
-            </div>
-            <div class="cs-controls">
-                <button type="button" class="cs-nav cs-prev">
-                    <Icon mode="svg" name="material-symbols:chevron-left" class="icon" />
-                </button>
-                <button type="button" class="cs-nav cs-next">
-                    <Icon mode="svg" name="material-symbols:chevron-right" />
-                </button>
+                <slot name="trackers">
+                    <button class="cs-tracker" v-for="n in tmp.slidesNo" :data-csid="n" :data-creator="tmp.uniqueId"></button>
+                </slot>
             </div>
         </template>
         <slot v-else></slot>

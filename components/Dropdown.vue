@@ -69,8 +69,14 @@ const selectors = {
   // select all element in dropMenu regarding it statuses
   items_filtered: `:scope > .item:not(.xhover):not(.disabled):not(.filtered)${!(settings.multipleSelect && classes.includes('indicating')) ? ':not(.selected)' : ''}, :scope > .items > .item:not(.xhover):not(.disabled):not(.filtered)${!(settings.multipleSelect && classes.includes('indicating')) ? ':not(.selected)' : ''}`,
   // exiter
-  dropdown_exiter: `:scope .exit-dd`,
+  dropdown_exiter: `.exit-dd`,
 };
+const unwatch = {
+  allItemFiltered: undefined,
+  allItemSelected: undefined,
+  modelValue: undefined,
+  compValue: undefined,
+}
 
 // get dropdown menu element,set-it-up and generate uniqueId
 let dropMenu, uniqueId;
@@ -107,8 +113,8 @@ onMounted(() => {
     selectableContentBox = useTemplateRef('sContent');
     selectablePlaceholder = useTemplateRef('sPlaceholder');
 
-    // Warn if select dropdown does not have a name prop
-    if (!props.name) console.warn("It might be difficult to get the data of a selection-dropdown on this page because its name prop is invalid.");
+    // // Warn if select dropdown does not have a name prop
+    // if (!props.name) console.warn("It might be difficult to get the data of a selection-dropdown on this page because its name prop is invalid.");
 
     // configure search box and cache concurrent element for searchable dropdown
     if (settings.searchable) {
@@ -124,7 +130,7 @@ onMounted(() => {
         dropMenu.append(allFilteredMsgBox);
       }
 
-      watch(() => tmp.allItemFiltered, (filtered) => {
+      unwatch.allItemFiltered = watch(() => tmp.allItemFiltered, (filtered) => {
         if (filtered) allFilteredMsgBox.classList.add('active');
         else allFilteredMsgBox.classList.remove('active');
       });
@@ -240,7 +246,7 @@ onMounted(() => {
         dropMenu.append(allSelectedMsgBox);
       }
 
-      watch(() => tmp.allItemSelected, (selected) => {
+      unwatch.allItemSelected = watch(() => tmp.allItemSelected, (selected) => {
         if (selected) allSelectedMsgBox.classList.add('active');
         else allSelectedMsgBox.classList.remove('active');
       });
@@ -252,7 +258,7 @@ onMounted(() => {
     else if (!settings.multipleSelect && items.filter(el => el.matches('.active'))[0]) dd_setSelect(items.filter(el => el.matches('.active'))[0]);
 
     // sychronize selectable dropdown value with it modelValue if it is two-way-binded from it parent
-    watch(() => props.modelValue, (newValue) => {
+    unwatch.modelValue = watch(() => props.modelValue, (newValue) => {
       if (JSON.stringify(newValue) === JSON.stringify(compValue.value)) return;
       let items = [...dropMenu.querySelectorAll(selectors.items)];
 
@@ -317,7 +323,7 @@ onMounted(() => {
         }
       }
     }, { immediate: props.modelValue !== undefined });
-    watch(compValue, (newValue) => {
+    unwatch.compValue = watch(compValue, (newValue) => {
       if (JSON.stringify(newValue) === JSON.stringify(props.modelValue)) return;
       emit('update:modelValue', newValue);
     }, { immediate: props.modelValue === undefined });
@@ -463,6 +469,10 @@ watch(showDropdown, (show) => {
 });
 
 onBeforeUnmount(() => {
+  // stop all asynchronous watcher
+  Object.keys(unwatch).forEach(el => {
+    if (typeof unwatch[el] === 'function') unwatch[el]();
+  });
   document.removeEventListener('click', dd_clickOnDomEvt);
   document.removeEventListener('keyup', dd_escAndTabEvt);
   document.removeEventListener('keydown', dd_KBControlEvt);
@@ -606,7 +616,7 @@ function dd_clickOnDomEvt(e) {
   let item = items.filter(el => el.contains(e.target))[0];
   let sItem = [...dropElem.value.querySelectorAll(':scope > .content > .chip')].filter(el => el.contains(e.target))[0];
   let sItemClose = [...dropElem.value.querySelectorAll(':scope > .content > .chip > .close')].filter(el => el.contains(e.target))[0];
-  let exiter = [...dropMenu.querySelectorAll(selectors.dropdown_exiter)].filter(el => el.contains(e.target))[0];
+  let exiter = dropMenu.contains(e.target) && e.target.closest(selectors.dropdown_exiter);
 
   // Close when an exiter is clicked or on "Click Out"
   if (exiter || (!dropElem.value.contains(e.target) && !dropMenu.contains(e.target))) showDropdown.value = false;
@@ -805,8 +815,7 @@ function dd_CalcPosition() {
         bottom: rects.window.height - rects.dd.top - rects.dd.height,
         left: rects.dd.left + rects.dd.width,
         right: rects.window.width - rects.dd.left,
-      }
-
+      };
       rects.dm = {
         ...rects.dm,
         ...{
@@ -815,7 +824,7 @@ function dd_CalcPosition() {
           top: rects.dd.top - rects.dm.height,
           bottom: rects.dd.top + rects.dd.height,
         },
-      }
+      };
     }
     else {
       spacing = {
@@ -823,8 +832,7 @@ function dd_CalcPosition() {
         bottom: rects.window.height - rects.dd.top,
         left: rects.dd.left,
         right: rects.window.width - rects.dd.left - rects.dd.width,
-      }
-
+      };
       rects.dm = {
         ...rects.dm,
         ...{
@@ -833,7 +841,7 @@ function dd_CalcPosition() {
           top: rects.dd.top + rects.dd.width - rects.dm.height,
           bottom: rects.dd.top,
         }
-      }
+      };
     }
 
     if (settings.directionPriority.x === 'right') {
@@ -852,7 +860,7 @@ function dd_CalcPosition() {
         }
       }
     }
-    else if (settings.directionPriority.x === 'center') {
+    else if (settings.directionPriority.x === 'center' && settings.view === "vertical") {
       dropMenu.style.left = `${Math.max(Math.min(Math.max(0, rects.dd.left + (rects.dd.width / 2) - (rects.dm.width / 2)), (rects.window.width - rects.dm.width)), 0)}px`;
     }
     else {
@@ -888,6 +896,9 @@ function dd_CalcPosition() {
         }
       }
     }
+    else if (settings.directionPriority.y === 'center' && settings.view === "horizontal") {
+      dropMenu.style.top = `${Math.max(Math.min(Math.max(0, rects.dd.top + (rects.dd.height / 2) - (rects.dm.height / 2)), (rects.window.height - rects.dm.height)), 0)}px`;
+    }
     else {
       if (spacing.top >= rects.dm.height) {
         if (!dropElem.value.classList.contains('select')) dropMenu.style.top = `${rects.dm.top}px`;
@@ -903,6 +914,18 @@ function dd_CalcPosition() {
           dropMenu.classList.remove('upward');
         }
       }
+    }
+
+    // set arrow position variable
+    if (settings.view === "vertical") {
+      if (dropMenu.classList.contains('lhs')) dropMenu.style.setProperty('--arrow-center', `${rects.dm.width - rects.dd.width/2}px`);
+      else if (dropMenu.classList.contains('rhs')) dropMenu.style.setProperty('--arrow-center', `${rects.dd.width/2}px`);
+      else dropMenu.style.setProperty('--arrow-center', `${rects.dd.left - rects.dm.left + (rects.dd.width/2)}px`);
+    }
+    else {
+      if (dropMenu.classList.contains('upward')) dropMenu.style.setProperty('--arrow-center', `${rects.dm.height - rects.dd.height/2}px`);
+      else if (dropMenu.classList.contains('downward')) dropMenu.style.setProperty('--arrow-center', `${rects.dd.height/2}px`);
+      else dropMenu.style.setProperty('--arrow-center', `${rects.dd.top + (rects.dd.height/2) - rects.dm.top}px`);
     }
   }
 }
@@ -1025,7 +1048,8 @@ function dd_setDeselect(sItem) {
 </script>
 
 <template>
-  <div ref="dropdown" class="dropdown" :data-ddid="uniqueId" :class="{ active: showDropdown }" :tabindex="settings.selectable ? 0 : null">
+  <div ref="dropdown" class="dropdown" :data-ddid="uniqueId" :class="{ active: showDropdown }"
+    :tabindex="settings.selectable ? 0 : null">
     <slot></slot>
     <template v-if="settings.selectable">
       <div v-if="settings.multipleSelect" ref="sContent" class="content no-content">

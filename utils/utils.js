@@ -70,6 +70,7 @@ export const utils = {
 					el.setAttribute('style', ((el.lui && el.lui.styleBeforeLock) ? el.lui.styleBeforeLock : null));
 					if (el.lui && el.lui.styleBeforeLock) el.lui.styleBeforeLock = null;
 				});
+				this.afterNextRepaint(() => this.triggerEvent(window, 'resize'));
 			}
 		}
 	},
@@ -207,8 +208,9 @@ export const utils = {
 		}
 	},
 	afterNextRepaint(func) {
-		const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 		// requestAnimationFrame fires before repaint. So calling it twice makes it fire after a repaint.
 		requestAnimationFrame(() => requestAnimationFrame(func));
-	}
+	},
+	compareArrays: (a, b) => a.length === b.length && a.every((element, index) => element === b[index]),
+	durationInMilliseconds: (duration) => parseFloat(duration) * (duration.includes('ms') ? 1 : 1000),
 }

@@ -33,8 +33,8 @@
 		<Shareables name="main_menu" />
 	</div>
 	<div v-if="!route.meta.noFab" class="fab-group respect-lock">
-		<button v-if="userStore.auth && userStore.userData.manageBisiness" class="open-modal fab radius-lg secondary button" data-target="create-post">
-			<SvgIcon name="edit_square" />
+		<button class="open-modal fab radius-lg secondary button" data-target="cart-modal">
+			<Icon name="material-symbols:shopping-cart-outline" />
 		</button>
 		<button id="qaction" @click="toTop" class="outlined fab compact radius-lg secondary button" :class="{ 'now-visible': mainStore.showFixedMenu }">
 			<SvgIcon name="vertical_align_top" />

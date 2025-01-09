@@ -377,7 +377,7 @@ h4,
 h5,
 h6 {
   font-weight: var(--bold-weight);
-  line-height: 1.15;
+  line-height: 1.25;
   margin-top: 0.5em;
   margin-bottom: 0.25em;
 }
@@ -3156,7 +3156,7 @@ table.table tbody tr.i-selectable td:hover:before {
 .fab-group {
   position: fixed;
   z-index: var(--z-level-3);
-  bottom: 2.5rem;
+  bottom: 4.25rem;
   right: 1rem;
   display: flex;
   flex-direction: column-reverse;
@@ -3503,20 +3503,6 @@ html.scroll-locked .fab-group.respect-lock .fab {
   margin: 0;
 }
 
-/* --- COLLAPSIBLE --- */
-.collapsible .c-toggler {
-  cursor: pointer;
-}
-.collapsible.pointer .c-toggler > .indicator::before {
-  transition: all linear 0.2s;
-}
-.collapsible.pointer .c-toggler:not(.active) > .indicator::before {
-  transform: rotateZ(-90deg);
-}
-.collapsible.c-item {
-  display: none;
-}
-
 /* --- MODAL --- */
 .modal {
   position: fixed !important;
@@ -3531,7 +3517,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  z-index: var(--z-level-5);
+  z-index: -1;
   overflow: hidden auto;
   scroll-behavior: smooth;
   pointer-events: none;
@@ -3642,18 +3628,15 @@ html.scroll-locked .fab-group.respect-lock .fab {
   transform: translateY(100%);
 }
 .modal.active {
-  background-color: transparent;
   opacity: 1;
   pointer-events: initial;
+  z-index: var(--z-level-5);
   transition: opacity 0ms linear 0ms, background-color 350ms ease;
 }
 .modal.active:before {
   opacity: var(--scrim-opacity);
 }
-.modal.active.transparent {
-  background-color: transparent;
-}
-.modal.active.transparent::before {
+.modal.active.transparent:before {
   opacity: 0;
 }
 .modal.active > .scrim {
@@ -3687,6 +3670,24 @@ html.scroll-locked .fab-group.respect-lock .fab {
 }
 
 /*-- LIGHTBOX --*/
+@media screen and (prefers-color-scheme: light) {
+  :root {
+    --overlay-bg: rgba(230,230,230,0.65);
+  }
+}
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    --overlay-bg: rgba(35,35,35,0.65);
+  }
+}
+.light-mode {
+  --overlay-bg: rgba(230,230,230,0.65);
+}
+
+.dark-mode {
+  --overlay-bg: rgba(35,35,35,0.65);
+}
+
 .lightbox {
   --menu-height: 3.125rem;
   display: block;
@@ -3704,6 +3705,24 @@ html.scroll-locked .fab-group.respect-lock .fab {
   background-color: transparent;
   opacity: 0;
   transition: opacity 0ms linear 500ms, background-color 350ms ease;
+}
+.lightbox::before {
+  content: "";
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background-color: var(--surface-v2);
+  border: 0px none;
+  border-radius: inherit;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  transition: opacity 300ms;
 }
 .lightbox > .slides {
   display: block;
@@ -3779,8 +3798,8 @@ html.scroll-locked .fab-group.respect-lock .fab {
   position: absolute;
   width: 50px;
   height: 50px;
-  border: 5px solid white;
-  border-top-color: black;
+  border: 5px solid var(--on-surface);
+  border-top-color: var(--surface);
   border-radius: var(--max-radius);
   z-index: -1;
   animation: spin 0.6s linear;
@@ -3799,9 +3818,9 @@ html.scroll-locked .fab-group.respect-lock .fab {
   font-size: 0.875rem;
   text-align: center;
   line-height: 1.5;
-  color: white;
-  background-color: rgba(35, 35, 35, 0.65);
-  text-shadow: 0px 0px 5px #000;
+  color: var(--on-surface);
+  background-color: var(--overlay-bg);
+  text-shadow: 0px 0px 5px var(--surface);
   pointer-events: initial;
   z-index: 1000;
   -webkit-user-select: none;
@@ -3869,9 +3888,8 @@ html.scroll-locked .fab-group.respect-lock .fab {
   width: 1em;
   border-radius: var(--comp-radius);
   font-size: 3.125rem;
-  color: #fff;
-  text-shadow: 0px 0px 5px #000;
-  filter: drop-shadow(0px 0px 5px #000);
+  color: var(--on-surface);
+  filter: drop-shadow(0px 0px 5px var(--surface));
   background-color: transparent;
   border: 0px none;
   outline: 0px none;
@@ -3895,11 +3913,13 @@ html.scroll-locked .fab-group.respect-lock .fab {
   z-index: 100;
 }
 .lightbox.active {
-  background-color: rgba(30, 30, 30, 0.9);
   opacity: 1;
   pointer-events: initial;
   z-index: var(--z-level-5);
   transition: opacity 0ms linear 0ms, background-color 350ms ease;
+}
+.lightbox.active:before {
+  opacity: 0.9;
 }
 .lightbox.active > .slides {
   opacity: 1;
@@ -3916,13 +3936,13 @@ html.scroll-locked .fab-group.respect-lock .fab {
   width: 100%;
   z-index: 110;
   margin: 0;
-  background-color: #555;
+  background-color: var(--surface);
   opacity: 0;
 }
 .lightbox > .progress-bar .determinate {
   width: 0;
   transition: none;
-  background-color: #fff;
+  background-color: var(--on-surface);
 }
 .lightbox.playing > .progress-bar {
   opacity: 1;
@@ -3933,15 +3953,15 @@ html.scroll-locked .fab-group.respect-lock .fab {
   margin: 0;
   top: 0;
   left: 0;
-  background: rgba(35, 35, 35, 0.65);
-  color: rgba(255, 255, 255, 0.8);
-  text-shadow: 0px 0px 5px #000;
+  background-color: var(--overlay-bg);
+  color: var(--on-surface);
+  text-shadow: 0px 0px 5px var(--surface);
   box-shadow: none;
   transition: transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s, opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s !important;
 }
 .lightbox > .menu.icon-bar .icon {
   font-size: 1.5em;
-  filter: drop-shadow(0px 0px 5px #000);
+  filter: drop-shadow(0px 0px 5px var(--surface));
 }
 .lightbox > .gallery-view {
   display: flex;
@@ -3951,8 +3971,8 @@ html.scroll-locked .fab-group.respect-lock .fab {
   width: 100%;
   height: 6rem;
   overflow: hidden;
-  background: rgba(35, 35, 35, 0.65);
-  background: linear-gradient(0deg, rgba(35, 35, 35, 0.65) 0%, rgba(35, 35, 35, 0.55) 80%, rgba(35, 35, 35, 0) 100%);
+  background: var(--overlay-bg);
+  background: linear-gradient(0deg, var(--overlay-bg) 0%, var(--overlay-bg) 80%, transparent 100%);
   transform: scale(1);
   transform-origin: center bottom;
   transition: opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s, background-color 0.35s cubic-bezier(0, 0, 0.25, 1) 0s, transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s !important;
@@ -3981,9 +4001,8 @@ html.scroll-locked .fab-group.respect-lock .fab {
   height: 1.5em;
   width: 1.5em;
   font-size: 1.5rem;
-  color: #fff;
-  text-shadow: 0px 0px 5px #000;
-  background: linear-gradient(rgba(30, 30, 30, 0.9), #000 1810%);
+  color: var(--on-surface);
+  text-shadow: 0px 0px 5px var(--surface);
   border: 0px none;
   outline: 0px none;
   z-index: 1000;
@@ -4014,8 +4033,8 @@ html.scroll-locked .fab-group.respect-lock .fab {
   transition: transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s, opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s !important;
 }
 .lightbox > .gallery-view .thumbnail.active {
-  border: 2px solid white;
-  box-shadow: 0px 0px 5px 1px #000;
+  border: 2px solid var(--on-surface);
+  box-shadow: 0px 0px 5px 1px var(--surface);
   transform: scale(1.1);
 }
 .lightbox > .gallery-view .thumbnail * {
@@ -4063,7 +4082,17 @@ html.scroll-locked .fab-group.respect-lock .fab {
   max-height: calc(100% - var(--menu-height) - 6rem);
 }
 .lightbox:not(.pic-only) > .slides .caption ~ .content {
-  height: calc(100% - 4.75rem);
+  height: calc(100% - 4.375rem);
+}
+@media screen and (max-width: 580px) {
+  .lightbox .resp-down-hidden {
+    display: none !important;
+  }
+}
+@media screen and (min-width: 581px) {
+  .lightbox .resp-up-hidden {
+    display: none !important;
+  }
 }
 
 /*** TOOLTIP ***/
@@ -4235,6 +4264,50 @@ html.scroll-locked .fab-group.respect-lock .fab {
   pointer-events: none;
   scroll-behavior: smooth;
   transition: transform 300ms ease-in 0s, opacity 300ms linear 0s;
+  --spacing: 0.25em;
+}
+.drop.menu.pointing {
+  --spacing: 0.875em;
+}
+.drop.menu.pointing:before {
+  content: "";
+  position: absolute;
+  height: 1.125em;
+  width: 1.125em;
+  transform-origin: center;
+  background: inherit;
+  border: inherit;
+  box-shadow: inherit;
+}
+.drop.menu.pointing[data-view=vertical]:before {
+  left: calc(var(--arrow-center) - 0.5625em);
+}
+.drop.menu.pointing[data-view=vertical].upward:before {
+  -webkit-clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
+          clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
+  transform: translateY(-50%) rotate(45deg);
+  top: 100%;
+}
+.drop.menu.pointing[data-view=vertical].downward:before {
+  -webkit-clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
+          clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
+  transform: translateY(50%) rotate(45deg);
+  bottom: 100%;
+}
+.drop.menu.pointing[data-view=horizontal]:before {
+  top: calc(var(--arrow-center) - 0.5625em);
+}
+.drop.menu.pointing[data-view=horizontal].rhs:before {
+  -webkit-clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
+          clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
+  transform: translateX(50%) rotate(-45deg);
+  right: 100%;
+}
+.drop.menu.pointing[data-view=horizontal].lhs:before {
+  -webkit-clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
+          clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
+  transform: translateX(-50%) rotate(-45deg);
+  left: 100%;
 }
 .drop.menu > .item, .drop.menu > .items > .item {
   text-align: left;
@@ -4294,16 +4367,16 @@ html.scroll-locked .fab-group.respect-lock .fab {
   transition: transform 300ms ease-in 0s, opacity 300ms linear 0s;
 }
 .drop.menu[data-view=vertical].upward {
-  margin-top: -0.25em;
+  margin-top: calc(0em - var(--spacing));
 }
 .drop.menu[data-view=vertical].downward {
-  margin-top: 0.25em;
+  margin-top: var(--spacing);
 }
 .drop.menu[data-view=horizontal].rhs {
-  margin-left: 0.25em;
+  margin-left: var(--spacing);
 }
 .drop.menu[data-view=horizontal].lhs {
-  margin-left: -0.25em;
+  margin-left: calc(0em - var(--spacing));
 }
 
 .dropdown.sub > .drop.menu[data-view=horizontal].upward {
@@ -4452,17 +4525,17 @@ html.scroll-locked .fab-group.respect-lock .fab {
   position: relative;
   max-width: 100%;
 }
-
-.cs-viewbox {
+.carousel .cs-viewbox {
   display: block;
+  position: relative;
   overflow: hidden;
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
   width: 100%;
+  border-radius: var(--default-radius);
 }
-
-.cs-slider {
+.carousel .cs-slider {
   display: flex;
   align-items: stretch;
   backface-visibility: hidden;
@@ -4473,13 +4546,13 @@ html.scroll-locked .fab-group.respect-lock .fab {
   width: 100% !important;
   transition: transform 500ms cubic-bezier(0, 0, 0.25, 1);
 }
-.cs-slider[data-anim=slide] {
+.carousel .cs-slider[data-anim=slide] {
   flex-flow: row nowrap;
 }
-.cs-slider.swiping, .cs-slider.ghost-walk {
+.carousel .cs-slider.swiping, .carousel .cs-slider.ghost-walk {
   transition-duration: 0ms !important;
 }
-.cs-slider .cs-slide {
+.carousel .cs-slider .cs-slide {
   display: flex;
   flex: 0 0 auto;
   justify-content: center;
@@ -4492,17 +4565,23 @@ html.scroll-locked .fab-group.respect-lock .fab {
   height: auto;
   z-index: 0;
 }
+.carousel .cs-trackers {
+  pointer-events: none;
+}
+.carousel .cs-trackers .cs-tracker {
+  pointer-events: auto;
+  cursor: pointer;
+}
 
 .carousel.lui .cs-trackers {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-flow: row wrap;
-  gap: 0.25em;
-  margin: 0;
-  pointer-events: none;
+  gap: 0.5rem;
+  margin: 0.5rem 0rem 0rem;
 }
-.carousel.lui .cs-trackers > .cs-tracker {
+.carousel.lui .cs-trackers .cs-tracker:not(.thumbnail) {
   display: inline-block;
   position: relative;
   background-color: var(--outline);
@@ -4514,9 +4593,8 @@ html.scroll-locked .fab-group.respect-lock .fab {
   padding: 0;
   opacity: 0.75;
   transition: background-color 0.2s ease, color 0.2s ease;
-  pointer-events: auto;
 }
-.carousel.lui .cs-trackers > .cs-tracker.active {
+.carousel.lui .cs-trackers .cs-tracker:not(.thumbnail).active {
   background-color: var(--primary);
   opacity: 1;
 }
@@ -4528,15 +4606,13 @@ html.scroll-locked .fab-group.respect-lock .fab {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px 0 var(--on-surface-v2);
   border: 0;
   opacity: 0.5;
-  border-radius: 50%;
   padding: 0px !important;
   margin: 0 !important;
   color: var(--on-surface);
   cursor: pointer;
-  font-size: 1.25em;
+  font-size: 1.25rem;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -4552,10 +4628,10 @@ html.scroll-locked .fab-group.respect-lock .fab {
   pointer-events: none;
 }
 .carousel.lui .cs-prev {
-  left: 0.0625rem;
+  left: 0px;
 }
 .carousel.lui .cs-next {
-  right: 0.0625rem;
+  right: 0px;
 }
 .carousel.lui:not(:hover) > .cs-prev, .carousel.lui:not(:hover) > .cs-next {
   opacity: 0;
@@ -5955,7 +6031,9 @@ hr {
 *:not(.active) > .aview,
 *:not(.active) > .viewbox > .a-view,
 *.active > .nview,
-*.active > .viewbox > .n-view {
+*.active > .viewbox > .n-view,
+*.active > .ac-viewbox > :first-child,
+*:not(.active) > .ac-viewbox > :last-child {
   display: none !important;
 }
 
@@ -5975,94 +6053,41 @@ hr {
   flex: 1 1 0;
 }
 
-mark, mark[data-paint=green],
-.mark,
-.mark[data-paint=green] {
-  background: #fff7b1;
-}
-mark[data-paint=green],
-.mark[data-paint=green] {
-  background: #c4fb98;
-}
-mark[data-paint=blue],
-.mark[data-paint=blue] {
-  background: #bee9fc;
-}
-mark[data-paint=purple],
-.mark[data-paint=purple] {
-  background: #ecc7ff;
-}
-mark[data-paint=pink],
-.mark[data-paint=pink] {
-  background: #fad2e0;
-}
-mark[data-paint=orange],
-.mark[data-paint=orange] {
-  background: #ffd7a9;
-}
-
-[data-thumbnails] .thumbnail,
+/* --- THUMBNAIL --- */
 .thumbnail {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 2px;
-  margin: 8px;
-  width: auto;
-  height: 200px;
+  padding: 0.125em;
+  width: var(--thumbnail-size, 6.25rem);
+  height: var(--thumbnail-size, 6.25rem);
   max-height: 100%;
+  border-radius: var(--sm-radius);
   transition: transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s, opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s !important;
 }
-[data-thumbnails] .thumbnail.active,
 .thumbnail.active {
-  border: 2px solid white;
-  box-shadow: 0px 0px 5px 1px #000;
+  border: 0.125em solid var(--on-surface);
+  box-shadow: 0px 0px 5px 1px var(--surface);
   transform: scale(1.1);
 }
-[data-thumbnails] .thumbnail *,
-.thumbnail * {
+.thumbnail > img {
   display: block;
   margin: 0px;
-  width: auto;
-  height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+  width: 100%;
+  height: 100%;
   max-height: 100%;
   max-width: 100%;
+  border-radius: calc(var(--sm-radius) - 0.125em);
 }
 
-[data-thumbnails=pico] .thumbnail,
-.thumbnail.pico {
-  height: 75px;
-}
-
-[data-thumbnails=nano] .thumbnail,
-.thumbnail.nano {
-  height: 100px;
-}
-
-[data-thumbnails=micro] .thumbnail,
-.thumbnail.micro {
-  height: 125px;
-}
-
-[data-thumbnails=mini] .thumbnail,
-.thumbnail.mini {
-  height: 150px;
-}
-
-[data-thumbnails=big] .thumbnail,
-.thumbnail.big {
-  height: 300px;
-}
-
-[data-thumbnails=large] .thumbnail,
-.thumbnail.large {
-  height: 400px;
-}
-
-[data-thumbnails=mega] .thumbnail,
-.thumbnail.mega {
-  height: 500px;
+/* --- COLLAPSIBLE --- */
+.collapsible {
+  transition: height 0.5s ease-in-out;
+  overflow: hidden !important;
+  height: 0px;
 }
 
 html.scroll-locked {
@@ -6269,12 +6294,6 @@ html.scroll-locked {
   padding-bottom: 1rem !important;
 }
 
-.flex-middle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .fluid {
   width: 100% !important;
 }
@@ -6449,6 +6468,11 @@ html.scroll-locked {
 
 .sm-guttered {
   gap: 0.5em;
+}
+
+.align-middle {
+  align-items: center;
+  justify-content: center;
 }
 
 .align-left {

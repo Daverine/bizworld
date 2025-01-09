@@ -1,3 +1,7 @@
+svg.icon {
+	font-size: 1.5em;
+	vertical-align: -0.25em;
+}
 :root {
 	--default-radius: 0.5em;
 	--site-logo-filter: invert(0);
@@ -59,12 +63,6 @@
 	}
 }
 
-.collapsible {
-	transition: max-height .5s ease-in-out;
-	overflow: hidden !important;
-	max-height: 0px;
-}
-
 // landing page style
 
 .csection {
@@ -112,7 +110,6 @@
 }
 
 .p-h {
-	.p-h3 { transition: font-size 0.1s linear; }
 	& > .pinned {
 		box-shadow: 0px 5px 10px 5px var(--surface);
 
@@ -121,4 +118,7 @@
 			margin-top: 0.5rem;
 		}
 	}
+	.p-h3 { transition: font-size 0.1s linear; }
 }
+
+.p-f > .pinned { box-shadow: 0px -5px 10px var(--surface); }

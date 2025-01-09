@@ -50,7 +50,6 @@ export function scrollPin() {
 
                 // start parentSize streaming
                 if (this.settings.streamSizeToParent) {
-                    const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
                     this.sizeStreamId = requestAnimationFrame(this.streamCallback);
                 }
             },
@@ -69,7 +68,6 @@ export function scrollPin() {
                     streamer = setTimeout(() => this.getGeometry(), 20);
                 }
                 
-                const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
                 this.sizeStreamId = requestAnimationFrame(this.streamCallback);
             },
             getGeometry() {
