@@ -61,6 +61,7 @@ const bb = { // brainbox
     viewportMeta: '',
     openWithHash: false,
     inOutTimeout: undefined,
+    scrollPosBeforeLock: undefined,
 };
 const vbb = reactive({ //view brainbox
     initialized: false,
@@ -140,7 +141,7 @@ onBeforeUnmount(() => {
         if (typeof unwatch[el] === 'function') unwatch[el]();
     });
     if (document.fullscreenElement === lightbox.value) document.exitFullscreen();
-    if (settings.hashLightbox) window.removeEventListener('popstate', backToClose);
+    if (settings.hashLightbox) window.removeEventListener('popstate', backToExit);
     document.removeEventListener('keydown', panelKbdFunc);
     utils.checkEscStatus(uniqueId, true);
     document.removeEventListener('keyup', panelEscFunc);
@@ -157,12 +158,14 @@ onBeforeUnmount(() => {
 watch(() => vbb.showLightbox, (value) => {
     if (value) {
         if (vbb.slidesNo) update();
-        utils.lockWindowScroll(uniqueId);
 
         if (settings.hashLightbox) {
+            bb.scrollPosBeforeLock = { top: window.scrollY, left: window.scrollX };
             if (!bb.openWithHash) router.replace({ hash: `#${props.id}` });
-            window.addEventListener('popstate', backToClose);
+            window.addEventListener('popstate', backToExit);
         }
+
+        utils.lockWindowScroll(uniqueId);
 
         // configure viewport meta to let lightbox function well
         let viewportMeta = document.head.querySelector('meta[name=viewport]');
@@ -252,10 +255,10 @@ watch(() => vbb.showLightbox, (value) => {
         lightbox.value.classList.remove('active');
         if (settings.hashLightbox) {
             unwatch.closeOnRouteChange();
-            window.removeEventListener('popstate', backToClose);
-            if (bb.openWithHash) router.push({ hash: '' });
-            else router.replace({ hash: '' });
+            window.removeEventListener('popstate', backToExit);
+            router.replace({ hash: '' });
             bb.openWithHash = false;
+            utils.afterNextRepaint(() => window.scrollTo(bb.scrollPosBeforeLock));
         }
         clearTimeout(bb.inOutTimeout);
         bb.inOutTimeout = setTimeout(() => {
@@ -270,7 +273,7 @@ watch(() => vbb.showLightbox, (value) => {
     }
 });
 
-function backToClose() {
+function backToExit() {
     history.pushState(null, null, window.location.href);
     vbb.showLightbox = false;
 }

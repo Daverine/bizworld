@@ -84,12 +84,13 @@ export default {
         }
 
         function streamCallback() {
+            if (!el) return;
             if (tmp.initialized) {
                 let elHeight = el.getBoundingClientRect().height;
-
                 // let parent take scrollPin element height + the parent padding top and bottom as min-height
-                wrapper.style.minHeight = `${elHeight + getTB(wrapper, true) + getTB(wrapper)}px`;
-                if (settings.ancestorGuarded && guardian.getBoundingClientRect().height !== tmp.pBox.height) {
+                wrapper.style.minHeight = `${elHeight + parseFloat(utils.getCssVal(el, 'margin-top')) + parseFloat(utils.getCssVal(el, 'margin-bottom')) + getTB(wrapper, true) + getTB(wrapper)}px`;
+                
+                if (settings.ancestorGuarded && (guardian && guardian.getBoundingClientRect().height !== tmp.pHeight)) {
                     getGeometry();
                     sizeStreamId = requestAnimationFrame(streamCallback);
                 }
@@ -150,7 +151,8 @@ export default {
                         ? wrapper.parentNode
                         : el.parentNode;
 
-                tmp.pBox = JSON.parse(JSON.stringify(guardian.getBoundingClientRect()));
+                if (!guardian) return;
+                tmp.pHeight = guardian.getBoundingClientRect().height;
                 tmp.pOffset = utils.offsetPos(guardian);
 
                 if (Math.max(tmp.eBox.height + tmp.calcTop, tmp.eBox.height + tmp.calcBottom) > utils.contentSize(guardian).height) {
@@ -198,7 +200,7 @@ export default {
                 if (tmp.currState === 'reset-state' && (prevState === 'dir-bottom-unpinned' || prevState === 'dir-top-unpinned') &&
                     (
                         (!settings.ancestorGuarded && document.body.getBoundingClientRect().height - tmp.scrollPos > tmp.eBox.height + tmp.calcTop) ||
-                        (settings.ancestorGuarded && tmp.pOffset.top + tmp.pBox.height - tmp.scrollPos > tmp.eBox.height + tmp.calcTop + getTB(guardian))
+                        (settings.ancestorGuarded && tmp.pOffset.top + tmp.pHeight - tmp.scrollPos > tmp.eBox.height + tmp.calcTop + getTB(guardian))
                     ) && tmp.scrollPos >= tmp.eOffset.top - tmp.calcTop
                 ) { return; }
 
@@ -220,9 +222,9 @@ export default {
                     !el.classList.contains(settings.className) &&
                     (
                         (tmp.scrollDir === 1 && utils.offsetPos(el).top + tmp.eBox.height + tmp.calcBottom <= tmp.scrollPos + tmp.clipBoxHeight) ||
-                        (tmp.currState === 'reset-state' && ((!settings.ancestorGuarded && document.body.getBoundingClientRect().height - tmp.scrollPos <= tmp.eBox.height + tmp.calcTop) || (settings.ancestorGuarded && tmp.pOffset.top + tmp.pBox.height - tmp.scrollPos <= tmp.eBox.height + tmp.calcTop + getTB(guardian))))
+                        (tmp.currState === 'reset-state' && ((!settings.ancestorGuarded && document.body.getBoundingClientRect().height - tmp.scrollPos <= tmp.eBox.height + tmp.calcTop) || (settings.ancestorGuarded && tmp.pOffset.top + tmp.pHeight - tmp.scrollPos <= tmp.eBox.height + tmp.calcTop + getTB(guardian))))
                     ) &&
-                    (!settings.ancestorGuarded || Math.ceil(tmp.pOffset.top + tmp.pBox.height - getTB(guardian)) >= tmp.scrollPos + tmp.clipBoxHeight)
+                    (!settings.ancestorGuarded || Math.ceil(tmp.pOffset.top + tmp.pHeight - getTB(guardian)) >= tmp.scrollPos + tmp.clipBoxHeight)
                 ) {
                     el.classList.add(settings.className);
                     el.style.position = 'fixed';
@@ -240,7 +242,7 @@ export default {
                     !el.classList.contains(settings.className) &&
                     (
                         (tmp.scrollDir === -1 && utils.offsetPos(el).top > tmp.scrollPos + tmp.calcTop) ||
-                        (tmp.currState === 'reset-state' && ((!settings.ancestorGuarded && document.body.getBoundingClientRect().height - tmp.scrollPos > tmp.eBox.height + tmp.calcTop) || (settings.ancestorGuarded && tmp.pOffset.top + tmp.pBox.height - tmp.scrollPos > tmp.eBox.height + tmp.calcTop + getTB(guardian))))
+                        (tmp.currState === 'reset-state' && ((!settings.ancestorGuarded && document.body.getBoundingClientRect().height - tmp.scrollPos > tmp.eBox.height + tmp.calcTop) || (settings.ancestorGuarded && tmp.pOffset.top + tmp.pHeight - tmp.scrollPos > tmp.eBox.height + tmp.calcTop + getTB(guardian))))
                     ) && tmp.scrollPos >= tmp.eOffset.top - tmp.calcTop
                 ) {
                     el.classList.add(settings.className);
@@ -255,11 +257,11 @@ export default {
                 // if it is Guarded by it parent and it as reach it parent limit at the bottom.
                 else if (
                     settings.ancestorGuarded &&
-                    tmp.pOffset.top + tmp.pBox.height - getTB(guardian) <= tmp.scrollPos + tmp.clipBoxHeight - tmp.calcBottom
+                    tmp.pOffset.top + tmp.pHeight - getTB(guardian) <= tmp.scrollPos + tmp.clipBoxHeight - tmp.calcBottom
                 ) {
                     el.classList.remove(settings.className);
                     el.style.position = 'absolute';
-                    el.style.top = `${tmp.pOffset.top + tmp.pBox.height - tmp.eBox.height - getTB(guardian) - ppOffset.top}px`;
+                    el.style.top = `${tmp.pOffset.top + tmp.pHeight - tmp.eBox.height - getTB(guardian) - ppOffset.top}px`;
                     el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
                     // fix for the use of relative width on the element.
                     el.style.setProperty('width', tmp.eBox.width + "px", "important");
@@ -307,7 +309,7 @@ export default {
                     // or if guarded, the guardian content-visible area on the screen can contain the pin element and it bottom space
                     if (tmp.currState !== 'bottom-pinned' && (!settings.ancestorGuarded || (
                         (tmp.pOffset.top < tmp.scrollPos || tmp.scrollPos + tmp.clipBoxHeight - tmp.pOffset.top >= tmp.eBox.height + tmp.calcBottom + getTB(guardian, true)) &&
-                        (tmp.pOffset.top + tmp.pBox.height - getTB(guardian) > tmp.scrollPos + tmp.clipBoxHeight || tmp.scrollPos + tmp.clipBoxHeight - tmp.pOffset.top - tmp.pBox.height + getTB(guardian) <= tmp.calcBottom)
+                        (tmp.pOffset.top + tmp.pHeight - getTB(guardian) > tmp.scrollPos + tmp.clipBoxHeight || tmp.scrollPos + tmp.clipBoxHeight - tmp.pOffset.top - tmp.pHeight + getTB(guardian) <= tmp.calcBottom)
                     ))) {
                         el.classList.add(settings.className);
                         el.style.position = 'fixed';
@@ -321,14 +323,14 @@ export default {
                     else if (settings.ancestorGuarded) {
                         // unpin element if user is scrolling down and have scrolled past the bottom of guardian element
                         if (tmp.currState !== 'bottom-unpinned' && (
-                            tmp.pOffset.top + tmp.pBox.height < tmp.scrollPos + tmp.clipBoxHeight &&
-                            tmp.scrollPos + tmp.clipBoxHeight - tmp.pOffset.top - tmp.pBox.height + getTB(guardian) > tmp.calcBottom
+                            tmp.pOffset.top + tmp.pHeight < tmp.scrollPos + tmp.clipBoxHeight &&
+                            tmp.scrollPos + tmp.clipBoxHeight - tmp.pOffset.top - tmp.pHeight + getTB(guardian) > tmp.calcBottom
                         )) {
-                            // tmp.scrollPos + tmp.clipBoxHeight - tmp.pOffset.top - tmp.pBox.height + getTB(guardian) < tmp.calcBottom
+                            // tmp.scrollPos + tmp.clipBoxHeight - tmp.pOffset.top - tmp.pHeight + getTB(guardian) < tmp.calcBottom
                             el.classList.remove(settings.className);
                             el.style.position = 'absolute';
-                            el.style.top = `${tmp.pOffset.top + tmp.pBox.height - tmp.eBox.height - getTB(guardian) - ppOffset.top}px`;
-                            // el.style.top = tmp.pBox.height - getTB(guardian) - tmp.eBox.height;
+                            el.style.top = `${tmp.pOffset.top + tmp.pHeight - tmp.eBox.height - getTB(guardian) - ppOffset.top}px`;
+                            // el.style.top = tmp.pHeight - getTB(guardian) - tmp.eBox.height;
                             el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
                             // fix for the use of relative width on the element.
                             el.style.setProperty('width', `${tmp.eBox.width}px`, 'important');
@@ -358,7 +360,7 @@ export default {
                     if (
                         (!settings.sticky || (tmp.scrollDir === 1 && tmp.currState !== 'bottom-unpinned')) &&
                         tmp.scrollPos > tmp.eOffset.top - tmp.calcTop &&
-                        (!settings.ancestorGuarded || tmp.pOffset.top + tmp.pBox.height - tmp.scrollPos > tmp.eBox.height + tmp.calcTop + getTB(guardian)) &&
+                        (!settings.ancestorGuarded || tmp.pOffset.top + tmp.pHeight - tmp.scrollPos > tmp.eBox.height + tmp.calcTop + getTB(guardian)) &&
                         !el.classList.contains(settings.className)
                     ) {
                         el.classList.add(settings.className);
@@ -376,7 +378,7 @@ export default {
                     // also the parent of sticky has enough space in the viewport to contain the element
                     else if (
                         settings.sticky && tmp.currState === 'bottom-unpinned' && tmp.scrollDir === -1 &&
-                        tmp.pOffset.top + tmp.pBox.height > tmp.scrollPos + tmp.clipBoxHeight &&
+                        tmp.pOffset.top + tmp.pHeight > tmp.scrollPos + tmp.clipBoxHeight &&
                         utils.offsetPos(el).top + tmp.eBox.height + tmp.calcBottom >= tmp.clipBoxHeight + tmp.scrollPos &&
                         !el.classList.contains(settings.className)
                     ) {
@@ -413,14 +415,14 @@ export default {
                     // must have reach or scrolled the parent out of viewport
                     else if (
                         settings.ancestorGuarded &&
-                        (tmp.scrollPos > tmp.pOffset.top + tmp.pBox.height - tmp.eBox.height - tmp.calcTop - getTB(guardian) ||
-                            (tmp.currState === 'bottom-pinned' && tmp.scrollDir === 1 && tmp.pOffset.top + tmp.pBox.height < tmp.scrollPos + tmp.clipBoxHeight)
+                        (tmp.scrollPos > tmp.pOffset.top + tmp.pHeight - tmp.eBox.height - tmp.calcTop - getTB(guardian) ||
+                            (tmp.currState === 'bottom-pinned' && tmp.scrollDir === 1 && tmp.pOffset.top + tmp.pHeight < tmp.scrollPos + tmp.clipBoxHeight)
                         ) && (el.classList.contains(settings.className) || tmp.currState === 'reset-state')
                     ) {
                         el.classList.remove(settings.className);
                         el.style.position = 'absolute';
-                        el.style.top = `${tmp.pOffset.top + tmp.pBox.height - tmp.eBox.height - getTB(guardian) - ppOffset.top}px`;
-                        // el.style.top = tmp.pBox.height - getTB(guardian) - tmp.eBox.height;
+                        el.style.top = `${tmp.pOffset.top + tmp.pHeight - tmp.eBox.height - getTB(guardian) - ppOffset.top}px`;
+                        // el.style.top = tmp.pHeight - getTB(guardian) - tmp.eBox.height;
                         el.style.left = `${tmp.eOffset.left - ppOffset.left}px`;
                         // fix for the use of relative width on the element.
                         el.style.setProperty('width', `${tmp.eBox.width}px`, 'important');
@@ -433,18 +435,12 @@ export default {
 
         function stopScrollPin() {
             // stop height streaming
-            const cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
             cancelAnimationFrame(sizeStreamId);
 
             // stop scrollPin events
             window.removeEventListener('resize', getGeometry);
             window.removeEventListener('scroll', onScrollMtd);
             el.removeEventListener('stopScrollPin', stopScrollPin);
-
-            // reset scrollPin element
-            el.classList.remove(settings.className);
-            if (tmp.initStyle) el.setAttribute('style', tmp.initStyle);
-            else el.removeAttribute('style');
         }
 
         // utility to get padding and border of either the top side or the bottom side of an element

@@ -91,7 +91,7 @@ const searchStore = useSearchStore();
                     <SvgIcon name="store_filled" class="lead aview" />
                     My Shops
                 </router-link>
-                <div v-collapsible class="item xactive">
+                <div v-collapser class="item xactive">
                     <SvgIcon name="person" class="lead nview" />
                     <SvgIcon name="person_filled" class="lead aview" />
                     Account
@@ -101,7 +101,7 @@ const searchStore = useSearchStore();
                 <div class="collapsible sub items">
                     <rc-shareables name="account" />
                 </div>
-                <div v-collapsible class="item xactive">
+                <div v-collapser class="item xactive">
                     <SvgIcon name="contact_support" class="lead nview" />
                     <SvgIcon name="contact_support_filled" class="lead aview" />
                     Support
@@ -118,15 +118,15 @@ const searchStore = useSearchStore();
                 <div class="xhover item 0-padding"><button class="fluid button">Have a shop online</button></div>
             </template>
             <template v-else>
-                <div v-collapsible class="item xactive">
-                    <i class="lead viewbox icon">
-                        <SvgIcon name="contact_support" class="n-view" />
-                        <SvgIcon name="contact_support_filled" class="a-view" />
+                <div v-collapser class="item xactive ac-viewbox-ref">
+                    <i class="lead ac-viewbox icon">
+                        <SvgIcon name="contact_support" />
+                        <SvgIcon name="contact_support_filled" />
                     </i>
                     Support
-                    <i class="trailing viewbox icon">
-                        <SvgIcon name="expand_more" class="a-view" />
-                        <SvgIcon name="chevron_left" class="n-view" />
+                    <i class="trailing ac-viewbox icon">
+                        <SvgIcon name="chevron_left" />
+                        <SvgIcon name="expand_more" />
                     </i>
                 </div>
                 <div class="collapsible sub items">

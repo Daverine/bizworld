@@ -76,7 +76,7 @@ onUpdated(() => {
           </div>
         </div>
         <hr ref="divider" />
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="overview" class="lead icon" />
           Product Overview
           <i class="viewbox trailing icon">
@@ -88,7 +88,7 @@ onUpdated(() => {
           <p>This product is suitable for office use and it also presentable. It has a long lasting battery and its
             capable of handling comming computer daily tasks.</p>
         </div>
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="list_alt" class="lead icon" />
           Specifications
           <i class="viewbox trailing icon">
@@ -104,7 +104,7 @@ onUpdated(() => {
             </tr>
           </table>
         </div>
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="local_shipping" class="lead icon" />
           Delivery
           <i class="viewbox trailing icon">
@@ -123,7 +123,7 @@ onUpdated(() => {
             <SvgIcon name="chevron_right" class="trailing" />
           </a>
         </div>
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="security" class="lead icon" />
           Buyer's Protection
           <i class="viewbox trailing icon">
@@ -143,7 +143,7 @@ onUpdated(() => {
             </div>
           </div>
         </div>
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="reviews" class="lead icon" />
           Ratings and Reviews
           <i class="viewbox trailing icon">
@@ -241,7 +241,7 @@ onUpdated(() => {
             </div>
           </div>
         </div>
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="store" class="lead icon" />
           Seller's Information
           <i class="viewbox trailing icon">

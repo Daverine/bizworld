@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
   .page-prod {
     width: 12.5rem;
     position: relative;

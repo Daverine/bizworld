@@ -70,7 +70,7 @@ export const utils = {
 					el.setAttribute('style', ((el.lui && el.lui.styleBeforeLock) ? el.lui.styleBeforeLock : null));
 					if (el.lui && el.lui.styleBeforeLock) el.lui.styleBeforeLock = null;
 				});
-				this.afterNextRepaint(() => this.triggerEvent(window, 'resize'));
+				// this.afterNextRepaint(() => this.triggerEvent(window, 'resize'));
 			}
 		}
 	},

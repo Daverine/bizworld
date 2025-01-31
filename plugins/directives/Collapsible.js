@@ -1,7 +1,7 @@
 export default {
     mounted(el) {
         function toggleCollapsible(e) {
-            const collapsible = el.nextElementSibling.matches('.collapsible') ? el.nextElementSibling : null;
+            const collapsible = el.nextElementSibling?.matches('.collapsible') ? el.nextElementSibling : null;
             const accordion = el.getAttribute('data-collapsible');
 
             if (e) el.classList.toggle('active');

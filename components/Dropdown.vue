@@ -59,6 +59,7 @@ const tmp = reactive({
   hidingDropdown: false,
   // event data to be used for a settings.page dropdown coordinates.
   evt: undefined,
+  independentMenu: false,
 });
 
 const selectors = {
@@ -333,11 +334,9 @@ onMounted(() => {
 // decide wether to teleport dropdown menu or not
 onMounted(() => {
   if (!tmp.dropdownReady) return;
-
-  if (settings.independentMenu) {
-    if (settings.independentMenu === true || (!dropElem.value.classList.contains('sub') && !settings.browseDm && !dropElem.value.classList.contains('select'))) document.body.append(dropMenu);
-  }
-})
+  if (settings.independentMenu) tmp.independentMenu = settings.independentMenu === true || ((!dropElem.value.classList.contains('sub') && !dropElem.value.classList.contains('select')) || settings.browseDm);
+  if (tmp.independentMenu) document.body.append(dropMenu);
+});
 
 // cache all dropdowns and dropdown menus that can possibly close the dropdown in allExiter variable
 let allExiter = [];
@@ -846,14 +845,14 @@ function dd_CalcPosition() {
 
     if (settings.directionPriority.x === 'right') {
       if (spacing.right >= rects.dm.width || spacing.right >= spacing.left || rects.dm.width > spacing.left) {
-        if (!dropElem.value.classList.contains('select')) dropMenu.style.left = `${rects.dm.right}px`;
+        if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.right}px`;
         if (!dropMenu.classList.contains('rhs')) {
           dropMenu.classList.add('rhs');
           dropMenu.classList.remove('lhs');
         }
       }
       else {
-        if (!dropElem.value.classList.contains('select')) dropMenu.style.left = `${rects.dm.left}px`;
+        if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.left}px`;
         if (!dropMenu.classList.contains('lhs')) {
           dropMenu.classList.add('lhs');
           dropMenu.classList.remove('rhs');
@@ -865,14 +864,14 @@ function dd_CalcPosition() {
     }
     else {
       if (spacing.left >= rects.dm.width) {
-        if (!dropElem.value.classList.contains('select')) dropMenu.style.left = `${rects.dm.left}px`;
+        if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.left}px`;
         if (!dropMenu.classList.contains('lhs')) {
           dropMenu.classList.add('lhs');
           dropMenu.classList.remove('rhs');
         }
       }
       else {
-        if (!dropElem.value.classList.contains('select')) dropMenu.style.left = `${rects.dm.right}px`;
+        if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.right}px`;
         if (!dropMenu.classList.contains('rhs')) {
           dropMenu.classList.add('rhs');
           dropMenu.classList.remove('lhs');
@@ -882,14 +881,14 @@ function dd_CalcPosition() {
 
     if (settings.directionPriority.y === 'bottom') {
       if (spacing.bottom >= rects.dm.height || spacing.bottom >= spacing.top || rects.dm.height > spacing.top) {
-        if (!dropElem.value.classList.contains('select')) dropMenu.style.top = `${rects.dm.bottom}px`;
+        if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.bottom}px`;
         if (!dropMenu.classList.contains('downward')) {
           dropMenu.classList.add('downward');
           dropMenu.classList.remove('upward');
         }
       }
       else {
-        if (!dropElem.value.classList.contains('select')) dropMenu.style.top = `${rects.dm.top}px`;
+        if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.top}px`;
         if (!dropMenu.classList.contains('upward')) {
           dropMenu.classList.add('upward');
           dropMenu.classList.remove('downward');
@@ -901,14 +900,14 @@ function dd_CalcPosition() {
     }
     else {
       if (spacing.top >= rects.dm.height) {
-        if (!dropElem.value.classList.contains('select')) dropMenu.style.top = `${rects.dm.top}px`;
+        if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.top}px`;
         if (!dropMenu.classList.contains('upward')) {
           dropMenu.classList.add('upward');
           dropMenu.classList.remove('downward');
         }
       }
       else {
-        if (!dropElem.value.classList.contains('select')) dropMenu.style.top = `${rects.dm.bottom}px`;
+        if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.bottom}px`;
         if (!dropMenu.classList.contains('downward')) {
           dropMenu.classList.add('downward');
           dropMenu.classList.remove('upward');

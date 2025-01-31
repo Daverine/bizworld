@@ -75,7 +75,7 @@ onUpdated(() => {
           </div>
         </div>
         <hr ref="divider" />
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="overview" class="lead icon" />
           Service Details
           <i class="viewbox trailing icon">
@@ -105,7 +105,7 @@ onUpdated(() => {
           <p>Your satisfaction is our priority, and we look forward to the opportunity to collaborate on your design
             needs.</p>
         </div>
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="list_alt" class="lead icon" />
           Service Plans
           <i class="viewbox trailing icon">
@@ -252,7 +252,7 @@ onUpdated(() => {
             </table>
           </div>
         </div>
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="security" class="lead icon" />
           Client's Protection
           <i class="viewbox trailing icon">
@@ -288,7 +288,7 @@ onUpdated(() => {
             </tbody>
           </table>
         </div>
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="reviews" class="lead icon" />
           Reviews on this Service
           <i class="viewbox trailing icon">
@@ -386,7 +386,7 @@ onUpdated(() => {
             </div>
           </div>
         </div>
-        <div v-collapsible class="sub heading a-block active">
+        <div v-collapser class="sub heading a-block active">
           <SvgIcon name="store" class="lead icon" />
           Service Manager Details
           <i class="viewbox trailing icon">
