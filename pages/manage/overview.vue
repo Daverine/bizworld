@@ -5,7 +5,7 @@ definePageMeta({layout: 'manage', auth: true, });
     <main class="flexible col" id="feed">
 
         <header class="sp-wrapper fluid z-level-3 p-h" style="margin-bottom: 1rem;">
-            <div v-scrollPin="{ topSpacing: 64, ancestorGuarded: true }" style="background-color: var(--surface);">
+            <div v-scrollPin="{ top: 64, independent: true }" style="background-color: var(--surface);">
                 <div class="fluid l-aligned">
                     <div class="p-h3 h3">Overview</div>
                     <hr class="0-b-margined" />

@@ -8,9 +8,21 @@ const details = ref({
   currency: "Naira",
   negotiable: true,
   media: [
-    ["pic", "/images/product.jpeg"],
-    ["pic", "/images/product.jpeg"],
-    ["pic", "/images/product.jpeg"],
+    {
+      type: "pic",
+      url: "/images/product.jpeg",
+      thumbnail: "/images/product.jpeg",
+    },
+    {
+      type: "pic",
+      url: "/images/product.jpeg",
+      thumbnail: "/images/product.jpeg",
+    },
+    {
+      type: "pic",
+      url: "/images/product.jpeg",
+      thumbnail: "/images/product.jpeg",
+    },
   ],
   overview:
     "This product is suitable for office use and it also presentable. It has a long lasting battery and its capable of handling comming computer daily tasks.",
@@ -160,99 +172,85 @@ onMounted(() =>
 <template>
   <Title>{{ details.title }}</Title>
   <main class="grid-layout" style="padding-top: 1rem">
-    <div class="prod-cont">
-      <header class="sp-wrapper prod-summary">
-        <div
-          v-scrollPin="{
-            clipTop: 64,
-            topSpacing: 4,
-            ancestorGuarded: true,
-            breakpoints: [{ maxWidth: 767, pinnable: false }],
-          }"
-        >
-          <Carousel>
-            <div v-for="slide in details.media" class="cs-slide">
-              <img
-                v-if="slide[0] === 'pic'"
-                :src="slide[1]"
-                :data-lightbox="slide[1]"
-                data-target="lightbox1"
-                class="image"
-              />
-            </div>
-            <template v-if="isLargeScreen" #trackers>
-              <div v-for="slide in details.media" class="thumbnail cs-tracker">
-                <img v-if="slide[0] === 'pic'" :src="slide[1]" />
-              </div>
-            </template>
-          </Carousel>
-          <div class="prod-heading">
-            <h5 class="semibold prod-title">{{ details.title }}</h5>
-            <div class="flexbox flex-separate guttered small semibold">
-              <span
-                v-tooltip.unblocking
-                data-tooltip="Average Rate (Number of raters)"
-              >
-                <Icon
-                  name="material-symbols:star-rounded"
-                  class="yellow-text"
-                />
-                {{
-                  `${(
-                    details.reviews.reduce((n, i) => n + i.rating, 0) /
-                    details.reviews.length
-                  ).toFixed(1)} (${details.reviews.length} reviews)`
-                }}
-              </span>
-              <span
-                v-tooltip.unblocking
-                :data-tooltip="details.bizData.location.address"
-              >
-                <Icon name="material-symbols:location-on-outline-rounded" />
-                {{
-                  `${details.bizData.location.city}, ${details.bizData.location.state}`
-                }}
-              </span>
-            </div>
-            <div class="h3 0-margined primary-text bold">
-              {{ details.price }}
-            </div>
-            <div class="prod-overview">
-              <div class="lined heading">
-                <Icon
-                  name="material-symbols:overview-outline-rounded"
-                  class="lead"
-                />
-                Product Overview
-              </div>
-              <p>{{ details.overview }}</p>
-            </div>
+    <div class="page-cont">
+      <header
+        v-scrollPin="{
+          top: 68,
+          bottom: 64,
+          breakpoints: [{ maxWidth: 767, pinnable: false }],
+        }"
+        class="page-summary"
+      >
+        <Carousel>
+          <div v-for="slide in details.media" class="cs-slide">
+            <img
+              v-if="slide.type === 'pic'"
+              :src="slide.url"
+              :data-lightbox="slide.url"
+              data-target="lightbox1"
+              class="image"
+            />
           </div>
+          <template v-if="isLargeScreen" #trackers>
+            <div v-for="slide in details.media" class="thumbnail cs-tracker">
+              <img :src="slide.thumbnail" />
+            </div>
+          </template>
+        </Carousel>
+        <h5 class="semibold 0-margined page-title">{{ details.title }}</h5>
+        <div class="flexbox flex-separate guttered small semibold">
+          <span
+            v-tooltip.unblocking
+            data-tooltip="Average Rate (Number of raters)"
+          >
+            <Icon name="material-symbols:star-rounded" class="yellow-text" />
+            {{
+              (
+                details.reviews.reduce((n, i) => n + i.rating, 0) /
+                details.reviews.length
+              ).toFixed(1)
+            }}
+            ({{ details.reviews.length }} reviews)
+          </span>
+          <span
+            v-tooltip.unblocking
+            :data-tooltip="details.bizData.location.address"
+          >
+            <Icon name="material-symbols:location-on-outline-rounded" />
+            {{ details.bizData.location.city }},
+            {{ details.bizData.location.state }}
+          </span>
+        </div>
+        <div class="h3 0-margined primary-text bold">
+          {{ details.price }}
+        </div>
+        <div class="page-overview">
+          <div class="lined heading">
+            <Icon
+              name="material-symbols:overview-outline-rounded"
+              class="lead"
+            />
+            Product Overview
+          </div>
+          <p>{{ details.overview }}</p>
+        </div>
+        <!-- Purchase Configuration Note -->
+        <div
+          v-if="configureMessage"
+          class="warning compact handled note 0-margined"
+        >
+          <Icon name="material-symbols:brand-awareness-outline-rounded" />
+          <div class="content">Add item to cart to configure purchase.</div>
+          <i
+            class="small trailing"
+            style="align-self: start"
+            @click="() => (configureMessage = false)"
+          >
+            <Icon name="material-symbols:cancel-rounded" />
+          </i>
         </div>
       </header>
-      <div class="prod-details">
-        <!-- Purchase Configuration Note -->
-        <div v-if="configureMessage" class="sp-wrapper">
-          <div
-            v-scrollPin="{
-              clipTop: 64,
-              topSpacing: 4,
-              ancestorGuarded: true,
-              autoContainMargins: false,
-            }"
-            class="warning compact handled note 0-margined"
-          >
-            <Icon name="material-symbols:brand-awareness-outline-rounded" />
-            <div class="content">Add item to cart to configure purchase.</div>
-            <i
-              class="small trailing"
-              style="align-self: start"
-              @click="() => (configureMessage = false)"
-            >
-              <Icon name="material-symbols:cancel-rounded" />
-            </i>
-          </div>
-        </div>
+      <div class="page-details sp-wrapper">
         <!-- Specifications Section -->
         <section class="spec">
           <div v-collapser class="ac-viewbox-ref active lined heading a-block">
@@ -294,13 +292,14 @@ onMounted(() =>
             <div>
               <div class="sub heading">Product is Located at:</div>
               <p class="indented">
-                {{
-                  `${details.bizData.location.address}, ${details.bizData.location.city}, ${details.bizData.location.state}`
-                }}
+                {{ details.bizData.location.address }},
+                {{ details.bizData.location.city }},
+                {{ details.bizData.location.state }}
               </p>
             </div>
             <div>
               <div class="sub heading">Available delivery options</div>
+              <!-- Bizworld delivery option -->
               <div class="compact note">
                 <Icon
                   name="material-symbols:delivery-truck-speed-outline-rounded"
@@ -314,6 +313,7 @@ onMounted(() =>
                   </div>
                 </div>
               </div>
+              <!-- Self pickup option -->
               <div class="compact note">
                 <Icon
                   name="material-symbols:package-outline-rounded"
@@ -415,9 +415,9 @@ onMounted(() =>
                       name="material-symbols:star-rounded"
                       class="yellow-text"
                     />
-                    {{
-                      `${details.bizData.rating.rate} (${details.bizData.rating.raters})`
-                    }}
+                    {{ details.bizData.rating.rate }} ({{
+                      details.bizData.rating.raters
+                    }})
                   </span>
                 </div>
               </div>
@@ -483,12 +483,13 @@ onMounted(() =>
                     name="material-symbols:star-outline-rounded"
                   />
                 </div>
-                <div>{{ `${details.reviews.length} reviews` }}</div>
+                <div>{{ details.reviews.length }} review(s)</div>
                 <div>All reviews are from verified purchases.</div>
               </div>
               <div class="centered">
                 <p class="small semibold">
-                  Patronize {{ details.bizData.bizName }} to write a review <a href="#">Learn more.</a>
+                  Patronize {{ details.bizData.bizName }} to write a review
+                  <a href="#">Learn more.</a>
                 </p>
               </div>
             </div>
@@ -578,95 +579,93 @@ onMounted(() =>
       </div>
     </div>
     <!-- Call to Action Section -->
-    <div class="sp-wrapper fluid z-level-2 p-f">
-      <div
-        v-scrollPin="{ pinPriority: 'bottom', ancestorGuarded: true }"
-        class="prod-footer surface-bg"
-      >
-        <div class="container flexbox guttered" style="padding: 0.5rem 1rem">
-          <Dropdown class="primary button">
-            <Icon name="material-symbols:add-shopping-cart" class="lead" />
-            Add to cart
-            <div class="drop menu pointing">
-              <div class="content" style="padding: 0.5em">
-                <div class="field">
-                  <label>Quantity</label>
-                  <input
-                    type="number"
-                    class="form-item compact"
-                    min="1"
-                    value="1"
-                  />
-                </div>
-                <hr class="transparent" />
-                <div class="flexbox guttered">
-                  <button class="exit-dd secondary compact button">
-                    Checkout
-                  </button>
-                  <button class="exit-dd secondary flat compact button">
-                    Add and shop more
-                  </button>
-                </div>
+    <div
+      v-scrollPin="{ pinPriority: 'bottom' }"
+      class="page-footer surface-bg fluid z-level-2 p-f"
+    >
+      <div class="container flexbox guttered" style="padding: 0.5rem 1rem">
+        <Dropdown class="primary button">
+          <Icon name="material-symbols:add-shopping-cart" class="lead" />
+          Add to cart
+          <div class="drop menu pointing">
+            <div class="content" style="padding: 0.5em">
+              <div class="field">
+                <label>Quantity</label>
+                <input
+                  type="number"
+                  class="form-item compact"
+                  min="1"
+                  value="1"
+                />
+              </div>
+              <hr class="transparent" />
+              <div class="flexbox guttered">
+                <button class="exit-dd secondary compact button">
+                  Checkout
+                </button>
+                <button class="exit-dd secondary flat compact button">
+                  Add and shop more
+                </button>
               </div>
             </div>
-          </Dropdown>
-          <button class="outlined button">
-            <Icon
-              name="material-symbols:bookmark-add-outline-rounded"
-              class="lead"
-            />
-            Save
-          </button>
-          <button
-            class="flat circular button"
-            v-tooltip.unblocking
-            data-tooltip="Contact seller"
-          >
-            <Icon name="material-symbols:chat-outline-rounded" />
-          </button>
-          <Dropdown
-            :options="{ directionPriority: { x: 'left', y: 'top' } }"
-            v-tooltip.unblocking
-            data-tooltip="More options"
-            class="flat circular button"
-          >
-            <Icon name="material-symbols:more-vert" />
-            <div class="drop menu">
-              <div class="item">
-                <Icon
-                  name="material-symbols:category-search-outline-rounded"
-                  class="lead"
-                />
-                View related
-              </div>
-              <div class="item">
-                <Icon
-                  name="material-symbols:bookmark-add-outline-rounded"
-                  class="lead"
-                />
-                Save card
-              </div>
-              <div class="item">
-                <Icon name="material-symbols:share-outline" class="lead" />
-                Share
-              </div>
-              <div class="item">
-                <Icon
-                  name="material-symbols:report-outline-rounded"
-                  class="lead"
-                />
-                Report
-              </div>
+          </div>
+        </Dropdown>
+        <button class="outlined button">
+          <Icon
+            name="material-symbols:bookmark-add-outline-rounded"
+            class="lead"
+          />
+          Save
+        </button>
+        <button
+          class="flat circular button"
+          v-tooltip.unblocking
+          data-tooltip="Contact seller"
+        >
+          <Icon name="material-symbols:chat-outline-rounded" />
+        </button>
+        <Dropdown
+          :options="{ directionPriority: { x: 'left', y: 'top' } }"
+          v-tooltip.unblocking
+          data-tooltip="More options"
+          class="flat circular button"
+        >
+          <Icon name="material-symbols:more-vert" />
+          <div class="drop menu">
+            <div class="item">
+              <Icon
+                name="material-symbols:category-search-outline-rounded"
+                class="lead"
+              />
+              View related
             </div>
-          </Dropdown>
-        </div>
+            <div class="item">
+              <Icon
+                name="material-symbols:bookmark-add-outline-rounded"
+                class="lead"
+              />
+              Save card
+            </div>
+            <div class="item">
+              <Icon name="material-symbols:share-outline" class="lead" />
+              Share
+            </div>
+            <div class="item">
+              <Icon
+                name="material-symbols:report-outline-rounded"
+                class="lead"
+              />
+              Report
+            </div>
+          </div>
+        </Dropdown>
       </div>
     </div>
   </main>
 </template>
 
-<style lang="scss">
-.prod-cont {
+<style lang="scss" scoped>
+.page-cont {
   display: grid;
   gap: 1.5rem;
   grid-template-columns: 1fr 1fr;
@@ -674,10 +673,14 @@ onMounted(() =>
   .carousel {
     --thumbnail-size: 4.5rem;
   }
-  .prod-summary {
+  .page-summary {
     padding-bottom: 0.5rem;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
-  .prod-details {
+  .page-details {
     padding-bottom: 18vh;
 
     & > section {
@@ -725,19 +728,6 @@ onMounted(() =>
 
 .posts-main {
   display: flex;
-  align-items: center;
-  flex-direction: column;
-}
-
-.page-aside {
-  display: flex;
-  border-radius: var(--sm-radius);
-  border: 1px solid var(--outline);
-  margin-left: auto;
-  margin-right: auto;
-  width: 20rem;
-  max-width: 100%;
-  padding: 1rem;
   align-items: center;
   flex-direction: column;
 }

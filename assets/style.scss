@@ -1,126 +1,152 @@
 svg.icon {
-	font-size: 1.5em;
-	vertical-align: -0.25em;
+  font-size: 1.5em;
+  vertical-align: -0.25em;
 }
 :root {
-	--default-radius: 0.5em;
-	--site-logo-filter: invert(0);
-	// --container-text: 700px;
-	// --container: 90rem;
+  --default-radius: 0.5em;
+  --site-logo-filter: invert(0);
+  // --container-text: 700px;
+  // --container: 90rem;
 }
 
 @mixin light-mode() {
-	--fmenu-bg: rgba(255,255,255,0.9);
+  --fmenu-bg: rgba(255, 255, 255, 0.9);
 }
 @mixin dark-mode() {
-	--fmenu-bg: rgba(26,26,26,0.8);
+  --fmenu-bg: rgba(26, 26, 26, 0.8);
 }
 
 @media screen and (prefers-color-scheme: light) {
-	:root { @include light-mode(); }
+  :root {
+    @include light-mode();
+  }
 }
 @media screen and (prefers-color-scheme: dark) {
-	:root { @include dark-mode(); }
+  :root {
+    @include dark-mode();
+  }
 }
 
-.light-mode { @include light-mode(); }
-.dark-mode { @include dark-mode(); }
+.light-mode {
+  @include light-mode();
+}
+.dark-mode {
+  @include dark-mode();
+}
 
 .as-page {
-	scroll-behavior: smooth;
-	min-width: 350px;
+  scroll-behavior: smooth;
+  min-width: 350px;
 }
 
 .material-icons,
 .material-symbols-outlined {
-	font-size: 1.5em;
+  font-size: 1.5em;
 }
 
-.material-icons { vertical-align: -23% !important; }
+.material-icons {
+  vertical-align: -23% !important;
+}
 
 .site-logo {
-	filter: var(--site-logo-filter);
+  filter: var(--site-logo-filter);
 }
 
 #fmenu {
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	height: 64px;
-	transform: translateY(-100%);
-	transform-origin: 0%;
-	opacity: 0;
-	border-bottom: 1px solid var(--outline);
-	box-shadow: 0px 1px 15px rgba(128,128,128,0.05);
-	z-index: 9000;
-	background-color: var(--fmenu-bg);
-	backdrop-filter: saturate(50%) blur(8px);
-	transition: transform ease 0.1s, opacity ease 0.1s !important;
-	
-	&.pinned {
-		opacity: 1;
-		transform: translateY(0%);
-	}
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  height: 64px;
+  transform: translateY(-100%);
+  transform-origin: 0%;
+  opacity: 0;
+  border-bottom: 1px solid var(--outline);
+  box-shadow: 0px 1px 15px rgba(128, 128, 128, 0.05);
+  z-index: 9000;
+  background-color: var(--fmenu-bg);
+  backdrop-filter: saturate(50%) blur(8px);
+  transition: transform ease 0.1s, opacity ease 0.1s !important;
+
+  &.pinned {
+    opacity: 1;
+    transform: translateY(0%);
+  }
 }
 
 // landing page style
 
 .csection {
-	position: relative;
-	min-height: 70vh;
-	max-width: 1440px;
-	margin: 0rem auto;
+  position: relative;
+  min-height: 70vh;
+  max-width: 1440px;
+  margin: 0rem auto;
 }
 
 .sidemenu {
-	width: var(--sidepanel-width);
-	box-shadow: none;
-	background-color: transparent !important;
-	padding: 10px;
+  width: var(--sidepanel-width);
+  box-shadow: none;
+  background-color: transparent !important;
+  padding: 10px;
 }
 
 #admenu {
-	display: flex;
-	flex-flow: row wrap;
-	padding: 15px 6px;
-	min-height: calc(100vh - 200px);
+  display: flex;
+  flex-flow: row wrap;
+  padding: 15px 6px;
+  min-height: calc(100vh - 200px);
 }
 
 #navmenu {
-	border-right: 1px solid var(--outline);
+  border-right: 1px solid var(--outline);
 }
 
 @media only screen and (max-width: 800px) {
-	.sidemenu { display: none !important; }
+  .sidemenu {
+    display: none !important;
+  }
 }
 
 .ad {
-	box-shadow: 0px 0px 5px #aaa;
-	padding: 10px;
-	background-color: var(--surface);
+  box-shadow: 0px 0px 5px #aaa;
+  padding: 10px;
+  background-color: var(--surface);
 }
 
 #feed {
-	position: relative;
-	width: calc(100% - var(--sidepanel-width) - var(--sidepanel-width));
-	max-width: var(--container-text);
-	min-height: 100%;
-	padding: 20px 1em;
-	margin: 0px auto;
+  position: relative;
+  width: calc(100% - var(--sidepanel-width) - var(--sidepanel-width));
+  max-width: var(--container-text);
+  min-height: 100%;
+  padding: 20px 1em;
+  margin: 0px auto;
 }
 
-.sp-wrapper { z-index: var(--z-level-1); }
+.sp-wrapper {
+  z-index: var(--z-level-1);
+}
+.sticky {
+  position: sticky !important;
+  will-change: transform;
+}
+.pinned {
+  position: fixed !important;
+  will-change: transform;
+}
 
 .p-h {
-	& > .pinned {
-		box-shadow: 0px 5px 10px 5px var(--surface);
+  & > .pinned {
+    box-shadow: 0px 5px 10px 5px var(--surface);
 
-		.p-h3 {
-			font-size: 1.5rem !important;
-			margin-top: 0.5rem;
-		}
-	}
-	.p-h3 { transition: font-size 0.1s linear; }
+    .p-h3 {
+      font-size: 1.5rem !important;
+      margin-top: 0.5rem;
+    }
+  }
+  .p-h3 {
+    transition: font-size 0.1s linear;
+  }
 }
 
-.p-f > .pinned { box-shadow: 0px -5px 10px var(--surface); }
+.p-f > .pinned {
+  box-shadow: 0px -5px 10px var(--surface);
+}

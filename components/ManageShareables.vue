@@ -61,8 +61,8 @@
         </RouterLink>
     </div>
     <template v-else-if="name === 'page_nav'">
-        <aside id="navmenu" class="flex-none col sidemenu md-and-down-hidden sp-wrapper">
-            <div v-scrollPin="{ topSpacing: 84, bottomSpacing: 16, ancestorGuarded: true }" class="vertical transparent menu">
+        <aside id="navmenu" class="flex-none col sidemenu md-and-down-hidden">
+            <div v-scrollPin="{ top: 84, bottom: 16 }" class="vertical transparent menu">
                 <rc-manage-shareables name="nav_menu" />
             </div>
         </aside>

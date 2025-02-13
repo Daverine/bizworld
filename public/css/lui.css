@@ -6353,4 +6353,28 @@ html.scroll-locked {
 
 .align-vcenter {
   align-items: center;
+}
+
+.self-align-left {
+  justify-self: start;
+}
+
+.self-align-right {
+  justify-self: end;
+}
+
+.self-align-center {
+  justify-self: center;
+}
+
+.self-align-top {
+  align-self: start;
+}
+
+.self-align-bottom {
+  align-self: end;
+}
+
+.self-align-vcenter {
+  align-self: center;
 }/*# sourceMappingURL=lui.css.map */

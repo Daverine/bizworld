@@ -286,8 +286,8 @@ const searchStore = useSearchStore();
 
 
     <template v-else-if="name === 'page_nav'">
-        <aside id="navmenu" class="flex-none col sidemenu sp-wrapper">
-            <div v-scrollPin="{ topSpacing: 84, bottomSpacing: 16, ancestorGuarded: true }"
+        <aside id="navmenu" class="flex-none col sidemenu">
+            <div v-scrollPin="{ top: 84, bottom: 16 }"
                 class="vertical transparent menu">
                 <rc-shareables name="nav_menu" />
             </div>
@@ -295,7 +295,7 @@ const searchStore = useSearchStore();
     </template>
     <template v-else-if="name === 'ad_menu'">
         <aside class="flex-none col sidemenu lg-and-down-hidden">
-            <div id="admenu" v-scrollPin="{ topSpacing: 84, bottomSpacing: 16, parentGuided: true }">
+            <div id="admenu" v-scrollPin="{ top: 84, bottom: 16 }">
                 <div style="width: 100%;">
                     <h6 class="centered" style="margin-bottom: 16px;">Sponsored (Ads)</h6>
                     <div class="ads">

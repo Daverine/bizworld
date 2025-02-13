@@ -20,8 +20,8 @@ defineOptions({ title: 'Your account page | BizWorld' });
 						</div>
 					</div>
 				</div>
-				<div class="sp-wrapper fluid z-level-3" style="margin-top: 1rem;">
-					<IScroller v-scrollPin="{ topSpacing: 64, ancestorGuarded: true, guardian: '#feed' }" class="fluid">
+				<div class="sp-wrapper z-level-3" style="margin-top: 1rem;">
+					<IScroller v-scrollPin="{ top: 64, independent: true }">
 						<div class="l-scroll">
 							<SvgIcon name="double_arrow_left" class="mini" />
 						</div>

@@ -134,6 +134,7 @@ function sizeResponse() {
             ...(breakpoint || {})
         };
         init();
+        if (!carousel.value) return;
         changeInSlides.observe(carousel.value, { subtree: true, childList: true, });
     }, 350);
 }

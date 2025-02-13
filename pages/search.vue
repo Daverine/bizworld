@@ -16,7 +16,7 @@ onMounted(() => {
 	<Title>BizWorld | Search: {{ route.query.q }}</Title>
 	<main class="flexible col" id="feed">
 		<div class="sp-wrapper fluid z-level-3 p-h" style="margin-bottom: 1rem;">
-			<IScroller v-scrollPin="{ topSpacing: 64, ancestorGuarded: true }">
+			<IScroller v-scrollPin="{ top: 64, independent: true }">
 				<div class="l-scroll">
 					<SvgIcon name="double_arrow_left" class="mini" />
 				</div>
