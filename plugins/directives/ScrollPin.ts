@@ -15,8 +15,8 @@ interface Settings {
   pinnable: boolean;
   pinPriority: 'top' | 'bottom';
   sticky: boolean;
-  top?: number;
-  bottom?: number;
+  top: number;
+  bottom: number;
   breakpoints: Breakpoint[];
   independent: boolean;
   wrapper: string;
@@ -45,6 +45,8 @@ export default {
       namespace: 'scrollPin',
       className: 'sticky',
       pinnable: true,
+      top: 0,
+      bottom: 0,
       pinPriority: 'top',
       sticky: false,
       independent: false,
@@ -59,8 +61,8 @@ export default {
       clipBoxHeight: window.innerHeight,
       scrollPos: window.scrollY,
       pinnable: settings.pinnable,
-      top: settings.top || 0,
-      bottom: settings.bottom || 0,
+      top: settings.top,
+      bottom: settings.bottom,
       eBox: el.getBoundingClientRect(),
       eOffset: utils.offsetPos(el),
     };
@@ -108,6 +110,11 @@ export default {
 
       tmp = {
         ...tmp,
+        ...{
+          pinnable: settings.pinnable,
+          top: settings.top,
+          bottom: settings.bottom,
+        },
         ...(breakpoint || {}),
       };
 
@@ -116,7 +123,7 @@ export default {
       tmp.clipBoxHeight = tmp.windowHeight - tmp.top;
 
       if (settings.independent) {
-        tmp.eBox = el.getBoundingClientRect();
+        tmp.eBox = JSON.parse(JSON.stringify(el.getBoundingClientRect()));
         tmp.eOffset = utils.offsetPos(el);
         tmp.overflow =
           tmp.eBox.height + tmp.top >= tmp.clipBoxHeight ||
@@ -138,7 +145,7 @@ export default {
         sizeStreamId = requestAnimationFrame(streamCallback);
     }
 
-    function onScrollMtd(event?: Event | string) {
+    function onScrollMtd() {
       let prevState = tmp.currState;
       let prevScrollPos = tmp.scrollPos;
       let positionedParent =
@@ -347,7 +354,10 @@ export default {
 
       if (elHeight && tmp.eBox && elHeight !== tmp.eBox.height) {
         tmp.eBox.height = elHeight;
-        onScrollMtd('partial-reset');
+        tmp.overflow =
+          tmp.eBox.height + tmp.top >= tmp.clipBoxHeight ||
+          tmp.eBox.height + tmp.bottom! >= tmp.clipBoxHeight;
+        onScrollMtd();
         sizeStreamId = requestAnimationFrame(streamCallback);
       } else {
         setTimeout(() => {
