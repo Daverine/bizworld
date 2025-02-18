@@ -137,7 +137,7 @@ onUpdated(() => {
               </div>
             </label>
           </div>
-          <div class="tab-page" id="basic-tier">
+          <div class="tab-page" data-tab="basic-tier">
             <table class=table>
               <tbody>
                 <tr>
@@ -175,7 +175,7 @@ onUpdated(() => {
               </tbody>
             </table>
           </div>
-          <div class="tab-page" id="standard-tier">
+          <div class="tab-page" data-tab="standard-tier">
             <table class=table>
               <tbody>
                 <tr>
@@ -213,7 +213,7 @@ onUpdated(() => {
               </tbody>
             </table>
           </div>
-          <div class="tab-page" id="premium-tier">
+          <div class="tab-page" data-tab="premium-tier">
             <table class=table>
               <tbody>
                 <tr>

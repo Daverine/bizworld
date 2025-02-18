@@ -21,7 +21,7 @@ onMounted(() => {
     { immediate: true }
   );
 });
-onUnmounted(() => window.removeEventListener("scroll", this.handleScroll));
+onUnmounted(() => window.removeEventListener("scroll", handleScroll));
 onUpdated(() => window.dispatchEvent(new Event("scroll")));
 </script>
 <template>

@@ -1,5 +1,6 @@
 svg.icon {
-  font-size: 1.5em;
+  width: 1.5em;
+  height: 1.5em;
   vertical-align: -0.25em;
 }
 :root {
@@ -32,20 +33,6 @@ svg.icon {
 }
 .dark-mode {
   @include dark-mode();
-}
-
-.as-page {
-  scroll-behavior: smooth;
-  min-width: 350px;
-}
-
-.material-icons,
-.material-symbols-outlined {
-  font-size: 1.5em;
-}
-
-.material-icons {
-  vertical-align: -23% !important;
 }
 
 .site-logo {

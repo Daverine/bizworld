@@ -1,151 +1,149 @@
 <script setup>
-definePageMeta({ layout: "details" });
+definePageMeta({ layout: 'details' });
 const details = ref({
-  type: "product",
+  type: 'product',
   title:
-    "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
-  price: "N100,000",
-  currency: "Naira",
-  negotiable: true,
+    'Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery',
+  price: 'N100,000',
   media: [
     {
-      type: "pic",
-      url: "/images/product.jpeg",
-      thumbnail: "/images/product.jpeg",
+      type: 'pic',
+      url: '/images/product.jpeg',
+      thumbnail: '/images/product.jpeg',
     },
     {
-      type: "pic",
-      url: "/images/product.jpeg",
-      thumbnail: "/images/product.jpeg",
+      type: 'pic',
+      url: '/images/product.jpeg',
+      thumbnail: '/images/product.jpeg',
     },
     {
-      type: "pic",
-      url: "/images/product.jpeg",
-      thumbnail: "/images/product.jpeg",
+      type: 'pic',
+      url: '/images/product.jpeg',
+      thumbnail: '/images/product.jpeg',
     },
   ],
   overview:
-    "This product is suitable for office use and it also presentable. It has a long lasting battery and its capable of handling comming computer daily tasks.",
-  specifications: {
-    Type: "Laptop",
-    Condition: "Used",
-    Brand: "Dell",
-    Model: "Inspiron 5050",
-    Processor: "Intel Corel i5 5th Generation",
-    RAM: "8gb DDR3",
-    Storage: "256gb SSD M.2",
-    "Display Size": '15.6"',
-    Graphics: "Intel Graphics 3000 (64mb)",
+    'This product is suitable for office use and it also presentable. It has a long lasting battery and its capable of handling comming computer daily tasks.',
+  specification: {
+    Type: 'Laptop',
+    Condition: 'Used',
+    Brand: 'Dell',
+    Model: 'Inspiron 5050',
+    Processor: 'Intel Corel i5 5th Generation',
+    RAM: '8gb DDR3',
+    Storage: '256gb SSD M.2',
+    'Display Size': '15.6"',
+    Graphics: 'Intel Graphics 3000 (64mb)',
   },
   reviews: [
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 3,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 3,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 2,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 2,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 2,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
   ],
   bizData: {
-    logo: "/images/logo-sq.png",
-    bizName: "Emmadave Computer Technology Services",
-    bizUrl: "https://www.edtech.com",
-    mainCategory: "Computer repair services",
+    logo: '/images/logo-sq.png',
+    bizName: 'Emmadave Computer Technology Services',
+    bizUrl: 'https://www.edtech.com',
+    mainCategory: 'Computer repair services',
     contacts: {
-      tel: "08157483233",
-      email: "contact_us@edtech.com",
+      tel: '08157483233',
+      email: 'contact_us@edtech.com',
     },
     verified: true,
     rating: {
@@ -153,33 +151,33 @@ const details = ref({
       raters: 30,
     },
     location: {
-      address: "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
-      city: "Abeokuta",
-      state: "Ogun State",
-      url: "https://goo.gl/maps/y9ExQLSq37FL6EHm6",
+      address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
+      city: 'Abeokuta',
+      state: 'Ogun State',
+      url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
     },
   },
 });
 
-const isLargeScreen = ref(false);
+const isSmallScreen = ref(true);
 const configureMessage = ref(true);
 onMounted(() =>
   watchEffect(() => {
-    isLargeScreen.value = useMediaQuery("(min-width: 768px)").value;
+    isSmallScreen.value = useMediaQuery('(max-width: 959px)').value;
   })
 );
 </script>
 <template>
-  <Title>{{ details.title }}</Title>
+  <Title>{{ `${details.title} | Bizworld` }}</Title>
   <main class="grid-layout" style="padding-top: 1rem">
     <div class="page-cont">
-      <header
+      <section
+        class="page-summary"
         v-scrollPin="{
           top: 68,
           bottom: 64,
-          breakpoints: [{ maxWidth: 767, pinnable: false }],
+          breakpoints: [{ maxWidth: 959, pinnable: false }],
         }"
-        class="page-summary"
       >
         <Carousel>
           <div v-for="slide in details.media" class="cs-slide">
@@ -191,7 +189,7 @@ onMounted(() =>
               class="image"
             />
           </div>
-          <template v-if="isLargeScreen" #trackers>
+          <template v-if="!isSmallScreen" #trackers>
             <div v-for="slide in details.media" class="thumbnail cs-tracker">
               <img :src="slide.thumbnail" />
             </div>
@@ -224,16 +222,7 @@ onMounted(() =>
         <div class="h3 0-margined primary-text bold">
           {{ details.price }}
         </div>
-        <div class="page-overview">
-          <div class="lined heading">
-            <Icon
-              name="material-symbols:overview-outline-rounded"
-              class="lead"
-            />
-            Product Overview
-          </div>
-          <p>{{ details.overview }}</p>
-        </div>
+        <p>{{ details.overview }}</p>
         <!-- Purchase Configuration Note -->
         <div
           v-if="configureMessage"
@@ -249,16 +238,16 @@ onMounted(() =>
             <Icon name="material-symbols:cancel-rounded" />
           </i>
         </div>
-      </header>
+      </section>
       <div class="page-details sp-wrapper">
-        <!-- Specifications Section -->
+        <!-- Specification Section -->
         <section class="spec">
           <div v-collapser class="ac-viewbox-ref active lined heading a-block">
             <Icon
               name="material-symbols:list-alt-outline-rounded"
               class="lead"
             />
-            Specifications
+            Specification
             <i class="ac-viewbox trailing icon">
               <Icon name="material-symbols:chevron-left-rounded" />
               <Icon name="material-symbols:expand-more-rounded" />
@@ -267,7 +256,7 @@ onMounted(() =>
           <div class="collapsible">
             <table class="basic definition table">
               <tbody>
-                <tr v-for="(value, key) in details.specifications">
+                <tr v-for="(value, key) in details.specification">
                   <td>{{ key }}</td>
                   <td>{{ value }}</td>
                 </tr>
@@ -669,13 +658,13 @@ onMounted(() =>
   display: grid;
   gap: 1.5rem;
   grid-template-columns: 1fr 1fr;
+  align-items: start;
 
   .carousel {
     --thumbnail-size: 4.5rem;
   }
   .page-summary {
     padding-bottom: 0.5rem;
-    align-self: start;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -688,72 +677,13 @@ onMounted(() =>
     }
   }
 
-  .block.heading.pinned {
-    color: var(--primary);
-  }
-
-  @media only screen and (max-width: 767px) {
+  @media only screen and (max-width: 959px) {
     grid-template-columns: 1fr;
+    gap: 1rem;
 
     .carousel {
       padding-bottom: 0px;
     }
-  }
-}
-
-.show-onpinned {
-  opacity: 0;
-  transition: all 100ms ease;
-}
-
-.pinned .show-onpinned {
-  opacity: 1;
-}
-
-.posts-sec {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: auto;
-  gap: 1rem;
-  margin-top: 5rem;
-
-  @media only screen and (max-width: 1000px) {
-    grid-template-columns: 1fr;
-
-    & > .biz-pin {
-      display: none;
-    }
-  }
-}
-
-.posts-main {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-}
-
-.ft-badge {
-  filter: saturate(0.1);
-  text-align: center;
-  color: transparent;
-
-  &:hover {
-    filter: saturate(1);
-    color: inherit;
-  }
-}
-
-.footer-main {
-  display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(4, 1fr);
-
-  @media screen and (max-width: 960px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media screen and (max-width: 550px) {
-    grid-template-columns: 1fr;
   }
 }
 </style>

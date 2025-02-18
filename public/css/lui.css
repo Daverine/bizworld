@@ -1239,12 +1239,11 @@ hr.vertical:empty,
 
 .menu:not(.vertical, .drop) {
   align-items: center;
-  min-width: -moz-max-content;
-  min-width: max-content;
+  min-width: -moz-fit-content;
+  min-width: fit-content;
   flex-flow: row nowrap;
 }
 .menu:not(.vertical, .drop).wrappable {
-  min-width: 0px;
   flex-flow: row wrap;
   row-gap: 0em;
 }
@@ -1893,7 +1892,7 @@ table.table th, table.table td {
   position: relative;
   text-align: inherit;
   color: var(--text-color);
-  background-color: var(--bg-color);
+  background-color: transparent;
   text-transform: none;
   border: 1px solid var(--bd-color);
 }
@@ -4170,9 +4169,8 @@ html.scroll-locked .fab-group.respect-lock .fab {
 }
 
 .drop.menu {
-  width: -moz-max-content;
-  width: max-content;
-  min-width: 150px;
+  width: -moz-fit-content;
+  width: fit-content;
   padding: 0.25em;
   gap: 0.25em;
   text-align: left;
@@ -5918,12 +5916,6 @@ hr {
   transition: height 0.5s ease-in-out;
   overflow: hidden !important;
   height: 0px;
-}
-
-.as-page {
-  min-width: 100vw;
-  min-height: 100vh;
-  position: relative;
 }
 
 .scrim {

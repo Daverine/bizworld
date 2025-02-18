@@ -90,20 +90,83 @@
         }
     },
     {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
+        "cardId": "biz003884",
+        "cardType": "business",
+        "url": "https://www.edtech.com",
+        "logo": "/images/logo-sq.png",
+        "name": "Emmadave Computer Techonology Services",
+        "category": "Computer repair services",
+        "place": {
+            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun state",
+            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+        },
+        "verify": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 30
+        },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    },
+    {
+        "cardId": "prod39884",
+        "cardType": "product",
+        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         "media": [
             {
                 "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
+                "source": "/images/product.jpeg",
+                "alt": "pic"
             }
         ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
+        "labels": ["used", "15.6"],
+        "price": "N100,000",
+        "currency": "Naira",
+        "negotiable": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 340
+        },
+        "bizDetails": {
+            "name": "Emmadave Computer Technology Services",
+            "url": "https://www.edtech.com",
+            "place": {
+                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+                "city": "Abeokuta",
+                "state": "Ogun state",
+                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+            },
+            "verify": true
+        }
+    },
+    {
+        "cardId": "ser39884",
+        "cardType": "service",
+        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
+        "media": [
+            {
+                "type": "image",
+                "source": "/images/product.jpeg",
+                "alt": "pic"
+            }
+        ],
+        "priceDefinition": "From",
+        "price": "N100,000",
+        "currency": "Naira",
+        "duration": "2 days",
+        "rating": {
+            "rate": 4.6,
+            "raters": 3440
+        },
         "bizDetails": {
             "name": "Emmadave Computer Technology Services",
             "url": "https://www.edtech.com",
@@ -207,20 +270,83 @@
         }
     },
     {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
+        "cardId": "biz003884",
+        "cardType": "business",
+        "url": "https://www.edtech.com",
+        "logo": "/images/logo-sq.png",
+        "name": "Emmadave Computer Techonology Services",
+        "category": "Computer repair services",
+        "place": {
+            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun state",
+            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+        },
+        "verify": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 30
+        },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    },
+    {
+        "cardId": "prod39884",
+        "cardType": "product",
+        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         "media": [
             {
                 "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
+                "source": "/images/product.jpeg",
+                "alt": "pic"
             }
         ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
+        "labels": ["used", "15.6"],
+        "price": "N100,000",
+        "currency": "Naira",
+        "negotiable": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 340
+        },
+        "bizDetails": {
+            "name": "Emmadave Computer Technology Services",
+            "url": "https://www.edtech.com",
+            "place": {
+                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+                "city": "Abeokuta",
+                "state": "Ogun state",
+                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+            },
+            "verify": true
+        }
+    },
+    {
+        "cardId": "ser39884",
+        "cardType": "service",
+        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
+        "media": [
+            {
+                "type": "image",
+                "source": "/images/product.jpeg",
+                "alt": "pic"
+            }
+        ],
+        "priceDefinition": "From",
+        "price": "N100,000",
+        "currency": "Naira",
+        "duration": "2 days",
+        "rating": {
+            "rate": 4.6,
+            "raters": 3440
+        },
         "bizDetails": {
             "name": "Emmadave Computer Technology Services",
             "url": "https://www.edtech.com",
@@ -324,20 +450,83 @@
         }
     },
     {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
+        "cardId": "biz003884",
+        "cardType": "business",
+        "url": "https://www.edtech.com",
+        "logo": "/images/logo-sq.png",
+        "name": "Emmadave Computer Techonology Services",
+        "category": "Computer repair services",
+        "place": {
+            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun state",
+            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+        },
+        "verify": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 30
+        },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    },
+    {
+        "cardId": "prod39884",
+        "cardType": "product",
+        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         "media": [
             {
                 "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
+                "source": "/images/product.jpeg",
+                "alt": "pic"
             }
         ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
+        "labels": ["used", "15.6"],
+        "price": "N100,000",
+        "currency": "Naira",
+        "negotiable": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 340
+        },
+        "bizDetails": {
+            "name": "Emmadave Computer Technology Services",
+            "url": "https://www.edtech.com",
+            "place": {
+                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+                "city": "Abeokuta",
+                "state": "Ogun state",
+                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+            },
+            "verify": true
+        }
+    },
+    {
+        "cardId": "ser39884",
+        "cardType": "service",
+        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
+        "media": [
+            {
+                "type": "image",
+                "source": "/images/product.jpeg",
+                "alt": "pic"
+            }
+        ],
+        "priceDefinition": "From",
+        "price": "N100,000",
+        "currency": "Naira",
+        "duration": "2 days",
+        "rating": {
+            "rate": 4.6,
+            "raters": 3440
+        },
         "bizDetails": {
             "name": "Emmadave Computer Technology Services",
             "url": "https://www.edtech.com",
@@ -441,20 +630,83 @@
         }
     },
     {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
+        "cardId": "biz003884",
+        "cardType": "business",
+        "url": "https://www.edtech.com",
+        "logo": "/images/logo-sq.png",
+        "name": "Emmadave Computer Techonology Services",
+        "category": "Computer repair services",
+        "place": {
+            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun state",
+            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+        },
+        "verify": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 30
+        },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    },
+    {
+        "cardId": "prod39884",
+        "cardType": "product",
+        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         "media": [
             {
                 "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
+                "source": "/images/product.jpeg",
+                "alt": "pic"
             }
         ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
+        "labels": ["used", "15.6"],
+        "price": "N100,000",
+        "currency": "Naira",
+        "negotiable": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 340
+        },
+        "bizDetails": {
+            "name": "Emmadave Computer Technology Services",
+            "url": "https://www.edtech.com",
+            "place": {
+                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+                "city": "Abeokuta",
+                "state": "Ogun state",
+                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+            },
+            "verify": true
+        }
+    },
+    {
+        "cardId": "ser39884",
+        "cardType": "service",
+        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
+        "media": [
+            {
+                "type": "image",
+                "source": "/images/product.jpeg",
+                "alt": "pic"
+            }
+        ],
+        "priceDefinition": "From",
+        "price": "N100,000",
+        "currency": "Naira",
+        "duration": "2 days",
+        "rating": {
+            "rate": 4.6,
+            "raters": 3440
+        },
         "bizDetails": {
             "name": "Emmadave Computer Technology Services",
             "url": "https://www.edtech.com",
@@ -558,20 +810,83 @@
         }
     },
     {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
+        "cardId": "biz003884",
+        "cardType": "business",
+        "url": "https://www.edtech.com",
+        "logo": "/images/logo-sq.png",
+        "name": "Emmadave Computer Techonology Services",
+        "category": "Computer repair services",
+        "place": {
+            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun state",
+            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+        },
+        "verify": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 30
+        },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    },
+    {
+        "cardId": "prod39884",
+        "cardType": "product",
+        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         "media": [
             {
                 "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
+                "source": "/images/product.jpeg",
+                "alt": "pic"
             }
         ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
+        "labels": ["used", "15.6"],
+        "price": "N100,000",
+        "currency": "Naira",
+        "negotiable": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 340
+        },
+        "bizDetails": {
+            "name": "Emmadave Computer Technology Services",
+            "url": "https://www.edtech.com",
+            "place": {
+                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+                "city": "Abeokuta",
+                "state": "Ogun state",
+                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+            },
+            "verify": true
+        }
+    },
+    {
+        "cardId": "ser39884",
+        "cardType": "service",
+        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
+        "media": [
+            {
+                "type": "image",
+                "source": "/images/product.jpeg",
+                "alt": "pic"
+            }
+        ],
+        "priceDefinition": "From",
+        "price": "N100,000",
+        "currency": "Naira",
+        "duration": "2 days",
+        "rating": {
+            "rate": 4.6,
+            "raters": 3440
+        },
         "bizDetails": {
             "name": "Emmadave Computer Technology Services",
             "url": "https://www.edtech.com",
@@ -675,20 +990,83 @@
         }
     },
     {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
+        "cardId": "biz003884",
+        "cardType": "business",
+        "url": "https://www.edtech.com",
+        "logo": "/images/logo-sq.png",
+        "name": "Emmadave Computer Techonology Services",
+        "category": "Computer repair services",
+        "place": {
+            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            "city": "Abeokuta",
+            "state": "Ogun state",
+            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+        },
+        "verify": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 30
+        },
+        "hours": [
+            [-1],
+            [8, 18],
+            [8, 18],
+            [15, 18],
+            [8, 18],
+            [-1],
+            [8, 21]
+        ]
+    },
+    {
+        "cardId": "prod39884",
+        "cardType": "product",
+        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         "media": [
             {
                 "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
+                "source": "/images/product.jpeg",
+                "alt": "pic"
             }
         ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
+        "labels": ["used", "15.6"],
+        "price": "N100,000",
+        "currency": "Naira",
+        "negotiable": true,
+        "rating": {
+            "rate": 3.5,
+            "raters": 340
+        },
+        "bizDetails": {
+            "name": "Emmadave Computer Technology Services",
+            "url": "https://www.edtech.com",
+            "place": {
+                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+                "city": "Abeokuta",
+                "state": "Ogun state",
+                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+            },
+            "verify": true
+        }
+    },
+    {
+        "cardId": "ser39884",
+        "cardType": "service",
+        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
+        "media": [
+            {
+                "type": "image",
+                "source": "/images/product.jpeg",
+                "alt": "pic"
+            }
+        ],
+        "priceDefinition": "From",
+        "price": "N100,000",
+        "currency": "Naira",
+        "duration": "2 days",
+        "rating": {
+            "rate": 4.6,
+            "raters": 3440
+        },
         "bizDetails": {
             "name": "Emmadave Computer Technology Services",
             "url": "https://www.edtech.com",
@@ -792,33 +1170,6 @@
         }
     },
     {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
-            }
-        ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
         "cardId": "biz003884",
         "cardType": "business",
         "url": "https://www.edtech.com",
@@ -909,33 +1260,6 @@
         }
     },
     {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
-            }
-        ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
         "cardId": "biz003884",
         "cardType": "business",
         "url": "https://www.edtech.com",
@@ -1013,735 +1337,6 @@
             "rate": 4.6,
             "raters": 3440
         },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
-            }
-        ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "biz003884",
-        "cardType": "business",
-        "url": "https://www.edtech.com",
-        "logo": "/images/logo-sq.png",
-        "name": "Emmadave Computer Techonology Services",
-        "category": "Computer repair services",
-        "place": {
-            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-            "city": "Abeokuta",
-            "state": "Ogun state",
-            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-        },
-        "verify": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 30
-        },
-        "hours": [
-            [-1],
-            [8, 18],
-            [8, 18],
-            [15, 18],
-            [8, 18],
-            [-1],
-            [8, 21]
-        ]
-    },
-    {
-        "cardId": "prod39884",
-        "cardType": "product",
-        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "labels": ["used", "15.6"],
-        "price": "N100,000",
-        "currency": "Naira",
-        "negotiable": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 340
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "ser39884",
-        "cardType": "service",
-        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "priceDefinition": "From",
-        "price": "N100,000",
-        "currency": "Naira",
-        "duration": "2 days",
-        "rating": {
-            "rate": 4.6,
-            "raters": 3440
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
-            }
-        ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "biz003884",
-        "cardType": "business",
-        "url": "https://www.edtech.com",
-        "logo": "/images/logo-sq.png",
-        "name": "Emmadave Computer Techonology Services",
-        "category": "Computer repair services",
-        "place": {
-            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-            "city": "Abeokuta",
-            "state": "Ogun state",
-            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-        },
-        "verify": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 30
-        },
-        "hours": [
-            [-1],
-            [8, 18],
-            [8, 18],
-            [15, 18],
-            [8, 18],
-            [-1],
-            [8, 21]
-        ]
-    },
-    {
-        "cardId": "prod39884",
-        "cardType": "product",
-        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "labels": ["used", "15.6"],
-        "price": "N100,000",
-        "currency": "Naira",
-        "negotiable": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 340
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "ser39884",
-        "cardType": "service",
-        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "priceDefinition": "From",
-        "price": "N100,000",
-        "currency": "Naira",
-        "duration": "2 days",
-        "rating": {
-            "rate": 4.6,
-            "raters": 3440
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
-            }
-        ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "biz003884",
-        "cardType": "business",
-        "url": "https://www.edtech.com",
-        "logo": "/images/logo-sq.png",
-        "name": "Emmadave Computer Techonology Services",
-        "category": "Computer repair services",
-        "place": {
-            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-            "city": "Abeokuta",
-            "state": "Ogun state",
-            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-        },
-        "verify": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 30
-        },
-        "hours": [
-            [-1],
-            [8, 18],
-            [8, 18],
-            [15, 18],
-            [8, 18],
-            [-1],
-            [8, 21]
-        ]
-    },
-    {
-        "cardId": "prod39884",
-        "cardType": "product",
-        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "labels": ["used", "15.6"],
-        "price": "N100,000",
-        "currency": "Naira",
-        "negotiable": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 340
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "ser39884",
-        "cardType": "service",
-        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "priceDefinition": "From",
-        "price": "N100,000",
-        "currency": "Naira",
-        "duration": "2 days",
-        "rating": {
-            "rate": 4.6,
-            "raters": 3440
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
-            }
-        ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "biz003884",
-        "cardType": "business",
-        "url": "https://www.edtech.com",
-        "logo": "/images/logo-sq.png",
-        "name": "Emmadave Computer Techonology Services",
-        "category": "Computer repair services",
-        "place": {
-            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-            "city": "Abeokuta",
-            "state": "Ogun state",
-            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-        },
-        "verify": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 30
-        },
-        "hours": [
-            [-1],
-            [8, 18],
-            [8, 18],
-            [15, 18],
-            [8, 18],
-            [-1],
-            [8, 21]
-        ]
-    },
-    {
-        "cardId": "prod39884",
-        "cardType": "product",
-        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "labels": ["used", "15.6"],
-        "price": "N100,000",
-        "currency": "Naira",
-        "negotiable": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 340
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "ser39884",
-        "cardType": "service",
-        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "priceDefinition": "From",
-        "price": "N100,000",
-        "currency": "Naira",
-        "duration": "2 days",
-        "rating": {
-            "rate": 4.6,
-            "raters": 3440
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
-            }
-        ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "biz003884",
-        "cardType": "business",
-        "url": "https://www.edtech.com",
-        "logo": "/images/logo-sq.png",
-        "name": "Emmadave Computer Techonology Services",
-        "category": "Computer repair services",
-        "place": {
-            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-            "city": "Abeokuta",
-            "state": "Ogun state",
-            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-        },
-        "verify": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 30
-        },
-        "hours": [
-            [-1],
-            [8, 18],
-            [8, 18],
-            [15, 18],
-            [8, 18],
-            [-1],
-            [8, 21]
-        ]
-    },
-    {
-        "cardId": "prod39884",
-        "cardType": "product",
-        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "labels": ["used", "15.6"],
-        "price": "N100,000",
-        "currency": "Naira",
-        "negotiable": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 340
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "ser39884",
-        "cardType": "service",
-        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "priceDefinition": "From",
-        "price": "N100,000",
-        "currency": "Naira",
-        "duration": "2 days",
-        "rating": {
-            "rate": 4.6,
-            "raters": 3440
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
-            }
-        ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "biz003884",
-        "cardType": "business",
-        "url": "https://www.edtech.com",
-        "logo": "/images/logo-sq.png",
-        "name": "Emmadave Computer Techonology Services",
-        "category": "Computer repair services",
-        "place": {
-            "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-            "city": "Abeokuta",
-            "state": "Ogun state",
-            "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-        },
-        "verify": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 30
-        },
-        "hours": [
-            [-1],
-            [8, 18],
-            [8, 18],
-            [15, 18],
-            [8, 18],
-            [-1],
-            [8, 21]
-        ]
-    },
-    {
-        "cardId": "prod39884",
-        "cardType": "product",
-        "title": "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "labels": ["used", "15.6"],
-        "price": "N100,000",
-        "currency": "Naira",
-        "negotiable": true,
-        "rating": {
-            "rate": 3.5,
-            "raters": 340
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "ser39884",
-        "cardType": "service",
-        "title": "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/product.jpeg",
-                "alt": "pic"
-            }
-        ],
-        "priceDefinition": "From",
-        "price": "N100,000",
-        "currency": "Naira",
-        "duration": "2 days",
-        "rating": {
-            "rate": 4.6,
-            "raters": 3440
-        },
-        "bizDetails": {
-            "name": "Emmadave Computer Technology Services",
-            "url": "https://www.edtech.com",
-            "place": {
-                "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
-                "city": "Abeokuta",
-                "state": "Ogun state",
-                "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
-            },
-            "verify": true
-        }
-    },
-    {
-        "cardId": "post34885",
-        "cardType": "post",
-        "date": "May 28",
-        "postText": "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
-        "media": [
-            {
-                "type": "image",
-                "source": "/images/ads.jpg",
-                "altTxt": "pic"
-            }
-        ],
-        "visibility": 132,
-        "thumbsUp": 0,
-        "comments": [],
         "bizDetails": {
             "name": "Emmadave Computer Technology Services",
             "url": "https://www.edtech.com",

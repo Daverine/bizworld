@@ -2,12 +2,10 @@
 defineProps(['details', 'isSaved']);
 </script>
 <template>
-	<NuxtLink :to="`/${details.cardType}/${details.cardId}`" class="fluid item-card card open-modal" :class="isSaved ? 'sav' : ''" :data-type="details.cardType"
-		data-target="sc-details">
+	<NuxtLink :to="`/${details.cardType}/${details.cardId}`" class="fluid item-card card" :class="isSaved ? 'sav' : ''" :data-type="details.cardType">
 		<businessCard v-if="details.cardType === 'business'" :details="details" />
 		<productCard v-else-if="details.cardType === 'product'" :details="details" />
 		<serviceCard v-else-if="details.cardType === 'service'" :details="details" />
-		<postCard v-else-if="details.cardType === 'post'" :details="details" />
 
 		<div v-if="isSaved" class="itm-opt ex-open-modal">
 			<Dropdown :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
