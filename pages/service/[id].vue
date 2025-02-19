@@ -257,7 +257,7 @@ const servicesOffer = computed(() => [
 const choice = ref({
   id: details.value.id,
   spec: details.value.serviceOptions[0].type,
-  quant: 0,
+  quantity: 0,
   delivery: 0,
 });
 const isSmallScreen = ref(true);
@@ -495,42 +495,46 @@ function whatDay(index) {
           <h5>Service Details</h5>
           <div v-html="details.desc"></div>
           <div class="sub heading">Our Package(s)</div>
-          <table class="table striped">
-            <thead>
-              <tr>
-                <th>Packages</th>
-                <th v-for="option in details.serviceOptions" class="centered">
-                  {{
-                    `${option.type.charAt(0).toUpperCase()}${option.type.slice(
-                      1
-                    )}`
-                  }}
-                  <br />
-                  <span class="bold">{{ option.price }}</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="offer in servicesOffer">
-                <td>{{ offer }}</td>
-                <td v-for="option in details.serviceOptions" class="centered">
-                  <Icon
-                    v-if="option.specifications[offer] === true"
-                    name="material-symbols:check-rounded"
-                  />
-                  <Icon
-                    v-else-if="option.specifications[offer] === false"
-                    name="material-symbols:close-rounded"
-                  />
-                  <Icon
-                    v-else-if="option.specifications[offer] === undefined"
-                    name="material-symbols:check-indeterminate-small-rounded"
-                  />
-                  <template v-else>{{ option.specifications[offer] }}</template>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-scroll">
+            <table class="table striped">
+              <thead>
+                <tr>
+                  <th>Packages</th>
+                  <th v-for="option in details.serviceOptions" class="centered">
+                    {{
+                      `${option.type
+                        .charAt(0)
+                        .toUpperCase()}${option.type.slice(1)}`
+                    }}
+                    <br />
+                    <span class="bold">{{ option.price }}</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="offer in servicesOffer">
+                  <td>{{ offer }}</td>
+                  <td v-for="option in details.serviceOptions" class="centered">
+                    <Icon
+                      v-if="option.specifications[offer] === true"
+                      name="material-symbols:check-rounded"
+                    />
+                    <Icon
+                      v-else-if="option.specifications[offer] === false"
+                      name="material-symbols:close-rounded"
+                    />
+                    <Icon
+                      v-else-if="option.specifications[offer] === undefined"
+                      name="material-symbols:check-indeterminate-small-rounded"
+                    />
+                    <template v-else>{{
+                      option.specifications[offer]
+                    }}</template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
         <section class="mobile-screen-only"></section>
         <!-- Review and Rating Section -->

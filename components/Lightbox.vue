@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
     document.removeEventListener('keydown', panelKbdFunc);
     utils.checkEscStatus(uniqueId, true);
     document.removeEventListener('keyup', panelEscFunc);
-    document.removeEventListener('mousemove', controlHider);
+    // document.removeEventListener('mousemove', controlHider);
     document.removeEventListener('fullscreenchange', fullscreenOutFunc);
     window.removeEventListener('resize', resizeFunc);
     document.removeEventListener('touchmove', gestureMove);
@@ -203,8 +203,8 @@ watch(() => vbb.showLightbox, (value) => {
             if (vbb.slidesNo) resizeIframe();
 
             // Hide lightbox controls if no pointer event triggered for some period of time.
-            document.addEventListener('mousemove', controlHider);
-            controlHider();
+            // document.addEventListener('mousemove', controlHider);
+            // controlHider();
             // // Caption is truncated to contain a line. Click on it to show full text and click out for otherwise.
             // slider.value.addEventListener('click', captionControl);
 
@@ -238,7 +238,7 @@ watch(() => vbb.showLightbox, (value) => {
             document.removeEventListener('keyup', panelEscFunc);
         }
 
-        document.removeEventListener('mousemove', controlHider);
+        // document.removeEventListener('mousemove', controlHider);
         toolbar.value.removeEventListener('click', toolbarControls);
         if (document.fullscreenElement === lightbox.value) document.exitFullscreen();
         document.removeEventListener('fullscreenchange', fullscreenOutFunc);
@@ -505,8 +505,8 @@ function toolbarControls(e) {
             lightbox.value.classList.remove('pic-only');
             [...toolbar.value.querySelectorAll(':scope .item.gallery-switch')].forEach(el => el.classList.add('active'));
             lightbox.value.classList.add('show-gallery');
-            document.addEventListener('mousemove', controlHider);
-            controlHider();
+            // document.addEventListener('mousemove', controlHider);
+            // controlHider();
         }
         else {
             [...toolbar.value.querySelectorAll(':scope .item.gallery-switch')].forEach(el => el.classList.toggle('active'));
@@ -546,10 +546,10 @@ function toolbarControls(e) {
         if (lightbox.value.classList.contains('pic-only')) {
             clearTimeout(bb.controlsHiderTimeout);
             lightbox.value.classList.remove('hide-controls');
-            document.removeEventListener('mousemove', controlHider);
+            // document.removeEventListener('mousemove', controlHider);
         } else {
-            document.addEventListener('mousemove', controlHider);
-            controlHider();
+            // document.addEventListener('mousemove', controlHider);
+            // controlHider();
         }
 
         if (lightbox.value.classList.contains('show-gallery')) {
@@ -652,7 +652,7 @@ function gestureStart(e) {
     if ((e.type === 'mousedown' && e.button != 0) || !vbb.slidesNo) return;
     if (!currContent.contains(e.target) && !e.target.closest('.caption')) return;
 
-    controlHider(); // show controls
+    // controlHider(); // show controls
     // save gesture time start to know gesture duration
     bb.gT = new Date().getTime();
     bb.maybeCaption = e.target.closest('.caption');
