@@ -185,9 +185,7 @@ function init() {
     }
 
     tmp.slidesNo = slides.length;
-    tmp.currSlideNo = slides.filter(el => el.classList.contains('active'))[0]
-        ? Number(slides.filter(el => el.classList.contains('active'))[0].getAttribute('data-csid'))
-        : 1;
+    tmp.currSlideNo = Number(slides.find(el => el.classList.contains('active'))?.getAttribute('data-csid') || 1);
     currSlide = slides[tmp.currSlideNo - 1];
     tmp.spaceBetween = typeof (tmp.breakpoint.spaceBetween) === 'number' ? `${tmp.breakpoint.spaceBetween}px` : tmp.breakpoint.spaceBetween;
     tmp.slidesPerView = tmp.continuous && tmp.breakpoint.slidesPerView > tmp.slidesNo ? tmp.slidesNo : tmp.breakpoint.slidesPerView;

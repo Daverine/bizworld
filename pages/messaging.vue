@@ -20,7 +20,7 @@ definePageMeta({auth: true, noFab: true,});
                                 <div class="active item">
                                     <div class="lead avatar circular image mini" style="flex: 0 0 auto; background-color: #999;"></div>
                                     <div style="flex: 1 1 auto;">
-                                        <div class="text l-aligned">
+                                        <div class="text text-left">
                                             <div class="semibold" style="font-size: 1.125em; line-height: 1.25;">Ayoola Folorunso</div>
                                             <div class="small faint-text-v1">Personal Account</div>
                                         </div>
@@ -29,7 +29,7 @@ definePageMeta({auth: true, noFab: true,});
                                 <div class="item">
                                     <div class="lead avatar circular image mini" style="flex: 0 0 auto; background-color: #999;"></div>
                                     <div style="flex: 1 1 auto;">
-                                        <div class="text l-aligned">
+                                        <div class="text text-left">
                                             <div class="semibold" style="font-size: 1.125em; line-height: 1.25;">Emmadave Computers</div>
                                             <div class="small faint-text-v1">Business Account</div>
                                         </div>
@@ -61,7 +61,7 @@ definePageMeta({auth: true, noFab: true,});
                             <div class="adaptable xhover item">
                                 <div class="lead avatar circular image mini" style="flex: 0 0 auto; background-color: #999;"></div>
                                 <div style="flex: 1 1 auto;">
-                                    <div class="text l-aligned">
+                                    <div class="text text-left">
                                         <div class="semibold" style="font-size: 1.125em; line-height: 1.25;">Ayoola Folorunso</div>
                                         <div class="small faint-text-v1">Online</div>
                                     </div>

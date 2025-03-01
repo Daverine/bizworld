@@ -442,7 +442,7 @@ function handleScroll() {
     </div>
     <section>
       <div class="heading" style="padding: 1rem">New and Trending products</div>
-      <div class="flexbox guttered flex-wrap align-center">
+      <div class="flexbox guttered flex-wrap justify-center">
         <PageProduct class="flex-none" />
         <PageProduct class="flex-none" />
         <PageProduct class="flex-none" />
@@ -457,7 +457,7 @@ function handleScroll() {
     </section>
     <section>
       <div class="heading" style="padding: 1rem">Our services</div>
-      <div class="flexbox guttered flex-wrap align-center">
+      <div class="flexbox guttered flex-wrap justify-center">
         <PageService class="flex-none" />
         <PageService class="flex-none" />
         <PageService class="flex-none" />

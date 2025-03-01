@@ -19,7 +19,7 @@
 						<img src="/images/logo.png" alt="site logo" class="logo-sm site-logo">
 					</router-link>
 				</div>
-				<ManageShareables v-if="route.matched.filter(el => el.path === '/manage')[0]" name="nav_menu" />
+				<ManageShareables v-if="route.matched.some(el => el.path === '/manage')" name="nav_menu" />
 				<Shareables v-else name="nav_menu" />
 			</div>
 			<hr />

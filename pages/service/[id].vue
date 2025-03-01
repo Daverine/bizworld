@@ -1,6 +1,6 @@
 <script setup>
 definePageMeta({ layout: 'details' });
-const route = useRoute();
+
 const details = ref({
   type: 'service',
   title:
@@ -41,8 +41,7 @@ const details = ref({
   serviceOptions: [
     {
       type: 'basic',
-      descHead: '',
-      descCont: '',
+      description: '',
       duration: 2, // in days
       price: 'N5,000',
       specifications: {
@@ -53,8 +52,7 @@ const details = ref({
     },
     {
       type: 'standard',
-      descHead: '',
-      descCont: '',
+      description: '',
       duration: 2, // in days
       price: 'N8,000',
       specifications: {
@@ -66,8 +64,7 @@ const details = ref({
     },
     {
       type: 'premium',
-      descHead: '',
-      descCont: '',
+      description: '',
       duration: 2, // in days
       price: 'N12,000',
       specifications: {
@@ -256,12 +253,16 @@ const servicesOffer = computed(() => [
 ]);
 const choice = ref({
   id: details.value.id,
-  spec: details.value.serviceOptions[0].type,
+  spec: undefined,
   quantity: 0,
   delivery: 0,
 });
 const isSmallScreen = ref(true);
 onMounted(() => {
+  // Set default service option
+  if (details.value.serviceOptions) {
+    choice.value.spec = details.value.serviceOptions[0].type;
+  }
   watchEffect(() => {
     isSmallScreen.value = useMediaQuery('(min-width: 863px)').value;
   });
@@ -297,8 +298,14 @@ function whatDay(index) {
   <Title>{{ `${details.title} | Bizworld` }}</Title>
   <main class="grid-layout" style="padding-top: 1rem">
     <div class="page-cont">
-      <section class="page-details">
-        <h4 class="semibold 0-margined page-title">{{ details.title }}</h4>
+      <section class="page-sec1">
+        <div class="flexbox guttered align-start">
+          <h4 class="semibold 0-margined page-title">{{ details.title }}</h4>
+          <button class="outlined button">
+            <Icon name="material-symbols:bookmark-outline-rounded" class="lead" />
+            Save
+          </button>
+        </div>
         <!-- Seller's Details Section -->
         <section>
           <div class="a-block">
@@ -421,12 +428,11 @@ function whatDay(index) {
           "
         >
           <div class="bold" style="margin-bottom: 1rem">Service option</div>
-          <div class="fillable-eq menu" v-tab>
+          <div class="fillable-eq menu">
             <label
               v-for="(option, index) in details.serviceOptions"
               class="flex-column item"
               :class="{ active: option.type === choice.spec }"
-              :data-tab="`${option.type}-tier`"
             >
               <input
                 class="big form-item"
@@ -448,12 +454,9 @@ function whatDay(index) {
           <div
             v-for="option in details.serviceOptions"
             class="tab-page"
-            :data-tab="`${option.type}-tier`"
+            :class="{ active: option.type === choice.spec }"
           >
-            <div v-if="option.descHead" class="heading">
-              {{ option.descHead }}
-            </div>
-            <p v-if="option.descCont">{{ option.descCont }}</p>
+            <p v-if="option.description">{{ option.description }}</p>
             <table v-if="option.specifications" class="clear table">
               <tbody>
                 <tr v-for="(value, key) in option.specifications">
@@ -551,7 +554,7 @@ function whatDay(index) {
             </i>
           </div>
           <div class="collapsible">
-            <div class="flexbox flex-items-to-basis align-vcenter">
+            <div class="flexbox flex-items-to-basis align-center">
               <div
                 class="centered"
                 :set="
@@ -596,7 +599,7 @@ function whatDay(index) {
             <hr />
             <div>
               <div
-                class="flexbox flex-separate guttered align-vcenter"
+                class="flexbox flex-separate guttered align-center"
                 style="margin-bottom: 1rem"
               >
                 <div class="semibold">Reviews</div>
@@ -620,7 +623,7 @@ function whatDay(index) {
                   style="padding: 0.5em"
                   :set="(review = details.reviews[a - 1])"
                 >
-                  <header class="flexbox flex-separate align-vcenter guttered">
+                  <header class="flexbox flex-separate align-center guttered">
                     <div class="circular small avatar image">
                       <img
                         src="../../assets/Images/profilepic.jpg"
@@ -688,12 +691,11 @@ function whatDay(index) {
       >
         <template v-if="details.serviceOptions.length > 1">
           <div class="heading 0-t-margined">Service Options</div>
-          <div class="fillable-eq menu" v-tab>
+          <div class="fillable-eq menu">
             <label
               v-for="(option, index) in details.serviceOptions"
               class="flex-column item"
               :class="{ active: option.type === choice.spec }"
-              :data-tab="`${option.type}-tier`"
             >
               <input
                 class="big form-item"
@@ -717,12 +719,9 @@ function whatDay(index) {
         <div
           v-for="option in details.serviceOptions"
           class="tab-page"
-          :data-tab="`${option.type}-tier`"
+          :class="{ active: option.type === choice.spec }"
         >
-          <div v-if="option.descHead" class="heading">
-            {{ option.descHead }}
-          </div>
-          <p v-if="option.descCont">{{ option.descCont }}</p>
+          <p v-if="option.description">{{ option.description }}</p>
           <table v-if="option.specifications" class="clear table">
             <tbody>
               <tr v-for="(value, key) in option.specifications">
@@ -746,8 +745,7 @@ function whatDay(index) {
         <div class="flexbox flex-column guttered">
           <button class="fluid primary button">
             Continue ({{
-              details.serviceOptions.filter((el) => el.type === choice.spec)[0]
-                .price
+              details.serviceOptions.filter((el) => el.type === choice.spec)[0]?.price
             }})
             <Icon
               name="material-symbols:chevron-right-rounded"
@@ -784,8 +782,7 @@ function whatDay(index) {
       <div class="container flexbox guttered" style="padding: 0.5rem 1rem">
         <button class="flexible primary button">
           Continue ({{
-            details.serviceOptions.filter((el) => el.type === choice.spec)[0]
-              .price
+            details.serviceOptions.filter((el) => el.type === choice.spec)[0]?.price
           }})
           <Icon
             name="material-symbols:chevron-right-rounded"
@@ -846,7 +843,7 @@ function whatDay(index) {
   .carousel {
     --thumbnail-size: 4.5rem;
   }
-  .page-details {
+  .page-sec1 {
     padding-bottom: 2rem;
     display: flex;
     flex-direction: column;

@@ -12,11 +12,11 @@ export default {
             .includes(el.getAttribute('data-tab'))
         ) as HTMLElement[];
 
-      let currTab = tabs.filter((el) =>
+      let currTab = tabs.find((el) =>
         typeof e === 'object'
           ? el.contains(e.target as Node)
           : el.classList.contains('active')
-      )[0];
+      );
       if (e === 'on') currTab = currTab || tabs[0];
 
       if (currTab) {

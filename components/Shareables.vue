@@ -275,7 +275,7 @@ const searchStore = useSearchStore();
     <footer v-else-if="name === 'common_footer'" style="align-self: flex-end;">
         <rc-shareables name="copyright" />
     </footer>
-    <div v-else-if="name === 'copyright'" class="transparent text wrappable menu flex-centered">
+    <div v-else-if="name === 'copyright'" class="transparent text wrappable menu justify-center">
         <div class="item">Terms of use</div>
         <div class="item">About us</div>
         <div class="item">Help</div>

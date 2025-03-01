@@ -35,7 +35,7 @@
     </div>
     <div class="itm-display">
         <div class="itm-media">
-            <canvas :style="`background-image: url(${details.media.filter(el => el.type === 'image')[0].source})`"></canvas>
+            <canvas :style="`background-image: url(${details.media.find(el => el.type === 'image')?.source})`"></canvas>
         </div>
     </div>
     <div class="itm-content">

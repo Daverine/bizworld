@@ -506,7 +506,7 @@ function getScDetails(md, settings) {
         </button>
       </div>
       <div class="content">
-        <div class="centered d-flex flex-middle" style="flex-flow: row wrap; min-height: 150px;">
+        <div class="centered d-flex justify-center align-center" style="flex-flow: row wrap; min-height: 150px;">
           <svg width="59" height="45" viewBox="0 0 59 45" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M40.3332 13.747L1.58323 13.747L1.58323 43.4553L40.3332 43.4553L40.3332 13.747Z" class="ArIAXb">
             </path>
@@ -565,7 +565,7 @@ function getScDetails(md, settings) {
               <div class="active item">
                 <div class="lead avatar circular image mini" style="flex: 0 0 auto; background-color: #999;"></div>
                 <div style="flex: 1 1 auto;">
-                  <div class="text l-aligned">
+                  <div class="text text-left">
                     <div class="semibold" style="font-size: 1.125em; line-height: 1.25;">Ayoola Folorunso</div>
                     <div class="small faint-text-v1">Personal Account</div>
                   </div>
@@ -574,7 +574,7 @@ function getScDetails(md, settings) {
               <div class="item">
                 <div class="lead avatar circular image mini" style="flex: 0 0 auto; background-color: #999;"></div>
                 <div style="flex: 1 1 auto;">
-                  <div class="text l-aligned">
+                  <div class="text text-left">
                     <div class="semibold" style="font-size: 1.125em; line-height: 1.25;">Emmadave Computers</div>
                     <div class="small faint-text-v1">Business Account</div>
                   </div>

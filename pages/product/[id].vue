@@ -35,6 +35,113 @@ const details = ref({
     'Display Size': '15.6"',
     Graphics: 'Intel Graphics 3000 (64mb)',
   },
+  productOptions: {
+    optionType: 'RAM/ROM',
+    options: [
+      {
+        label: '4GB / 64GB',
+        media: undefined,
+        price: 'N100,000',
+        subOptions: {
+          optionType: 'Color',
+          options: [
+            {
+              label: 'Yellow',
+              price: 'N100,000',
+              media: {
+                pic: '/images/product.jpeg',
+                thumbnail: '/images/product.jpeg',
+              },
+            },
+            {
+              label: 'Reflective Blue',
+              price: 'N100,000',
+              media: {
+                pic: '/images/product.jpeg',
+                thumbnail: '/images/product.jpeg',
+              },
+            },
+            {
+              label: 'Silver',
+              price: 'N100,000',
+              media: {
+                pic: '/images/product.jpeg',
+                thumbnail: '/images/product.jpeg',
+              },
+            },
+          ],
+        },
+      },
+      {
+        label: '4GB / 128GB',
+        media: undefined,
+        price: 'N120,000',
+        subOptions: {
+          optionType: 'Color',
+          options: [
+            {
+              label: 'Black',
+              price: 'N120,000',
+              media: {
+                pic: '/images/product.jpeg',
+                thumbnail: '/images/product.jpeg',
+              },
+            },
+            {
+              label: 'Reflective Blue',
+              price: 'N120,000',
+              media: {
+                pic: '/images/product.jpeg',
+                thumbnail: '/images/product.jpeg',
+              },
+            },
+            {
+              label: 'Moon Gray',
+              price: 'N120,000',
+              media: {
+                pic: '/images/product.jpeg',
+                thumbnail: '/images/product.jpeg',
+              },
+            },
+          ],
+        },
+      },
+      {
+        label: '6GB / 128GB',
+        media: undefined,
+        price: 'N150,000',
+        subOptions: {
+          optionType: 'Color',
+          options: [
+            {
+              label: 'Black',
+              price: 'N150,000',
+              media: {
+                pic: '/images/product.jpeg',
+                thumbnail: '/images/product.jpeg',
+              },
+            },
+            {
+              label: 'Reflective Blue',
+              price: 'N150,000',
+              media: {
+                pic: '/images/product.jpeg',
+                thumbnail: '/images/product.jpeg',
+              },
+            },
+            {
+              label: 'Moon Gray',
+              price: 'N150,000',
+              media: {
+                pic: '/images/product.jpeg',
+                thumbnail: '/images/product.jpeg',
+              },
+            },
+          ],
+        },
+      },
+    ],
+  },
   reviews: [
     {
       userid: 'e8e34',
@@ -158,21 +265,60 @@ const details = ref({
     },
   },
 });
-
+const tmp = ref({
+  id: details.value.id,
+  spec: [],
+  price: computed(() => {
+    if (tmp.value.spec[0]) {
+      if (tmp.value.spec[1]) {
+        return details.value.productOptions.options
+          .find((option) => option.label === tmp.value.spec[0])
+          .subOptions.options.find(
+            (subOption) => subOption.label === tmp.value.spec[1]
+          ).price;
+      }
+      return details.value.productOptions.options.find(
+        (option) => option.label === tmp.value.spec[0]
+      ).price;
+    }
+    return details.value.price;
+  }),
+  quantity: 1,
+  delivery: 'bizworld',
+});
 const isSmallScreen = ref(true);
-const configureMessage = ref(true);
-onMounted(() =>
+onMounted(() => {
+  // Configure product default option
+  if (details.value.productOptions) {
+    tmp.value.spec.push(details.value.productOptions.options[0].label);
+    if (details.value.productOptions.options[0].subOptions) {
+      tmp.value.spec.push(
+        details.value.productOptions.options[0].subOptions.options[0].label
+      );
+      // Configure sub-option based on option
+      watchEffect(() => {
+        let option = details.value.productOptions.options.find(
+          (option) => option.label === tmp.value.spec[0]
+        );
+        tmp.value.spec[1] =
+          option.subOptions.options.find(
+            (subOption) => subOption.label === tmp.value.spec[1]
+          )?.label || option.subOptions.options[0].label;
+      });
+    }
+  }
+  // watch for screen size change
   watchEffect(() => {
     isSmallScreen.value = useMediaQuery('(max-width: 959px)').value;
-  })
-);
+  });
+});
 </script>
 <template>
   <Title>{{ `${details.title} | Bizworld` }}</Title>
   <main class="grid-layout" style="padding-top: 1rem">
     <div class="page-cont">
       <section
-        class="page-summary"
+        class="page-sec1"
         v-scrollPin="{
           top: 68,
           bottom: 64,
@@ -219,27 +365,180 @@ onMounted(() =>
             {{ details.bizData.location.state }}
           </span>
         </div>
-        <div class="h3 0-margined primary-text bold">
-          {{ details.price }}
-        </div>
-        <p>{{ details.overview }}</p>
-        <!-- Purchase Configuration Note -->
-        <div
-          v-if="configureMessage"
-          class="warning compact handled note 0-margined"
-        >
-          <Icon name="material-symbols:brand-awareness-outline-rounded" />
-          <div class="content">Add item to cart to configure purchase.</div>
-          <i
-            class="small trailing"
-            style="align-self: start"
-            @click="() => (configureMessage = false)"
-          >
-            <Icon name="material-symbols:cancel-rounded" />
-          </i>
-        </div>
-      </section>
-      <div class="page-details sp-wrapper">
+        <!-- Product Options -->
+        <section class="mobile-screen-only config">
+          <div class="h3 0-margined primary-text bold">
+            {{ tmp.price }}
+          </div>
+          <div class="alt-ribbon red label">Configure purchase</div>
+          <template v-if="details.productOptions">
+            <div>
+              <div class="sub lined heading a-block">
+                {{ details.productOptions.optionType }}:
+                <div class="trailing">{{ tmp.spec[0] }}</div>
+              </div>
+              <div class="wrappable menu">
+                <label
+                  v-for="(option, a) in details.productOptions.options"
+                  class="item as-icon"
+                  :class="{ active: option.label === tmp.spec[0] }"
+                >
+                  <input
+                    type="radio"
+                    class="form-item"
+                    :value="option.label"
+                    v-model="tmp.spec[0]"
+                  />
+                  <img
+                    v-if="option.media"
+                    :src="option.media.thumbnail"
+                    class="thumbnail"
+                  />
+                  {{ option.label }}
+                </label>
+              </div>
+            </div>
+            <template v-for="(option, a) in details.productOptions.options">
+              <div
+                v-if="option.subOptions"
+                class="tab-page"
+                :class="{ active: option.label === tmp.spec[0] }"
+              >
+                <div class="sub lined heading a-block">
+                  {{ option.subOptions.optionType }}:
+                  <div class="trailing">{{ tmp.spec[1] }}</div>
+                </div>
+                <div class="wrappable menu">
+                  <label
+                    v-for="(subOption, b) in option.subOptions.options"
+                    class="item as-icon"
+                    :class="{ active: subOption.label === tmp.spec[1] }"
+                  >
+                    <input
+                      type="radio"
+                      class="form-item"
+                      :value="subOption.label"
+                      v-model="tmp.spec[1]"
+                    />
+                    <img
+                      v-if="subOption.media"
+                      :src="subOption.media.thumbnail"
+                      class="thumbnail"
+                    />
+                    {{ subOption.label }}
+                  </label>
+                </div>
+              </div>
+            </template>
+          </template>
+          <div>
+            <div class="sub lined heading a-block">
+              Quantity:
+              <div class="trailing">{{ tmp.quantity }}</div>
+            </div>
+            <input
+              type="number"
+              placeholder="Enter product Quantity"
+              class="form-item compact"
+              min="1"
+              v-model="tmp.quantity"
+            />
+          </div>
+          <div>
+            <div class="sub lined heading a-block">
+              Delivery service:
+              <div class="trailing">
+                {{
+                  `${tmp.delivery.charAt(0).toUpperCase()}${tmp.delivery.slice(
+                    1
+                  )}`
+                }}
+              </div>
+            </div>
+            <div class="vertical menu">
+              <!-- Bizworld delivery option -->
+              <label
+                class="item as-icon"
+                :class="{ active: tmp.delivery === 'bizworld' }"
+              >
+                <div class="flexbox flex-column sm-guttered align-center">
+                  <input
+                    type="radio"
+                    value="bizworld"
+                    v-model="tmp.delivery"
+                    class="form-item"
+                  />
+                  <Icon
+                    name="material-symbols:delivery-truck-speed-outline-rounded"
+                    style="font-size: 1.5em"
+                  />
+                </div>
+                <div class="content" style="font-weight: normal">
+                  <div class="flexbox guttered flex-separate">
+                    <div class="small bold">BizWorld Delivery Management</div>
+                    <a href="#">Learn more</a>
+                  </div>
+                  <div class="flexbox guttered flex-separate">
+                    <div>Delivery fee:</div>
+                    <div>N900</div>
+                  </div>
+                  <div class="flexbox guttered flex-separate">
+                    <div>Delivery time:</div>
+                    <div>2-3 days</div>
+                  </div>
+                </div>
+              </label>
+              <!-- Self pickup option -->
+              <label
+                class="item as-icon"
+                :class="{ active: tmp.delivery === 'self-pickup' }"
+              >
+                <div class="flexbox flex-column sm-guttered align-center">
+                  <input
+                    type="radio"
+                    value="self-pickup"
+                    v-model="tmp.delivery"
+                    class="form-item"
+                  />
+                  <Icon
+                    name="material-symbols:package-outline-rounded"
+                    style="font-size: 1.5em"
+                  />
+                </div>
+                <div class="content" style="font-weight: normal">
+                  <div class="flexbox guttered flex-separate">
+                    <div class="small bold">Self Pickup</div>
+                    <a href="#">Learn more</a>
+                  </div>
+                  <div class="faint-text-v1">
+                    Manage how your item gets to you. Pick up your item within 2
+                    weeks of purchase.
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div class="compact success note">
+            <Icon
+              name="material-symbols:verified-user-outline-rounded"
+              style="font-size: 1.875em"
+            />
+            <div class="content">
+              <div class="heading">Secure personal details</div>
+              <div class="faint-text-v1">
+                Your personal and payment information is kept confidential and
+                secure. We do not share your details with third parties without
+                your explicit consent, ensuring your privacy is always
+                protected.
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Overview Section -->
+        <section>
+          <div class="heading">Seller's review</div>
+          <p>{{ details.overview }}</p>
+        </section>
         <!-- Specification Section -->
         <section class="spec">
           <div v-collapser class="ac-viewbox-ref active lined heading a-block">
@@ -327,37 +626,6 @@ onMounted(() =>
             </div>
           </div>
         </section>
-        <!-- Buyer's Protection Section -->
-        <section>
-          <div v-collapser class="ac-viewbox-ref active lined heading a-block">
-            <Icon
-              name="material-symbols:shield-person-outline-rounded"
-              class="lead"
-            />
-            Buyer's Protection
-            <i class="ac-viewbox trailing icon">
-              <Icon name="material-symbols:chevron-left-rounded" />
-              <Icon name="material-symbols:expand-more-rounded" />
-            </i>
-          </div>
-          <div class="collapsible">
-            <div class="compact success note">
-              <Icon
-                name="material-symbols:verified-user-outline-rounded"
-                style="font-size: 1.875em"
-              />
-              <div class="content">
-                <div class="heading">Secure personal details</div>
-                <div class="faint-text-v1">
-                  Your personal and payment information is kept confidential and
-                  secure. We do not share your details with third parties
-                  without your explicit consent, ensuring your privacy is always
-                  protected.
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
         <!-- Seller's Details Section -->
         <section>
           <div v-collapser class="ac-viewbox-ref active lined heading a-block">
@@ -440,7 +708,7 @@ onMounted(() =>
             </i>
           </div>
           <div class="collapsible">
-            <div class="flexbox flex-items-to-basis align-vcenter">
+            <div class="flexbox flex-items-to-basis align-center">
               <div
                 class="centered"
                 :set="
@@ -485,7 +753,7 @@ onMounted(() =>
             <hr />
             <div>
               <div
-                class="flexbox flex-separate guttered align-vcenter"
+                class="flexbox flex-separate guttered align-center"
                 style="margin-bottom: 1rem"
               >
                 <div class="semibold">Reviews</div>
@@ -509,7 +777,7 @@ onMounted(() =>
                   style="padding: 0.5em"
                   :set="(review = details.reviews[a - 1])"
                 >
-                  <header class="flexbox flex-separate align-vcenter guttered">
+                  <header class="flexbox flex-separate align-center guttered">
                     <div class="circular small avatar image">
                       <img
                         src="../../assets/Images/profilepic.jpg"
@@ -565,15 +833,254 @@ onMounted(() =>
             </div>
           </div>
         </section>
-      </div>
+      </section>
+
+      <!-- Product Options -->
+      <section
+        class="desktop-screen-only config sp-wrapper"
+        v-scrollPin="{
+          top: 80,
+          bottom: 64,
+          breakpoints: [{ maxWidth: 863, pinnable: false }],
+        }"
+      >
+        <div class="h3 0-margined primary-text bold">
+          {{ tmp.price }}
+        </div>
+        <div class="alt-ribbon red label">Configure purchase</div>
+        <template v-if="details.productOptions">
+          <div>
+            <div class="sub lined heading a-block">
+              {{ details.productOptions.optionType }}:
+              <div class="trailing">{{ tmp.spec[0] }}</div>
+            </div>
+            <div class="wrappable menu">
+              <label
+                v-for="(option, a) in details.productOptions.options"
+                class="item as-icon"
+                :class="{ active: option.label === tmp.spec[0] }"
+              >
+                <input
+                  type="radio"
+                  class="form-item"
+                  :value="option.label"
+                  v-model="tmp.spec[0]"
+                />
+                <img
+                  v-if="option.media"
+                  :src="option.media.thumbnail"
+                  class="thumbnail"
+                />
+                {{ option.label }}
+              </label>
+            </div>
+          </div>
+          <template v-for="(option, a) in details.productOptions.options">
+            <div
+              v-if="option.subOptions"
+              class="tab-page"
+              :class="{ active: option.label === tmp.spec[0] }"
+            >
+              <div class="sub lined heading a-block">
+                {{ option.subOptions.optionType }}:
+                <div class="trailing">{{ tmp.spec[1] }}</div>
+              </div>
+              <div class="wrappable menu">
+                <label
+                  v-for="(subOption, b) in option.subOptions.options"
+                  class="item as-icon"
+                  :class="{ active: subOption.label === tmp.spec[1] }"
+                >
+                  <input
+                    type="radio"
+                    class="form-item"
+                    :value="subOption.label"
+                    v-model="tmp.spec[1]"
+                  />
+                  <img
+                    v-if="subOption.media"
+                    :src="subOption.media.thumbnail"
+                    class="thumbnail"
+                  />
+                  {{ subOption.label }}
+                </label>
+              </div>
+            </div>
+          </template>
+        </template>
+        <div>
+          <div class="sub lined heading a-block">
+            Quantity:
+            <div class="trailing">{{ tmp.quantity }}</div>
+          </div>
+          <input
+            type="number"
+            placeholder="Enter product Quantity"
+            class="form-item compact"
+            min="1"
+            v-model="tmp.quantity"
+          />
+        </div>
+        <div>
+          <div class="sub lined heading a-block">
+            Delivery service:
+            <div class="trailing">
+              {{
+                `${tmp.delivery.charAt(0).toUpperCase()}${tmp.delivery.slice(
+                  1
+                )}`
+              }}
+            </div>
+          </div>
+          <div class="vertical menu">
+            <!-- Bizworld delivery option -->
+            <label
+              class="item as-icon"
+              :class="{ active: tmp.delivery === 'bizworld' }"
+            >
+              <div class="flexbox flex-column sm-guttered align-center">
+                <input
+                  type="radio"
+                  value="bizworld"
+                  v-model="tmp.delivery"
+                  class="form-item"
+                />
+                <Icon
+                  name="material-symbols:delivery-truck-speed-outline-rounded"
+                  style="font-size: 1.5em"
+                />
+              </div>
+              <div class="content" style="font-weight: normal">
+                <div class="flexbox guttered flex-separate">
+                  <div class="small bold">BizWorld Delivery Management</div>
+                  <a href="#">Learn more</a>
+                </div>
+                <div class="flexbox guttered flex-separate">
+                  <div>Delivery fee:</div>
+                  <div>N900</div>
+                </div>
+                <div class="flexbox guttered flex-separate">
+                  <div>Delivery time:</div>
+                  <div>2-3 days</div>
+                </div>
+              </div>
+            </label>
+            <!-- Self pickup option -->
+            <label
+              class="item as-icon"
+              :class="{ active: tmp.delivery === 'self-pickup' }"
+            >
+              <div class="flexbox flex-column sm-guttered align-center">
+                <input
+                  type="radio"
+                  value="self-pickup"
+                  v-model="tmp.delivery"
+                  class="form-item"
+                />
+                <Icon
+                  name="material-symbols:package-outline-rounded"
+                  style="font-size: 1.5em"
+                />
+              </div>
+              <div class="content" style="font-weight: normal">
+                <div class="flexbox guttered flex-separate">
+                  <div class="small bold">Self Pickup</div>
+                  <a href="#">Learn more</a>
+                </div>
+                <div class="faint-text-v1">
+                  Manage how your item gets to you. Pick up your item within 2
+                  weeks of purchase.
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="flexbox guttered" style="margin-top: 1rem">
+          <Dropdown class="primary fluid button">
+            <Icon name="material-symbols:add-shopping-cart" class="lead" />
+            Add to cart
+            <div class="drop menu pointing">
+              <div class="content" style="padding: 0.5em">
+                <div class="field">
+                  <label>Quantity</label>
+                  <input
+                    type="number"
+                    class="form-item compact"
+                    min="1"
+                    value="1"
+                  />
+                </div>
+                <hr class="transparent" />
+                <div class="flexbox guttered">
+                  <button class="exit-dd secondary compact button">
+                    Checkout
+                  </button>
+                  <button class="exit-dd secondary flat compact button">
+                    Add and shop more
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Dropdown>
+          <Dropdown
+            :options="{ directionPriority: { x: 'left', y: 'top' } }"
+            v-tooltip.unblocking
+            data-tooltip="More options"
+            class="flat circular button"
+          >
+            <Icon name="material-symbols:more-vert" />
+            <div class="drop menu">
+              <div class="item">
+                <Icon
+                  name="material-symbols:category-search-outline-rounded"
+                  class="lead"
+                />
+                View related
+              </div>
+              <div class="item">
+                <Icon
+                  name="material-symbols:bookmark-add-outline-rounded"
+                  class="lead"
+                />
+                Save card
+              </div>
+              <div class="item">
+                <Icon name="material-symbols:share-outline" class="lead" />
+                Share
+              </div>
+              <div class="item">
+                <Icon
+                  name="material-symbols:report-outline-rounded"
+                  class="lead"
+                />
+                Report
+              </div>
+            </div>
+          </Dropdown>
+        </div>
+        <div class="compact success note">
+          <Icon
+            name="material-symbols:verified-user-outline-rounded"
+            style="font-size: 1.875em"
+          />
+          <div class="content">
+            <div class="heading">Secure personal details</div>
+            <div class="faint-text-v1">
+              Your personal and payment information is kept confidential and
+              secure. We do not share your details with third parties without
+              your explicit consent, ensuring your privacy is always protected.
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
     <!-- Call to Action Section -->
     <div
       v-scrollPin="{ pinPriority: 'bottom' }"
-      class="page-footer surface-bg fluid z-level-2 p-f"
+      class="mobile-screen-only surface-bg fluid z-level-2 p-f"
     >
-      <div class="container flexbox guttered" style="padding: 0.5rem 1rem">
-        <Dropdown class="primary button">
+      <div class="container flexbox guttered" style="padding: 0.5rem 0rem">
+        <Dropdown class="primary fluid button">
           <Icon name="material-symbols:add-shopping-cart" class="lead" />
           Add to cart
           <div class="drop menu pointing">
@@ -599,20 +1106,6 @@ onMounted(() =>
             </div>
           </div>
         </Dropdown>
-        <button class="outlined button">
-          <Icon
-            name="material-symbols:bookmark-add-outline-rounded"
-            class="lead"
-          />
-          Save
-        </button>
-        <button
-          class="flat circular button"
-          v-tooltip.unblocking
-          data-tooltip="Contact seller"
-        >
-          <Icon name="material-symbols:chat-outline-rounded" />
-        </button>
         <Dropdown
           :options="{ directionPriority: { x: 'left', y: 'top' } }"
           v-tooltip.unblocking
@@ -656,34 +1149,44 @@ onMounted(() =>
 <style lang="scss" scoped>
 .page-cont {
   display: grid;
-  gap: 1.5rem;
+  gap: 2rem;
   grid-template-columns: 1fr 1fr;
   align-items: start;
 
   .carousel {
     --thumbnail-size: 4.5rem;
   }
-  .page-summary {
-    padding-bottom: 0.5rem;
+  .page-sec1 {
+    padding-bottom: 2rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
-  .page-details {
-    padding-bottom: 18vh;
+}
 
-    & > section {
-      margin: 0em 0em 1rem;
-    }
+.config {
+  border: 1px solid var(--outline);
+  border-radius: var(--comp-radius);
+  padding: 1rem;
+
+  & > .label {
+    margin-left: auto;
+    margin-right: -2.125em;
   }
+}
 
-  @media only screen and (max-width: 959px) {
+@media only screen and (min-width: 960px) {
+  .mobile-screen-only {
+    display: none !important;
+  }
+}
+@media only screen and (max-width: 959px) {
+  .page-cont {
     grid-template-columns: 1fr;
     gap: 1rem;
-
-    .carousel {
-      padding-bottom: 0px;
-    }
+  }
+  .desktop-screen-only {
+    display: none !important;
   }
 }
 </style>

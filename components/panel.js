@@ -51,7 +51,7 @@ export default {
 			if (e.key === 'Escape' && utils.checkEscStatus(this.uniqueId)) this.showPanel = false;
 		},
 		togglePanel(e) {
-			let toggler = [...document.querySelectorAll(this.settings.toggler)].filter((el) => el.contains(e.target) && (el.getAttribute('data-target') === this.id || el.getAttribute('href') === `#${this.id}`))[0];
+			let toggler = [...document.querySelectorAll(this.settings.toggler)].find((el) => el.contains(e.target) && (el.getAttribute('data-target') === this.id || el.getAttribute('href') === `#${this.id}`));
 			if (!toggler || e.target.closest(this.settings.toExcuseToggler)) return;
 			this.settings.caller = toggler;
 			this.showPanel = !this.showPanel;

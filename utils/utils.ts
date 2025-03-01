@@ -127,9 +127,9 @@ export const utils = {
   ): HTMLElement[] {
     if (until) {
       if (typeof until === "string") {
-        until = [...document.querySelectorAll(until)].filter((elem) =>
+        until = [...document.querySelectorAll(until)].find((elem) =>
           (elem as HTMLElement).contains(el)
-        )[0] as HTMLElement || document.documentElement;
+        ) as HTMLElement || document.documentElement;
       } else if (!until.contains(el)) until = document.documentElement;
     } else until = document.documentElement;
 

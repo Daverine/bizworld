@@ -151,7 +151,7 @@ export default {
       let positionedParent =
         utils
           .getParents(el)
-          .filter((el) => utils.getCssVal(el, 'position') !== 'static')[0] ||
+          .find((el) => utils.getCssVal(el, 'position') !== 'static') ||
         document.body;
       let ppOffset = utils.offsetPos(positionedParent);
       tmp.scrollAmt = window.scrollY - tmp.scrollPos;

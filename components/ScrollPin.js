@@ -114,7 +114,7 @@ export function scrollPin() {
                 this.tmp.scrollPos = window.scrollY;
 
                 let
-                    offsetParent = utils.getParents(this.el).filter(el => utils.getCssVal(el, 'position') !== 'static')[0] || document.body,
+                    offsetParent = utils.getParents(this.el).find(el => utils.getCssVal(el, 'position') !== 'static') || document.body,
                     opOffset = utils.offsetPos(offsetParent),
                     isIndependentBefore = this.settings.independent,
                     prevState = this.currState
