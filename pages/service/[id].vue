@@ -301,9 +301,12 @@ function whatDay(index) {
       <section class="page-sec1">
         <div class="flexbox guttered align-start">
           <h4 class="semibold 0-margined page-title">{{ details.title }}</h4>
-          <button class="outlined button">
-            <Icon name="material-symbols:bookmark-outline-rounded" class="lead" />
-            Save
+          <button
+            class="outlined icon button"
+            v-tooltip.unblocking
+            data-tooltip="Add to favourite"
+          >
+            <Icon name="material-symbols:bookmark-outline-rounded" />
           </button>
         </div>
         <!-- Seller's Details Section -->
@@ -745,17 +748,62 @@ function whatDay(index) {
         <div class="flexbox flex-column guttered">
           <button class="fluid primary button">
             Continue ({{
-              details.serviceOptions.filter((el) => el.type === choice.spec)[0]?.price
+              details.serviceOptions.filter((el) => el.type === choice.spec)[0]
+                ?.price
             }})
             <Icon
               name="material-symbols:chevron-right-rounded"
               class="trailing"
             />
           </button>
-          <button class="fluid outlined button">
-            <Icon name="material-symbols:chat-outline-rounded" class="lead" />
-            Chat Contractor
-          </button>
+          <div class="flexbox guttered">
+            <button class="fluid outlined button">
+              <Icon name="material-symbols:chat-outline-rounded" class="lead" />
+              Chat Contractor
+            </button>
+            <Dropdown
+              :options="{ directionPriority: { x: 'left', y: 'top' } }"
+              v-tooltip.unblocking
+              data-tooltip="More options"
+              class="flat circular button"
+            >
+              <Icon name="material-symbols:more-vert" />
+              <div class="drop menu">
+                <div class="item">
+                  <Icon
+                    name="material-symbols:chat-outline-rounded"
+                    class="lead"
+                  />
+                  Chat contractor
+                </div>
+                <div class="item">
+                  <Icon
+                    name="material-symbols:bookmark-add-outline-rounded"
+                    class="lead"
+                  />
+                  Add to favourite
+                </div>
+                <div class="item">
+                  <Icon name="material-symbols:share-outline" class="lead" />
+                  Share
+                </div>
+                <div class="item">
+                  <Icon
+                    name="material-symbols:category-search-outline-rounded"
+                    class="lead"
+                  />
+                  View related
+                </div>
+                <div class="item">
+                  <Icon
+                    name="material-symbols:report-outline-rounded"
+                    class="lead"
+                  />
+                  Report
+                </div>
+              </div>
+            </Dropdown>
+          </div>
         </div>
         <!-- Buyer's Protection Section -->
         <div class="compact success note 0-b-margined">
@@ -779,17 +827,18 @@ function whatDay(index) {
       v-scrollPin="{ pinPriority: 'bottom' }"
       class="mobile-screen-only surface-bg fluid z-level-2 p-f"
     >
-      <div class="container flexbox guttered" style="padding: 0.5rem 1rem">
+      <div class="container flexbox guttered" style="padding: 0.5rem 0rem">
         <button class="flexible primary button">
           Continue ({{
-            details.serviceOptions.filter((el) => el.type === choice.spec)[0]?.price
+            details.serviceOptions.filter((el) => el.type === choice.spec)[0]
+              ?.price
           }})
           <Icon
             name="material-symbols:chevron-right-rounded"
             class="trailing"
           />
         </button>
-        <button class="flexible outlined button">
+        <button class="flexible outlined button md-and-down-hidden">
           <Icon name="material-symbols:chat-outline-rounded" class="lead" />
           Chat Contractor
         </button>
@@ -802,22 +851,26 @@ function whatDay(index) {
           <Icon name="material-symbols:more-vert" />
           <div class="drop menu">
             <div class="item">
-              <Icon
-                name="material-symbols:category-search-outline-rounded"
-                class="lead"
-              />
-              View related
+              <Icon name="material-symbols:chat-outline-rounded" class="lead" />
+              Chat contractor
             </div>
             <div class="item">
               <Icon
                 name="material-symbols:bookmark-add-outline-rounded"
                 class="lead"
               />
-              Save card
+              Add to favourite
             </div>
             <div class="item">
               <Icon name="material-symbols:share-outline" class="lead" />
               Share
+            </div>
+            <div class="item">
+              <Icon
+                name="material-symbols:category-search-outline-rounded"
+                class="lead"
+              />
+              View related
             </div>
             <div class="item">
               <Icon

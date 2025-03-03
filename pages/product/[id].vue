@@ -476,7 +476,7 @@ onMounted(() => {
                 <div class="content" style="font-weight: normal">
                   <div class="flexbox guttered flex-separate">
                     <div class="small bold">BizWorld Delivery Management</div>
-                    <a href="#">Learn more</a>
+                    <a href="#">Details</a>
                   </div>
                   <div class="flexbox guttered flex-separate">
                     <div>Delivery fee:</div>
@@ -508,7 +508,7 @@ onMounted(() => {
                 <div class="content" style="font-weight: normal">
                   <div class="flexbox guttered flex-separate">
                     <div class="small bold">Self Pickup</div>
-                    <a href="#">Learn more</a>
+                    <a href="#">Details</a>
                   </div>
                   <div class="faint-text-v1">
                     Manage how your item gets to you. Pick up your item within 2
@@ -597,7 +597,7 @@ onMounted(() => {
                   <div class="small bold">BizWorld Delivery Management</div>
                   <div class="faint-text-v1">
                     Bizworld manages how your item is delivered to you.
-                    <a href="#">Learn more</a>
+                    <a href="#">Details</a>
                   </div>
                 </div>
               </div>
@@ -612,7 +612,7 @@ onMounted(() => {
                   <div class="faint-text-v1">
                     You manage how your item gets to you. With this option, you
                     must pick up your item within 2 weeks of purchase.
-                    <a href="#">Learn more</a>
+                    <a href="#">Details</a>
                   </div>
                 </div>
               </div>
@@ -953,7 +953,7 @@ onMounted(() => {
               <div class="content" style="font-weight: normal">
                 <div class="flexbox guttered flex-separate">
                   <div class="small bold">BizWorld Delivery Management</div>
-                  <a href="#">Learn more</a>
+                  <a href="#">Details</a>
                 </div>
                 <div class="flexbox guttered flex-separate">
                   <div>Delivery fee:</div>
@@ -985,7 +985,7 @@ onMounted(() => {
               <div class="content" style="font-weight: normal">
                 <div class="flexbox guttered flex-separate">
                   <div class="small bold">Self Pickup</div>
-                  <a href="#">Learn more</a>
+                  <a href="#">Details</a>
                 </div>
                 <div class="faint-text-v1">
                   Manage how your item gets to you. Pick up your item within 2
@@ -1032,10 +1032,10 @@ onMounted(() => {
             <div class="drop menu">
               <div class="item">
                 <Icon
-                  name="material-symbols:category-search-outline-rounded"
+                  name="material-symbols:chat-outline-rounded"
                   class="lead"
                 />
-                View related
+                Chat seller
               </div>
               <div class="item">
                 <Icon
@@ -1047,6 +1047,13 @@ onMounted(() => {
               <div class="item">
                 <Icon name="material-symbols:share-outline" class="lead" />
                 Share
+              </div>
+              <div class="item">
+                <Icon
+                  name="material-symbols:category-search-outline-rounded"
+                  class="lead"
+                />
+                View related
               </div>
               <div class="item">
                 <Icon
@@ -1080,7 +1087,7 @@ onMounted(() => {
       class="mobile-screen-only surface-bg fluid z-level-2 p-f"
     >
       <div class="container flexbox guttered" style="padding: 0.5rem 0rem">
-        <Dropdown class="primary fluid button">
+        <Dropdown class="flexible primary button">
           <Icon name="material-symbols:add-shopping-cart" class="lead" />
           Add to cart
           <div class="drop menu pointing">
@@ -1115,11 +1122,8 @@ onMounted(() => {
           <Icon name="material-symbols:more-vert" />
           <div class="drop menu">
             <div class="item">
-              <Icon
-                name="material-symbols:category-search-outline-rounded"
-                class="lead"
-              />
-              View related
+              <Icon name="material-symbols:chat-outline-rounded" class="lead" />
+              Chat seller
             </div>
             <div class="item">
               <Icon
@@ -1131,6 +1135,13 @@ onMounted(() => {
             <div class="item">
               <Icon name="material-symbols:share-outline" class="lead" />
               Share
+            </div>
+            <div class="item">
+              <Icon
+                name="material-symbols:category-search-outline-rounded"
+                class="lead"
+              />
+              View related
             </div>
             <div class="item">
               <Icon
@@ -1171,7 +1182,7 @@ onMounted(() => {
 
   & > .label {
     margin-left: auto;
-    margin-right: -2.125em;
+    margin-right: -2em;
   }
 }
 
