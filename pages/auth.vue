@@ -59,7 +59,7 @@
                         <button class="fluid primary button">Create Account</button>
                     </div>
                     <hr />
-                    <div class="field centered">
+                    <div class="field text-center">
                         <p>Already have an account? <router-link to="/login">Login</router-link></p>
                     </div>
                 </form>
@@ -95,7 +95,7 @@
                         <button class="fluid primary button">Continue</button>
                     </div>
                     <hr />
-                    <div class="field centered">
+                    <div class="field text-center">
                         <p>New to BizWorld? <router-link to="/register">Sign up</router-link></p>
                     </div>
                 </form>

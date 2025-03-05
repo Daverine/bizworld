@@ -447,12 +447,8 @@ onMounted(() => {
           <div>
             <div class="sub lined heading a-block">
               Delivery service:
-              <div class="trailing">
-                {{
-                  `${tmp.delivery.charAt(0).toUpperCase()}${tmp.delivery.slice(
-                    1
-                  )}`
-                }}
+              <div class="trailing" style="text-transform: capitalize">
+                {{ tmp.delivery }}
               </div>
             </div>
             <div class="vertical menu">
@@ -924,12 +920,8 @@ onMounted(() => {
         <div>
           <div class="sub lined heading a-block">
             Delivery service:
-            <div class="trailing">
-              {{
-                `${tmp.delivery.charAt(0).toUpperCase()}${tmp.delivery.slice(
-                  1
-                )}`
-              }}
+            <div class="trailing capitalized">
+              {{ tmp.delivery }}
             </div>
           </div>
           <div class="vertical menu">
@@ -996,32 +988,13 @@ onMounted(() => {
           </div>
         </div>
         <div class="flexbox guttered" style="margin-top: 1rem">
-          <Dropdown class="primary fluid button">
+          <button
+            class="primary fluid button open-modal"
+            data-target="pre-cart"
+          >
             <Icon name="material-symbols:add-shopping-cart" class="lead" />
             Add to cart
-            <div class="drop menu pointing">
-              <div class="content" style="padding: 0.5em">
-                <div class="field">
-                  <label>Quantity</label>
-                  <input
-                    type="number"
-                    class="form-item compact"
-                    min="1"
-                    value="1"
-                  />
-                </div>
-                <hr class="transparent" />
-                <div class="flexbox guttered">
-                  <button class="exit-dd secondary compact button">
-                    Checkout
-                  </button>
-                  <button class="exit-dd secondary flat compact button">
-                    Add and shop more
-                  </button>
-                </div>
-              </div>
-            </div>
-          </Dropdown>
+          </button>
           <Dropdown
             :options="{ directionPriority: { x: 'left', y: 'top' } }"
             v-tooltip.unblocking
@@ -1087,32 +1060,13 @@ onMounted(() => {
       class="mobile-screen-only surface-bg fluid z-level-2 p-f"
     >
       <div class="container flexbox guttered" style="padding: 0.5rem 0rem">
-        <Dropdown class="flexible primary button">
+        <button
+          class="flexible primary button open-modal"
+          data-target="pre-cart"
+        >
           <Icon name="material-symbols:add-shopping-cart" class="lead" />
           Add to cart
-          <div class="drop menu pointing">
-            <div class="content" style="padding: 0.5em">
-              <div class="field">
-                <label>Quantity</label>
-                <input
-                  type="number"
-                  class="form-item compact"
-                  min="1"
-                  value="1"
-                />
-              </div>
-              <hr class="transparent" />
-              <div class="flexbox guttered">
-                <button class="exit-dd secondary compact button">
-                  Checkout
-                </button>
-                <button class="exit-dd secondary flat compact button">
-                  Add and shop more
-                </button>
-              </div>
-            </div>
-          </div>
-        </Dropdown>
+        </button>
         <Dropdown
           :options="{ directionPriority: { x: 'left', y: 'top' } }"
           v-tooltip.unblocking
@@ -1154,6 +1108,180 @@ onMounted(() => {
         </Dropdown>
       </div>
     </div>
+    <Modal id="pre-cart">
+      <div class="self-scroll dialog">
+        <div class="header flexbox guttered">
+          <div class="bold truncate">Confirm options</div>
+          <button
+            class="circular flat button as-text exit-modal"
+            style="margin-left: auto"
+          >
+            <Icon name="material-symbols:close" />
+          </button>
+        </div>
+        <div class="content">
+          <template v-if="details.productOptions">
+            <div>
+              <div class="sub lined heading a-block">
+                {{ details.productOptions.optionType }}:
+                <div class="trailing">{{ tmp.spec[0] }}</div>
+              </div>
+              <div class="wrappable menu">
+                <label
+                  v-for="(option, a) in details.productOptions.options"
+                  class="item as-icon"
+                  :class="{ active: option.label === tmp.spec[0] }"
+                >
+                  <input
+                    type="radio"
+                    class="form-item"
+                    :value="option.label"
+                    v-model="tmp.spec[0]"
+                  />
+                  <img
+                    v-if="option.media"
+                    :src="option.media.thumbnail"
+                    class="thumbnail"
+                  />
+                  {{ option.label }}
+                </label>
+              </div>
+            </div>
+            <template v-for="(option, a) in details.productOptions.options">
+              <div
+                v-if="option.subOptions"
+                class="tab-page"
+                :class="{ active: option.label === tmp.spec[0] }"
+              >
+                <div class="sub lined heading a-block">
+                  {{ option.subOptions.optionType }}:
+                  <div class="trailing">{{ tmp.spec[1] }}</div>
+                </div>
+                <div class="wrappable menu">
+                  <label
+                    v-for="(subOption, b) in option.subOptions.options"
+                    class="item as-icon"
+                    :class="{ active: subOption.label === tmp.spec[1] }"
+                  >
+                    <input
+                      type="radio"
+                      class="form-item"
+                      :value="subOption.label"
+                      v-model="tmp.spec[1]"
+                    />
+                    <img
+                      v-if="subOption.media"
+                      :src="subOption.media.thumbnail"
+                      class="thumbnail"
+                    />
+                    {{ subOption.label }}
+                  </label>
+                </div>
+              </div>
+            </template>
+          </template>
+          <div>
+            <div class="sub lined heading a-block">
+              Quantity:
+              <div class="trailing">{{ tmp.quantity }}</div>
+            </div>
+            <input
+              type="number"
+              placeholder="Enter product Quantity"
+              class="form-item compact"
+              min="1"
+              v-model="tmp.quantity"
+            />
+          </div>
+          <div>
+            <div class="sub lined heading a-block">
+              Delivery service:
+              <div class="trailing" style="text-transform: capitalize">
+                {{ tmp.delivery }}
+              </div>
+            </div>
+            <div class="vertical menu">
+              <!-- Bizworld delivery option -->
+              <label
+                class="item as-icon"
+                :class="{ active: tmp.delivery === 'bizworld' }"
+              >
+                <div class="flexbox flex-column sm-guttered align-center">
+                  <input
+                    type="radio"
+                    value="bizworld"
+                    v-model="tmp.delivery"
+                    class="form-item"
+                  />
+                  <Icon
+                    name="material-symbols:delivery-truck-speed-outline-rounded"
+                    style="font-size: 1.5em"
+                  />
+                </div>
+                <div class="content" style="font-weight: normal">
+                  <div class="flexbox guttered flex-separate">
+                    <div class="small bold">BizWorld Delivery Management</div>
+                    <a href="#">Details</a>
+                  </div>
+                  <div class="flexbox guttered flex-separate">
+                    <div>Delivery fee:</div>
+                    <div>N900</div>
+                  </div>
+                  <div class="flexbox guttered flex-separate">
+                    <div>Delivery time:</div>
+                    <div>2-3 days</div>
+                  </div>
+                </div>
+              </label>
+              <!-- Self pickup option -->
+              <label
+                class="item as-icon"
+                :class="{ active: tmp.delivery === 'self-pickup' }"
+              >
+                <div class="flexbox flex-column sm-guttered align-center">
+                  <input
+                    type="radio"
+                    value="self-pickup"
+                    v-model="tmp.delivery"
+                    class="form-item"
+                  />
+                  <Icon
+                    name="material-symbols:package-outline-rounded"
+                    style="font-size: 1.5em"
+                  />
+                </div>
+                <div class="content" style="font-weight: normal">
+                  <div class="flexbox guttered flex-separate">
+                    <div class="small bold">Self Pickup</div>
+                    <a href="#">Details</a>
+                  </div>
+                  <div class="faint-text-v1">
+                    Manage how your item gets to you. Pick up your item within 2
+                    weeks of purchase.
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="footer flexbox flex-column guttered">
+          <div class="flexbox guttered flex-separate">
+            <div class="bold">Total:</div>
+            <div class="h5 bold">{{ tmp.price }}</div>
+          </div>
+          <div class="flexbox guttered flex-separate align-start">
+            <button class="flexible primary button">
+              <Icon name="material-symbols:shopping-cart-checkout-rounded" class="lead" />
+              Checkout
+            </button>
+            <button class="flexible primary flat button">
+              <Icon name="material-symbols:add-shopping-cart-rounded" class="lead" />
+              Add and shop more
+            </button>
+          </div>
+        </div>
+      </div>
+    </Modal>
   </main>
 </template>
 

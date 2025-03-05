@@ -14,39 +14,7 @@ onMounted(() => feedStore.getUpdate());
 </script>
 <template>
 	<header id="main-header">
-		<div class="transparent menu" style="height: 64px;">
-			<div class="container-lg items auto-margined" style="border-radius: var(--default-radius);">
-				<div class="item as-icon open-sidepanel" v-tooltip.unblocking data-tooltip="Menu"
-					data-target="msidepanel">
-					<SvgIcon name="menu" />
-				</div>
-				<div class="xhover item as-icon">
-					<img src="/images/logo_sqr.png" alt="site logo" class="logo-lg site-logo" />
-				</div>
-				<div class="items r-aligned">
-					<div class="items md-and-down-hidden">
-						<router-link to="/help#shop-online" class="item">Have a shop online</router-link>
-						<Dropdown class="item">
-							Support
-							<SvgIcon name="expand_more" class="trailing" />
-							<div class="drop menu">
-								<Shareables name="supports" />
-							</div>
-						</Dropdown>
-					</div>
-					<Shareables name="do_more_item" />
-					<div class="as-icon item" v-tooltip.unblocking data-tooltip="Notifications">
-						<SvgIcon name="notifications" />
-					</div>
-					<Dropdown data-browse-dm="dm1_profile" :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
-						v-tooltip.unblocking data-tooltip="Your profile" class="xhover browse as-icon item">
-						<img :src="userStore.userData.profileImg" alt="profile" class="fully-rounded logo" />
-					</Dropdown>
-					<Shareables id="dm1_profile" name="profile_menu" />
-				</div>
-			</div>
-		</div>
-		<form id="searchbox" class="centered" @submit.prevent="searchStore.triggerSearch()">
+		<form id="searchbox" class="text-center" @submit.prevent="searchStore.triggerSearch()">
 			<div style="margin-bottom: 2rem;">
 				<h2 id="call-text">Let us do business</h2>
 				<p class="huge">Search for business names, products, and services.</p>
@@ -69,7 +37,7 @@ onMounted(() => feedStore.getUpdate());
 				</div>
 			</div>
 		</form>
-		<div class="centered" style="width: 100%; align-self: flex-end; margin: 2rem auto 1rem;">
+		<div class="text-center" style="width: 100%; align-self: flex-end; margin: 2rem auto 1rem;">
 			<div role="button" @click="scrollToView">
 				<SvgIcon name="double_arrow_down" style="font-size: 2em; line-height: 1;" />
 				<div style="font-size: 1.2em; line-height: 1; font-weight: 500;">FEEDS</div>
@@ -96,7 +64,7 @@ onMounted(() => feedStore.getUpdate());
 				</IScroller>
 			</header>
 			<section style="display: flex; flex-direction: column; align-items: center;">
-				<h6 class="centered" style="margin-bottom: 2rem;" id="bizupdate">Update from page you're following
+				<h6 class="text-center" style="margin-bottom: 2rem;" id="bizupdate">Update from page you're following
 					(Feeds)</h6>
 				<FeedCard v-for="(feed, i) in feedStore.feeds" :key="i" :details="feed" />
 				<div class="divider">

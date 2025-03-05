@@ -444,11 +444,7 @@ function whatDay(index) {
                 v-model="choice.spec"
               />
               <div>
-                {{
-                  `${option.type.charAt(0).toUpperCase()}${option.type.slice(
-                    1
-                  )}`
-                }}
+                <span class="capitalized">{{ option.type }}</span>
                 <br />
                 <span class="bold">{{ option.price }}</span>
               </div>
@@ -507,11 +503,7 @@ function whatDay(index) {
                 <tr>
                   <th>Packages</th>
                   <th v-for="option in details.serviceOptions" class="centered">
-                    {{
-                      `${option.type
-                        .charAt(0)
-                        .toUpperCase()}${option.type.slice(1)}`
-                    }}
+                    <span class="capitalized">{{ option.type }}</span>
                     <br />
                     <span class="bold">{{ option.price }}</span>
                   </th>
@@ -707,11 +699,7 @@ function whatDay(index) {
                 v-model="choice.spec"
               />
               <div>
-                {{
-                  `${option.type.charAt(0).toUpperCase()}${option.type.slice(
-                    1
-                  )}`
-                }}
+                <span class="capitalized">{{ option.type }}</span>
                 <br />
                 <span class="bold">{{ option.price }}</span>
               </div>

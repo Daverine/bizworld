@@ -5,64 +5,7 @@ const userStore = useUserStore();
 
 <template>
 	<header id="main-header">
-		<div class="transparent menu" style="height: 64px">
-			<div class="container-lg items" style="border-radius: var(--default-radius)">
-				<div class="item as-icon open-sidepanel" v-tooltip.unblocking data-tooltip="Menu"
-					data-target="msidepanel">
-					<SvgIcon name="menu" />
-				</div>
-				<div class="items md-and-down-hidden">
-					<router-link to="/help#shop-online" class="item">Have a shop online</router-link>
-					<Dropdown class="item">
-						Support
-						<SvgIcon name="expand_more" class="trailing" />
-						<div class="drop menu">
-							<Shareables name="supports" />
-						</div>
-					</Dropdown>
-				</div>
-				<div class="items r-aligned">
-					<Shareables name="do_more_item" />
-					<template v-if="userStore.auth">
-						<div class="as-icon item" v-tooltip.unblocking data-tooltip="Notifications">
-							<SvgIcon name="notifications" />
-						</div>
-						<Dropdown data-browse-dm="dm1_profile"
-							:options="{ directionPriority: { x: 'left', y: 'bottom' } }" v-tooltip.unblocking
-							data-tooltip="Your profile" class="xhover browse as-icon item">
-							<img :src="userStore.userData.profileImg" alt="profile" class="fully-rounded logo" />
-						</Dropdown>
-						<Shareables id="dm1_profile" name="profile_menu" />
-					</template>
-					<template v-else>
-						<div class="items sm-and-down-hidden">
-							<div class="item open-modal" data-target="login-modal">
-								Log in
-							</div>
-							<div class="xhover item 0-h-padding">
-								<button class="primary button open-modal" data-target="register-modal">
-									Sign Up
-								</button>
-							</div>
-						</div>
-						<Dropdown class="as-icon item sm-and-up-hidden">
-							<SvgIcon name="person_add" class="lead" /> Account
-							<div class="drop menu">
-								<div class="item open-modal" data-target="login-modal">
-									Log in
-								</div>
-								<div class="xhover item">
-									<button class="primary button open-modal" data-target="register-modal">
-										Sign Up
-									</button>
-								</div>
-							</div>
-						</Dropdown>
-					</template>
-				</div>
-			</div>
-		</div>
-		<form id="searchbox" class="centered" @submit.prevent="searchStore.triggerSearch()">
+		<form id="searchbox" class="text-center" @submit.prevent="searchStore.triggerSearch()">
 			<div style="margin-bottom: 16px">
 				<img src="/images/logo_full.png" alt="site logo" class="site-logo fluid image"
 					style="max-width: 450px; background-color: rgba(128, 128, 128, 0.025)" />
@@ -111,7 +54,7 @@ const userStore = useUserStore();
 	</header>
 	<article id="firstSec" ref="main">
 		<section id="whatfor" class="sec-block">
-			<div class="big centered container-text">
+			<div class="big text-center container-text">
 				<h1>
 					Do <span class="primary-text">business</span> at your
 					<span class="primary-text">conveniency</span>
@@ -124,7 +67,7 @@ const userStore = useUserStore();
 					You can get updates from stores, offices, and businesses in general.
 					You can rate and write reviews on enterprises.
 				</p>
-				<div v-if="!userStore.auth" class="centered">
+				<div v-if="!userStore.auth" class="text-center">
 					<button class="primary button open-modal" data-target="register-modal">
 						SIGN UP
 					</button>
@@ -159,7 +102,7 @@ const userStore = useUserStore();
 							If you can not find the category of interest on our explore page,
 							use the search feature instead.
 						</p>
-						<div class="centered">
+						<div class="text-center">
 							<button class="primary button open-modal" data-target="explore-modal">
 								EXPLORE
 							</button>
@@ -184,7 +127,7 @@ const userStore = useUserStore();
 							page. You can use the QR code scanner on this page for such codes.
 						</p>
 						<!-- <p>Scan a business bizWorld QR Code and get to know what products or services a business offer. Businesses that have page(s) on bizWorld usually have their BizWorld QR Code pasted in public places to help people easyly access their page. You can utilize the QR scanner on this page on such Code and directly access a business page and explore their business world.</p> -->
-						<div class="centered">
+						<div class="text-center">
 							<button class="primary button open-modal" data-target="scanqr-modal">
 								SCAN QR
 							</button>
@@ -194,7 +137,7 @@ const userStore = useUserStore();
 			</div>
 		</section>
 		<section class="sec-block">
-			<div class="big centered container-text">
+			<div class="big text-center container-text">
 				<h2>Take <span class="primary-text">your business online</span> with ease</h2>
 				<p>
 					Are you a business owner? Do you want people to connect with your
@@ -202,7 +145,7 @@ const userStore = useUserStore();
 					Started button below to create your microsite here on BizWorld today
 					and get connected with new clients and customers.
 				</p>
-				<div class="centered">
+				<div class="text-center">
 					<button class="primary button">GET STARTED</button>
 				</div>
 			</div>

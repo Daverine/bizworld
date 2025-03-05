@@ -229,7 +229,7 @@ onUpdated(() => {
             <div v-for="a in Math.min(5, details.reviews.length)" class="dm-review"
               :set="review = details.reviews[a - 1]">
               <header>
-                <div class="avatar image"><span class="huge">{{ review.username.split('')[0].toUpperCase()
+                <div class="avatar image"><span class="huge uppercased">{{ review.username.split('')[0]
                     }}</span>
                 </div>
                 <div class="content">

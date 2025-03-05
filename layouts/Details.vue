@@ -5,9 +5,6 @@ const searchStore = useSearchStore();
   <div class="as-page">
     <header id="main-header"
       style="border-bottom: 1px solid var(--outline); background-color: var(--surface);">
-      <div class="menu" style="height: 64px;">
-        <Shareables name="main_menu" />
-      </div>
       <div class="container md-and-up-hidden" style="padding-top: 0.5rem; padding-bottom: 0.5rem;">
         <form class="fluid" @submit.prevent="searchStore.triggerSearch()">
           <label class="input fluid transparent" style="background-color: var(--surface-v4) !important;">

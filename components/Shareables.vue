@@ -206,9 +206,6 @@ const searchStore = useSearchStore();
 
     <header v-else-if="name === 'common_header'" id="main-header"
         style="border-bottom: 1px solid var(--outline); background-color: var(--surface);">
-        <div class="menu" style="height: 64px;">
-            <rc-shareables name="main_menu" />
-        </div>
         <div class="container-lg md-and-up-hidden" style="padding-top: 0.5rem; padding-bottom: 0.5rem;">
             <form class="fluid" @submit.prevent="searchStore.triggerSearch()">
                 <label class="input fluid transparent" style="background-color: var(--surface-v4) !important;">
@@ -297,9 +294,9 @@ const searchStore = useSearchStore();
         <aside class="flex-none col sidemenu lg-and-down-hidden">
             <div id="admenu" v-scrollPin="{ top: 84, bottom: 16 }">
                 <div style="width: 100%;">
-                    <h6 class="centered" style="margin-bottom: 16px;">Sponsored (Ads)</h6>
+                    <h6 class="text-center" style="margin-bottom: 16px;">Sponsored (Ads)</h6>
                     <div class="ads">
-                        <div class="centered ad">
+                        <div class="text-center ad">
                             <img src="/images/ads.jpg" alt="ad" class="image">
                             <div>
                                 Fix your laptops and desktops (Hardware and Software).
