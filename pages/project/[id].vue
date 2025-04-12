@@ -3,6 +3,7 @@ definePageMeta({ layout: 'details' });
 
 const details = ref({
   type: 'service',
+  id: 'serv134344',
   title:
     'Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW',
   desc: `
@@ -21,6 +22,7 @@ const details = ref({
     </ul>
     <p>Your satisfaction is our priority, and we look forward to the opportunity to collaborate on your design needs.</p>
   `,
+  price: 6000,
   media: [
     {
       type: 'pic',
@@ -43,7 +45,7 @@ const details = ref({
       type: 'basic',
       description: '',
       duration: 2, // in days
-      price: 'N5,000',
+      price: 5000,
       specifications: {
         'Number of Revisions': '2',
         'Number of Pages': '1',
@@ -54,7 +56,7 @@ const details = ref({
       type: 'standard',
       description: '',
       duration: 2, // in days
-      price: 'N8,000',
+      price: 8000,
       specifications: {
         'Number of Revisions': '5',
         'Number of Pages': '3',
@@ -66,7 +68,7 @@ const details = ref({
       type: 'premium',
       description: '',
       duration: 2, // in days
-      price: 'N12,000',
+      price: 12000,
       specifications: {
         'Number of Revisions': '10',
         'Number of Pages': '5',
@@ -186,6 +188,10 @@ const details = ref({
       email: 'contact_us@edtech.com',
     },
     verified: true,
+    rating: {
+      rate: 3.5,
+      raters: 30,
+    },
     location: {
       address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
       city: 'Abeokuta',
@@ -193,56 +199,17 @@ const details = ref({
       url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
     },
     hours: [
-      [-1],
+      [false],
       ['8:30', '18:30'],
       ['8:30', '18:30'],
       ['15:30', '18:30'],
       ['8:30', '18:30'],
-      [-1],
+      [false],
       ['8:30', '18:30'],
     ],
   },
 });
-const now = useNow({ interval: 10000 });
-const openTime = computed(() =>
-  details.value.bizData.hours[now.value.getDay()][0] === -1
-    ? false
-    : details.value.bizData.hours[now.value.getDay()][0]
-        .split(':')
-        .map((el) => Number(el))
-);
-const closeTime = computed(() =>
-  openTime.value === false
-    ? false
-    : details.value.bizData.hours[now.value.getDay()][1]
-        .split(':')
-        .map((el) => Number(el))
-);
-const isClosed = computed(
-  () =>
-    !openTime.value ||
-    openTime.value[0] > now.value.getHours() ||
-    (openTime.value[0] === now.value.getHours() &&
-      openTime.value[1] > now.value.getMinutes()) ||
-    closeTime.value[0] < now.value.getHours() ||
-    (closeTime.value[0] === now.value.getHours() &&
-      closeTime.value[1] < now.value.getMinutes())
-);
-const willOpenToday = computed(
-  () =>
-    openTime.value !== false &&
-    (openTime.value[0] > now.value.getHours() ||
-      (openTime.value[0] === now.value.getHours &&
-        openTime.value[1] > now.value.getMinutes()))
-);
-const closesSoon = computed(
-  () =>
-    !isClosed.value &&
-    closeTime.value[0] * 60 +
-      closeTime.value[1] -
-      (now.value.getHours() * 60 + now.value.getMinutes()) <
-      90
-);
+const avail = useAvailability(details.value.bizData.hours);
 const servicesOffer = computed(() => [
   ...new Set(
     details.value.serviceOptions.reduce(
@@ -268,31 +235,6 @@ onMounted(() => {
   });
 });
 
-function nextOpenDay(hours) {
-  let ex = now.value.getDay() === 6 ? 0 : now.value.getDay() + 1,
-    i = 1,
-    result;
-
-  for (; i < 6; i++) {
-    if (hours[ex > 5 ? -1 + i : ex + i][0] !== -1) {
-      result = ex > 5 ? -1 + i : ex + i;
-      break;
-    }
-  }
-
-  return result;
-}
-function whatDay(index) {
-  return [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ][index];
-}
 </script>
 <template>
   <Title>{{ `${details.title} | Bizworld` }}</Title>
@@ -333,42 +275,42 @@ function whatDay(index) {
                 <span
                   v-tooltip.unblocking
                   :data-tooltip="
-                    openTime[0] < 0
+                    avail.openTime[0] < 0
                       ? 'Did not open today at all.'
-                      : `Open today by ${openTime[0]}:${openTime[1]} and closes by ${closeTime[0]}:${closeTime[1]}.`
+                      : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
                   "
                 >
                   <Icon
                     name="material-symbols:recent-patient-outline-rounded"
                   />
-                  <template v-if="isClosed">
+                  <template v-if="avail.isClosed">
                     <span class="error-text">Closed.</span>
                     Opens
                     {{
-                      willOpenToday
-                        ? `${openTime[0]}:${openTime[1]}`
+                      avail.willOpenToday
+                        ? `${avail.openTime[0]}:${avail.openTime[1]}`
                         : details.bizData.hours[
-                            now.getDay() === 6 ? 0 : now.getDay() + 1
+                            avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
                           ][0] !== -1
                         ? `${
                             details.bizData.hours[
-                              now.getDay() === 6 ? 0 : now.getDay() + 1
+                              avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
                             ][0]
                           } Tomorrow`
                         : `${
                             details.bizData.hours[
-                              nextOpenDay(details.bizData.hours)
+                              avail.nextOpenDay(details.bizData.hours)
                             ][0]
-                          } on ${whatDay(nextOpenDay(details.bizData.hours))}`
+                          } on ${avail.whatDay(avail.nextOpenDay(details.bizData.hours))}`
                     }}
                   </template>
                   <template v-else>
-                    <span v-if="closesSoon" class="warning-text">
+                    <span v-if="avail.closesSoon" class="warning-text">
                       Closes soon.
                     </span>
                     <span v-else class="success-text">Open.</span>
                     Closes
-                    {{ `${closeTime[0]}:${closeTime[1]}` }}
+                    {{ `${avail.closeTime[0]}:${avail.closeTime[1]}` }}
                   </template>
                 </span>
               </div>
@@ -446,7 +388,7 @@ function whatDay(index) {
               <div>
                 <span class="capitalized">{{ option.type }}</span>
                 <br />
-                <span class="bold">{{ option.price }}</span>
+                <span class="bold">₦{{ option.price.toLocaleString() }}</span>
               </div>
             </label>
           </div>
@@ -476,14 +418,14 @@ function whatDay(index) {
             </table>
           </div>
           <!-- Buyer's Protection Section -->
-          <div class="compact success note">
+          <div class="compact success note" style="margin-top: 1rem">
             <Icon
               name="material-symbols:verified-user-outline-rounded"
               style="font-size: 1.875em"
             />
             <div class="content">
               <div class="heading">Secure personal details</div>
-              <div class="faint-text-v1">
+              <div class="faint-text">
                 Your personal and payment information is kept confidential and
                 secure. We do not share your details with third parties without
                 your explicit consent, ensuring your privacy is always
@@ -505,7 +447,9 @@ function whatDay(index) {
                   <th v-for="option in details.serviceOptions" class="centered">
                     <span class="capitalized">{{ option.type }}</span>
                     <br />
-                    <span class="bold">{{ option.price }}</span>
+                    <span class="bold"
+                      >₦{{ option.price.toLocaleString() }}</span
+                    >
                   </th>
                 </tr>
               </thead>
@@ -549,7 +493,7 @@ function whatDay(index) {
             </i>
           </div>
           <div class="collapsible">
-            <div class="flexbox flex-items-to-basis align-center">
+            <div class="flexbox flexible-items align-center">
               <div
                 class="centered"
                 :set="
@@ -662,7 +606,7 @@ function whatDay(index) {
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
-                    <span class="faint-text-v1 small semibold">12-01-2034</span>
+                    <span class="faint-text small semibold">12-01-2034</span>
                   </footer>
                 </div>
                 <div v-if="details.reviews.length > 5" class="centered">
@@ -701,7 +645,7 @@ function whatDay(index) {
               <div>
                 <span class="capitalized">{{ option.type }}</span>
                 <br />
-                <span class="bold">{{ option.price }}</span>
+                <span class="bold">₦{{ option.price.toLocaleString() }}</span>
               </div>
             </label>
           </div>
@@ -735,9 +679,10 @@ function whatDay(index) {
         <!-- Call to Action Section -->
         <div class="flexbox flex-column guttered">
           <button class="fluid primary button">
-            Continue ({{
-              details.serviceOptions.filter((el) => el.type === choice.spec)[0]
-                ?.price
+            Continue (₦{{
+              details.serviceOptions
+                .filter((el) => el.type === choice.spec)[0]
+                ?.price.toLocaleString()
             }})
             <Icon
               name="material-symbols:chevron-right-rounded"
@@ -794,14 +739,14 @@ function whatDay(index) {
           </div>
         </div>
         <!-- Buyer's Protection Section -->
-        <div class="compact success note 0-b-margined">
+        <div class="compact success note" style="margin-top: 1rem">
           <Icon
             name="material-symbols:verified-user-outline-rounded"
             style="font-size: 1.875em"
           />
           <div class="content">
             <div class="heading">Secure personal details</div>
-            <div class="faint-text-v1">
+            <div class="faint-text">
               Your personal and payment information is kept confidential and
               secure. We do not share your details with third parties without
               your explicit consent, ensuring your privacy is always protected.
@@ -817,9 +762,10 @@ function whatDay(index) {
     >
       <div class="container flexbox guttered" style="padding: 0.5rem 0rem">
         <button class="flexible primary button">
-          Continue ({{
-            details.serviceOptions.filter((el) => el.type === choice.spec)[0]
-              ?.price
+          Continue (₦{{
+            details.serviceOptions
+              .filter((el) => el.type === choice.spec)[0]
+              ?.price.toLocaleString()
           }})
           <Icon
             name="material-symbols:chevron-right-rounded"

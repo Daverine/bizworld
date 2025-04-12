@@ -8,7 +8,7 @@ definePageMeta({layout: 'common', auth: true,});
                 <div class="rounded" style="width: 90px; height: 90px; background-color: pink;"></div>
                 <div style="display: flex; flex-direction: column; justify-content: space-evenly; width: calc(100% - 90px - 0.5em);">
                     <div class="bold h6">Emmadave Computer Technology Services</div>
-                    <div class="faint-text-v1">
+                    <div class="faint-text">
                         <span>@emmadavetechservices</span> | <span>Computer repair services</span>
                     </div>
                     <div class="flexbox flex-wrap semibold" style="gap: 1em;">

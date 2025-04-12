@@ -23,7 +23,7 @@ const nextBtn = useTemplateRef('nextBtn');
 
 const settings = {
     ...{
-        nameSpace: 'lightbox',
+        namespace: 'lightbox',
         toBeConsidered: '.slides, .lb-control',
         toggler: '.open-lightbox',
         toExcuseToggler: '.ex-open-lightbox',
@@ -31,10 +31,8 @@ const settings = {
         closeOnWrapperClick: true,
         dismissible: true,
         dismisser: '.exit-lightbox',
-        lockScreen: true,
         inDuration: 500,
         outDuration: 500,
-        iaTimeout: 6000, // inactive timeout
         slideshow: true,
         slideshowDuration: 6000,
         transitionDuration: 350,
@@ -44,6 +42,7 @@ const settings = {
     ...(props.options || {})
 };
 const bb = { // brainbox
+    uniqueId: undefined,
     startCoords: { x: 0, y: 0, z: 0, zoom: 1 },
     endCoords: { x: 0, y: 0, z: 0, zoom: 1 },
     initCoords: { x: 0, y: 0, z: 0, zoom: 1 },
@@ -89,16 +88,15 @@ let prevSlide;
 let nextSlide;
 let currContent;
 let currPic;
-let uniqueId;
 
 onMounted(async () => {
-    uniqueId = utils.getUniqueId(settings.namespace);
+    bb.uniqueId = utils.getUniqueId(settings.namespace);
     gallery = lightbox.value.querySelector('.gallery-view');
 
     // click on lightbox toggler to open lightbox event
     useEventListener(document, 'click', (e) => {
-        let toggler = e.target.closest(settings.toggler);
-        if (!toggler || !toggler.matches(`[data-target="${props.id}"]`) || e.target.closest(settings.toExcuseToggler)) return;
+        let toggler = e.target.closest(`${settings.toggler}[data-target="${props.id}"]`);
+        if (!toggler || e.target.closest(settings.toExcuseToggler)) return;
         triggerViewOf(toggler);
     });
 
@@ -142,7 +140,7 @@ onBeforeUnmount(() => {
     if (document.fullscreenElement === lightbox.value) document.exitFullscreen();
     if (settings.hashLightbox) window.removeEventListener('popstate', backToExit);
     document.removeEventListener('keydown', panelKbdFunc);
-    utils.checkEscStatus(uniqueId, true);
+    utils.checkEscStatus(bb.uniqueId, true);
     document.removeEventListener('keyup', panelEscFunc);
     document.removeEventListener('fullscreenchange', fullscreenOutFunc);
     window.removeEventListener('resize', resizeFunc);
@@ -150,7 +148,7 @@ onBeforeUnmount(() => {
     document.removeEventListener('touchend', gestureEnd);
     document.removeEventListener('mousemove', gestureMove);
     document.removeEventListener('mouseup', gestureEnd);
-    utils.unlockWindowScroll(uniqueId);
+    utils.unlockWindowScroll(bb.uniqueId);
 });
 
 watch(() => vbb.showLightbox, (value) => {
@@ -161,9 +159,13 @@ watch(() => vbb.showLightbox, (value) => {
             bb.scrollPosBeforeLock = { top: window.scrollY, left: window.scrollX };
             if (!bb.openWithHash) router.replace({ hash: `#${props.id}` });
             window.addEventListener('popstate', backToExit);
+            // exit when route hash changes
+            unwatch.closeOnRouteChange = watch(() => route.hash, (newHash) => {
+                if (newHash !== `#${props.id}`) vbb.showLightbox = false;
+            });
         }
 
-        utils.lockWindowScroll(uniqueId);
+        utils.lockWindowScroll(bb.uniqueId);
 
         // configure viewport meta to let lightbox function well
         let viewportMeta = document.head.querySelector('meta[name=viewport]');
@@ -183,13 +185,9 @@ watch(() => vbb.showLightbox, (value) => {
         if (typeof (settings.controller) === 'function') settings.controller(lightbox.value, settings);
         // set focus and text-highlight range to only lightbox;
         document.addEventListener('keydown', panelKbdFunc);
-        // exit when route hash changes
-        if (settings.hashLightbox) unwatch.closeOnRouteChange = watch(() => route.hash, (newHash) => {
-            if (newHash !== `#${props.id}`) vbb.showLightbox = false;
-        });
 
         if (settings.closeOnEsc) {
-            utils.trackEscOn(uniqueId);
+            utils.trackEscOn(bb.uniqueId);
             document.addEventListener('keyup', panelEscFunc);
         }
 
@@ -221,6 +219,7 @@ watch(() => vbb.showLightbox, (value) => {
             lightbox.value.addEventListener('touchstart', gestureStart);
             // click to exit event
             lightbox.value.addEventListener('click', panelClickFunc);
+            if (vbb.slidesNo) update();
         }, settings.inDuration);
     }
     else {
@@ -229,7 +228,7 @@ watch(() => vbb.showLightbox, (value) => {
         lightbox.value.removeEventListener('click', panelClickFunc);
         if (settings.closeOnEsc) {
             // safely get out of escape track
-            utils.checkEscStatus(uniqueId, true);
+            utils.checkEscStatus(bb.uniqueId, true);
             document.removeEventListener('keyup', panelEscFunc);
         }
 
@@ -262,7 +261,7 @@ watch(() => vbb.showLightbox, (value) => {
             document.head.querySelector('meta[name=viewport]').setAttribute('content', bb.viewportMeta);
             if (settings.caller) settings.caller.focus();
             settings.caller = undefined;
-            utils.unlockWindowScroll(uniqueId);
+            utils.unlockWindowScroll(bb.uniqueId);
         }, settings.outDuration);
     }
 });
@@ -461,7 +460,7 @@ function panelClickFunc(e) {
     if ((settings.closeOnWrapperClick && !e.target.closest(settings.toBeConsidered)) || (settings.dismissible && e.target.closest(settings.dismisser))) vbb.showLightbox = false;
 }
 function panelEscFunc(e) {
-    if (e.key === 'Escape' && utils.checkEscStatus(uniqueId)) vbb.showLightbox = false;
+    if (e.key === 'Escape' && utils.checkEscStatus(bb.uniqueId)) vbb.showLightbox = false;
 }
 function toolbarControls(e) {
     // Zoom-in and zoom-out funtionality on toolbar
@@ -702,7 +701,7 @@ function gestureStart(e) {
             bb.startCoords = dist(e);
             // Swiping
             if (bb.newCoords.zoom === 1) {
-                bb.newCoords.w = slider.value.offsetWidth;
+                bb.newCoords.w = slider.value.getBoundingClientRect().width;
                 slider.value.classList.add('swiping');
             }
             //Zoom dragging
@@ -966,15 +965,15 @@ function stopSlideshow() {
                 </div>
             </div>
             <IScroller
-                :options="{ scrollBody: '[data-thumbnails]', scrollChildren: '.thumbnail', prevCtrlBtn: '.l-scroll', nextCtrlBtn: '.r-scroll', }"
+                :options="{ autoSetup: false, scrollBody: '[data-thumbnails]', scrollChildren: '.thumbnail', prevCtrlBtn: '.l-scroll', nextCtrlBtn: '.r-scroll', }"
                 class="lb-control gallery-view">
-                <div class="l-scroll">
-                    <Icon mode="svg" name="material-symbols:keyboard-double-arrow-left" class="icon" />
-                </div>
                 <div data-thumbnails>
                     <div v-for="(slide, index) in vbb.slidesData" class="thumbnail" :data-gallery-ref="index + 1">
                         <img :src="slide.thumbnail" alt="a thumbnail picture" />
                     </div>
+                </div>
+                <div class="l-scroll">
+                    <Icon mode="svg" name="material-symbols:keyboard-double-arrow-left" class="icon" />
                 </div>
                 <div class="r-scroll">
                     <Icon mode="svg" name="material-symbols:keyboard-double-arrow-right" class="icon" />

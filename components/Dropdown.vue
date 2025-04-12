@@ -468,6 +468,9 @@ watch(showDropdown, (show) => {
 });
 
 onBeforeUnmount(() => {
+  // return dropMenu to it appropriate location.
+  if (dropMenu && !settings.browseDm && !settings.selectable) dropElem.value.append(dropMenu); // return drop menu to the drop down to get it removed also.
+
   // stop all asynchronous watcher
   Object.keys(unwatch).forEach(el => {
     if (typeof unwatch[el] === 'function') unwatch[el]();
@@ -480,9 +483,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', dd_CalcPosition, true);
 
   if (settings.openOnMouseover) document.removeEventListener('mousemove', dd_toggleDropdown);
-  // return dropMenu to it appropriate location.
-  if (dropMenu && !settings.browseDm && !settings.selectable) dropElem.value.append(dropMenu); // return drop menu to the drop down to get it removed also.
-
+  
   // safely get out of escape track
   utils.checkEscStatus(uniqueId, true);
 

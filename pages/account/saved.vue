@@ -6,7 +6,7 @@ onMounted(() => userStore.getSavedCards());
 </script>
 
 <template>
-	<h6 class="centered">Saved Cards</h6>
+	<h6 class="text-center">Saved Cards</h6>
 
 	<ItemCard v-for="(result, i) in userStore.savedCards" :key="i" :details="result" :isSaved="true" />
 

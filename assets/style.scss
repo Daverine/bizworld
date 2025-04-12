@@ -51,7 +51,7 @@ svg.icon {
   // border-bottom: 1px solid var(--outline);
   box-shadow: 0px 1px 15px rgba(128, 128, 128, 0.05);
   z-index: 9000;
-  background-color: var(--fmenu-bg);
+  background: var(--fmenu-bg);
   backdrop-filter: saturate(50%) blur(8px);
   transition: transform ease 0.1s, opacity ease 0.1s !important;
 
@@ -74,13 +74,13 @@ svg.icon {
   width: var(--sidepanel-width);
   box-shadow: none;
   background-color: transparent !important;
-  padding: 10px;
+  padding: 0.625rem;
 }
 
 #admenu {
   display: flex;
   flex-flow: row wrap;
-  padding: 15px 6px;
+  padding: 1rem 0.5rem;
   min-height: calc(100vh - 200px);
 }
 
@@ -101,11 +101,8 @@ svg.icon {
 }
 
 #feed {
-  position: relative;
-  width: calc(100% - var(--sidepanel-width) - var(--sidepanel-width));
-  max-width: var(--container-text);
-  min-height: 100%;
-  padding: 20px 1em;
+  max-width: var(--container-md);
+  padding: 1.5rem 1em;
   margin: 0px auto;
 }
 
@@ -133,6 +130,13 @@ svg.icon {
   .p-h3 {
     transition: font-size 0.1s linear;
   }
+}
+
+.pin-top-blend {
+  box-shadow: 0px 5px 10px 5px var(--surface);
+}
+.pin-bottom-blend {
+  box-shadow: 0px -5px 10px var(--surface);
 }
 
 .p-f > .pinned {

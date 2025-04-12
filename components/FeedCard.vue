@@ -13,7 +13,7 @@ defineProps(['details']);
 			</div>
 			<div style="flex: 1 1 auto;">
 				<div class="fcd-displayname">{{ details.displayName }}</div>
-				<div class="faint-text-v1 small semibold" style="display: flex; gap: 10px; flex: 1 1 auto;">
+				<div class="faint-text small semibold" style="display: flex; gap: 10px; flex: 1 1 auto;">
 					<div><SvgIcon name="schedule" class="mini" /> {{ details.date }}</div>
 				</div>
 			</div>

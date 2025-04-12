@@ -1,161 +1,273 @@
-<script setup>
+<script setup lang="ts">
+interface ScrollerOptions {
+  namespace: string;
+  autoSetup: boolean;
+  scrollBody: string;
+  scrollChildren: string;
+  prevCtrlBtn: string;
+  nextCtrlBtn: string;
+  autoProvideCtrls: boolean;
+  tolerance: number;
+  duration: number;
+}
+
+interface Rect {
+  width: number;
+  left: number;
+  scrollPos: number;
+  sWidth: number;
+  maxScroll: number;
+}
+
+interface Coords {
+  start?: number;
+  end?: number;
+  change?: boolean;
+  scrollPos?: number;
+}
+
 const { $anime } = useNuxtApp();
 const el = useTemplateRef('el');
-const props = defineProps(['options']);
-const settings = {
-    ...{
-        namespace: 'iScroller',
-        scrollBody: '.scroll-items',
-        scrollChildren: '.item',
-        prevCtrlBtn: '.l-scroll',
-        nextCtrlBtn: '.r-scroll',
-        autoProvideCtrls: true,
-        tolerance: 10,
-        duration: 300,
-    },
-    ...props.options || {}
-};
-const rect = {};
-const coords = {};
+const props = defineProps<{ options?: Partial<ScrollerOptions> }>();
 
-let scrollElem, items;
+const settings: ScrollerOptions = {
+  ...{
+    namespace: 'iScroller',
+    autoSetup: false,
+    scrollBody: '.scroll-items',
+    scrollChildren: '.item',
+    prevCtrlBtn: '.l-scroll',
+    nextCtrlBtn: '.r-scroll',
+    autoProvideCtrls: true,
+    tolerance: 32,
+    duration: 300,
+  },
+  ...(props.options || {}),
+};
+
+const coords: Coords = {};
+
+let scrollElem: HTMLElement | null = null;
 
 onMounted(async () => {
-    scrollElem = el.value.querySelector(`:scope > ${settings.scrollBody}`);
+  if (!el.value) return;
 
-    if (!scrollElem) {
-        console.warn('An IScrollable element does not exist');
-        return;
+  scrollElem = el.value.querySelector(`:scope > ${settings.scrollBody}`);
+
+  if (!scrollElem) {
+    console.warn('An IScrollable element does not exist');
+    return;
+  }
+  window.addEventListener('resize', onResizeMtd);
+  scrollElem.addEventListener('scroll', onScrollMtd);
+
+  el.value.addEventListener('click', (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const rect = getRect();
+    const items = [
+      ...scrollElem!.querySelectorAll(`:scope ${settings.scrollChildren}`),
+    ] as HTMLElement[];
+    let checker: number[] = [];
+
+    if (target.closest(settings.prevCtrlBtn)) {
+      if (items[0]) {
+        checker = items.reduce((acc, el) => {
+          if (
+            utils.offsetPos(el).left - rect.left > 0 ||
+            utils.offsetPos(el).left +
+              el.getBoundingClientRect().width -
+              rect.left <
+              0
+          )
+            return acc;
+          else
+            return [
+              ...acc,
+              rect.scrollPos -
+                (rect.left +
+                  rect.width -
+                  utils.offsetPos(el).left -
+                  el.getBoundingClientRect().width),
+            ];
+        }, [] as number[]);
+      }
+      animateScroll(
+        checker.length &&
+          Math.abs(Math.min(...checker) + settings.tolerance - rect.scrollPos) >
+            4
+          ? Math.min(...checker) + settings.tolerance
+          : rect.scrollPos - rect.width + settings.tolerance > 0
+          ? rect.scrollPos - rect.width + settings.tolerance
+          : 0
+      );
+    } else if (target.closest(settings.nextCtrlBtn)) {
+      if (items[0]) {
+        checker = items.reduce((acc, el) => {
+          if (
+            utils.offsetPos(el).left - rect.left < 0 ||
+            utils.offsetPos(el).left + el.getBoundingClientRect().width <
+              rect.left + rect.width
+          )
+            return acc;
+          else
+            return [
+              ...acc,
+              rect.scrollPos + utils.offsetPos(el).left - rect.left,
+            ];
+        }, [] as number[]);
+      }
+      animateScroll(
+        checker.length &&
+          Math.abs(Math.min(...checker) - settings.tolerance - rect.scrollPos) >
+            4
+          ? Math.min(...checker) - settings.tolerance
+          : rect.maxScroll > rect.scrollPos + rect.width - settings.tolerance
+          ? rect.scrollPos + rect.width - settings.tolerance
+          : rect.maxScroll + 10 // overscroll to prevent not reaching the end
+      );
     }
+  });
 
-    items = [...scrollElem.querySelectorAll(`:scope ${settings.scrollChildren}`)];
-    window.addEventListener('resize', onResizeMtd);
-    scrollElem.addEventListener('scroll', onScrollMtd);
-    el.value.ondragstart = () => false;
-    el.value.addEventListener('click', (e) => {
-        if (e.target.closest(settings.prevCtrlBtn)) {
-            getRect();
+  el.value.addEventListener('activeView', (e: Event) => {
+    const items = [
+      ...scrollElem!.querySelectorAll(`:scope ${settings.scrollChildren}`),
+    ] as HTMLElement[];
+    let activeItem =
+      (e as CustomEvent).detail ||
+      items.find((el) => el.classList.contains('active'));
 
-            let checker = [];
-            if (items[0]) {
-                items.forEach((el) => {
-                    if (utils.offsetPos(el).left + el.offsetWidth - rect.left < 0) return;
-                    else checker.push(rect.scrollPos - (rect.left + rect.width - utils.offsetPos(el).left - el.offsetWidth));
-                });
-            }
+    if (!activeItem || !scrollElem?.contains(activeItem)) return;
+    const rect = getRect();
 
-            animateScroll(
-                checker.length
-                    ? Math.min.apply(null, checker) + settings.tolerance
-                    : rect.scrollPos - rect.width > 0
-                        ? rect.scrollPos - rect.width
-                        : 0
-            );
-        }
-        else if (e.target.closest(settings.nextCtrlBtn)) {
-            getRect();
+    let aeProp = {
+      left: utils.offsetPos(activeItem).left,
+      width: activeItem.getBoundingClientRect().width,
+    };
 
-            let checker = [];
-            if (items[0]) {
-                items.forEach((el) => {
-                    if (utils.offsetPos(el).left - rect.left < 0 || utils.offsetPos(el).left + el.offsetWidth < rect.left + rect.width) return;
-                    else checker.push(rect.scrollPos + utils.offsetPos(el).left - rect.left);
-                });
-            }
-            animateScroll(
-                checker.length
-                    ? Math.min.apply(null, checker) - settings.tolerance
-                    : rect.maxScroll > rect.scrollPos + rect.width
-                        ? rect.scrollPos + rect.width
-                        : rect.maxScroll);
-        }
-    });
-    el.value.addEventListener('activeView', (e) => {
-        let activeItem = e.detail || items.filter(el => el.classList.contains('active'));
-
-        if (!activeItem || !scrollElem.contains(activeItem)) return;
-        getRect();
-
-        let aeProp = {
-            left: utils.offsetPos(activeItem).left,
-            width: activeItem.offsetWidth,
-        }
-
-        animateScroll(rect.scrollPos - ((rect.width / 2) - aeProp.left + rect.left - (aeProp.width / 2)));
-    })
-    await nextTick();
-    onResizeMtd();
+    animateScroll(
+      rect.scrollPos -
+        (rect.width / 2 - aeProp.left + rect.left - aeProp.width / 2)
+    );
+  });
+  await nextTick();
+  onResizeMtd();
 });
-onBeforeUnmount(() => {
-    window.removeEventListener('resize', onResizeMtd);
-    scrollElem.removeEventListener('scroll', onScrollMtd);
-});
 
-function getRect() {
-    rect.width = scrollElem.clientWidth;
-    rect.left = utils.offsetPos(scrollElem).left;
-    rect.scrollPos = scrollElem.scrollLeft;
-    rect.sWidth = scrollElem.scrollWidth;
-    rect.maxScroll = scrollElem.scrollWidth - rect.width;
-}
-function dist(e) {
-    return e.type.indexOf('touch') > -1 ? e.touches[0].clientX : e.clientX;
-}
-function onResizeMtd() {
-    getRect();
-    onScrollMtd();
-}
-function onScrollMtd() {
-    if (scrollElem.scrollLeft === 0) [...el.value.querySelectorAll(`:scope ${settings.prevCtrlBtn}`)].forEach((el) => el.classList.add('disabled'));
-    else[...el.value.querySelectorAll(`:scope ${settings.prevCtrlBtn}`)].forEach((el) => el.classList.remove('disabled'));
+onBeforeUnmount(() => window.removeEventListener('resize', onResizeMtd));
 
-    if (scrollElem.scrollLeft >= rect.maxScroll - settings.tolerance) [...el.value.querySelectorAll(`:scope ${settings.nextCtrlBtn}`)].forEach((el) => el.classList.add('disabled'));
-    else[...el.value.querySelectorAll(`:scope ${settings.nextCtrlBtn}`)].forEach((el) => el.classList.remove('disabled'));
+function getRect(): Rect {
+  return {
+    width: scrollElem!.clientWidth,
+    left: utils.offsetPos(scrollElem!).left,
+    scrollPos: scrollElem!.scrollLeft,
+    sWidth: scrollElem!.scrollWidth,
+    maxScroll: scrollElem!.scrollWidth - scrollElem!.clientWidth,
+  };
 }
-function gestureStart(e) {
-    if (scrollElem.contains(e.target) || e.target === scrollElem) {
-        getRect();
-        coords.start = dist(e);
-        coords.change = false;
-        scrollElem.classList.add('swiping');
-        document.addEventListener('touchmove', gestureMove);
-        document.addEventListener('touchend', gestureEnd);
-    }
-}
-function gestureMove(e) {
-    coords.end = dist(e);
-    if (Math.abs(coords.end - coords.start) > 5 && !coords.change) coords.change = true;
-    if (coords.change) scrollElem.scrollLeft = rect.scrollPos - (coords.end - coords.start);
-}
-function gestureEnd(e) {
-    document.removeEventListener('touchmove', gestureMove);
-    document.removeEventListener('touchend', gestureEnd);
-    scrollElem.classList.remove('swiping');
-    rect.scrollPos = scrollElem.scrollLeft;
-}
-function wheelControl(e) {
-    getRect();
 
-    if (e.deltaY > 0 && Math.ceil(rect.scrollPos) < rect.maxScroll) {
-        e.preventDefault();
-        scrollElem.scrollLeft = rect.scrollPos + 30;
-    } else if (e.deltaY < 0 && rect.scrollPos != 0) {
-        e.preventDefault();
-        scrollElem.scrollLeft = rect.scrollPos - 30;
-    }
+function dist(e: TouchEvent): number {
+  return e.touches[0].clientX;
 }
-function animateScroll(scrollExt) {
-    $anime({
-        targets: scrollElem,
-        scrollLeft: scrollExt,
-        duration: settings.duration,
-        easing: 'linear',
-    });
+
+function onResizeMtd(): void {
+  onScrollMtd();
+}
+
+function onScrollMtd(): void {
+  if (!scrollElem || !el.value) return;
+
+  const rect = getRect();
+  if (Math.floor(scrollElem.scrollLeft) === 0)
+    [...el.value.querySelectorAll(`:scope ${settings.prevCtrlBtn}`)].forEach(
+      (el) => el.classList.add('disabled')
+    );
+  else
+    [...el.value.querySelectorAll(`:scope ${settings.prevCtrlBtn}`)].forEach(
+      (el) => el.classList.remove('disabled')
+    );
+
+  if (Math.ceil(scrollElem.scrollLeft) >= rect.maxScroll) {
+    [...el.value.querySelectorAll(`:scope ${settings.nextCtrlBtn}`)].forEach(
+      (el) => el.classList.add('disabled')
+    );
+  }
+  else
+    [...el.value.querySelectorAll(`:scope ${settings.nextCtrlBtn}`)].forEach(
+      (el) => el.classList.remove('disabled')
+    );
+}
+
+function gestureStart(e: TouchEvent): void {
+  if (!scrollElem) return;
+
+  if (scrollElem.contains(e.target as Node) || e.target === scrollElem) {
+    coords.start = e.touches[0].clientX;
+    coords.change = false;
+    coords.scrollPos = getRect().scrollPos;
+    scrollElem.classList.add('swiping');
+    document.addEventListener('touchmove', gestureMove);
+    document.addEventListener('touchend', gestureEnd);
+  }
+}
+
+function gestureMove(e: TouchEvent): void {
+  if (!scrollElem) return;
+  coords.end = e.touches[0].clientX;
+  if (Math.abs(coords.end! - coords.start!) > 5 && !coords.change)
+    coords.change = true;
+  if (coords.change)
+    scrollElem.scrollLeft = coords.scrollPos! - (coords.end! - coords.start!);
+}
+
+function gestureEnd(): void {
+  if (!scrollElem) return;
+  document.removeEventListener('touchmove', gestureMove);
+  document.removeEventListener('touchend', gestureEnd);
+  scrollElem.classList.remove('swiping');
+}
+
+function wheelControl(e: WheelEvent): void {
+  if (!scrollElem) return;
+
+  const rect = getRect();
+
+  if (e.deltaY > 0 && Math.ceil(rect.scrollPos) < rect.maxScroll) {
+    e.preventDefault();
+    scrollElem.scrollLeft = rect.scrollPos + 30;
+  } else if (e.deltaY < 0 && rect.scrollPos !== 0) {
+    e.preventDefault();
+    scrollElem.scrollLeft = rect.scrollPos - 30;
+  }
+}
+
+function animateScroll(scrollExt: number): void {
+  $anime({
+    targets: scrollElem!,
+    scrollLeft: scrollExt,
+    duration: settings.duration,
+    easing: 'linear',
+  });
 }
 </script>
 
 <template>
-    <div ref="el" class="i-scroller" @touchstart="gestureStart" @wheel="wheelControl">
+  <div
+    ref="el"
+    class="i-scroller"
+    @touchstart="gestureStart"
+    @wheel="wheelControl"
+  >
+    <template v-if="settings.autoSetup">
+      <div class="scroll-items">
         <slot />
-    </div>
+      </div>
+      <div class="l-scroll">
+        <Icon name="material-symbols:keyboard-double-arrow-left" />
+      </div>
+      <div class="r-scroll">
+        <Icon name="material-symbols:keyboard-double-arrow-right" />
+      </div>
+    </template>
+    <slot v-else />
+  </div>
 </template>

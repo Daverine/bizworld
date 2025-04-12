@@ -53,20 +53,20 @@ definePageMeta({layout: 'manage', auth: true, });
         <section class="bizmsec">
             <div class="heading small">Earned barge</div>
             <div style="display: flex; gap: 1.5rem; align-items: center; justify-content: center; margin-bottom: 1rem;">
-                <div class="centered">
+                <div class="text-center">
                     <Badges name="verified" style="font-size: 4rem;" />
                     <div class="semibold">Verified</div>
                 </div>
-                <div class="centered">
+                <div class="text-center">
                     <Badges name="escrow" style="font-size: 4rem;" />
                     <div class="semibold">Trade Assurance</div>
                 </div>
-                <div class="centered">
+                <div class="text-center">
                     <Badges name="5years" style="font-size: 4rem;" />
                     <div class="semibold">Sustainable</div>
                 </div>
             </div>
-            <div class="centered">
+            <div class="text-center">
                 <div class="b-margined-sm">Learn more about what each of our badges mean and how to earn them.</div>
                 <button class="button">Learn more</button>
             </div>
@@ -77,7 +77,7 @@ definePageMeta({layout: 'manage', auth: true, });
                 <div class="content">
                     <div class="small heading">Basic</div>
                     <div style="display: flex; gap: 1rem;">
-                        <div class="centered" style="flex: 0 0 auto;">
+                        <div class="text-center" style="flex: 0 0 auto;">
                             <div class="h1">$2</div>
                             <div class="small">per month</div>
                         </div>
@@ -88,7 +88,7 @@ definePageMeta({layout: 'manage', auth: true, });
                     </div>
                 </div>
             </div>
-            <div class="centered">
+            <div class="text-center">
                 <div class="b-margined-sm">See all our available market plan.</div>
                 <button class="button open-modal" data-target="marketplan">Market plans</button>
             </div>
@@ -99,7 +99,7 @@ definePageMeta({layout: 'manage', auth: true, });
                     <div class="content">
                         <div class="small heading">Standard</div>
                         <div style="display: flex; gap: 1rem;">
-                            <div class="centered" style="flex: 0 0 auto;">
+                            <div class="text-center" style="flex: 0 0 auto;">
                                 <div class="h1">$5</div>
                                 <div class="small">per month</div>
                             </div>

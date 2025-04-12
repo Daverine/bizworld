@@ -22,7 +22,7 @@ definePageMeta({auth: true, noFab: true,});
                                     <div style="flex: 1 1 auto;">
                                         <div class="text text-left">
                                             <div class="semibold" style="font-size: 1.125em; line-height: 1.25;">Ayoola Folorunso</div>
-                                            <div class="small faint-text-v1">Personal Account</div>
+                                            <div class="small faint-text">Personal Account</div>
                                         </div>
                                     </div>
                                 </div>
@@ -31,7 +31,7 @@ definePageMeta({auth: true, noFab: true,});
                                     <div style="flex: 1 1 auto;">
                                         <div class="text text-left">
                                             <div class="semibold" style="font-size: 1.125em; line-height: 1.25;">Emmadave Computers</div>
-                                            <div class="small faint-text-v1">Business Account</div>
+                                            <div class="small faint-text">Business Account</div>
                                         </div>
                                     </div>
                                 </div>
@@ -63,7 +63,7 @@ definePageMeta({auth: true, noFab: true,});
                                 <div style="flex: 1 1 auto;">
                                     <div class="text text-left">
                                         <div class="semibold" style="font-size: 1.125em; line-height: 1.25;">Ayoola Folorunso</div>
-                                        <div class="small faint-text-v1">Online</div>
+                                        <div class="small faint-text">Online</div>
                                     </div>
                                 </div>
                             </div>

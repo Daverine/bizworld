@@ -1,149 +1,149 @@
 <script setup>
-definePageMeta({ layout: "details" });
+definePageMeta({ layout: 'details' });
 const route = useRoute();
 const details = ref({
-  type: "business",
-  bizName: "Emmadave Computer Technology Services",
-  mainCategory: "Computer repair services",
-  logo: "/images/logo-sq.png",
-  coverPic: "/images/ads.jpg",
-  bizUrl: "https://www.edtech.com",
+  type: 'business',
+  bizName: 'Emmadave Computer Technology Services',
+  mainCategory: 'Computer repair services',
+  logo: '/images/logo-sq.png',
+  coverPic: '/images/ads.jpg',
+  bizUrl: 'https://www.edtech.com',
   description:
-    "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    'We offer technical services on laptop and desktop. We offer computer tech training We also do web development.',
   verified: true,
   rating: { rate: 3.5, raters: 30 },
   contacts: {
-    tel: "08157483233",
-    email: "contact_us@edtech.com",
+    tel: '08157483233',
+    email: 'contact_us@edtech.com',
   },
   location: {
-    address: "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
-    city: "Abeokuta",
-    state: "Ogun State",
-    url: "https://goo.gl/maps/y9ExQLSq37FL6EHm6",
+    address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
+    city: 'Abeokuta',
+    state: 'Ogun State',
+    url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
   },
   reviews: [
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 3,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 3,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 2,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 2,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 2,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
     {
-      userid: "e8e34",
-      username: "daverine",
-      userpic: "/images/profile_pic.jpg",
+      userid: 'e8e34',
+      username: 'daverine',
+      userpic: '/images/profile_pic.jpg',
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: "I enjoy my experience doing business with you guys. keep it up.",
+      review: 'I enjoy my experience doing business with you guys. keep it up.',
     },
   ],
   hours: [
     [-1],
-    ["8:30", "18:30"],
-    ["8:30", "18:30"],
-    ["15:30", "18:30"],
-    ["8:30", "18:30"],
+    ['8:30', '18:30'],
+    ['8:30', '18:30'],
+    ['15:30', '18:30'],
+    ['8:30', '18:30'],
     [-1],
-    ["8:30", "18:30"],
+    ['8:30', '18:30'],
   ],
   template: {
-    userid: "e8e34",
-    username: "daverine",
-    userpic: "/images/profile_pic.jpg",
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
     anonymous: false,
     timestamp: 1694061107318,
     rating: 4,
-    review: "I enjoy my experience doing business with you guys. keep it up.",
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
   },
 });
-const divider = useTemplateRef("divider");
-const dgContent = useTemplateRef("dgContent");
+const divider = useTemplateRef('divider');
+const dgContent = useTemplateRef('dgContent');
 const activeFixedMenu = ref(false);
 const feedStore = useFeedStore();
 
@@ -165,26 +165,26 @@ function nextOpenDay(hours) {
 }
 
 function getMinutes(time) {
-  time = time.split(":");
+  time = time.split(':');
   return Number(time[0]) * 60 + Number(time[1]);
 }
 
 function to12hrsTime(time) {
-  time = time.split(":");
+  time = time.split(':');
   return `${Number(time[0]) % 12 || 12}:${time[1]}${
-    Number(time[0]) >= 12 ? "PM" : "AM"
+    Number(time[0]) >= 12 ? 'PM' : 'AM'
   }`;
 }
 
 function whatDay(index) {
   return [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
   ][index];
 }
 
@@ -199,119 +199,111 @@ function handleScroll() {
 
 <template>
   <main class="grid-layout">
-    <header class="fluid grid-layout" style="padding-top: 0.5rem">
-      <div class="flexbox dm-gap" style="align-items: center; gap: 1rem">
-        <div
-          class="dm-logo flex-none"
-          style="position: relative; width: max-content; line-height: 0"
-        >
-          <img
-            class="logo image"
-            style="width: 5rem; height: 5rem; object-fit: contain"
-            :src="details.logo"
-            alt="Business Logo"
-          />
-          <SvgIcon
-            v-if="details.verified"
-            name="verified_sp"
-            v-tooltip.unblocking
-            data-tooltip="Verified"
-            style="position: absolute; bottom: 0.5em; right: 0.5em"
-          />
-        </div>
-        <div class="dm-heading flexible">
-          <h5 class="dm-title">{{ details.bizName }}</h5>
-          <div class="faint-text-v1">{{ details.mainCategory }}</div>
-        </div>
-        <button
-          class="flex-none flat button auto-l-margined md-and-down-hidden"
-        >
-          <SvgIcon name="follow" class="lead" /> Follow
-        </button>
+    <header
+      class="flexbox dm-gap"
+      style="padding-top: 0.5rem; align-items: center; gap: 1rem"
+    >
+      <div
+        class="dm-logo flex-none"
+        style="position: relative; width: max-content; line-height: 0"
+      >
+        <img
+          class="logo image"
+          style="width: 5rem; height: 5rem; object-fit: contain"
+          :src="details.logo"
+          alt="Business Logo"
+        />
+        <SvgIcon
+          v-if="details.verified"
+          name="verified_sp"
+          v-tooltip.unblocking
+          data-tooltip="Verified"
+          style="position: absolute; bottom: 0.5em; right: 0.5em"
+        />
       </div>
-      <div class="sp-wrapper z-level-2 p-h fluid" style="margin-bottom: 1rem">
-        <div
-          v-scrollPin="{ top: 64, independent: true,}"
-          class="r-aligned menu"
-          style="height: 3.5rem"
-        >
-          <div class="container items">
-            <div class="xhover l-aligned item as-icon">
-              <img
-                :src="details.logo"
-                alt="site logo"
-                class="show-onpinned logo-lg site-logo"
-              />
-            </div>
-            <div class="items md-and-down-hidden">
-              <div class="item">Home</div>
-              <div class="item">Feeds</div>
-              <div class="item">Products</div>
-              <div class="item">Services</div>
-              <div class="item">About Us</div>
-            </div>
-            <div
-              class="item open-sidepanel md-and-up-hidden"
-              data-target="bizsidepanel"
-            >
-              <SvgIcon name="menu" class="lead" />
-              Menu
-              <SidePanel class="right" id="bizsidepanel">
-                <div class="padded panel">
-                  <div class="vertical menu">
-                    <div class="centered item exit-sidepanel">
-                      <SvgIcon name="arrow_back" />
-                    </div>
-                    <router-link
-                      to="/"
-                      class="xhover centered item exit-sidepanel"
-                    >
-                      <img
-                        :src="details.logo"
-                        alt="site logo"
-                        class="logo-lg site-logo"
-                      />
-                    </router-link>
-                    <div class="item">Home</div>
-                    <div class="item">Feeds</div>
-                    <div class="item">Products</div>
-                    <div class="item">Services</div>
-                    <div class="item">About Us</div>
-                  </div>
-                  <hr />
-                  <footer style="margin-top: auto">
-                    <Shareables name="color_scheme" />
-                    <Shareables name="copyright" />
-                  </footer>
-                </div>
-              </SidePanel>
-            </div>
-            <Dropdown
-              :options="{ directionPriority: { x: 'left' } }"
-              v-tooltip.unblocking
-              data-tooltip="More options"
-              class="item"
-            >
-              <SvgIcon name="more_horiz" />
-              <div class="drop menu">
-                <div class="item">
-                  <SvgIcon name="follow" class="lead" /> Follow page
-                </div>
-                <div class="item">
-                  <SvgIcon name="bookmark_add" class="lead" /> Save card
-                </div>
-                <div class="item">
-                  <SvgIcon name="share" class="lead" /> Share
-                </div>
-                <div class="item">
-                  <SvgIcon name="report" class="lead" /> Report page
-                </div>
-              </div>
-            </Dropdown>
-          </div>
-        </div>
+      <div class="dm-heading flexible">
+        <h5 class="dm-title">{{ details.bizName }}</h5>
+        <div class="faint-text">{{ details.mainCategory }}</div>
       </div>
+      <button class="flex-none flat button auto-l-margined md-and-down-hidden">
+        <SvgIcon name="follow" class="lead" /> Follow
+      </button>
     </header>
+    <div
+      v-scrollPin="{ top: 64 }"
+      class="fluid pin-top-blend z-level-2 r-aligned menu"
+      style="height: 3.5rem; margin-bottom: 0.75rem;"
+    >
+      <div class="container items">
+        <div class="xhover l-aligned item as-icon">
+          <img
+            :src="details.logo"
+            alt="site logo"
+            class="show-onpinned logo-lg site-logo"
+          />
+        </div>
+        <div class="items md-and-down-hidden">
+          <div class="item">Home</div>
+          <div class="item">Feeds</div>
+          <div class="item">Products</div>
+          <div class="item">Services</div>
+          <div class="item">About Us</div>
+        </div>
+        <div
+          class="item open-sidepanel md-and-up-hidden"
+          data-target="bizsidepanel"
+        >
+          <SvgIcon name="menu" class="lead" />
+          Menu
+          <SidePanel class="right" id="bizsidepanel">
+            <div class="padded panel">
+              <div class="vertical menu">
+                <div class="centered item exit-sidepanel">
+                  <SvgIcon name="arrow_back" />
+                </div>
+                <router-link to="/" class="xhover centered item exit-sidepanel">
+                  <img
+                    :src="details.logo"
+                    alt="site logo"
+                    class="logo-lg site-logo"
+                  />
+                </router-link>
+                <div class="item">Home</div>
+                <div class="item">Feeds</div>
+                <div class="item">Products</div>
+                <div class="item">Services</div>
+                <div class="item">About Us</div>
+              </div>
+              <hr />
+              <footer style="margin-top: auto">
+                <Shareables name="color_scheme" />
+                <Shareables name="copyright" />
+              </footer>
+            </div>
+          </SidePanel>
+        </div>
+        <Dropdown
+          :options="{ directionPriority: { x: 'left' } }"
+          v-tooltip.unblocking
+          data-tooltip="More options"
+          class="item"
+        >
+          <SvgIcon name="more_horiz" />
+          <div class="drop menu">
+            <div class="item">
+              <SvgIcon name="follow" class="lead" /> Follow page
+            </div>
+            <div class="item">
+              <SvgIcon name="bookmark_add" class="lead" /> Save card
+            </div>
+            <div class="item"><SvgIcon name="share" class="lead" /> Share</div>
+            <div class="item">
+              <SvgIcon name="report" class="lead" /> Report page
+            </div>
+          </div>
+        </Dropdown>
+      </div>
+    </div>
     <div
       class="dm-display"
       style="position: relative; padding-top: calc(100% / 6 * 2)"
@@ -431,7 +423,7 @@ function handleScroll() {
         </span>
         <SvgIcon
           name="info"
-          class="mini l-spaced faint-text-v2"
+          class="mini l-spaced faint-text-more"
           v-tooltip.unblocking
           data-tooltip="Note that the given detail is generated using your device time relative to the Business location timezone."
         />
@@ -471,7 +463,7 @@ function handleScroll() {
           bottom: 16,
           sticky: true,
         }"
-        class="page-aside biz-pin centered"
+        class="page-aside biz-pin text-center"
       >
         <div
           class="dm-logo flex-none"
@@ -491,8 +483,8 @@ function handleScroll() {
             style="position: absolute; bottom: 0.5em; right: 0.5em"
           />
         </div>
-        <h6 class="dm-title centered">{{ details.bizName }}</h6>
-        <div class="faint-text-v1">{{ details.mainCategory }}</div>
+        <h6 class="dm-title text-center">{{ details.bizName }}</h6>
+        <div class="faint-text">{{ details.mainCategory }}</div>
         <p>
           <span
             v-tooltip.unblocking
@@ -578,7 +570,7 @@ function handleScroll() {
           </span>
           <SvgIcon
             name="info"
-            class="mini l-spaced faint-text-v2"
+            class="mini l-spaced faint-text-more"
             v-tooltip.unblocking
             data-tooltip="Note that the given detail is generated using your device time relative to the Business location timezone."
           />
@@ -600,7 +592,7 @@ function handleScroll() {
         </button>
       </div>
     </section>
-    <section class="centered" style="padding: 6.25rem">
+    <section class="text-center" style="padding: 6.25rem">
       <h3>Thanks for visiting our website.</h3>
       <p class="container-text huge semibold">
         We hope you got what you’re looking for. You can make inquiries if not.
@@ -633,7 +625,7 @@ function handleScroll() {
             />
           </div>
           <h6 class="dm-title">{{ details.bizName }}</h6>
-          <!-- <div class="faint-text-v1">{{ details.mainCategory }}</div> -->
+          <!-- <div class="faint-text">{{ details.mainCategory }}</div> -->
           <div class="flexible">
             {{ details.description }}
             <a :href="`${details.bizUrl}/about_us`" target="_blank"

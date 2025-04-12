@@ -43,7 +43,7 @@ const userStore = useUserStore();
             </tr>
         </tbody>
     </table>
-    <div class="centered container">
+    <div class="text-center container">
         <h4>Are you looking for employment?</h4>
         <p>You can create a work profile for yourself on Bizworld. Employers can easily search for keywords that matches
             you profile and get you employed.</p>

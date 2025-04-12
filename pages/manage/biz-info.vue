@@ -67,7 +67,7 @@ definePageMeta({ layout: 'manage', auth: true, });
                 </div>
                 <div class="field">
                     <label>Service area</label>
-                    <div class="centered">
+                    <div class="text-center">
                         <p>No other service area present.</p>
                         <button class="compact button">Add</button>
                     </div>

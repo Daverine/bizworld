@@ -89,7 +89,7 @@ export function Tooltip() {
                     spacing = {}, tpPos = {}
                 ;
 
-                prop.width = this.tooltip.offsetWidth;
+                prop.width = this.tooltip.getBoundingClientRect().width;
 
                 if (this.settings.unblocking) {
                     this.tooltip.style.left = `${Math.max(Math.min(Math.max(0, tProp.left + (tProp.width/2) - (prop.width/2)), (vWidth - prop.width)), 0)}px`;
@@ -101,7 +101,7 @@ export function Tooltip() {
                     spacing.left = prop.x - offset;
                     spacing.right = window.innerWidth - prop.x - offset;
 
-                    tpPos.left = prop.x - this.tooltip.offsetWidth - offset;
+                    tpPos.left = prop.x - this.tooltip.getBoundingClientRect().width - offset;
                     tpPos.right = prop.x + offset;
 
                     if (spacing.right >= prop.width || spacing.right >= spacing.left) {

@@ -2,20 +2,11 @@
 definePageMeta({ layout: 'details' });
 const details = ref({
   type: 'product',
+  id: 'prod123343',
   title:
     'Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery',
-  price: 'N100,000',
+  price: 100000,
   media: [
-    {
-      type: 'pic',
-      url: '/images/product.jpeg',
-      thumbnail: '/images/product.jpeg',
-    },
-    {
-      type: 'pic',
-      url: '/images/product.jpeg',
-      thumbnail: '/images/product.jpeg',
-    },
     {
       type: 'pic',
       url: '/images/product.jpeg',
@@ -41,31 +32,34 @@ const details = ref({
       {
         label: '4GB / 64GB',
         media: undefined,
-        price: 'N100,000',
+        price: 100000,
         subOptions: {
           optionType: 'Color',
           options: [
             {
               label: 'Yellow',
-              price: 'N100,000',
+              price: 100000,
               media: {
-                pic: '/images/product.jpeg',
+                type: 'pic',
+                url: '/images/product.jpeg',
                 thumbnail: '/images/product.jpeg',
               },
             },
             {
               label: 'Reflective Blue',
-              price: 'N100,000',
+              price: 100000,
               media: {
-                pic: '/images/product.jpeg',
+                type: 'pic',
+                url: '/images/product.jpeg',
                 thumbnail: '/images/product.jpeg',
               },
             },
             {
               label: 'Silver',
-              price: 'N100,000',
+              price: 100000,
               media: {
-                pic: '/images/product.jpeg',
+                type: 'pic',
+                url: '/images/product.jpeg',
                 thumbnail: '/images/product.jpeg',
               },
             },
@@ -75,31 +69,34 @@ const details = ref({
       {
         label: '4GB / 128GB',
         media: undefined,
-        price: 'N120,000',
+        price: 120000,
         subOptions: {
           optionType: 'Color',
           options: [
             {
               label: 'Black',
-              price: 'N120,000',
+              price: 120000,
               media: {
-                pic: '/images/product.jpeg',
+                type: 'pic',
+                url: '/images/product.jpeg',
                 thumbnail: '/images/product.jpeg',
               },
             },
             {
               label: 'Reflective Blue',
-              price: 'N120,000',
+              price: 120000,
               media: {
-                pic: '/images/product.jpeg',
+                type: 'pic',
+                url: '/images/product.jpeg',
                 thumbnail: '/images/product.jpeg',
               },
             },
             {
               label: 'Moon Gray',
-              price: 'N120,000',
+              price: 120000,
               media: {
-                pic: '/images/product.jpeg',
+                type: 'pic',
+                url: '/images/product.jpeg',
                 thumbnail: '/images/product.jpeg',
               },
             },
@@ -109,31 +106,34 @@ const details = ref({
       {
         label: '6GB / 128GB',
         media: undefined,
-        price: 'N150,000',
+        price: 150000,
         subOptions: {
           optionType: 'Color',
           options: [
             {
               label: 'Black',
-              price: 'N150,000',
+              price: 150000,
               media: {
-                pic: '/images/product.jpeg',
+                type: 'pic',
+                url: '/images/product.jpeg',
                 thumbnail: '/images/product.jpeg',
               },
             },
             {
               label: 'Reflective Blue',
-              price: 'N150,000',
+              price: 150000,
               media: {
-                pic: '/images/product.jpeg',
+                type: 'pic',
+                url: '/images/product.jpeg',
                 thumbnail: '/images/product.jpeg',
               },
             },
             {
               label: 'Moon Gray',
-              price: 'N150,000',
+              price: 150000,
               media: {
-                pic: '/images/product.jpeg',
+                type: 'pic',
+                url: '/images/product.jpeg',
                 thumbnail: '/images/product.jpeg',
               },
             },
@@ -269,22 +269,39 @@ const tmp = ref({
   id: details.value.id,
   spec: [],
   price: computed(() => {
+    let price = 0;
     if (tmp.value.spec[0]) {
       if (tmp.value.spec[1]) {
-        return details.value.productOptions.options
+        price = details.value.productOptions.options
           .find((option) => option.label === tmp.value.spec[0])
           .subOptions.options.find(
             (subOption) => subOption.label === tmp.value.spec[1]
           ).price;
+      } else {
+        price = details.value.productOptions.options.find(
+          (option) => option.label === tmp.value.spec[0]
+        ).price;
       }
-      return details.value.productOptions.options.find(
-        (option) => option.label === tmp.value.spec[0]
-      ).price;
+    } else price = details.value.price;
+    return price;
+  }),
+  media: computed(() => {
+    let media = [];
+    details.value.media.forEach((item) => media.push(item));
+    if (details.value.productOptions) {
+      details.value.productOptions.options.forEach((item) => {
+        if (item.media) media.push(item.media);
+        if (item.subOptions) {
+          item.subOptions.options.forEach((item) => {
+            if (item.media) media.push(item.media);
+          });
+        }
+      });
     }
-    return details.value.price;
+    return media;
   }),
   quantity: 1,
-  delivery: 'bizworld',
+  delivery: 'self-pickup',
 });
 const isSmallScreen = ref(true);
 onMounted(() => {
@@ -325,8 +342,8 @@ onMounted(() => {
           breakpoints: [{ maxWidth: 959, pinnable: false }],
         }"
       >
-        <Carousel>
-          <div v-for="slide in details.media" class="cs-slide">
+        <Carousel :options="{ continuous: false }">
+          <div v-for="slide in tmp.media" class="cs-slide">
             <img
               v-if="slide.type === 'pic'"
               :src="slide.url"
@@ -336,7 +353,7 @@ onMounted(() => {
             />
           </div>
           <template v-if="!isSmallScreen" #trackers>
-            <div v-for="slide in details.media" class="thumbnail cs-tracker">
+            <div v-for="slide in tmp.media" class="thumbnail cs-tracker">
               <img :src="slide.thumbnail" />
             </div>
           </template>
@@ -368,7 +385,7 @@ onMounted(() => {
         <!-- Product Options -->
         <section class="mobile-screen-only config">
           <div class="h3 0-margined primary-text bold">
-            {{ tmp.price }}
+            ₦{{ tmp.price.toLocaleString() }}
           </div>
           <div class="alt-ribbon red label">Configure purchase</div>
           <template v-if="details.productOptions">
@@ -436,13 +453,31 @@ onMounted(() => {
               Quantity:
               <div class="trailing">{{ tmp.quantity }}</div>
             </div>
-            <input
-              type="number"
-              placeholder="Enter product Quantity"
-              class="form-item compact"
-              min="1"
-              v-model="tmp.quantity"
-            />
+            <div class="fluid small input-box">
+              <button class="addon icon mini button" @click="tmp.quantity--">
+                <Icon name="material-symbols:remove-rounded" />
+              </button>
+              <input
+                type="number"
+                placeholder="Enter product Quantity"
+                class="subject form-item compact text-center"
+                min="1"
+                v-model="tmp.quantity"
+                @input="
+                  (evt) => {
+                    if (evt.target.value < 1) tmp.quantity = 1;
+                  }
+                "
+                @keypress="
+                  (evt) => {
+                    if (evt.key === '-') evt.preventDefault();
+                  }
+                "
+              />
+              <button class="addon icon mini button" @click="tmp.quantity++">
+                <Icon name="material-symbols:add-rounded" />
+              </button>
+            </div>
           </div>
           <div>
             <div class="sub lined heading a-block">
@@ -454,7 +489,7 @@ onMounted(() => {
             <div class="vertical menu">
               <!-- Bizworld delivery option -->
               <label
-                class="item as-icon"
+                class="item as-icon disbled"
                 :class="{ active: tmp.delivery === 'bizworld' }"
               >
                 <div class="flexbox flex-column sm-guttered align-center">
@@ -476,11 +511,11 @@ onMounted(() => {
                   </div>
                   <div class="flexbox guttered flex-separate">
                     <div>Delivery fee:</div>
-                    <div>N900</div>
+                    <div>NA</div>
                   </div>
                   <div class="flexbox guttered flex-separate">
                     <div>Delivery time:</div>
-                    <div>2-3 days</div>
+                    <div>NA</div>
                   </div>
                 </div>
               </label>
@@ -504,9 +539,14 @@ onMounted(() => {
                 <div class="content" style="font-weight: normal">
                   <div class="flexbox guttered flex-separate">
                     <div class="small bold">Self Pickup</div>
-                    <a href="#">Details</a>
+                    <a
+                      href="javascript:void(0)"
+                      class="open-modal"
+                      data-target="sp-details"
+                      >Details</a
+                    >
                   </div>
-                  <div class="faint-text-v1">
+                  <div class="faint-text">
                     Manage how your item gets to you. Pick up your item within 2
                     weeks of purchase.
                   </div>
@@ -514,14 +554,14 @@ onMounted(() => {
               </label>
             </div>
           </div>
-          <div class="compact success note">
+          <div class="compact success note" style="margin-top: 1rem">
             <Icon
               name="material-symbols:verified-user-outline-rounded"
               style="font-size: 1.875em"
             />
             <div class="content">
               <div class="heading">Secure personal details</div>
-              <div class="faint-text-v1">
+              <div class="faint-text">
                 Your personal and payment information is kept confidential and
                 secure. We do not share your details with third parties without
                 your explicit consent, ensuring your privacy is always
@@ -557,69 +597,6 @@ onMounted(() => {
                 </tr>
               </tbody>
             </table>
-          </div>
-        </section>
-        <!-- Delivery Section -->
-        <section class="delivery">
-          <div v-collapser class="ac-viewbox-ref active lined heading a-block">
-            <Icon
-              name="material-symbols:local-shipping-outline-rounded"
-              class="lead"
-            />
-            Delivery Information
-            <i class="ac-viewbox trailing icon">
-              <Icon name="material-symbols:chevron-left-rounded" />
-              <Icon name="material-symbols:expand-more-rounded" />
-            </i>
-          </div>
-          <div class="collapsible">
-            <div>
-              <div class="sub heading">Product is Located at:</div>
-              <p class="indented">
-                {{ details.bizData.location.address }},
-                {{ details.bizData.location.city }},
-                {{ details.bizData.location.state }}
-              </p>
-            </div>
-            <div>
-              <div class="sub heading">Available delivery options</div>
-              <!-- Bizworld delivery option -->
-              <div class="compact note">
-                <Icon
-                  name="material-symbols:delivery-truck-speed-outline-rounded"
-                  style="font-size: 1.875em"
-                />
-                <div class="content">
-                  <div class="small bold">BizWorld Delivery Management</div>
-                  <div class="faint-text-v1">
-                    Bizworld manages how your item is delivered to you.
-                    <a href="#">Details</a>
-                  </div>
-                </div>
-              </div>
-              <!-- Self pickup option -->
-              <div class="compact note">
-                <Icon
-                  name="material-symbols:package-outline-rounded"
-                  style="font-size: 1.875em"
-                />
-                <div class="content">
-                  <div class="small bold">Self Pickup</div>
-                  <div class="faint-text-v1">
-                    You manage how your item gets to you. With this option, you
-                    must pick up your item within 2 weeks of purchase.
-                    <a href="#">Details</a>
-                  </div>
-                </div>
-              </div>
-              <p class="small centered">
-                Bizworld offers a curated list of trusted third-party delivery
-                service providers.
-                <a href="#" target="_blank">
-                  Click here to view our recommended providers.
-                </a>
-              </p>
-            </div>
           </div>
         </section>
         <!-- Seller's Details Section -->
@@ -676,7 +653,7 @@ onMounted(() => {
               </div>
             </div>
             <div
-              class="flexbox flex-items-to-basis guttered"
+              class="flexbox flexible-items guttered"
               style="margin-top: 0.5em"
             >
               <button class="secondary compact button">
@@ -704,9 +681,9 @@ onMounted(() => {
             </i>
           </div>
           <div class="collapsible">
-            <div class="flexbox flex-items-to-basis align-center">
+            <div class="flexbox flexible-items align-center">
               <div
-                class="centered"
+                class="text-center"
                 :set="
                   (rating = (
                     details.reviews.reduce((n, i) => n + i.rating, 0) /
@@ -739,9 +716,9 @@ onMounted(() => {
                 <div>{{ details.reviews.length }} review(s)</div>
                 <div>All reviews are from verified purchases.</div>
               </div>
-              <div class="centered">
+              <div class="text-center">
                 <p class="small semibold">
-                  Patronize {{ details.bizData.bizName }} to write a review
+                  Patronize {{ details.bizData.bizName }} to write a review.
                   <a href="#">Learn more.</a>
                 </p>
               </div>
@@ -817,10 +794,10 @@ onMounted(() => {
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
-                    <span class="faint-text-v1 small semibold">12-01-2034</span>
+                    <span class="faint-text small semibold">12-01-2034</span>
                   </footer>
                 </div>
-                <div v-if="details.reviews.length > 5" class="centered">
+                <div v-if="details.reviews.length > 5" class="text-center">
                   <a href="#" class="flat primary button"
                     >More reviews ({{ details.reviews.length - 5 }})</a
                   >
@@ -841,7 +818,7 @@ onMounted(() => {
         }"
       >
         <div class="h3 0-margined primary-text bold">
-          {{ tmp.price }}
+          ₦{{ tmp.price.toLocaleString() }}
         </div>
         <div class="alt-ribbon red label">Configure purchase</div>
         <template v-if="details.productOptions">
@@ -909,13 +886,38 @@ onMounted(() => {
             Quantity:
             <div class="trailing">{{ tmp.quantity }}</div>
           </div>
-          <input
-            type="number"
-            placeholder="Enter product Quantity"
-            class="form-item compact"
-            min="1"
-            v-model="tmp.quantity"
-          />
+          <div class="fluid small input-box">
+            <button
+              class="addon icon mini button"
+              @click="
+                () => {
+                  if (tmp.quantity > 1) tmp.quantity--;
+                }
+              "
+            >
+              <Icon name="material-symbols:remove-rounded" />
+            </button>
+            <input
+              type="number"
+              placeholder="Enter product Quantity"
+              class="subject form-item compact text-center"
+              min="1"
+              v-model="tmp.quantity"
+              @input="
+                (evt) => {
+                  if (evt.target.value < 1) tmp.quantity = 1;
+                }
+              "
+              @keypress="
+                (evt) => {
+                  if (evt.key === '-') evt.preventDefault();
+                }
+              "
+            />
+            <button class="addon icon mini button" @click="tmp.quantity++">
+              <Icon name="material-symbols:add-rounded" />
+            </button>
+          </div>
         </div>
         <div>
           <div class="sub lined heading a-block">
@@ -927,7 +929,7 @@ onMounted(() => {
           <div class="vertical menu">
             <!-- Bizworld delivery option -->
             <label
-              class="item as-icon"
+              class="item as-icon disabled"
               :class="{ active: tmp.delivery === 'bizworld' }"
             >
               <div class="flexbox flex-column sm-guttered align-center">
@@ -949,11 +951,11 @@ onMounted(() => {
                 </div>
                 <div class="flexbox guttered flex-separate">
                   <div>Delivery fee:</div>
-                  <div>N900</div>
+                  <div>NA</div>
                 </div>
                 <div class="flexbox guttered flex-separate">
                   <div>Delivery time:</div>
-                  <div>2-3 days</div>
+                  <div>NA</div>
                 </div>
               </div>
             </label>
@@ -977,9 +979,14 @@ onMounted(() => {
               <div class="content" style="font-weight: normal">
                 <div class="flexbox guttered flex-separate">
                   <div class="small bold">Self Pickup</div>
-                  <a href="#">Details</a>
+                  <a
+                    href="javascript:void(0)"
+                    class="open-modal"
+                    data-target="sp-details"
+                    >Details</a
+                  >
                 </div>
-                <div class="faint-text-v1">
+                <div class="faint-text">
                   Manage how your item gets to you. Pick up your item within 2
                   weeks of purchase.
                 </div>
@@ -987,7 +994,15 @@ onMounted(() => {
             </label>
           </div>
         </div>
-        <div class="flexbox guttered" style="margin-top: 1rem">
+        <div
+          class="flexbox guttered sticky pin-bottom-blend"
+          style="
+            bottom: 0px;
+            background-color: var(--surface);
+            padding: 0.5rem 0rem;
+            margin-top: 0.5rem;
+          "
+        >
           <button
             class="primary fluid button open-modal"
             data-target="pre-cart"
@@ -1038,14 +1053,14 @@ onMounted(() => {
             </div>
           </Dropdown>
         </div>
-        <div class="compact success note">
+        <div class="compact success note" style="margin-top: 0.5rem">
           <Icon
             name="material-symbols:verified-user-outline-rounded"
             style="font-size: 1.875em"
           />
           <div class="content">
             <div class="heading">Secure personal details</div>
-            <div class="faint-text-v1">
+            <div class="faint-text">
               Your personal and payment information is kept confidential and
               secure. We do not share your details with third parties without
               your explicit consent, ensuring your privacy is always protected.
@@ -1057,7 +1072,7 @@ onMounted(() => {
     <!-- Call to Action Section -->
     <div
       v-scrollPin="{ pinPriority: 'bottom' }"
-      class="mobile-screen-only surface-bg fluid z-level-2 p-f"
+      class="mobile-screen-only surface-bg fluid z-level-2 pin-bottom-blend"
     >
       <div class="container flexbox guttered" style="padding: 0.5rem 0rem">
         <button
@@ -1108,9 +1123,59 @@ onMounted(() => {
         </Dropdown>
       </div>
     </div>
+    <Modal id="sp-details">
+      <div class="dialog">
+        <div class="header pin-top-blend flexbox guttered">
+          <div class="bold truncate">Self Pickup Details</div>
+          <button
+            class="circular flat button as-text exit-modal"
+            style="margin-left: auto"
+          >
+            <Icon name="material-symbols:close" />
+          </button>
+        </div>
+        <div class="content">
+          <p class="0-t-margined">
+            Self-pickup is a delivery option that lets you control how your item
+            is collected. A token is generated to verify your pickup from the
+            specified location.
+          </p>
+          <table class="table striped">
+            <tbody>
+              <tr>
+                <td>Location</td>
+                <td>
+                  {{
+                    `${details.bizData.location.address}, ${details.bizData.location.city}, ${details.bizData.location.state}.`
+                  }}
+                </td>
+              </tr>
+              <tr>
+                <td>Pickup Timeframe</td>
+                <td>Within 2 weeks of purchase</td>
+              </tr>
+              <tr>
+                <td>Contact</td>
+                <td>
+                  Call
+                  <a :href="`tel:${details.bizData.contacts.tel}`">{{
+                    details.bizData.contacts.tel
+                  }}</a>
+                  or email
+                  <a :href="`mailto:${details.bizData.contacts.email}`">{{
+                    details.bizData.contacts.email
+                  }}</a>
+                  for more information.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Modal>
     <Modal id="pre-cart">
       <div class="self-scroll dialog">
-        <div class="header flexbox guttered">
+        <div class="header pin-top-blend flexbox guttered">
           <div class="bold truncate">Confirm options</div>
           <button
             class="circular flat button as-text exit-modal"
@@ -1185,13 +1250,31 @@ onMounted(() => {
               Quantity:
               <div class="trailing">{{ tmp.quantity }}</div>
             </div>
-            <input
-              type="number"
-              placeholder="Enter product Quantity"
-              class="form-item compact"
-              min="1"
-              v-model="tmp.quantity"
-            />
+            <div class="fluid small input-box">
+              <button class="addon icon mini button" @click="tmp.quantity--">
+                <Icon name="material-symbols:remove-rounded" />
+              </button>
+              <input
+                type="number"
+                placeholder="Enter product Quantity"
+                class="subject form-item compact text-center"
+                min="1"
+                v-model="tmp.quantity"
+                @input="
+                  (evt) => {
+                    if (evt.target.value < 1) tmp.quantity = 1;
+                  }
+                "
+                @keypress="
+                  (evt) => {
+                    if (evt.key === '-') evt.preventDefault();
+                  }
+                "
+              />
+              <button class="addon icon mini button" @click="tmp.quantity++">
+                <Icon name="material-symbols:add-rounded" />
+              </button>
+            </div>
           </div>
           <div>
             <div class="sub lined heading a-block">
@@ -1203,7 +1286,7 @@ onMounted(() => {
             <div class="vertical menu">
               <!-- Bizworld delivery option -->
               <label
-                class="item as-icon"
+                class="item as-icon disabled"
                 :class="{ active: tmp.delivery === 'bizworld' }"
               >
                 <div class="flexbox flex-column sm-guttered align-center">
@@ -1225,11 +1308,11 @@ onMounted(() => {
                   </div>
                   <div class="flexbox guttered flex-separate">
                     <div>Delivery fee:</div>
-                    <div>N900</div>
+                    <div>NA</div>
                   </div>
                   <div class="flexbox guttered flex-separate">
                     <div>Delivery time:</div>
-                    <div>2-3 days</div>
+                    <div>NA</div>
                   </div>
                 </div>
               </label>
@@ -1253,9 +1336,14 @@ onMounted(() => {
                 <div class="content" style="font-weight: normal">
                   <div class="flexbox guttered flex-separate">
                     <div class="small bold">Self Pickup</div>
-                    <a href="#">Details</a>
+                    <a
+                      href="javascript:void(0)"
+                      class="open-modal"
+                      data-target="sp-details"
+                      >Details</a
+                    >
                   </div>
-                  <div class="faint-text-v1">
+                  <div class="faint-text">
                     Manage how your item gets to you. Pick up your item within 2
                     weeks of purchase.
                   </div>
@@ -1264,19 +1352,17 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="footer flexbox flex-column guttered">
+        <div class="footer pin-bottom-blend flexbox flex-column guttered">
           <div class="flexbox guttered flex-separate">
             <div class="bold">Total:</div>
-            <div class="h5 bold">{{ tmp.price }}</div>
+            <div class="h5 bold">
+              ₦{{ (tmp.price * tmp.quantity).toLocaleString() }}
+            </div>
           </div>
-          <div class="flexbox guttered flex-separate align-start">
-            <button class="flexible primary button">
-              <Icon name="material-symbols:shopping-cart-checkout-rounded" class="lead" />
-              Checkout
-            </button>
+          <div class="flexbox flex-wrap guttered flex-separate align-start">
+            <button class="flexible primary button">Add and Go to cart</button>
             <button class="flexible primary flat button">
-              <Icon name="material-symbols:add-shopping-cart-rounded" class="lead" />
-              Add and shop more
+              Add and Continue Shopping
             </button>
           </div>
         </div>

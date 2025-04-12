@@ -16,7 +16,7 @@ const userStore = useUserStore();
     </div>
   </header>
 
-  <div class="flexbox flex-items-to-basis" style="gap: 1.5rem; max-width: 650px; margin: 2rem auto;">
+  <div class="flexbox flexible-items" style="gap: 1.5rem; max-width: 650px; margin: 2rem auto;">
     <div class="col" style="background-image: linear-gradient(rgb(48 187 48), rgb(10 81 194));"></div>
     <div class="col">
       <div class="header" style="margin-bottom: 1rem;">
@@ -60,7 +60,7 @@ const userStore = useUserStore();
             <button class="fluid primary button">Create Account</button>
           </div>
           <hr />
-          <div class="field centered">
+          <div class="field text-center">
             <p>Already have an account? <router-link to="/login">Login</router-link></p>
           </div>
         </form>

@@ -43,7 +43,7 @@
         <div class="itm-gap">
             <div class="truncate">
                 <SvgIcon name="verified" v-if="details.bizDetails.verify" title="Verified" class="mini green-text r-spaced" />
-                <a :href="details.bizDetails.url" target="_blank" :title="details.bizDetails.name" class="small faint-text-v1 semibold">{{ details.bizDetails.name }}</a>
+                <a :href="details.bizDetails.url" target="_blank" :title="details.bizDetails.name" class="small faint-text semibold">{{ details.bizDetails.name }}</a>
             </div>
         </div>
         <!-- <div class="itm-gap">

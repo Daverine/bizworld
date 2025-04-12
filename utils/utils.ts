@@ -17,7 +17,7 @@ export const utils = {
 
     window.lui_EscTracker.push(trackId);
   },
-  checkEscStatus(trackId: string, byForce: boolean): boolean | undefined {
+  checkEscStatus(trackId: string, byForce?: boolean): boolean | undefined {
     if (!window.lui_EscTracker) {
       window.lui_EscTracker = [];
       return;

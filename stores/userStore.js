@@ -1,4 +1,4 @@
-import saved from '@/jsons/saved.json';
+import saved from '@/jsons/sresults.json';
 import followed from '@/jsons/followed.json';
 import reviews from '@/jsons/reviews.json';
 

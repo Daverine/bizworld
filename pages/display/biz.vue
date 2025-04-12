@@ -66,7 +66,7 @@ onUpdated(() => {
           </div>
           <div class="dm-heading">
             <h4 class="dm-title">{{ details.bizName }}</h4>
-            <div class="faint-text-v1">{{ details.mainCategory }}</div>
+            <div class="faint-text">{{ details.mainCategory }}</div>
           </div>
         </div>
         <div class="dm-gap">
@@ -169,7 +169,7 @@ onUpdated(() => {
           <div class="sub heading">Review Summary</div>
           <div class="flexbox" style="flex-direction: row-reverse;">
             <div class="col 6-width md-2-width">
-              <div class="centered"
+              <div class="text-center"
                 :set="rating = (details.reviews.reduce((n, i) => n + i.rating, 0) / details.reviews.length).toFixed(1)">
                 <div class="semibold" style="font-size: 3em;">{{ (details.reviews.reduce((n, i) => n +
                   i.rating,
@@ -203,7 +203,7 @@ onUpdated(() => {
               </table>
             </div>
           </div>
-          <div class="centered small semibold italic">
+          <div class="text-center small semibold italic">
             Patronize {{ details.bizName }} to write a review.
             <!-- <button class="button">
                                 <SvgIcon name="rate_review" class="lead" />
@@ -254,7 +254,7 @@ onUpdated(() => {
               </header>
               <article>{{ review.review }}</article>
             </div>
-            <div v-if="details.reviews.length > 5" class="centered"><a href="#" class="flat primary button">More
+            <div v-if="details.reviews.length > 5" class="text-center"><a href="#" class="flat primary button">More
                 reviews ({{
                   details.reviews.length - 5 }})</a></div>
           </div>
