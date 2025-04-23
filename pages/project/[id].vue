@@ -199,12 +199,12 @@ const details = ref({
       url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
     },
     hours: [
-      [false],
+      false,
       ['8:30', '18:30'],
       ['8:30', '18:30'],
       ['15:30', '18:30'],
       ['8:30', '18:30'],
-      [false],
+      false,
       ['8:30', '18:30'],
     ],
   },
@@ -234,7 +234,6 @@ onMounted(() => {
     isSmallScreen.value = useMediaQuery('(min-width: 863px)').value;
   });
 });
-
 </script>
 <template>
   <Title>{{ `${details.title} | Bizworld` }}</Title>
@@ -275,7 +274,7 @@ onMounted(() => {
                 <span
                   v-tooltip.unblocking
                   :data-tooltip="
-                    avail.openTime[0] < 0
+                    !avail.openTime
                       ? 'Did not open today at all.'
                       : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
                   "
@@ -290,18 +289,20 @@ onMounted(() => {
                       avail.willOpenToday
                         ? `${avail.openTime[0]}:${avail.openTime[1]}`
                         : details.bizData.hours[
-                            avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
+                            avail.now.getDay() === 6
+                              ? 0
+                              : avail.now.getDay() + 1
                           ][0] !== -1
                         ? `${
                             details.bizData.hours[
-                              avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
+                              avail.now.getDay() === 6
+                                ? 0
+                                : avail.now.getDay() + 1
                             ][0]
                           } Tomorrow`
                         : `${
-                            details.bizData.hours[
-                              avail.nextOpenDay(details.bizData.hours)
-                            ][0]
-                          } on ${avail.whatDay(avail.nextOpenDay(details.bizData.hours))}`
+                            details.bizData.hours[avail.nextOpenDay][0]
+                          } on ${avail.whatDay(avail.nextOpenDay)}`
                     }}
                   </template>
                   <template v-else>

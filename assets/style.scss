@@ -6,6 +6,7 @@ svg.icon {
 :root {
   --default-radius: 0.5em;
   --site-logo-filter: invert(0);
+  --blend-bg: var(--surface);
   // --container-text: 700px;
   // --container: 90rem;
 }
@@ -133,12 +134,12 @@ svg.icon {
 }
 
 .pin-top-blend {
-  box-shadow: 0px 5px 10px 5px var(--surface);
+  box-shadow: 0px 5px 10px 5px var(--blend-bg);
 }
 .pin-bottom-blend {
-  box-shadow: 0px -5px 10px var(--surface);
+  box-shadow: 0px -5px 10px var(--blend-bg);
 }
 
 .p-f > .pinned {
-  box-shadow: 0px -5px 10px var(--surface);
+  box-shadow: 0px -5px 10px var(--blend-bg);
 }

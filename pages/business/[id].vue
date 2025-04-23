@@ -1,204 +1,15 @@
 <script setup>
 definePageMeta({ layout: 'details' });
-const route = useRoute();
-const details = ref({
-  type: 'business',
-  bizName: 'Emmadave Computer Technology Services',
-  mainCategory: 'Computer repair services',
-  logo: '/images/logo-sq.png',
-  coverPic: '/images/ads.jpg',
-  bizUrl: 'https://www.edtech.com',
-  description:
-    'We offer technical services on laptop and desktop. We offer computer tech training We also do web development.',
-  verified: true,
-  rating: { rate: 3.5, raters: 30 },
-  contacts: {
-    tel: '08157483233',
-    email: 'contact_us@edtech.com',
-  },
-  location: {
-    address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
-    city: 'Abeokuta',
-    state: 'Ogun State',
-    url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
-  },
-  reviews: [
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 3,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 3,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 2,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 2,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 2,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-  ],
-  hours: [
-    [-1],
-    ['8:30', '18:30'],
-    ['8:30', '18:30'],
-    ['15:30', '18:30'],
-    ['8:30', '18:30'],
-    [-1],
-    ['8:30', '18:30'],
-  ],
-  template: {
-    userid: 'e8e34',
-    username: 'daverine',
-    userpic: '/images/profile_pic.jpg',
-    anonymous: false,
-    timestamp: 1694061107318,
-    rating: 4,
-    review: 'I enjoy my experience doing business with you guys. keep it up.',
-  },
-});
-const divider = useTemplateRef('divider');
-const dgContent = useTemplateRef('dgContent');
-const activeFixedMenu = ref(false);
+const data = useBizStore();
+const avail = useAvailability(data.details.hours);
+const isReady = computed(() => data.details && avail.value);
 const feedStore = useFeedStore();
 
 onMounted(() => feedStore.getUpdate());
-
-function nextOpenDay(hours) {
-  let ex = new Date().getDay() === 6 ? 0 : new Date().getDay() + 1,
-    i = 1,
-    result;
-
-  for (; i < 6; i++) {
-    if (hours[ex > 5 ? -1 + i : ex + i][0] !== -1) {
-      result = ex > 5 ? -1 + i : ex + i;
-      break;
-    }
-  }
-
-  return result;
-}
-
-function getMinutes(time) {
-  time = time.split(':');
-  return Number(time[0]) * 60 + Number(time[1]);
-}
-
-function to12hrsTime(time) {
-  time = time.split(':');
-  return `${Number(time[0]) % 12 || 12}:${time[1]}${
-    Number(time[0]) >= 12 ? 'PM' : 'AM'
-  }`;
-}
-
-function whatDay(index) {
-  return [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ][index];
-}
-
-function handleScroll() {
-  if (divider.value.getBoundingClientRect().top <= 210) {
-    activeFixedMenu.value = true;
-  } else {
-    activeFixedMenu.value = false;
-  }
-}
 </script>
 
 <template>
-  <main class="grid-layout">
+  <main v-if="isReady" class="grid-layout">
     <header
       class="flexbox dm-gap"
       style="padding-top: 0.5rem; align-items: center; gap: 1rem"
@@ -210,11 +21,11 @@ function handleScroll() {
         <img
           class="logo image"
           style="width: 5rem; height: 5rem; object-fit: contain"
-          :src="details.logo"
+          :src="data.details.logo"
           alt="Business Logo"
         />
         <SvgIcon
-          v-if="details.verified"
+          v-if="data.details.verified"
           name="verified_sp"
           v-tooltip.unblocking
           data-tooltip="Verified"
@@ -222,8 +33,8 @@ function handleScroll() {
         />
       </div>
       <div class="dm-heading flexible">
-        <h5 class="dm-title">{{ details.bizName }}</h5>
-        <div class="faint-text">{{ details.mainCategory }}</div>
+        <h5 class="0-margined">{{ data.details.bizName }}</h5>
+        <div class="faint-text">{{ data.details.mainCategory }}</div>
       </div>
       <button class="flex-none flat button auto-l-margined md-and-down-hidden">
         <SvgIcon name="follow" class="lead" /> Follow
@@ -231,15 +42,15 @@ function handleScroll() {
     </header>
     <div
       v-scrollPin="{ top: 64 }"
-      class="fluid pin-top-blend z-level-2 r-aligned menu"
-      style="height: 3.5rem; margin-bottom: 0.75rem;"
+      class="fluid z-level-2 r-aligned menu surface-v2-bg"
+      style="height: 3.5rem; margin-bottom: 0.5rem"
     >
       <div class="container items">
         <div class="xhover l-aligned item as-icon">
           <img
-            :src="details.logo"
+            :src="data.details.logo"
             alt="site logo"
-            class="show-onpinned logo-lg site-logo"
+            class="logo-lg site-logo"
           />
         </div>
         <div class="items md-and-down-hidden">
@@ -263,7 +74,7 @@ function handleScroll() {
                 </div>
                 <router-link to="/" class="xhover centered item exit-sidepanel">
                   <img
-                    :src="details.logo"
+                    :src="data.details.logo"
                     alt="site logo"
                     class="logo-lg site-logo"
                   />
@@ -311,7 +122,7 @@ function handleScroll() {
       <img
         class="image open-lightbox"
         data-target="lightbox1"
-        :data-lightbox="details.coverPic"
+        :data-lightbox="data.details.coverPic"
         style="
           position: absolute;
           height: 100%;
@@ -320,142 +131,160 @@ function handleScroll() {
           top: 0px;
           left: 0px;
         "
-        :src="details.coverPic"
+        :src="data.details.coverPic"
         alt="Business page cover picture"
       />
     </div>
-    <div
-      class="flexbox guttered flex-wrap"
-      style="align-items: center; padding: 1rem"
-    >
-      <SvgIcon class="flex-none" name="domain" />
-      <div class="flexible">
-        {{ details.description }}
-        <a :href="`${details.bizUrl}/about_us`" target="_blank">Learn more.</a>
+    <div class="flexbox guttered flex-wrap align-center" style="padding: 1rem">
+      <Icon name="material-symbols:domain-rounded" class="flex-none" />
+      <div class="flexible" style="min-width: 65%">
+        {{ data.details.description }}
+        <a :href="`${data.details.bizUrl}/about_us`">Learn more.</a>
       </div>
       <button class="flex-none auto-l-margined primary compact button">
         Contact Us
       </button>
     </div>
-    <div
-      class="flexbox guttered flex-wrap surface-v1-bg"
-      style="align-items: center; padding: 1rem"
-    >
-      <SvgIcon class="flex-none" name="today" />
-      <div class="flexible">
-        <span
-          v-tooltip.unblocking
-          :data-tooltip="
-            details.hours[new Date().getDay()][0] === -1
-              ? 'Did not open today at all.'
-              : `Open today by ${to12hrsTime(
-                  details.hours[new Date().getDay()][0]
-                )} and closes by ${to12hrsTime(
-                  details.hours[new Date().getDay()][1]
-                )}.`
-          "
-        >
+    <div class="fluid grid-layout surface-v2-bg" style="padding: 1rem">
+      <div class="flexbox guttered flex-wrap align-center">
+        <Icon name="material-symbols:today-outline-rounded" class="flex-none" />
+        <div class="flexible" style="min-width: 65%">
           <span
-            >We are currently
-            <template
-              v-if="
-                details.hours[new Date().getDay()][0] === -1 ||
-                getMinutes(details.hours[new Date().getDay()][0]) >
-                  getMinutes(
-                    `${new Date().getHours()}:${new Date().getMinutes()}`
-                  ) ||
-                getMinutes(details.hours[new Date().getDay()][1]) <=
-                  getMinutes(
-                    `${new Date().getHours()}:${new Date().getMinutes()}`
-                  )
-              "
-            >
+            v-tooltip.unblocking
+            :data-tooltip="
+              !avail.openTime
+                ? 'Did not open today at all.'
+                : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
+            "
+          >
+            We are currently
+            <template v-if="avail.isClosed">
               <span class="error-text">closed. </span>
-              <span
-                v-if="
-                  typeof details.hours[new Date().getDay()][0] === 'string' &&
-                  getMinutes(details.hours[new Date().getDay()][0]) >
-                    getMinutes(
-                      `${new Date().getHours()}:${new Date().getMinutes()}`
-                    )
-                "
-              >
-                Opens
-                {{ to12hrsTime(details.hours[new Date().getDay()][0]) }} Today.
-              </span>
-              <span v-else>
-                We'll open
-                {{
-                  details.hours[
-                    new Date().getDay() === 6 ? 0 : new Date().getDay() + 1
-                  ][0] !== -1
-                    ? `${to12hrsTime(
-                        details.hours[
-                          new Date().getDay() === 6
-                            ? 0
-                            : new Date().getDay() + 1
-                        ][0]
-                      )} Tomorrow. `
-                    : `${to12hrsTime(
-                        details.hours[nextOpenDay(details.hours)][0]
-                      )} on
-                ${whatDay(nextOpenDay(details.hours))}. `
-                }}
-              </span>
+              Opens
+              {{
+                avail.willOpenToday
+                  ? `${avail.openTime[0]}:${avail.openTime[1]}. `
+                  : data.details.hours[
+                      avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
+                    ][0] !== -1
+                  ? `${
+                      data.details.hours[
+                        avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
+                      ][0]
+                    } Tomorrow. `
+                  : `${
+                      data.details.hours[avail.nextOpenDay][0]
+                    } on ${avail.whatDay(avail.nextOpenDay)}. `
+              }}
             </template>
             <template v-else>
-              <span
-                v-if="
-                  getMinutes(details.hours[new Date().getDay()][1]) -
-                    getMinutes(
-                      `${new Date().getHours()}:${new Date().getMinutes()}`
-                    ) <=
-                  60
-                "
-                class="warning-text"
-                >Closes soon.
+              <span v-if="avail.closesSoon" class="warning-text">
+                Closes soon.
               </span>
-              <span v-else class="success-text">Open. </span>
-              <span>Closes {{ details.hours[new Date().getDay()][1] }}. </span>
+              <span v-else class="success-text">Open.</span>
+              Closes
+              {{ `${avail.closeTime[0]}:${avail.closeTime[1]}. ` }}
             </template>
+            <a href="#">Check our business hours</a>
           </span>
-          <a href="#">Check our business hours</a>
-        </span>
-        <SvgIcon
-          name="info"
-          class="mini l-spaced faint-text-more"
-          v-tooltip.unblocking
-          data-tooltip="Note that the given detail is generated using your device time relative to the Business location timezone."
-        />
+          <Icon
+            name="material-symbols:info-outline-rounded"
+            class="mini l-spaced faint-text-more"
+            v-tooltip.unblocking
+            data-tooltip="Note that the given detail is generated using your device time relative to the Business location timezone."
+          />
+        </div>
+        <button class="flex-none auto-l-margined compact button">
+          Shedule Visit
+        </button>
       </div>
-      <button class="flex-none auto-l-margined compact button">
-        Shedule Visit
-      </button>
     </div>
     <section>
       <div class="heading" style="padding: 1rem">New and Trending products</div>
-      <div class="flexbox guttered flex-wrap justify-center">
-        <PageProduct class="flex-none" />
-        <PageProduct class="flex-none" />
-        <PageProduct class="flex-none" />
-        <PageProduct class="flex-none" />
-        <PageProduct class="flex-none" />
-        <PageProduct class="flex-none" />
-        <PageProduct class="flex-none" />
-        <PageProduct class="flex-none" />
-        <PageProduct class="flex-none" />
-        <PageProduct class="flex-none" />
-      </div>
+      <IScroller class="flexbox justify-center">
+        <div class="scroll-items guttered">
+          <PageProduct
+            v-for="i in Math.min(6, data.products.length)"
+            :set="(product = data.products[i - 1])"
+            :details="product"
+            class="flex-none"
+          />
+          <button
+            v-if="data.products.length > 6"
+            class="button flat as-app"
+            style="
+              width: 12.5rem;
+              align-self: stretch;
+            "
+          >
+            <Icon name="material-symbols:arrow-forward-rounded" />
+            Show All
+          </button>
+        </div>
+        <div class="l-scroll">
+          <div class="circular button">
+            <Icon name="material-symbols:arrow-back-ios-new-rounded" />
+          </div>
+        </div>
+        <div class="r-scroll">
+          <div class="circular button">
+            <Icon name="material-symbols:arrow-forward-ios-rounded" />
+          </div>
+        </div>
+      </IScroller>
     </section>
     <section>
-      <div class="heading" style="padding: 1rem">Our services</div>
-      <div class="flexbox guttered flex-wrap justify-center">
-        <PageService class="flex-none" />
-        <PageService class="flex-none" />
-        <PageService class="flex-none" />
-        <PageService class="flex-none" />
-      </div>
+      <div class="heading" style="padding: 1rem">Our projects listing</div>
+      <IScroller class="flexbox justify-center">
+        <div class="scroll-items guttered">
+          <PageService
+            v-for="i in Math.min(6, data.projects.length)"
+            :set="(project = data.projects[i - 1])"
+            :details="project"
+            class="flex-none"
+          />
+          <button
+            v-if="data.projects.length > 6"
+            class="button flat as-app"
+            style="
+              width: 12.5rem;
+              align-self: stretch;
+            "
+          >
+            <Icon name="material-symbols:arrow-forward-rounded" />
+            Show All
+          </button>
+        </div>
+        <div class="l-scroll">
+          <div class="circular button">
+            <Icon name="material-symbols:arrow-back-ios-new-rounded" />
+          </div>
+        </div>
+        <div class="r-scroll">
+          <div class="circular button">
+            <Icon name="material-symbols:arrow-forward-ios-rounded" />
+          </div>
+        </div>
+      </IScroller>
     </section>
+    <!-- <section>
+      <div class="heading" style="padding: 1rem">Our services</div>
+      <IScroller>
+        <div class="scroll-items guttered">
+          <PageService
+            v-for="i in Math.min(5, data.services.length)"
+            :set="(service = data.services[i - 1])"
+            class="flex-none"
+          />
+        </div>
+        <div class="l-scroll">
+          <Icon name="material-symbols:keyboard-double-arrow-left" />
+        </div>
+        <div class="r-scroll">
+          <Icon name="material-symbols:keyboard-double-arrow-right" />
+        </div>
+      </IScroller>
+    </section> -->
     <section class="posts-sec">
       <div
         v-scrollPin="{
@@ -472,100 +301,56 @@ function handleScroll() {
           <img
             class="logo image"
             style="width: 5rem; height: 5rem; object-fit: contain"
-            :src="details.logo"
+            :src="data.details.logo"
             alt="Business Logo"
           />
           <SvgIcon
-            v-if="details.verified"
+            v-if="data.details.verified"
             name="verified_sp"
             v-tooltip.unblocking
             data-tooltip="Verified"
             style="position: absolute; bottom: 0.5em; right: 0.5em"
           />
         </div>
-        <h6 class="dm-title text-center">{{ details.bizName }}</h6>
-        <div class="faint-text">{{ details.mainCategory }}</div>
+        <h6 class="dm-title text-center">{{ data.details.bizName }}</h6>
+        <div class="faint-text">{{ data.details.mainCategory }}</div>
         <p>
           <span
             v-tooltip.unblocking
             :data-tooltip="
-              details.hours[new Date().getDay()][0] === -1
+              !avail.openTime
                 ? 'Did not open today at all.'
-                : `Open today by ${to12hrsTime(
-                    details.hours[new Date().getDay()][0]
-                  )} and closes by ${to12hrsTime(
-                    details.hours[new Date().getDay()][1]
-                  )}.`
+                : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
             "
           >
-            <span
-              >We are currently
-              <template
-                v-if="
-                  details.hours[new Date().getDay()][0] === -1 ||
-                  getMinutes(details.hours[new Date().getDay()][0]) >
-                    getMinutes(
-                      `${new Date().getHours()}:${new Date().getMinutes()}`
-                    ) ||
-                  getMinutes(details.hours[new Date().getDay()][1]) <=
-                    getMinutes(
-                      `${new Date().getHours()}:${new Date().getMinutes()}`
-                    )
-                "
-              >
-                <span class="error-text">closed. </span>
-                <span
-                  v-if="
-                    typeof details.hours[new Date().getDay()][0] === 'string' &&
-                    getMinutes(details.hours[new Date().getDay()][0]) >
-                      getMinutes(
-                        `${new Date().getHours()}:${new Date().getMinutes()}`
-                      )
-                  "
-                >
-                  Opens
-                  {{ to12hrsTime(details.hours[new Date().getDay()][0]) }}
-                  Today.
-                </span>
-                <span v-else>
-                  We'll open
-                  {{
-                    details.hours[
-                      new Date().getDay() === 6 ? 0 : new Date().getDay() + 1
+            We are currently
+            <template v-if="avail.isClosed">
+              <span class="error-text">closed. </span>
+              Opens
+              {{
+                avail.willOpenToday
+                  ? `${avail.openTime[0]}:${avail.openTime[1]}. `
+                  : data.details.hours[
+                      avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
                     ][0] !== -1
-                      ? `${to12hrsTime(
-                          details.hours[
-                            new Date().getDay() === 6
-                              ? 0
-                              : new Date().getDay() + 1
-                          ][0]
-                        )}
-                    Tomorrow. `
-                      : `${to12hrsTime(
-                          details.hours[nextOpenDay(details.hours)][0]
-                        )} on
-                    ${whatDay(nextOpenDay(details.hours))}. `
-                  }}
-                </span>
-              </template>
-              <template v-else>
-                <span
-                  v-if="
-                    getMinutes(details.hours[new Date().getDay()][1]) -
-                      getMinutes(
-                        `${new Date().getHours()}:${new Date().getMinutes()}`
-                      ) <=
-                    60
-                  "
-                  class="warning-text"
-                  >Closes soon.
-                </span>
-                <span v-else class="success-text">Open. </span>
-                <span
-                  >Closes {{ details.hours[new Date().getDay()][1] }}.
-                </span>
-              </template>
-            </span>
+                  ? `${
+                      data.details.hours[
+                        avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
+                      ][0]
+                    } Tomorrow. `
+                  : `${
+                      data.details.hours[avail.nextOpenDay][0]
+                    } on ${avail.whatDay(avail.nextOpenDay)}. `
+              }}
+            </template>
+            <template v-else>
+              <span v-if="avail.closesSoon" class="warning-text">
+                Closes soon.
+              </span>
+              <span v-else class="success-text">Open.</span>
+              Closes
+              {{ `${avail.closeTime[0]}:${avail.closeTime[1]}. ` }}
+            </template>
             <a href="#">Check our business hours</a>
           </span>
           <SvgIcon
@@ -602,7 +387,10 @@ function handleScroll() {
         Start Chat
       </button>
     </section>
-    <footer class="fluid grid-layout surface-v3-bg" style="padding: 4rem 0rem">
+    <footer
+      class="fluid grid-layout surface-v3-bg"
+      style="padding: 4rem 0rem 0rem"
+    >
       <div class="footer-main">
         <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
           <div
@@ -612,11 +400,11 @@ function handleScroll() {
             <img
               class="logo image"
               style="width: 4rem; height: 4rem; object-fit: contain"
-              :src="details.logo"
+              :src="data.details.logo"
               alt="Business Logo"
             />
             <SvgIcon
-              v-if="details.verified"
+              v-if="data.details.verified"
               name="verified_sp"
               v-tooltip.unblocking
               data-tooltip="Verified"
@@ -624,11 +412,11 @@ function handleScroll() {
               style="position: absolute; bottom: 0.5em; right: 0.5em"
             />
           </div>
-          <h6 class="dm-title">{{ details.bizName }}</h6>
-          <!-- <div class="faint-text">{{ details.mainCategory }}</div> -->
+          <h6 class="dm-title">{{ data.details.bizName }}</h6>
+          <!-- <div class="faint-text">{{ data.details.mainCategory }}</div> -->
           <div class="flexible">
-            {{ details.description }}
-            <a :href="`${details.bizUrl}/about_us`" target="_blank"
+            {{ data.details.description }}
+            <a :href="`${data.details.bizUrl}/about_us`" target="_blank"
               >Learn more.</a
             >
           </div>
@@ -636,18 +424,18 @@ function handleScroll() {
             <div class="bold" style="margin-bottom: 0.75rem">
               Earned barges on Bizword
             </div>
-            <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem">
-              <div class="ft-badge">
+            <div class="flexbox guttered flex-wrap">
+              <div class="flex-none ft-badge">
                 <Badges name="verified" style="font-size: 3rem" />
-                <div class="semibold">Verified</div>
+                <div class="mini semibold">Verified</div>
               </div>
-              <div class="ft-badge">
+              <div class="flex-none ft-badge">
                 <Badges name="escrow" style="font-size: 3rem" />
-                <div class="semibold">Trade Assurance</div>
+                <div class="mini semibold">Trade Assurance</div>
               </div>
-              <div class="ft-badge">
+              <div class="flex-none ft-badge">
                 <Badges name="5years" style="font-size: 3rem" />
-                <div class="semibold">Sustainable</div>
+                <div class="mini semibold">Sustainable</div>
               </div>
             </div>
           </div>
@@ -670,13 +458,13 @@ function handleScroll() {
           </div>
           <div>
             <div class="bold">Telephone</div>
-            <p>{{ details.contacts.tel }}</p>
+            <p>{{ data.details.contacts.tel }}</p>
           </div>
           <div>
             <div class="bold">Our physical location</div>
             <p>
               {{
-                `${details.location.address}, ${details.location.city}, ${details.location.state}.`
+                `${data.details.location.address}, ${data.details.location.city}, ${data.details.location.state}.`
               }}
             </p>
           </div>
@@ -690,6 +478,11 @@ function handleScroll() {
             <a class="item" href="#">LinkedIn</a>
             <a class="item" href="#">Youtube</a>
           </div>
+        </div>
+      </div>
+      <div class="fluid menu">
+        <div class="items container">
+          <div class="item xhover">Powered by Bizworld</div>
         </div>
       </div>
     </footer>

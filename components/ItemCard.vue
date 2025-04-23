@@ -5,33 +5,31 @@ defineProps(['details', 'isSaved']);
   <NuxtLink
     :to="`/${details.type}/${details.id}`"
     class="fluid item-card card"
-    :class="isSaved ? 'sav' : ''"
     :data-type="details.type"
   >
     <businessCard v-if="details.type === 'business'" :details="details" />
     <productCard v-else-if="details.type === 'product'" :details="details" />
     <serviceCard v-else-if="details.type === 'project'" :details="details" />
 
-    <div v-if="isSaved" class="itm-opt ex-open-modal">
-      <Dropdown
-        :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
-        class="icon circular transparent compact button"
-      >
-        <Icon name="material-symbols:more-vert" />
-        <div class="drop menu">
-          <div class="item">
-            <Icon name="material-symbols:share-outline" class="lead" /> Share
-          </div>
-          <div class="item">
-            <Icon
-              name="material-symbols:bookmark-remove-outline-rounded"
-              class="lead"
-            />
-            Unsave
-          </div>
+    <Dropdown
+      v-if="isSaved"
+      :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
+      class="icon circular transparent compact button"
+    >
+      <Icon name="material-symbols:more-vert" />
+      <div class="drop menu">
+        <div class="item">
+          <Icon name="material-symbols:share-outline" class="lead" /> Share
         </div>
-      </Dropdown>
-    </div>
+        <div class="item">
+          <Icon
+            name="material-symbols:bookmark-remove-outline-rounded"
+            class="lead"
+          />
+          Unsave
+        </div>
+      </div>
+    </Dropdown>
   </NuxtLink>
 </template>
 
@@ -44,21 +42,17 @@ defineProps(['details', 'isSaved']);
   flex-flow: row wrap;
   width: 100%;
   gap: var(--itm-gap);
+  align-items: center;
   padding: 0.5rem;
   text-decoration: none !important;
 
   .itm-display {
-    display: flex;
-    align-items: center;
     position: relative;
     width: 100%;
     max-width: var(--display-width);
-    flex: 0 0 auto;
     border-radius: inherit !important;
 
     img {
-      height: 100%;
-      width: 100%;
       object-fit: contain;
     }
   }

@@ -31,7 +31,7 @@ const props = defineProps(['details']);
           name="material-symbols:timelapse-outline-rounded"
           class="of-small r-spaced"
         />
-        Deliver in {{ details.duration }} time.
+        {{ details.duration }} delivery.
       </div>
     </div>
     <div v-if="details.rating">

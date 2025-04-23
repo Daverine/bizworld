@@ -1,16 +1,18 @@
 export const useAvailability = (hours: ([string, string] | false)[]) => {
   const now = useNow({ interval: 10000 });
-  const openTime = computed(() => {
-    return hours[now.value.getDay()] === false
+  const openTime = computed(() =>
+    hours[now.value.getDay()] === false
       ? false
-      : ((hours[now.value.getDay()] as Array<string>)[0])
+      : (hours[now.value.getDay()] as Array<string>)[0]
           .split(':')
           .map((el) => Number(el))
-  });
+  );
   const closeTime = computed(() =>
     openTime.value === false
       ? false
-      : (hours[now.value.getDay()] as Array<String>)[1].split(':').map((el) => Number(el))
+      : (hours[now.value.getDay()] as Array<String>)[1]
+          .split(':')
+          .map((el) => Number(el))
   );
   const isClosed = computed(
     () =>
@@ -64,5 +66,14 @@ export const useAvailability = (hours: ([string, string] | false)[]) => {
     ][index];
   }
 
-  return ref({ now, openTime, closeTime, isClosed, willOpenToday, closesSoon, nextOpenDay, whatDay });
+  return ref({
+    now,
+    openTime,
+    closeTime,
+    isClosed,
+    willOpenToday,
+    closesSoon,
+    nextOpenDay,
+    whatDay,
+  });
 };

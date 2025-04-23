@@ -95,10 +95,7 @@ const userStore = useUserStore();
         </div>
       </div>
     </div>
-    <form
-      class="hm-searchbox"
-      @submit.prevent="searchStore.triggerSearch()"
-    >
+    <form class="hm-searchbox" @submit.prevent="searchStore.triggerSearch()">
       <div style="margin-bottom: 16px">
         <img
           src="/images/logo_full.png"
@@ -188,7 +185,7 @@ const userStore = useUserStore();
         </p>
         <p>
           You can get updates from stores, offices, and businesses in general.
-          You can rate and write reviews on enterprises.
+          You can rate and write reviews on their offered products and services.
         </p>
         <div v-if="!userStore.auth" class="text-center">
           <button
@@ -247,9 +244,7 @@ const userStore = useUserStore();
       </div>
     </section>
     <section class="sec-block">
-      <div
-        class="container grid 1-cols md-2-cols flex-reverse"
-      >
+      <div class="container grid 1-cols md-2-cols flex-reverse">
         <div class="col">
           <img src="/images/qr.jpg" alt="picture depicting qr" class="image" />
         </div>
@@ -297,7 +292,7 @@ const userStore = useUserStore();
   </article>
   <footer style="background-color: rgba(128, 128, 128, 0.1)">
     <div
-      class="container flexbox xl-guttered flex-wrap"
+      class="container flexbox xl-guttered flex-wrap flex-separate"
       style="padding: 2.75rem 1.25rem 1.25rem"
     >
       <div class="col">
@@ -354,7 +349,7 @@ const userStore = useUserStore();
         </div>
       </div>
     </div>
-    <div class="wrappable text menu" style="padding: 10px 0px">
+    <div class="wrappable text menu" style="padding: 10px 0px; background-color: rgba(128, 128, 128, 0.1)">
       <div class="container items">
         <div class="item">Terms of use</div>
         <div class="item">About us</div>

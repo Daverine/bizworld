@@ -7,6 +7,8 @@ interface ScrollerOptions {
   prevCtrlBtn: string;
   nextCtrlBtn: string;
   autoProvideCtrls: boolean;
+  scrollwithVerticalWheel: boolean;
+  scrollwithHorizontalWheel: boolean;
   tolerance: number;
   duration: number;
 }
@@ -24,6 +26,7 @@ interface Coords {
   end?: number;
   change?: boolean;
   scrollPos?: number;
+  velocity?: number;
 }
 
 const { $anime } = useNuxtApp();
@@ -39,6 +42,8 @@ const settings: ScrollerOptions = {
     prevCtrlBtn: '.l-scroll',
     nextCtrlBtn: '.r-scroll',
     autoProvideCtrls: true,
+    scrollwithVerticalWheel: false,
+    scrollwithHorizontalWheel: true,
     tolerance: 32,
     duration: 300,
   },
@@ -165,10 +170,6 @@ function getRect(): Rect {
   };
 }
 
-function dist(e: TouchEvent): number {
-  return e.touches[0].clientX;
-}
-
 function onResizeMtd(): void {
   onScrollMtd();
 }
@@ -190,8 +191,7 @@ function onScrollMtd(): void {
     [...el.value.querySelectorAll(`:scope ${settings.nextCtrlBtn}`)].forEach(
       (el) => el.classList.add('disabled')
     );
-  }
-  else
+  } else
     [...el.value.querySelectorAll(`:scope ${settings.nextCtrlBtn}`)].forEach(
       (el) => el.classList.remove('disabled')
     );
@@ -202,8 +202,10 @@ function gestureStart(e: TouchEvent): void {
 
   if (scrollElem.contains(e.target as Node) || e.target === scrollElem) {
     coords.start = e.touches[0].clientX;
+    coords.end = e.touches[0].clientX;
     coords.change = false;
     coords.scrollPos = getRect().scrollPos;
+    coords.velocity = 0; // reset velocity
     scrollElem.classList.add('swiping');
     document.addEventListener('touchmove', gestureMove);
     document.addEventListener('touchend', gestureEnd);
@@ -212,6 +214,7 @@ function gestureStart(e: TouchEvent): void {
 
 function gestureMove(e: TouchEvent): void {
   if (!scrollElem) return;
+  coords.velocity = e.touches[0].clientX - coords.end!; // update velocity
   coords.end = e.touches[0].clientX;
   if (Math.abs(coords.end! - coords.start!) > 5 && !coords.change)
     coords.change = true;
@@ -224,6 +227,17 @@ function gestureEnd(): void {
   document.removeEventListener('touchmove', gestureMove);
   document.removeEventListener('touchend', gestureEnd);
   scrollElem.classList.remove('swiping');
+
+  // Apply momentum
+  const applyMomentum = () => {
+    if (Math.abs(coords.velocity!) > 0.1) {
+      scrollElem!.scrollLeft -= coords.velocity!; // Apply velocity to scroll position
+      coords.velocity! *= 0.95; // Reduce velocity (deceleration)
+      requestAnimationFrame(applyMomentum); // Continue animation
+    }
+  };
+
+  applyMomentum();
 }
 
 function wheelControl(e: WheelEvent): void {
@@ -231,12 +245,22 @@ function wheelControl(e: WheelEvent): void {
 
   const rect = getRect();
 
-  if (e.deltaY > 0 && Math.ceil(rect.scrollPos) < rect.maxScroll) {
+  if (
+    (settings.scrollwithVerticalWheel || e.shiftKey) &&
+    ((e.deltaY > 0 && Math.ceil(rect.scrollPos) < rect.maxScroll) ||
+      (e.deltaY < 0 && rect.scrollPos !== 0))
+  ) {
     e.preventDefault();
-    scrollElem.scrollLeft = rect.scrollPos + 30;
-  } else if (e.deltaY < 0 && rect.scrollPos !== 0) {
+    scrollElem.scrollLeft = rect.scrollPos + e.deltaY;
+  }
+
+  if (
+    settings.scrollwithHorizontalWheel &&
+    ((e.deltaX > 0 && Math.ceil(rect.scrollPos) < rect.maxScroll) ||
+      (e.deltaX < 0 && rect.scrollPos !== 0))
+  ) {
     e.preventDefault();
-    scrollElem.scrollLeft = rect.scrollPos - 30;
+    scrollElem.scrollLeft = rect.scrollPos + e.deltaX;
   }
 }
 

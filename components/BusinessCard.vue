@@ -58,7 +58,7 @@ const avail = useAvailability(props.details.hours);
       <span
         v-tooltip.unblocking
         :data-tooltip="
-          avail.openTime[0] < 0
+          !avail.openTime
             ? 'Did not open today at all.'
             : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
         "
@@ -83,8 +83,8 @@ const avail = useAvailability(props.details.hours);
                   ][0]
                 } Tomorrow`
               : `${
-                  details.hours[avail.nextOpenDay(details.hours)][0]
-                } on ${avail.whatDay(avail.nextOpenDay(details.hours))}`
+                  details.hours[avail.nextOpenDay][0]
+                } on ${avail.whatDay(avail.nextOpenDay)}`
           }}
         </template>
         <template v-else>

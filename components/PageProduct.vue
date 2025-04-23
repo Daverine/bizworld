@@ -1,57 +1,63 @@
+<script setup>
+const props = defineProps(['details']);
+</script>
 <template>
-  <div class="page-prod">
-    <div class="prod-pic"></div>
-    <div class="prod-content">
-      <div class="prod-price">N3,000</div>
-      <div class="prod-title">Product title or name a max of 2 lines</div>
-      <div class="prod-details">Product description in a small font size to fit a max of 2 lines or truncate.</div>
+  <NuxtLink :to="`/${details.type}/${details.id}`" class="page-prod item">
+    <div class="prod-pic">
+      <img :src="details.media" alt="" />
     </div>
-  </div>
+    <div class="prod-content">
+      <div class="prod-price">₦{{ details.price.toLocaleString() }}</div>
+      <div
+        class="semibold truncate"
+        style="--line-clamp: 3"
+        v-tooltip.unblocking
+        :data-tooltip="details.title"
+      >
+        {{ details.title }}
+      </div>
+      <div v-if="details.labels" class="flexbox sm-guttered justify-center">
+        <span v-for="label in details.labels" class="label">{{ label }}</span>
+      </div>
+    </div>
+  </NuxtLink>
 </template>
 
 <style scoped lang="scss">
-  .page-prod {
-    width: 12.5rem;
-    position: relative;
-    text-align: center;
-    border-radius: var(--sm-radius);
-    border: 1px solid transparent;
-    line-height: 1.375;
+.page-prod {
+  width: 12.5rem;
+  position: relative;
+  text-align: center;
+  border-radius: var(--sm-radius);
+  border: 1px solid transparent;
+  line-height: 1.375;
+  text-decoration: none !important;
+  color: var(--on-surface);
+  outline: none !important;
 
-    
-    &:hover {
-      border-color: var(--outline);
-    }
+  &:hover {
+    border-color: var(--outline);
   }
-  .prod-content {
-    margin-top: 0.5rem;
-    padding: 0rem 1rem 1rem;
-  }
-  .prod-pic {
-    position: relative;
+}
+.prod-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 0rem 1rem 1rem;
+}
+.prod-pic {
+  position: relative;
+  border-radius: inherit;
+  width: 100%;
+
+  img {
     border-radius: inherit;
-    width: 100%;
-    padding-top: 100%;
-    background-color: #F8D4D3;
+    object-fit: contain;
   }
-  .prod-price {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  .prod-title {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    line-clamp: 2;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    font-weight: var(--semibold-weight);
-  }
-  .prod-details {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    line-clamp: 2;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    font-size: calc(var(--sm-size) * 1rem);
-  }
+}
+.prod-price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary);
+}
 </style>

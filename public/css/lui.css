@@ -1171,24 +1171,13 @@ hr.vertical:empty,
 .menu .items > .item.as-app, .menu.app-items > .item, .menu.app-items .items > .item,
 .menu .items.app-items > .item {
   flex-direction: column;
-  padding: 0.25em;
+  gap: 0.25em;
 }
 .menu > .item.as-app > .icon,
 .menu .items > .item.as-app > .icon, .menu.app-items > .item > .icon, .menu.app-items .items > .item > .icon,
 .menu .items.app-items > .item > .icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1em;
-  min-height: 2em;
-  min-width: 3.5em;
+  font-size: 1.125em;
   margin: 0;
-}
-.menu > .item.as-app > .text.label,
-.menu .items > .item.as-app > .text.label, .menu.app-items > .item > .text.label, .menu.app-items .items > .item > .text.label,
-.menu .items.app-items > .item > .text.label {
-  margin: 0em;
-  font-size: 0.875em;
 }
 .menu > .item > .badge.floating,
 .menu .items > .item > .badge.floating, .menu > .item.as-app > .badge,
@@ -2929,6 +2918,14 @@ table.table tbody tr.i-selectable td:hover:before {
 }
 .button > .trailing.icon {
   margin-right: -0.5em;
+}
+.button.as-app {
+  flex-direction: column;
+  gap: 0.25em;
+}
+.button.as-app > .icon {
+  font-size: 1.125em;
+  margin: 0;
 }
 .button:hover, .button:focus, .button:active, .button.active {
   outline: none;
@@ -5701,6 +5698,7 @@ hr {
   flex-flow: row nowrap;
   overflow: hidden;
   scroll-behavior: auto;
+  touch-action: pan-y;
 }
 .i-scroller > .scroll-items > * {
   flex: 0 0 auto;
@@ -6050,8 +6048,8 @@ html.scroll-locked {
 .truncate {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  line-clamp: var(--line-clamp, 1);
   -webkit-line-clamp: var(--line-clamp, 1);
+  line-clamp: var(--line-clamp, 1);
   overflow: hidden;
 }
 
@@ -6148,6 +6146,10 @@ html.scroll-locked {
   justify-content: center;
 }
 
+.justify-stretch {
+  justify-content: stretch;
+}
+
 .align-start {
   align-items: start;
 }
@@ -6158,6 +6160,10 @@ html.scroll-locked {
 
 .align-center {
   align-items: center;
+}
+
+.align-stretch {
+  align-items: stretch;
 }
 
 .s-justify-start {
