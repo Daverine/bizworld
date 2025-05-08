@@ -10,18 +10,18 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/icon": "^1.11.0",
-    "@pinia/nuxt": "^0.10.1",
-    "@vueuse/core": "^13.0.0",
-    "@vueuse/nuxt": "^13.0.0",
-    "nuxt": "^3.16.0",
-    "pinia": "^3.0.1",
+    "@nuxt/icon": "^1.12.0",
+    "@pinia/nuxt": "^0.11.0",
+    "@vueuse/core": "^13.1.0",
+    "@vueuse/nuxt": "^13.1.0",
+    "nuxt": "^3.17.2",
+    "pinia": "^3.0.2",
     "vue": "latest",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@hypernym/nuxt-anime": "^2.1.1",
-    "@iconify-json/material-symbols": "^1.2.15",
-    "sass-embedded": "^1.85.1"
+    "@iconify-json/material-symbols": "^1.2.20",
+    "sass-embedded": "^1.87.0"
   }
 }

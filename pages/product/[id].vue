@@ -1,5 +1,5 @@
 <script setup>
-definePageMeta({ layout: 'details' });
+definePageMeta({ layout: 'details', name: 'product-page' });
 const details = ref({
   type: 'product',
   id: 'prod123343',
@@ -489,7 +489,7 @@ onMounted(() => {
             <div class="vertical menu">
               <!-- Bizworld delivery option -->
               <label
-                class="item as-icon disbled"
+                class="item as-icon disabled"
                 :class="{ active: tmp.delivery === 'bizworld' }"
               >
                 <div class="flexbox flex-column sm-guttered align-center">

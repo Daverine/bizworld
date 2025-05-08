@@ -232,7 +232,7 @@ function gestureEnd(): void {
   const applyMomentum = () => {
     if (Math.abs(coords.velocity!) > 0.1) {
       scrollElem!.scrollLeft -= coords.velocity!; // Apply velocity to scroll position
-      coords.velocity! *= 0.95; // Reduce velocity (deceleration)
+      coords.velocity! *= 0.975; // Reduce velocity (deceleration)
       requestAnimationFrame(applyMomentum); // Continue animation
     }
   };
