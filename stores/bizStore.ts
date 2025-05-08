@@ -158,81 +158,185 @@ export const useBizStore = defineStore('biz', {
     feeds: [
       {
         id: '20230701',
-        logoUrl: '/images/edads.jpg',
-        verified: true,
-        displayName: 'Emmadave Computer Technology and Services',
-        bizCategory: 'Computer repair services',
-        postText: 'Edtech on work. View profile',
-        postMediaUrls: [{ url: '/images/ads.jpg', alt: 'pic' }],
-        date: 'May 28',
-        thumbsUp: 0,
+        text: 'Edtech on work. View profile number 1',
+        media: [
+          {
+            type: 'pic',
+            url: '/images/ads.jpg',
+          },
+        ],
+        date: "2025-05-06T10:00:00.000Z",
+        thumbsUp: 10,
         comments: [],
-        visibility: 10,
+        bizDetails: {
+          name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
+          url: 'https://www.edtech.com',
+          verified: true,
+          location: {
+            address: '3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102',
+            city: 'Abeokuta',
+            state: 'Ogun state',
+            map: 'https://goo.gl/mapsy9ExQLSq37FL6EHm6',
+          },
+        },
       },
       {
         id: '20230701',
-        logoUrl: '/images/edads.jpg',
-        verified: true,
-        displayName: 'Emmadave Computer Technology and Services',
-        bizCategory: 'Computer repair services',
-        postText: 'Edtech on work. View profile',
-        postMediaUrls: [{ url: '/images/ads.jpg', alt: 'pic' }],
-        date: 'May 28',
-        thumbsUp: 0,
+        text: 'Edtech on work. View profile',
+        media: [
+          {
+            type: 'pic',
+            url: '/images/ads.jpg',
+          },
+        ],
+        date: "2025-02-06T10:00:00.000Z",
+        thumbsUp: 10,
         comments: [],
-        visibility: 10,
+        bizDetails: {
+          name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
+          url: 'https://www.edtech.com',
+          verified: true,
+          location: {
+            address: '3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102',
+            city: 'Abeokuta',
+            state: 'Ogun state',
+            map: 'https://goo.gl/mapsy9ExQLSq37FL6EHm6',
+          },
+        },
       },
       {
         id: '20230701',
-        logoUrl: '/images/edads.jpg',
-        verified: true,
-        displayName: 'Emmadave Computer Technology and Services',
-        bizCategory: 'Computer repair services',
-        postText: 'Edtech on work. View profile',
-        postMediaUrls: [{ url: '/images/ads.jpg', alt: 'pic' }],
-        date: 'May 28',
-        thumbsUp: 0,
+        text: 'Edtech on work. View profile',
+        media: [
+          {
+            type: 'pic',
+            url: '/images/ads.jpg',
+          },
+        ],
+        date: "2025-06-06T10:00:00.000Z",
+        thumbsUp: 10,
         comments: [],
-        visibility: 10,
+        bizDetails: {
+          name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
+          url: 'https://www.edtech.com',
+          verified: true,
+          location: {
+            address: '3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102',
+            city: 'Abeokuta',
+            state: 'Ogun state',
+            map: 'https://goo.gl/mapsy9ExQLSq37FL6EHm6',
+          },
+        },
       },
       {
         id: '20230701',
-        logoUrl: '/images/edads.jpg',
-        verified: true,
-        displayName: 'Emmadave Computer Technology and Services',
-        bizCategory: 'Computer repair services',
-        postText: 'Edtech on work. View profile',
-        postMediaUrls: [{ url: '/images/ads.jpg', alt: 'pic' }],
-        date: 'May 28',
-        thumbsUp: 0,
+        text: 'Edtech on work. View profile',
+        media: [
+          {
+            type: 'pic',
+            url: '/images/ads.jpg',
+          },
+        ],
+        date: "2025-01-06T10:00:00.000Z",
+        thumbsUp: 10,
         comments: [],
-        visibility: 10,
+        bizDetails: {
+          name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
+          url: 'https://www.edtech.com',
+          verified: true,
+          location: {
+            address: '3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102',
+            city: 'Abeokuta',
+            state: 'Ogun state',
+            map: 'https://goo.gl/mapsy9ExQLSq37FL6EHm6',
+          },
+        },
       },
       {
         id: '20230701',
-        logoUrl: '/images/edads.jpg',
-        verified: true,
-        displayName: 'Emmadave Computer Technology and Services',
-        bizCategory: 'Computer repair services',
-        postText: 'Edtech on work. View profile',
-        postMediaUrls: [{ url: '/images/ads.jpg', alt: 'pic' }],
-        date: 'May 28',
-        thumbsUp: 0,
+        text: 'Edtech on work. View profile',
+        media: [
+          {
+            type: 'pic',
+            url: '/images/ads.jpg',
+          },
+        ],
+        date: "2025-05-06T10:00:00.000Z",
+        thumbsUp: 10,
         comments: [],
-        visibility: 10,
+        bizDetails: {
+          name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
+          url: 'https://www.edtech.com',
+          verified: true,
+          location: {
+            address: '3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102',
+            city: 'Abeokuta',
+            state: 'Ogun state',
+            map: 'https://goo.gl/mapsy9ExQLSq37FL6EHm6',
+          },
+        },
       },
       {
         id: '20230701',
-        logoUrl: '/images/edads.jpg',
-        verified: true,
-        displayName: 'Emmadave Computer Technology and Services',
-        bizCategory: 'Computer repair services',
-        postText: 'Edtech on work. View profile',
-        postMediaUrls: [{ url: '/images/ads.jpg', alt: 'pic' }],
-        date: 'May 28',
-        thumbsUp: 0,
+        text: 'Edtech on work. View profile',
+        media: [
+          {
+            type: 'pic',
+            url: '/images/ads.jpg',
+          },
+        ],
+        date: "2025-05-06T10:00:00.000Z",
+        thumbsUp: 10,
         comments: [],
-        visibility: 10,
+        bizDetails: {
+          name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
+          url: 'https://www.edtech.com',
+          verified: true,
+          location: {
+            address: '3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102',
+            city: 'Abeokuta',
+            state: 'Ogun state',
+            map: 'https://goo.gl/mapsy9ExQLSq37FL6EHm6',
+          },
+        },
+      },
+      {
+        id: '20230701',
+        text: 'Edtech on work. View profile',
+        media: [
+          {
+            type: 'pic',
+            url: '/images/ads.jpg',
+          },
+        ],
+        date: "2025-05-06T10:00:00.000Z",
+        thumbsUp: 10,
+        comments: [],
+        bizDetails: {
+          name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
+          url: 'https://www.edtech.com',
+          verified: true,
+          location: {
+            address: '3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102',
+            city: 'Abeokuta',
+            state: 'Ogun state',
+            map: 'https://goo.gl/mapsy9ExQLSq37FL6EHm6',
+          },
+        },
       },
     ],
     products: [
@@ -250,6 +354,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -274,6 +380,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -298,6 +406,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -322,6 +432,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -346,6 +458,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -370,6 +484,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -394,6 +510,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -418,6 +536,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -444,6 +564,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -468,6 +590,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -492,6 +616,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -516,6 +642,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -540,6 +668,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -564,6 +694,8 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {
@@ -588,6 +720,34 @@ export const useBizStore = defineStore('biz', {
         },
         bizDetails: {
           name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
+          url: 'https://www.edtech.com',
+          verified: true,
+          location: {
+            address: '3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102',
+            city: 'Abeokuta',
+            state: 'Ogun state',
+            map: 'https://goo.gl/mapsy9ExQLSq37FL6EHm6',
+          },
+        },
+      },
+      {
+        id: 'ser39884',
+        type: 'project',
+        title:
+          'Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW',
+        media: '/images/product.jpeg',
+        price: 100000,
+        duration: '2 days',
+        rating: {
+          rate: 4.6,
+          raters: 3440,
+        },
+        bizDetails: {
+          name: 'Emmadave Computer Technology Services',
+          logo: '/images/logo-sq.png',
+          category: 'Computer repair services',
           url: 'https://www.edtech.com',
           verified: true,
           location: {

@@ -1,120 +1,12 @@
 <script setup>
-definePageMeta({ layout: 'details' });
+definePageMeta({ layout: 'biz-pages', name: 'biz-home' });
 const data = useBizStore();
 const avail = useAvailability(data.details.hours);
 const isReady = computed(() => data.details && avail.value);
-const feedStore = useFeedStore();
-
-onMounted(() => feedStore.getUpdate());
 </script>
 
 <template>
-  <main v-if="isReady" class="grid-layout">
-    <header
-      class="flexbox dm-gap"
-      style="padding-top: 0.5rem; align-items: center; gap: 1rem"
-    >
-      <div
-        class="dm-logo flex-none"
-        style="position: relative; width: max-content; line-height: 0"
-      >
-        <img
-          class="logo image"
-          style="width: 5rem; height: 5rem; object-fit: contain"
-          :src="data.details.logo"
-          alt="Business Logo"
-        />
-        <SvgIcon
-          v-if="data.details.verified"
-          name="verified_sp"
-          v-tooltip.unblocking
-          data-tooltip="Verified"
-          style="position: absolute; bottom: 0.5em; right: 0.5em"
-        />
-      </div>
-      <div class="dm-heading flexible">
-        <h5 class="0-margined">{{ data.details.bizName }}</h5>
-        <div class="faint-text">{{ data.details.mainCategory }}</div>
-      </div>
-      <button class="flex-none flat button auto-l-margined md-and-down-hidden">
-        <SvgIcon name="follow" class="lead" /> Follow
-      </button>
-    </header>
-    <div
-      v-scrollPin="{ top: 64 }"
-      class="fluid z-level-2 r-aligned menu surface-v2-bg"
-      style="height: 3.5rem; margin-bottom: 0.5rem"
-    >
-      <div class="container items">
-        <div class="xhover l-aligned item as-icon">
-          <img
-            :src="data.details.logo"
-            alt="site logo"
-            class="logo-lg site-logo"
-          />
-        </div>
-        <div class="items md-and-down-hidden">
-          <div class="item">Home</div>
-          <div class="item">Feeds</div>
-          <div class="item">Products</div>
-          <div class="item">Services</div>
-          <div class="item">About Us</div>
-        </div>
-        <div
-          class="item open-sidepanel md-and-up-hidden"
-          data-target="bizsidepanel"
-        >
-          <SvgIcon name="menu" class="lead" />
-          Menu
-          <SidePanel class="right" id="bizsidepanel">
-            <div class="padded panel">
-              <div class="vertical menu">
-                <div class="centered item exit-sidepanel">
-                  <SvgIcon name="arrow_back" />
-                </div>
-                <router-link to="/" class="xhover centered item exit-sidepanel">
-                  <img
-                    :src="data.details.logo"
-                    alt="site logo"
-                    class="logo-lg site-logo"
-                  />
-                </router-link>
-                <div class="item">Home</div>
-                <div class="item">Feeds</div>
-                <div class="item">Products</div>
-                <div class="item">Services</div>
-                <div class="item">About Us</div>
-              </div>
-              <hr />
-              <footer style="margin-top: auto">
-                <Shareables name="color_scheme" />
-                <Shareables name="copyright" />
-              </footer>
-            </div>
-          </SidePanel>
-        </div>
-        <Dropdown
-          :options="{ directionPriority: { x: 'left' } }"
-          v-tooltip.unblocking
-          data-tooltip="More options"
-          class="item"
-        >
-          <SvgIcon name="more_horiz" />
-          <div class="drop menu">
-            <div class="item">
-              <SvgIcon name="follow" class="lead" /> Follow page
-            </div>
-            <div class="item">
-              <SvgIcon name="bookmark_add" class="lead" /> Save card
-            </div>
-            <div class="item"><SvgIcon name="share" class="lead" /> Share</div>
-            <div class="item">
-              <SvgIcon name="report" class="lead" /> Report page
-            </div>
-          </div>
-        </Dropdown>
-      </div>
-    </div>
+  <main v-if="isReady">
     <div
       class="dm-display"
       style="position: relative; padding-top: calc(100% / 6 * 2)"
@@ -166,7 +58,7 @@ onMounted(() => feedStore.getUpdate());
                   ? `${avail.openTime[0]}:${avail.openTime[1]}. `
                   : data.details.hours[
                       avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
-                    ][0] !== -1
+                    ]
                   ? `${
                       data.details.hours[
                         avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
@@ -194,9 +86,11 @@ onMounted(() => feedStore.getUpdate());
             data-tooltip="Note that the given detail is generated using your device time relative to the Business location timezone."
           />
         </div>
-        <button class="flex-none auto-l-margined compact button">
-          Shedule Visit
-        </button>
+        <NuxtLink
+          :to="{ name: 'biz-about', params: { id: $route.params.id }, hash: '#biz-hours' }"
+           class="flex-none auto-l-margined compact button">
+          Schedule Visit
+        </NuxtLink>
       </div>
     </div>
     <section>
@@ -209,17 +103,15 @@ onMounted(() => feedStore.getUpdate());
             :details="product"
             class="flex-none"
           />
-          <button
+          <NuxtLink
+            :to="{ name: 'biz-products', params: { id: $route.params.id } }"
             v-if="data.products.length > 6"
             class="button flat as-app"
-            style="
-              width: 12.5rem;
-              align-self: stretch;
-            "
+            style="width: 12.5rem; align-self: stretch"
           >
             <Icon name="material-symbols:arrow-forward-rounded" />
             Show All
-          </button>
+          </NuxtLink>
         </div>
         <div class="l-scroll">
           <div class="circular button">
@@ -243,17 +135,15 @@ onMounted(() => feedStore.getUpdate());
             :details="project"
             class="flex-none"
           />
-          <button
+          <NuxtLink
+            :to="{ name: 'biz-services', params: { id: $route.params.id } }"
             v-if="data.projects.length > 6"
             class="button flat as-app"
-            style="
-              width: 12.5rem;
-              align-self: stretch;
-            "
+            style="width: 12.5rem; align-self: stretch"
           >
             <Icon name="material-symbols:arrow-forward-rounded" />
             Show All
-          </button>
+          </NuxtLink>
         </div>
         <div class="l-scroll">
           <div class="circular button">
@@ -267,29 +157,11 @@ onMounted(() => feedStore.getUpdate());
         </div>
       </IScroller>
     </section>
-    <!-- <section>
-      <div class="heading" style="padding: 1rem">Our services</div>
-      <IScroller>
-        <div class="scroll-items guttered">
-          <PageService
-            v-for="i in Math.min(5, data.services.length)"
-            :set="(service = data.services[i - 1])"
-            class="flex-none"
-          />
-        </div>
-        <div class="l-scroll">
-          <Icon name="material-symbols:keyboard-double-arrow-left" />
-        </div>
-        <div class="r-scroll">
-          <Icon name="material-symbols:keyboard-double-arrow-right" />
-        </div>
-      </IScroller>
-    </section> -->
     <section class="posts-sec">
       <div
         v-scrollPin="{
           top: 136,
-          bottom: 16,
+          bottom: 64,
           sticky: true,
         }"
         class="page-aside biz-pin text-center"
@@ -332,7 +204,7 @@ onMounted(() => feedStore.getUpdate());
                   ? `${avail.openTime[0]}:${avail.openTime[1]}. `
                   : data.details.hours[
                       avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
-                    ][0] !== -1
+                    ]
                   ? `${
                       data.details.hours[
                         avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
@@ -368,13 +240,17 @@ onMounted(() => feedStore.getUpdate());
       <div class="posts-main">
         <div class="heading">Updates from us</div>
         <FeedCard
-          v-for="(feed, i) in feedStore.feeds"
-          :key="i"
+          v-for="i in Math.min(6, data.feeds.length)"
+          :set="(feed = data.feeds[i - 1])"
           :details="feed"
         />
-        <button class="fluid button" style="max-width: 500px">
+        <NuxtLink
+          :to="{ name: 'biz-feeds', params: { id: $route.params.id } }"
+          class="fluid button"
+          style="max-width: 500px"
+        >
           View more posts
-        </button>
+        </NuxtLink>
       </div>
     </section>
     <section class="text-center" style="padding: 6.25rem">
@@ -387,105 +263,6 @@ onMounted(() => feedStore.getUpdate());
         Start Chat
       </button>
     </section>
-    <footer
-      class="fluid grid-layout surface-v3-bg"
-      style="padding: 4rem 0rem 0rem"
-    >
-      <div class="footer-main">
-        <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
-          <div
-            class="dm-logo flex-none"
-            style="position: relative; width: max-content; line-height: 0"
-          >
-            <img
-              class="logo image"
-              style="width: 4rem; height: 4rem; object-fit: contain"
-              :src="data.details.logo"
-              alt="Business Logo"
-            />
-            <SvgIcon
-              v-if="data.details.verified"
-              name="verified_sp"
-              v-tooltip.unblocking
-              data-tooltip="Verified"
-              class="mini"
-              style="position: absolute; bottom: 0.5em; right: 0.5em"
-            />
-          </div>
-          <h6 class="dm-title">{{ data.details.bizName }}</h6>
-          <!-- <div class="faint-text">{{ data.details.mainCategory }}</div> -->
-          <div class="flexible">
-            {{ data.details.description }}
-            <a :href="`${data.details.bizUrl}/about_us`" target="_blank"
-              >Learn more.</a
-            >
-          </div>
-          <div>
-            <div class="bold" style="margin-bottom: 0.75rem">
-              Earned barges on Bizword
-            </div>
-            <div class="flexbox guttered flex-wrap">
-              <div class="flex-none ft-badge">
-                <Badges name="verified" style="font-size: 3rem" />
-                <div class="mini semibold">Verified</div>
-              </div>
-              <div class="flex-none ft-badge">
-                <Badges name="escrow" style="font-size: 3rem" />
-                <div class="mini semibold">Trade Assurance</div>
-              </div>
-              <div class="flex-none ft-badge">
-                <Badges name="5years" style="font-size: 3rem" />
-                <div class="mini semibold">Sustainable</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
-          <div class="bold">Menus</div>
-          <div class="text vertical menu">
-            <NuxtLink class="item">Home</NuxtLink>
-            <NuxtLink class="item">Feeds</NuxtLink>
-            <NuxtLink class="item">Products</NuxtLink>
-            <NuxtLink class="item">Services</NuxtLink>
-            <NuxtLink class="item">About us</NuxtLink>
-          </div>
-        </div>
-        <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
-          <div class="bold">Contact Us</div>
-          <div>
-            <p>Start chat with us directly from here.</p>
-            <button class="secondary button">Start Chat</button>
-          </div>
-          <div>
-            <div class="bold">Telephone</div>
-            <p>{{ data.details.contacts.tel }}</p>
-          </div>
-          <div>
-            <div class="bold">Our physical location</div>
-            <p>
-              {{
-                `${data.details.location.address}, ${data.details.location.city}, ${data.details.location.state}.`
-              }}
-            </p>
-          </div>
-        </div>
-        <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
-          <div class="bold nowrap-text">Social media</div>
-          <div class="vertical text menu">
-            <a class="item" href="#">Facebook</a>
-            <a class="item" href="#">Instagram</a>
-            <a class="item" href="#">Twitter</a>
-            <a class="item" href="#">LinkedIn</a>
-            <a class="item" href="#">Youtube</a>
-          </div>
-        </div>
-      </div>
-      <div class="fluid menu">
-        <div class="items container">
-          <div class="item xhover">Powered by Bizworld</div>
-        </div>
-      </div>
-    </footer>
   </main>
 </template>
 

@@ -40,6 +40,8 @@
     },
     "bizDetails": {
       "name": "Emmadave Computer Technology Services",
+      "logo": "/images/logo-sq.png",
+      "category": "Computer repair services",
       "url": "https://www.edtech.com",
       "verified": true,
       "location": {
@@ -63,6 +65,8 @@
     },
     "bizDetails": {
       "name": "Emmadave Computer Technology Services",
+      "logo": "/images/logo-sq.png",
+      "category": "Computer repair services",
       "url": "https://www.edtech.com",
       "verified": true,
       "location": {

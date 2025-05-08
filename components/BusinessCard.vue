@@ -76,7 +76,7 @@ const avail = useAvailability(props.details.hours);
               ? `${avail.openTime[0]}:${avail.openTime[1]}`
               : details.hours[
                   avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
-                ][0] !== -1
+                ]
               ? `${
                   details.hours[
                     avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1

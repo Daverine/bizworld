@@ -203,7 +203,7 @@ const userStore = useUserStore();
           <img
             src="/images/explore.jpg"
             alt="picture depicting explore"
-            class="image"
+            class="image sm-rounded"
           />
         </div>
         <div class="col container-text big">
@@ -244,11 +244,15 @@ const userStore = useUserStore();
       </div>
     </section>
     <section class="sec-block">
-      <div class="container grid 1-cols md-2-cols flex-reverse">
+      <div class="container grid 1-cols md-2-cols" style="direction: rtl">
         <div class="col">
-          <img src="/images/qr.jpg" alt="picture depicting qr" class="image" />
+          <img
+            src="/images/qr.jpg"
+            alt="picture depicting qr"
+            class="image sm-rounded"
+          />
         </div>
-        <div class="col container-text big">
+        <div class="col container-text big" style="direction: ltr">
           <div>
             <h2>
               <span class="primary-text">Know</span> their products and services
@@ -349,7 +353,10 @@ const userStore = useUserStore();
         </div>
       </div>
     </div>
-    <div class="wrappable text menu" style="padding: 10px 0px; background-color: rgba(128, 128, 128, 0.1)">
+    <div
+      class="wrappable text menu"
+      style="padding: 10px 0px; background-color: rgba(128, 128, 128, 0.1)"
+    >
       <div class="container items">
         <div class="item">Terms of use</div>
         <div class="item">About us</div>

@@ -292,7 +292,7 @@ onMounted(() => {
                             avail.now.getDay() === 6
                               ? 0
                               : avail.now.getDay() + 1
-                          ][0] !== -1
+                          ]
                         ? `${
                             details.bizData.hours[
                               avail.now.getDay() === 6
