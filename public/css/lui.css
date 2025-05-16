@@ -262,7 +262,7 @@ input[type=radio] {
 
 button[disabled],
 input[disabled] {
-  cursor: default;
+  cursor: not-allowed;
 }
 
 button::-moz-focus-inner,
@@ -272,30 +272,19 @@ input::-moz-focus-inner {
 }
 
 input[type=text],
+input[type=number],
 input[type=email],
 input[type=search],
 input[type=password],
 textarea {
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: revert;
+  -webkit-appearance: revert;
+  -moz-appearance: revert;
 }
 
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
-  height: auto;
-}
-
-input[type=number]:not(:hover, :focus) {
-  -moz-appearance: textfield;
-}
-
-input[type=number]:hover,
-input[type=number]:focus {
-  -moz-appearance: spinner-textfield;
-}
-
-input[type=search] {
-  -webkit-appearance: textfield;
+  -webkit-appearance: none;
 }
 
 input[type=search]::-webkit-search-cancel-button,
@@ -2978,6 +2967,18 @@ table.table tbody tr.i-selectable td:hover:before {
   background-image: none;
   pointer-events: none;
 }
+.button .floating.badge {
+  position: absolute;
+  top: 0.25em;
+  right: 0.25em;
+  left: auto;
+  bottom: auto;
+  margin: 0;
+}
+.button .floating.badge:empty {
+  top: 0.5em;
+  right: 1em;
+}
 
 .button.loading {
   cursor: default;
@@ -3036,10 +3037,10 @@ table.table tbody tr.i-selectable td:hover:before {
   box-shadow: var(--z-depth-3);
   transition: transform 0.3s ease-in, opacity 0.25s ease-out;
 }
-.fab-group > .button.fab:not(:first-of-type) {
+.fab-group > .button.fab:not(:first-child) {
   padding: var(--button-padding-tb);
 }
-.fab-group > .button.fab:first-of-type {
+.fab-group > .button.fab:first-child {
   font-size: 1.125rem;
 }
 
@@ -5665,6 +5666,8 @@ hr {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  -o-object-fit: contain;
+     object-fit: contain;
   padding: 0.125em;
   width: var(--thumbnail-size, 6.25rem);
   height: var(--thumbnail-size, 6.25rem);

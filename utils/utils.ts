@@ -157,7 +157,7 @@ export const utils = {
     return nextElements;
   },
   triggerEvent(
-    el: HTMLElement,
+    el: HTMLElement | Window,
     eventType: string | Event,
     customData?: any
   ): void {

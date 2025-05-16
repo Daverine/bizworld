@@ -4,7 +4,7 @@ defineProps(['details']);
 <template>
   <div class="feed-card card">
     <div class="fcd-head">
-      <div style="position: relative">
+      <div class="flex-none" style="position: relative">
         <img class="fcd-logo" :src="details.bizDetails.logo" />
         <svg
           v-if="details.bizDetails.verified"
@@ -69,7 +69,8 @@ defineProps(['details']);
     <div v-if="details.media" class="fcd-media">
       <img
         v-for="media in details.media"
-        class="image"
+        class="image open-lightbox"
+        
         :src="media.url"
         alt=""
       />

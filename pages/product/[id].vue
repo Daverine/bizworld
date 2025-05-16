@@ -1,5 +1,9 @@
 <script setup>
+import { get } from '@vueuse/core';
+
 definePageMeta({ layout: 'details', name: 'product-page' });
+const cartStore = useCartStore();
+const [newTemplate, useTemplate] = createReusableTemplate();
 const details = ref({
   type: 'product',
   id: 'prod123343',
@@ -266,7 +270,6 @@ const details = ref({
   },
 });
 const tmp = ref({
-  id: details.value.id,
   spec: [],
   price: computed(() => {
     let price = 0;
@@ -329,8 +332,199 @@ onMounted(() => {
     isSmallScreen.value = useMediaQuery('(max-width: 959px)').value;
   });
 });
+
+function getItemForCart() {
+  return {
+    type: details.value.type,
+    id: details.value.id,
+    title: details.value.title,
+    price: tmp.value.price,
+    media: tmp.value.media[0].url,
+    productOptions: tmp.value.spec,
+    quantity: tmp.value.quantity,
+    delivery: tmp.value.delivery,
+    bizData: details.value.bizData,
+    checked: true,
+  };
+}
 </script>
 <template>
+  <newTemplate>
+    <template v-if="details.productOptions">
+      <div>
+        <div class="sub lined heading a-block">
+          {{ details.productOptions.optionType }}:
+          <div class="trailing">{{ tmp.spec[0] }}</div>
+        </div>
+        <div class="wrappable menu">
+          <label
+            v-for="(option, a) in details.productOptions.options"
+            class="item as-icon"
+            :class="{ active: option.label === tmp.spec[0] }"
+          >
+            <input
+              type="radio"
+              class="form-item"
+              :value="option.label"
+              v-model="tmp.spec[0]"
+            />
+            <img
+              v-if="option.media"
+              :src="option.media.thumbnail"
+              class="thumbnail"
+            />
+            {{ option.label }}
+          </label>
+        </div>
+      </div>
+      <template v-for="(option, a) in details.productOptions.options">
+        <div
+          v-if="option.subOptions"
+          class="tab-page"
+          :class="{ active: option.label === tmp.spec[0] }"
+        >
+          <div class="sub lined heading a-block">
+            {{ option.subOptions.optionType }}:
+            <div class="trailing">{{ tmp.spec[1] }}</div>
+          </div>
+          <div class="wrappable menu">
+            <label
+              v-for="(subOption, b) in option.subOptions.options"
+              class="item as-icon"
+              :class="{ active: subOption.label === tmp.spec[1] }"
+            >
+              <input
+                type="radio"
+                class="form-item"
+                :value="subOption.label"
+                v-model="tmp.spec[1]"
+              />
+              <img
+                v-if="subOption.media"
+                :src="subOption.media.thumbnail"
+                class="thumbnail"
+              />
+              {{ subOption.label }}
+            </label>
+          </div>
+        </div>
+      </template>
+    </template>
+    <div>
+      <div class="sub lined heading a-block">
+        Quantity:
+        <div class="trailing">{{ tmp.quantity }}</div>
+      </div>
+      <div class="fluid small input-box">
+        <button
+          class="addon icon mini button"
+          @click="
+            () => {
+              if (tmp.quantity > 1) tmp.quantity--;
+            }
+          "
+        >
+          <Icon name="material-symbols:remove-rounded" />
+        </button>
+        <input
+          type="number"
+          placeholder="Enter product Quantity"
+          class="subject form-item compact text-center"
+          min="1"
+          v-model="tmp.quantity"
+          @input="
+            (evt) => {
+              if (evt.target.value < 1) tmp.quantity = 1;
+            }
+          "
+          @keypress="
+            (evt) => {
+              if (evt.key === '-') evt.preventDefault();
+            }
+          "
+        />
+        <button class="addon icon mini button" @click="tmp.quantity++">
+          <Icon name="material-symbols:add-rounded" />
+        </button>
+      </div>
+    </div>
+    <div>
+      <div class="sub lined heading a-block">
+        Delivery service:
+        <div class="trailing capitalized">
+          {{ tmp.delivery }}
+        </div>
+      </div>
+      <div class="vertical menu">
+        <!-- Bizworld delivery option -->
+        <label
+          class="item as-icon disabled"
+          :class="{ active: tmp.delivery === 'bizworld' }"
+        >
+          <div class="flexbox flex-column sm-guttered align-center">
+            <input
+              type="radio"
+              value="bizworld"
+              v-model="tmp.delivery"
+              class="form-item"
+            />
+            <Icon
+              name="material-symbols:delivery-truck-speed-outline-rounded"
+              style="font-size: 1.5em"
+            />
+          </div>
+          <div class="content" style="font-weight: normal">
+            <div class="flexbox guttered flex-separate">
+              <div class="small bold">BizWorld Delivery Management</div>
+              <a href="#">Details</a>
+            </div>
+            <div class="flexbox guttered flex-separate">
+              <div>Delivery fee:</div>
+              <div>NA</div>
+            </div>
+            <div class="flexbox guttered flex-separate">
+              <div>Delivery time:</div>
+              <div>NA</div>
+            </div>
+          </div>
+        </label>
+        <!-- Self pickup option -->
+        <label
+          class="item as-icon"
+          :class="{ active: tmp.delivery === 'self-pickup' }"
+        >
+          <div class="flexbox flex-column sm-guttered align-center">
+            <input
+              type="radio"
+              value="self-pickup"
+              v-model="tmp.delivery"
+              class="form-item"
+            />
+            <Icon
+              name="material-symbols:package-outline-rounded"
+              style="font-size: 1.5em"
+            />
+          </div>
+          <div class="content" style="font-weight: normal">
+            <div class="flexbox guttered flex-separate">
+              <div class="small bold">Self Pickup</div>
+              <a
+                href="javascript:void(0)"
+                class="open-modal"
+                data-target="sp-details"
+                >Details</a
+              >
+            </div>
+            <div class="faint-text">
+              Manage how your item gets to you. Pick up your item within 2 weeks
+              of purchase.
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </newTemplate>
+
   <Title>{{ `${details.title} | Bizworld` }}</Title>
   <main class="grid-layout" style="padding-top: 1rem">
     <div class="page-cont">
@@ -384,176 +578,13 @@ onMounted(() => {
         </div>
         <!-- Product Options -->
         <section class="mobile-screen-only config">
+          <div class="small semibold">Unit price</div>
           <div class="h3 0-margined primary-text bold">
             ₦{{ tmp.price.toLocaleString() }}
           </div>
           <div class="alt-ribbon red label">Configure purchase</div>
-          <template v-if="details.productOptions">
-            <div>
-              <div class="sub lined heading a-block">
-                {{ details.productOptions.optionType }}:
-                <div class="trailing">{{ tmp.spec[0] }}</div>
-              </div>
-              <div class="wrappable menu">
-                <label
-                  v-for="(option, a) in details.productOptions.options"
-                  class="item as-icon"
-                  :class="{ active: option.label === tmp.spec[0] }"
-                >
-                  <input
-                    type="radio"
-                    class="form-item"
-                    :value="option.label"
-                    v-model="tmp.spec[0]"
-                  />
-                  <img
-                    v-if="option.media"
-                    :src="option.media.thumbnail"
-                    class="thumbnail"
-                  />
-                  {{ option.label }}
-                </label>
-              </div>
-            </div>
-            <template v-for="(option, a) in details.productOptions.options">
-              <div
-                v-if="option.subOptions"
-                class="tab-page"
-                :class="{ active: option.label === tmp.spec[0] }"
-              >
-                <div class="sub lined heading a-block">
-                  {{ option.subOptions.optionType }}:
-                  <div class="trailing">{{ tmp.spec[1] }}</div>
-                </div>
-                <div class="wrappable menu">
-                  <label
-                    v-for="(subOption, b) in option.subOptions.options"
-                    class="item as-icon"
-                    :class="{ active: subOption.label === tmp.spec[1] }"
-                  >
-                    <input
-                      type="radio"
-                      class="form-item"
-                      :value="subOption.label"
-                      v-model="tmp.spec[1]"
-                    />
-                    <img
-                      v-if="subOption.media"
-                      :src="subOption.media.thumbnail"
-                      class="thumbnail"
-                    />
-                    {{ subOption.label }}
-                  </label>
-                </div>
-              </div>
-            </template>
-          </template>
-          <div>
-            <div class="sub lined heading a-block">
-              Quantity:
-              <div class="trailing">{{ tmp.quantity }}</div>
-            </div>
-            <div class="fluid small input-box">
-              <button class="addon icon mini button" @click="tmp.quantity--">
-                <Icon name="material-symbols:remove-rounded" />
-              </button>
-              <input
-                type="number"
-                placeholder="Enter product Quantity"
-                class="subject form-item compact text-center"
-                min="1"
-                v-model="tmp.quantity"
-                @input="
-                  (evt) => {
-                    if (evt.target.value < 1) tmp.quantity = 1;
-                  }
-                "
-                @keypress="
-                  (evt) => {
-                    if (evt.key === '-') evt.preventDefault();
-                  }
-                "
-              />
-              <button class="addon icon mini button" @click="tmp.quantity++">
-                <Icon name="material-symbols:add-rounded" />
-              </button>
-            </div>
-          </div>
-          <div>
-            <div class="sub lined heading a-block">
-              Delivery service:
-              <div class="trailing" style="text-transform: capitalize">
-                {{ tmp.delivery }}
-              </div>
-            </div>
-            <div class="vertical menu">
-              <!-- Bizworld delivery option -->
-              <label
-                class="item as-icon disabled"
-                :class="{ active: tmp.delivery === 'bizworld' }"
-              >
-                <div class="flexbox flex-column sm-guttered align-center">
-                  <input
-                    type="radio"
-                    value="bizworld"
-                    v-model="tmp.delivery"
-                    class="form-item"
-                  />
-                  <Icon
-                    name="material-symbols:delivery-truck-speed-outline-rounded"
-                    style="font-size: 1.5em"
-                  />
-                </div>
-                <div class="content" style="font-weight: normal">
-                  <div class="flexbox guttered flex-separate">
-                    <div class="small bold">BizWorld Delivery Management</div>
-                    <a href="#">Details</a>
-                  </div>
-                  <div class="flexbox guttered flex-separate">
-                    <div>Delivery fee:</div>
-                    <div>NA</div>
-                  </div>
-                  <div class="flexbox guttered flex-separate">
-                    <div>Delivery time:</div>
-                    <div>NA</div>
-                  </div>
-                </div>
-              </label>
-              <!-- Self pickup option -->
-              <label
-                class="item as-icon"
-                :class="{ active: tmp.delivery === 'self-pickup' }"
-              >
-                <div class="flexbox flex-column sm-guttered align-center">
-                  <input
-                    type="radio"
-                    value="self-pickup"
-                    v-model="tmp.delivery"
-                    class="form-item"
-                  />
-                  <Icon
-                    name="material-symbols:package-outline-rounded"
-                    style="font-size: 1.5em"
-                  />
-                </div>
-                <div class="content" style="font-weight: normal">
-                  <div class="flexbox guttered flex-separate">
-                    <div class="small bold">Self Pickup</div>
-                    <a
-                      href="javascript:void(0)"
-                      class="open-modal"
-                      data-target="sp-details"
-                      >Details</a
-                    >
-                  </div>
-                  <div class="faint-text">
-                    Manage how your item gets to you. Pick up your item within 2
-                    weeks of purchase.
-                  </div>
-                </div>
-              </label>
-            </div>
-          </div>
+
+          <useTemplate />
           <div class="compact success note" style="margin-top: 1rem">
             <Icon
               name="material-symbols:verified-user-outline-rounded"
@@ -817,191 +848,16 @@ onMounted(() => {
           breakpoints: [{ maxWidth: 863, pinnable: false }],
         }"
       >
+        <div class="small semibold">Unit price</div>
         <div class="h3 0-margined primary-text bold">
           ₦{{ tmp.price.toLocaleString() }}
         </div>
         <div class="alt-ribbon red label">Configure purchase</div>
-        <template v-if="details.productOptions">
-          <div>
-            <div class="sub lined heading a-block">
-              {{ details.productOptions.optionType }}:
-              <div class="trailing">{{ tmp.spec[0] }}</div>
-            </div>
-            <div class="wrappable menu">
-              <label
-                v-for="(option, a) in details.productOptions.options"
-                class="item as-icon"
-                :class="{ active: option.label === tmp.spec[0] }"
-              >
-                <input
-                  type="radio"
-                  class="form-item"
-                  :value="option.label"
-                  v-model="tmp.spec[0]"
-                />
-                <img
-                  v-if="option.media"
-                  :src="option.media.thumbnail"
-                  class="thumbnail"
-                />
-                {{ option.label }}
-              </label>
-            </div>
-          </div>
-          <template v-for="(option, a) in details.productOptions.options">
-            <div
-              v-if="option.subOptions"
-              class="tab-page"
-              :class="{ active: option.label === tmp.spec[0] }"
-            >
-              <div class="sub lined heading a-block">
-                {{ option.subOptions.optionType }}:
-                <div class="trailing">{{ tmp.spec[1] }}</div>
-              </div>
-              <div class="wrappable menu">
-                <label
-                  v-for="(subOption, b) in option.subOptions.options"
-                  class="item as-icon"
-                  :class="{ active: subOption.label === tmp.spec[1] }"
-                >
-                  <input
-                    type="radio"
-                    class="form-item"
-                    :value="subOption.label"
-                    v-model="tmp.spec[1]"
-                  />
-                  <img
-                    v-if="subOption.media"
-                    :src="subOption.media.thumbnail"
-                    class="thumbnail"
-                  />
-                  {{ subOption.label }}
-                </label>
-              </div>
-            </div>
-          </template>
-        </template>
-        <div>
-          <div class="sub lined heading a-block">
-            Quantity:
-            <div class="trailing">{{ tmp.quantity }}</div>
-          </div>
-          <div class="fluid small input-box">
-            <button
-              class="addon icon mini button"
-              @click="
-                () => {
-                  if (tmp.quantity > 1) tmp.quantity--;
-                }
-              "
-            >
-              <Icon name="material-symbols:remove-rounded" />
-            </button>
-            <input
-              type="number"
-              placeholder="Enter product Quantity"
-              class="subject form-item compact text-center"
-              min="1"
-              v-model="tmp.quantity"
-              @input="
-                (evt) => {
-                  if (evt.target.value < 1) tmp.quantity = 1;
-                }
-              "
-              @keypress="
-                (evt) => {
-                  if (evt.key === '-') evt.preventDefault();
-                }
-              "
-            />
-            <button class="addon icon mini button" @click="tmp.quantity++">
-              <Icon name="material-symbols:add-rounded" />
-            </button>
-          </div>
-        </div>
-        <div>
-          <div class="sub lined heading a-block">
-            Delivery service:
-            <div class="trailing capitalized">
-              {{ tmp.delivery }}
-            </div>
-          </div>
-          <div class="vertical menu">
-            <!-- Bizworld delivery option -->
-            <label
-              class="item as-icon disabled"
-              :class="{ active: tmp.delivery === 'bizworld' }"
-            >
-              <div class="flexbox flex-column sm-guttered align-center">
-                <input
-                  type="radio"
-                  value="bizworld"
-                  v-model="tmp.delivery"
-                  class="form-item"
-                />
-                <Icon
-                  name="material-symbols:delivery-truck-speed-outline-rounded"
-                  style="font-size: 1.5em"
-                />
-              </div>
-              <div class="content" style="font-weight: normal">
-                <div class="flexbox guttered flex-separate">
-                  <div class="small bold">BizWorld Delivery Management</div>
-                  <a href="#">Details</a>
-                </div>
-                <div class="flexbox guttered flex-separate">
-                  <div>Delivery fee:</div>
-                  <div>NA</div>
-                </div>
-                <div class="flexbox guttered flex-separate">
-                  <div>Delivery time:</div>
-                  <div>NA</div>
-                </div>
-              </div>
-            </label>
-            <!-- Self pickup option -->
-            <label
-              class="item as-icon"
-              :class="{ active: tmp.delivery === 'self-pickup' }"
-            >
-              <div class="flexbox flex-column sm-guttered align-center">
-                <input
-                  type="radio"
-                  value="self-pickup"
-                  v-model="tmp.delivery"
-                  class="form-item"
-                />
-                <Icon
-                  name="material-symbols:package-outline-rounded"
-                  style="font-size: 1.5em"
-                />
-              </div>
-              <div class="content" style="font-weight: normal">
-                <div class="flexbox guttered flex-separate">
-                  <div class="small bold">Self Pickup</div>
-                  <a
-                    href="javascript:void(0)"
-                    class="open-modal"
-                    data-target="sp-details"
-                    >Details</a
-                  >
-                </div>
-                <div class="faint-text">
-                  Manage how your item gets to you. Pick up your item within 2
-                  weeks of purchase.
-                </div>
-              </div>
-            </label>
-          </div>
-        </div>
+
+        <useTemplate />
         <div
-          class="flexbox guttered sticky pin-bottom-blend"
-          style="
-            bottom: 0px;
-            background-color: var(--surface);
-            padding: 0.5rem 0rem;
-            margin-top: 0.5rem;
-          "
+          class="flexbox guttered sticky surface-bg pin-bottom-blend"
+          style="bottom: 0px; padding: 0.5rem 0rem; margin-top: 0.5rem"
         >
           <button
             class="primary fluid button open-modal"
@@ -1071,8 +927,8 @@ onMounted(() => {
     </div>
     <!-- Call to Action Section -->
     <div
-      v-scrollPin="{ pinPriority: 'bottom' }"
-      class="mobile-screen-only surface-bg fluid z-level-2 pin-bottom-blend"
+      class="mobile-screen-only sticky surface-bg fluid z-level-2 pin-bottom-blend"
+      style="bottom: 0px"
     >
       <div class="container flexbox guttered" style="padding: 0.5rem 0rem">
         <button
@@ -1184,186 +1040,33 @@ onMounted(() => {
             <Icon name="material-symbols:close" />
           </button>
         </div>
-        <div class="content">
-          <template v-if="details.productOptions">
-            <div>
-              <div class="sub lined heading a-block">
-                {{ details.productOptions.optionType }}:
-                <div class="trailing">{{ tmp.spec[0] }}</div>
+        <div class="content" style="padding-bottom: 0em">
+          <useTemplate />
+          <div
+            class="footer flex-column flexbox guttered surface-bg sticky pin-bottom-blend"
+            style="bottom: 0px; padding: 1rem 0rem; margin-top: 0.5rem"
+          >
+            <div class="flexbox flex-column" style="gap: 0.25rem">
+              <div class="flexbox guttered flex-separate">
+                <div>Unit price</div>
+                <div>₦{{ tmp.price.toLocaleString() }}</div>
               </div>
-              <div class="wrappable menu">
-                <label
-                  v-for="(option, a) in details.productOptions.options"
-                  class="item as-icon"
-                  :class="{ active: option.label === tmp.spec[0] }"
-                >
-                  <input
-                    type="radio"
-                    class="form-item"
-                    :value="option.label"
-                    v-model="tmp.spec[0]"
-                  />
-                  <img
-                    v-if="option.media"
-                    :src="option.media.thumbnail"
-                    class="thumbnail"
-                  />
-                  {{ option.label }}
-                </label>
-              </div>
-            </div>
-            <template v-for="(option, a) in details.productOptions.options">
-              <div
-                v-if="option.subOptions"
-                class="tab-page"
-                :class="{ active: option.label === tmp.spec[0] }"
-              >
-                <div class="sub lined heading a-block">
-                  {{ option.subOptions.optionType }}:
-                  <div class="trailing">{{ tmp.spec[1] }}</div>
-                </div>
-                <div class="wrappable menu">
-                  <label
-                    v-for="(subOption, b) in option.subOptions.options"
-                    class="item as-icon"
-                    :class="{ active: subOption.label === tmp.spec[1] }"
-                  >
-                    <input
-                      type="radio"
-                      class="form-item"
-                      :value="subOption.label"
-                      v-model="tmp.spec[1]"
-                    />
-                    <img
-                      v-if="subOption.media"
-                      :src="subOption.media.thumbnail"
-                      class="thumbnail"
-                    />
-                    {{ subOption.label }}
-                  </label>
+              <hr class="0-margined" />
+              <div class="flexbox guttered flex-separate">
+                <div class="bold">Total:</div>
+                <div class="h5 bold">
+                  ₦{{ (tmp.price * tmp.quantity).toLocaleString() }}
                 </div>
               </div>
-            </template>
-          </template>
-          <div>
-            <div class="sub lined heading a-block">
-              Quantity:
-              <div class="trailing">{{ tmp.quantity }}</div>
             </div>
-            <div class="fluid small input-box">
-              <button class="addon icon mini button" @click="tmp.quantity--">
-                <Icon name="material-symbols:remove-rounded" />
-              </button>
-              <input
-                type="number"
-                placeholder="Enter product Quantity"
-                class="subject form-item compact text-center"
-                min="1"
-                v-model="tmp.quantity"
-                @input="
-                  (evt) => {
-                    if (evt.target.value < 1) tmp.quantity = 1;
-                  }
-                "
-                @keypress="
-                  (evt) => {
-                    if (evt.key === '-') evt.preventDefault();
-                  }
-                "
-              />
-              <button class="addon icon mini button" @click="tmp.quantity++">
-                <Icon name="material-symbols:add-rounded" />
+            <div class="flexbox flex-wrap guttered flex-separate align-start">
+              <NuxtLink @click="cartStore.addToCart(getItemForCart())" to="/cart" class="flexible primary exit-modal button">
+                Add and Go to cart
+              </NuxtLink>
+              <button class="flexible primary flat button">
+                Add and Continue Shopping
               </button>
             </div>
-          </div>
-          <div>
-            <div class="sub lined heading a-block">
-              Delivery service:
-              <div class="trailing" style="text-transform: capitalize">
-                {{ tmp.delivery }}
-              </div>
-            </div>
-            <div class="vertical menu">
-              <!-- Bizworld delivery option -->
-              <label
-                class="item as-icon disabled"
-                :class="{ active: tmp.delivery === 'bizworld' }"
-              >
-                <div class="flexbox flex-column sm-guttered align-center">
-                  <input
-                    type="radio"
-                    value="bizworld"
-                    v-model="tmp.delivery"
-                    class="form-item"
-                  />
-                  <Icon
-                    name="material-symbols:delivery-truck-speed-outline-rounded"
-                    style="font-size: 1.5em"
-                  />
-                </div>
-                <div class="content" style="font-weight: normal">
-                  <div class="flexbox guttered flex-separate">
-                    <div class="small bold">BizWorld Delivery Management</div>
-                    <a href="#">Details</a>
-                  </div>
-                  <div class="flexbox guttered flex-separate">
-                    <div>Delivery fee:</div>
-                    <div>NA</div>
-                  </div>
-                  <div class="flexbox guttered flex-separate">
-                    <div>Delivery time:</div>
-                    <div>NA</div>
-                  </div>
-                </div>
-              </label>
-              <!-- Self pickup option -->
-              <label
-                class="item as-icon"
-                :class="{ active: tmp.delivery === 'self-pickup' }"
-              >
-                <div class="flexbox flex-column sm-guttered align-center">
-                  <input
-                    type="radio"
-                    value="self-pickup"
-                    v-model="tmp.delivery"
-                    class="form-item"
-                  />
-                  <Icon
-                    name="material-symbols:package-outline-rounded"
-                    style="font-size: 1.5em"
-                  />
-                </div>
-                <div class="content" style="font-weight: normal">
-                  <div class="flexbox guttered flex-separate">
-                    <div class="small bold">Self Pickup</div>
-                    <a
-                      href="javascript:void(0)"
-                      class="open-modal"
-                      data-target="sp-details"
-                      >Details</a
-                    >
-                  </div>
-                  <div class="faint-text">
-                    Manage how your item gets to you. Pick up your item within 2
-                    weeks of purchase.
-                  </div>
-                </div>
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="footer pin-bottom-blend flexbox flex-column guttered">
-          <div class="flexbox guttered flex-separate">
-            <div class="bold">Total:</div>
-            <div class="h5 bold">
-              ₦{{ (tmp.price * tmp.quantity).toLocaleString() }}
-            </div>
-          </div>
-          <div class="flexbox flex-wrap guttered flex-separate align-start">
-            <button class="flexible primary button">Add and Go to cart</button>
-            <button class="flexible primary flat button">
-              Add and Continue Shopping
-            </button>
           </div>
         </div>
       </div>

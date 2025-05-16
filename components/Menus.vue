@@ -1,8 +1,6 @@
 <script setup>
-const mainStore = useMainStore(),
-  searchStore = useSearchStore(),
-  userStore = useUserStore(),
-  route = useRoute();
+const mainStore = useMainStore();
+const { items: cartItems } = storeToRefs(useCartStore());
 function toTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -16,16 +14,16 @@ function toTop() {
           <div class="centered item exit-sidepanel">
             <Icon name="material-symbols:arrow-back-rounded" />
           </div>
-          <router-link to="/" class="xhover centered item exit-sidepanel">
+          <NuxtLink to="/" class="xhover centered item exit-sidepanel">
             <img
               src="/images/logo.png"
               alt="site logo"
               class="logo-sm site-logo"
             />
-          </router-link>
+          </NuxtLink>
         </div>
         <ManageShareables
-          v-if="route.matched.some((el) => el.path === '/manage')"
+          v-if="$route.matched.some((el) => el.path === '/manage')"
           name="nav_menu"
         />
         <Shareables v-else name="nav_menu" />
@@ -37,13 +35,14 @@ function toTop() {
       </footer>
     </div>
   </SidePanel>
-  <div v-if="!route.meta.noFab" class="fab-group respect-lock">
-    <button
-      class="open-modal fab radius-lg secondary button"
-      data-target="cart-modal"
+  <div v-if="!$route.meta.noFab" class="fab-group respect-lock">
+    <NuxtLink
+      to="/cart"
+      class="fab radius-lg secondary button"
     >
       <Icon name="material-symbols:shopping-cart-outline" />
-    </button>
+      <div v-if="cartItems.length" class="floating badge">{{ cartItems.length }}</div>
+  </NuxtLink>
     <button
       id="qaction"
       @click="toTop"

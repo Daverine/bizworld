@@ -209,6 +209,7 @@ const details = ref({
     ],
   },
 });
+const cartStore = useCartStore();
 const avail = useAvailability(details.value.bizData.hours);
 const servicesOffer = computed(() => [
   ...new Set(

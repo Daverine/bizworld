@@ -137,7 +137,7 @@ const searchStore = useSearchStore();
           <SvgIcon name="store_filled" class="lead aview" />
           My Shops
         </router-link>
-        <div v-collapser class="item xactive">
+        <div v-collapser class="item xactive" :class="{ active: $route.path.includes('/account') }">
           <SvgIcon name="person" class="lead nview" />
           <SvgIcon name="person_filled" class="lead aview" />
           Account
