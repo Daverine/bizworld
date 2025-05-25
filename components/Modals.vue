@@ -19,13 +19,13 @@ function popupSubmitSearch(e) {
           class="circular flat button as-text exit-modal"
           style="margin-left: auto"
         >
-          <SvgIcon name="close" />
+          <Icon name="material-symbols:close-rounded" />
         </button>
       </div>
       <div class="content">
         <form @submit.prevent="popupSubmitSearch">
-          <label class="input fluid" style="font-size: 1.125rem">
-            <SvgIcon name="search" class="xhover" />
+          <label class="input" style="font-size: 1.125rem">
+            <Icon name="material-symbols:search-rounded" class="xhover" />
             <input
               v-model="searchStore.searchBox"
               type="search"
@@ -39,7 +39,7 @@ function popupSubmitSearch(e) {
               class="icon open-modal exit-modal"
               data-target="scanqr-modal"
             >
-              <SvgIcon name="qr_code_scanner" />
+              <Icon name="material-symbols:qr-code-scanner-rounded" />
             </button>
             <button
               type="button"
@@ -47,7 +47,7 @@ function popupSubmitSearch(e) {
               class="icon open-modal"
               data-target=""
             >
-              <SvgIcon name="location_on" />
+              <Icon name="material-symbols:location-on-outline-rounded" />
             </button>
           </label>
           <div
@@ -56,7 +56,8 @@ function popupSubmitSearch(e) {
           >
             <div class="col">
               <button type="submit" class="fluid button">
-                <SvgIcon name="search" class="lead" /> SEARCH
+                <Icon name="material-symbols:search-rounded" class="lead" />
+                SEARCH
               </button>
             </div>
             <div class="col">
@@ -81,7 +82,7 @@ function popupSubmitSearch(e) {
           class="circular flat button as-text exit-modal"
           style="margin-left: auto"
         >
-          <SvgIcon name="close" />
+          <Icon name="material-symbols:close-rounded" />
         </button>
       </div>
       <div class="content">
@@ -157,7 +158,7 @@ function popupSubmitSearch(e) {
           class="circular flat button as-text exit-modal"
           style="margin-left: auto"
         >
-          <SvgIcon name="close" />
+          <Icon name="material-symbols:close-rounded" />
         </button>
       </div>
       <div class="content">
@@ -168,7 +169,10 @@ function popupSubmitSearch(e) {
             style="display: flex; align-items: center"
           >
             <template #trailing>
-              <SvgIcon name="expand_more" class="trailing" />
+              <Icon
+                name="material-symbols:expand-more-rounded"
+                class="trailing"
+              />
             </template>
             <div class="drop menu">
               <div class="active item">
@@ -221,155 +225,238 @@ function popupSubmitSearch(e) {
               style="border-radius: var(--default-radius)"
             >
               <div class="item">
-                <SvgIcon name="mood" />
+                <Icon name="material-symbols:mood-outline-rounded" />
               </div>
               <div class="item">
-                <SvgIcon name="add_image" />
+                <Icon
+                  name="material-symbols:add-photo-alternate-outline-rounded"
+                />
               </div>
               <div class="item">
-                <SvgIcon name="attach_file_add" />
+                <Icon name="material-symbols:attach-file-add-rounded" />
               </div>
             </div>
           </div>
           <div class="field">
-            <button class="fluid primary button">Post</button>
+            <button class="primary button">Post</button>
           </div>
         </form>
       </div>
     </div>
   </Modal>
-  <template v-if="!userStore.auth">
-    <Modal id="register-modal">
-      <div class="dialog">
-        <div class="header flexbox guttered">
-          <div class="bold truncate">Join BizWorld</div>
-          <button
-            class="circular flat button as-text exit-modal"
-            style="margin-left: auto"
-          >
-            <SvgIcon name="close" />
+  <Modal id="register-modal">
+    <div class="dialog">
+      <div class="header flexbox guttered">
+        <div class="bold truncate">Join BizWorld</div>
+        <button
+          class="circular flat button as-text exit-modal"
+          style="margin-left: auto"
+        >
+          <Icon name="material-symbols:close-rounded" />
+        </button>
+      </div>
+      <div class="content">
+        <div class="field">
+          <button class="button">
+            <Icon name="material-symbols:login" />
+            Continue with Google
           </button>
         </div>
-        <div class="content">
-          <div class="field">
-            <button class="fluid button">
-              <SvgIcon name="login" />
-              Continue with Google
-            </button>
-          </div>
-          <form @submit.prevent="userStore.signup()">
-            <div class="field 0-margined">
-              <label>Names</label>
-              <div class="2-fields">
-                <div class="field">
-                  <input
-                    class="form-item"
-                    type="text"
-                    placeholder="First name"
-                  />
-                </div>
-                <div class="field">
-                  <input
-                    class="form-item"
-                    type="text"
-                    placeholder="Last name"
-                  />
-                </div>
+        <form @submit.prevent="userStore.signup()">
+          <div class="field 0-margined">
+            <label>Names</label>
+            <div class="2-fields">
+              <div class="field">
+                <input class="form-item" type="text" placeholder="First name" />
+              </div>
+              <div class="field">
+                <input class="form-item" type="text" placeholder="Last name" />
               </div>
             </div>
-            <div class="field">
-              <label>Email</label>
-              <input
-                class="form-item"
-                type="text"
-                placeholder="Email address"
-              />
-            </div>
-            <div class="field">
-              <label>Password</label>
-              <input class="form-item" type="text" placeholder="Password" />
-            </div>
-            <div class="field">
-              <label>Country</label>
-              <input
-                class="form-item"
-                type="text"
-                placeholder="Select country"
-              />
-            </div>
-            <div class="field">
-              <p>
-                By signing up, you agree to our <a href="#">terms of use</a> &
-                <a href="#">privacy policy</a>
-              </p>
-              <button class="fluid primary button">Create Account</button>
-            </div>
-            <hr />
-            <div class="field text-center">
-              <p>
-                Already have an account?
-                <a
-                  href="#login"
-                  class="exit-modal open-modal"
-                  data-target="login-modal"
-                  >Login</a
-                >
-              </p>
-            </div>
-          </form>
-        </div>
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input class="form-item" type="text" placeholder="Email address" />
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input class="form-item" type="text" placeholder="Password" />
+          </div>
+          <div class="field">
+            <label>Country</label>
+            <input class="form-item" type="text" placeholder="Select country" />
+          </div>
+          <p>
+            By signing up, you agree to our <a href="#">terms of use</a> &
+            <a href="#">privacy policy</a>
+          </p>
+          <div class="field">
+            <button class="primary button exit-modal">Create Account</button>
+          </div>
+          <hr />
+          <p>
+            Already have an account?
+            <a
+              href="#login"
+              class="exit-modal open-modal"
+              data-target="login-modal"
+              >Login</a
+            >
+          </p>
+        </form>
       </div>
-    </Modal>
-    <Modal id="login-modal">
-      <div class="dialog">
-        <div class="header flexbox guttered">
-          <div class="bold truncate">Login to BizWorld</div>
-          <button
-            class="circular flat button as-text exit-modal"
-            style="margin-left: auto"
-          >
-            <SvgIcon name="close" />
+    </div>
+  </Modal>
+  <Modal id="login-modal">
+    <div class="dialog">
+      <div class="header flexbox guttered">
+        <div class="bold truncate">Login to BizWorld</div>
+        <button
+          class="circular flat button as-text exit-modal"
+          style="margin-left: auto"
+        >
+          <Icon name="material-symbols:close-rounded" />
+        </button>
+      </div>
+      <div class="content">
+        <div class="field">
+          <button class="button">
+            <Icon name="material-symbols:login" />
+            Continue with Google
           </button>
         </div>
-        <div class="content">
+        <form @submit.prevent="userStore.login()">
           <div class="field">
-            <button class="fluid button">
-              <SvgIcon name="login" />
-              Continue with Google
-            </button>
+            <label>Email</label>
+            <input class="form-item" type="text" placeholder="Email address" />
           </div>
-          <form @submit.prevent="userStore.login()">
-            <div class="field">
-              <label>Email</label>
-              <input
-                class="form-item"
-                type="text"
-                placeholder="Email address"
-              />
+          <div class="field">
+            <label>Password</label>
+            <input class="form-item" type="text" placeholder="Password" />
+          </div>
+          <div class="field">
+            <button class="primary button exit-modal">Continue</button>
+          </div>
+          <hr />
+          <p>
+            New to BizWorld?
+            <a
+              href="#register"
+              class="exit-modal open-modal"
+              data-target="register-modal"
+              >Sign up</a
+            >
+          </p>
+        </form>
+      </div>
+    </div>
+  </Modal>
+  <Modal id="create-biz">
+    <div class="dialog self-scroll">
+      <div class="header flexbox guttered">
+        <div class="bold truncate">Create business profile</div>
+        <button
+          class="circular flat button as-text exit-modal"
+          style="margin-left: auto"
+        >
+          <Icon name="material-symbols:close-rounded" />
+        </button>
+      </div>
+      <div class="content">
+        <div class="create1">
+          <h6 class="text-center">
+            Start building your business presence online
+          </h6>
+          <p class="text-center">
+            Follow and fill the following form to complete you Bizworld business
+            page.
+          </p>
+          <div class="field">
+            <label>Business name</label>
+            <input type="text" class="form-item" />
+          </div>
+          <div class="field">
+            <label>Business category</label>
+            <input type="text" class="form-item" />
+            <div class="supp-text">
+              You can change or add more categories later.
             </div>
-            <div class="field">
-              <label>Password</label>
-              <input class="form-item" type="text" placeholder="Password" />
-            </div>
-            <div class="field">
-              <button class="fluid primary button">Continue</button>
-            </div>
-            <hr />
-            <div class="field text-center">
-              <p>
-                New to BizWorld?
-                <a
-                  href="#register"
-                  class="exit-modal open-modal"
-                  data-target="register-modal"
-                  >Sign up</a
-                >
-              </p>
-            </div>
-          </form>
+          </div>
+          <p class="text-center">
+            By continuing you’re agreeing to these
+            <a href="">Terms of Service</a> and <a href="">Privacy Policy</a>.
+          </p>
+          <button class="primary button">Continue</button>
+        </div>
+        <div class="create2">
+          <h6 class="text-center">
+            Do you want to add a location where customers can visit, like a
+            store or office?
+          </h6>
+          <p>
+            This location will appear on your business profile on BizWorld and
+            will be used in deciding searches filtered with distance. You can
+            switch it off on your profile later perharps your business is going
+            remote.
+          </p>
+          <div class="field">
+            <label>
+              <input type="radio" class="form-item" />
+              Yes
+            </label>
+            <label>
+              <input type="radio" class="form-item" />
+              No
+            </label>
+          </div>
+          <div class="flexbox justify-end">
+            <button class="primary button">Next</button>
+          </div>
+        </div>
+        <div class="create3">
+          <h6>What is the address?</h6>
+          <div class="field">
+            <label>Country</label>
+            <Dropdown class="select search">
+              <div class="drop menu">
+                <div class="item">Nigeria</div>
+              </div>
+            </Dropdown>
+          </div>
+          <div class="field">
+            <label>State</label>
+            <Dropdown
+              :options="{ fluidMinWidth: true }"
+              class="multiple search selection"
+            >
+              <div class="drop menu">
+                <div class="item">Ogun</div>
+                <div class="item">Osun</div>
+              </div>
+            </Dropdown>
+          </div>
+          <div class="field">
+            <label>City</label>
+            <input type="text" class="form-item" />
+          </div>
+          <div class="field">
+            <label>Local government area</label>
+            <input type="text" class="form-item" />
+          </div>
+          <div class="field">
+            <label>Street address</label>
+            <input type="text" class="form-item" />
+          </div>
+          <div class="field">
+            <label>Postal code</label>
+            <input type="number" class="form-item" />
+          </div>
+          <div class="flexbox justify-end">
+            <button class="button">Next</button>
+          </div>
         </div>
       </div>
-    </Modal>
-  </template>
+    </div>
+  </Modal>
   <Lightbox id="lightbox1" class="dark-mode" />
 </template>

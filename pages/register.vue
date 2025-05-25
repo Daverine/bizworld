@@ -4,25 +4,44 @@ const userStore = useUserStore();
 
 <template>
   <header>
-    <div class="menu" style="height: 64px;">
-      <div class="container items auto-margined" style="border-radius: var(--default-radius)">
-        <div class="item as-icon open-sidepanel" v-tooltip.unblocking data-tooltip="Menu" data-target="msidepanel">
+    <div class="menu" style="height: 64px">
+      <div
+        class="container items auto-margined"
+        style="border-radius: var(--default-radius)"
+      >
+        <div
+          class="item as-icon open-sidepanel"
+          v-tooltip.unblocking
+          data-tooltip="Menu"
+          data-target="msidepanel"
+        >
           <SvgIcon name="menu" />
         </div>
-        <router-link :to="userStore.auth ? '/home' : '/'" class="xhover item as-icon">
-          <img src="/images/logo_sqr.png" alt="site logo" class="logo-lg site-logo">
+        <router-link
+          :to="userStore.auth ? '/home' : '/'"
+          class="xhover item as-icon"
+        >
+          <img
+            src="/images/logo_sqr.png"
+            alt="site logo"
+            class="logo-lg site-logo"
+          />
         </router-link>
       </div>
     </div>
   </header>
 
-  <div class="flexbox flexible-items" style="gap: 1.5rem; max-width: 650px; margin: 2rem auto;">
-    <div class="col" style="background-image: linear-gradient(rgb(48 187 48), rgb(10 81 194));"></div>
+  <div
+    class="flexbox flexible-items"
+    style="gap: 1.5rem; max-width: 650px; margin: 2rem auto"
+  >
+    <div
+      class="col"
+      style="background-image: linear-gradient(rgb(48 187 48), rgb(10 81 194))"
+    ></div>
     <div class="col">
-      <div class="header" style="margin-bottom: 1rem;">
-        <div class="bold">
-          Join BizWorld
-        </div>
+      <div class="header" style="margin-bottom: 1rem">
+        <div class="bold">Join BizWorld</div>
       </div>
       <div class="content">
         <div class="field">
@@ -36,33 +55,54 @@ const userStore = useUserStore();
             <label>Names</label>
             <div class="2-fields">
               <div class="field">
-                <input class="form-item" type="text" placeholder="First name" />
+                <input
+                  class="form-item fluid"
+                  type="text"
+                  placeholder="First name"
+                />
               </div>
               <div class="field">
-                <input class="form-item" type="text" placeholder="Last name" />
+                <input
+                  class="form-item fluid"
+                  type="text"
+                  placeholder="Last name"
+                />
               </div>
             </div>
           </div>
           <div class="field">
             <label>Email</label>
-            <input class="form-item" type="text" placeholder="Email address" />
+            <input
+              class="form-item fluid"
+              type="text"
+              placeholder="Email address"
+            />
           </div>
           <div class="field">
             <label>Password</label>
-            <input class="form-item" type="text" placeholder="Password" />
+            <input class="form-item fluid" type="text" placeholder="Password" />
           </div>
           <div class="field">
             <label>Country</label>
-            <input class="form-item" type="text" placeholder="Select country" />
+            <input
+              class="form-item fluid"
+              type="text"
+              placeholder="Select country"
+            />
           </div>
+          <p>
+            By signing up, you agree to our <a href="#">terms of use</a> &
+            <a href="#">privacy policy</a>
+          </p>
+
           <div class="field">
-            <p>By signing up, you agree to our <a href="#">terms of use</a> & <a href="#">privacy policy</a></p>
             <button class="fluid primary button">Create Account</button>
           </div>
           <hr />
-          <div class="field text-center">
-            <p>Already have an account? <router-link to="/login">Login</router-link></p>
-          </div>
+          <p>
+            Already have an account?
+            <router-link to="/login">Login</router-link>
+          </p>
         </form>
       </div>
     </div>
