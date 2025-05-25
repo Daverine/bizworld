@@ -1,413 +1,500 @@
-<script setup>
-import { useEventListener } from '@vueuse/core';
+<script setup lang="ts">
+import type { WatchStopHandle } from 'vue';
+interface MultipleSelectContent {
+  html: string;
+  index: string;
+}
+interface Settings {
+  namespace: string;
+  delay?: number;
+  duration: number;
+  closeOnItemClick: boolean;
+  independentMenu: boolean | 'auto';
+  openOnMouseover: boolean;
+  constrainWidth: boolean;
+  fluidMinWidth: boolean;
+  findToggler?: boolean;
+  page?: boolean;
+  view: 'unset' | 'vertical' | 'horizontal';
+  directionPriority: {
+    x: 'left' | 'right' | 'center';
+    y: 'top' | 'bottom' | 'center';
+  };
+}
 
 // get dropdown element and necessary dropdown properties
 const dropElem = useTemplateRef('dropdown');
-const props = defineProps(['modelValue', 'name', 'placeholder', 'options']);
+const props = defineProps<{
+  modelValue?: string[] | string;
+  name?: string;
+  placeholder?: string;
+  options?: Partial<Settings>;
+}>();
 const emit = defineEmits(['update:modelValue']);
-const attrs = useAttrs();
-const classes = attrs.class ? attrs.class.split(' ') : [];
 const compValue = ref();
 const showDropdown = ref(false);
 
-
-// function to check if an attribute exist on the base component.
-function checkAttr(attr) {
-  return Object.prototype.hasOwnProperty.call(attrs, attr);
-}
-
 // setup dropdown settings
-const settings = {
+const settings: Settings = {
   ...{
     namespace: 'dropdown',
-    constrainWidth: false,
-    fluidMinWidth: false,
-    delay: 0,
     duration: 300,
     closeOnItemClick: true,
-    independentMenu: 'auto', // can be true, 'auto' or false
+    independentMenu: 'auto',
+    openOnMouseover: false,
+    constrainWidth: false,
+    fluidMinWidth: false,
+    view: 'unset',
+    directionPriority: {
+      x: 'right',
+      y: 'bottom',
+    },
   },
-  ...(props.options || {})
-}
-settings.view = ((classes.includes('sub') && settings.view !== 'vertical') || settings.view === 'horizontal') ? 'horizontal' : 'vertical';
-settings.openOnMouseover = (checkAttr('data-hover') && attrs['data-hover'] !== false) || classes.includes('sub');
-settings.findToggler = checkAttr('data-find-toggler');
-settings.page = (settings.page && !classes.includes('sub')) && !settings.openOnMouseover;
-settings.browseDm = attrs?.['data-browse-dm'] || false; // replacement for settings.browser and settings.menuid
-settings.directionPriority = settings.directionPriority || {};
-settings.directionPriority.x = settings.directionPriority.x || 'right';
-settings.directionPriority.y = settings.directionPriority.y || 'bottom';
-settings.selectable = classes.includes('select') || classes.includes('selection');
-settings.multipleSelect = settings.selectable && classes.includes('multiple');
-settings.searchable = settings.selectable && classes.includes('search');
-settings.delay = settings.delay || (settings.openOnMouseover) ? 300 : 0;
-
-
+  ...(props.options || {}),
+};
 // create a workshop space variable
-const tmp = reactive({
+const tmp = reactive<{
+  dropdownReady: boolean;
+  selectionContent: (MultipleSelectContent | string)[];
+  selectionValue: {
+    [key: string]: string;
+  };
+  activateKeyboard: boolean;
+  allItemSelected: boolean;
+  allItemFiltered: boolean;
+  showDropdownTimeout?: ReturnType<typeof setTimeout>;
+  hideDropdownTimeout?: ReturnType<typeof setTimeout>;
+  hidingDropdown: boolean;
+  // event data to be used for a tmp.page dropdown coordinates.
+  evt?: MouseEvent;
+  independentMenu: boolean;
+  isSelect: boolean;
+  view?: 'vertical' | 'horizontal';
+  openOnMouseover: boolean;
+  findToggler: boolean;
+  page: boolean;
+  browseDm: string | false;
+  selectable?: boolean;
+  multipleSelect?: boolean;
+  searchable?: boolean;
+  delay: number;
+}>({
   dropdownReady: false,
-  selectionContent: undefined,
+  selectionContent: [],
   selectionValue: {},
-  positionStream: undefined,
-  // an array to contain browseable sub dropdown menu
-  asdm: [],
   activateKeyboard: false,
   allItemSelected: false,
   allItemFiltered: false,
-  showDropdownTimeout: undefined,
-  hideDropdownTimeout: undefined,
   hidingDropdown: false,
-  // event data to be used for a settings.page dropdown coordinates.
-  evt: undefined,
   independentMenu: false,
+  isSelect: false,
+  openOnMouseover: false,
+  findToggler: false,
+  page: false,
+  browseDm: false,
+  delay: 0,
 });
-
-const selectors = {
-  // select all element in dropMenu regardless of it statuses
-  items: ':scope > .item:not(.xhover):not(.disabled), :scope > .items > .item:not(.xhover):not(.disabled)',
-  // select all element in dropMenu regarding it statuses
-  items_of_indicating_dropdown: `:scope > .item:not(.xhover):not(.disabled)${!(settings.multipleSelect && classes.includes('indicating')) ? ':not(.selected)' : ''}, :scope > .items > .item:not(.xhover):not(.disabled)${!(settings.multipleSelect && classes.includes('indicating')) ? ':not(.selected)' : ''}`,
-  // select all element in dropMenu regarding it statuses
-  items_filtered: `:scope > .item:not(.xhover):not(.disabled):not(.filtered)${!(settings.multipleSelect && classes.includes('indicating')) ? ':not(.selected)' : ''}, :scope > .items > .item:not(.xhover):not(.disabled):not(.filtered)${!(settings.multipleSelect && classes.includes('indicating')) ? ':not(.selected)' : ''}`,
-  // exiter
-  dropdown_exiter: `.exit-dd`,
+let sizeStream: ResizeObserver;
+let selectors: {
+  items: string;
+  items_of_indicating_dropdown: string;
+  items_filtered: string;
+  dropdown_exiter: string;
 };
-const unwatch = {
-  allItemFiltered: undefined,
-  allItemSelected: undefined,
-  modelValue: undefined,
-  compValue: undefined,
-}
+const unwatch: {
+  [key: string]: WatchStopHandle;
+} = {};
+let dropMenu: HTMLElement, uniqueId: string;
+let selectableContentBox: HTMLElement,
+  selectablePlaceholder: HTMLElement,
+  searchBox: HTMLInputElement,
+  searchBoxSizer: HTMLElement,
+  allFilteredMsgBox: HTMLElement,
+  allSelectedMsgBox: HTMLElement;
+let ddFamily: Element[] = [];
 
-// get dropdown menu element,set-it-up and generate uniqueId
-let dropMenu, uniqueId;
-onMounted(() => {
-  dropMenu = (settings.browseDm) ? document.getElementById(settings.browseDm) : dropElem.value.querySelector(':scope > .drop.menu');
+onMounted(async () => {
+  tmp.view =
+    settings.view === 'unset'
+      ? dropElem.value!.classList.contains('sub')
+        ? 'horizontal'
+        : 'vertical'
+      : settings.view;
+  tmp.openOnMouseover =
+    (dropElem.value!.hasAttribute('data-hover') &&
+      dropElem.value!.getAttribute('data-hover') !== 'false') ||
+    (dropElem.value!.classList.contains('sub') && !settings.openOnMouseover);
+  tmp.findToggler =
+    settings.findToggler || dropElem.value!.hasAttribute('data-find-toggler');
+  tmp.page =
+    Boolean(settings.page) &&
+    !dropElem.value!.classList.contains('sub') &&
+    !tmp.openOnMouseover;
+  tmp.browseDm = dropElem.value!.getAttribute('data-browse-dm') ?? false; // replacement for settings.browser and settings.menuid
+  tmp.selectable =
+    dropElem.value!.classList.contains('select') ||
+    dropElem.value!.classList.contains('selection');
+  tmp.multipleSelect =
+    tmp.selectable && dropElem.value!.classList.contains('multiple');
+  tmp.searchable =
+    tmp.selectable && dropElem.value!.classList.contains('search');
+  tmp.delay =
+    settings.delay === undefined
+      ? tmp.openOnMouseover
+        ? 300
+        : 0
+      : settings.delay;
+  tmp.isSelect = dropElem.value!.classList.contains('select');
+
+  // set up selectors for dropdown items
+  selectors = {
+    // select all element in dropMenu regardless of it statuses
+    items:
+      ':scope > .item:not(.xhover):not(.disabled), :scope > .items > .item:not(.xhover):not(.disabled)',
+    // select all element in dropMenu regarding it statuses
+    items_of_indicating_dropdown: `:scope > .item:not(.xhover):not(.disabled)${
+      !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
+        ? ':not(.selected)'
+        : ''
+    }, :scope > .items > .item:not(.xhover):not(.disabled)${
+      !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
+        ? ':not(.selected)'
+        : ''
+    }`,
+    // select all element in dropMenu regarding it statuses
+    items_filtered: `:scope > .item:not(.xhover):not(.disabled):not(.filtered)${
+      !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
+        ? ':not(.selected)'
+        : ''
+    }, :scope > .items > .item:not(.xhover):not(.disabled):not(.filtered)${
+      !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
+        ? ':not(.selected)'
+        : ''
+    }`,
+    // exiter
+    dropdown_exiter: `.exit-dd`,
+  };
+
+  await nextTick();
+
+  // get dropdown menu element,set-it-up and generate uniqueId
+  let ddm = tmp.browseDm
+    ? document.getElementById(tmp.browseDm)
+    : dropElem.value!.querySelector(':scope > .drop.menu');
   // check if dropdown Menu exist
-  if (!dropMenu) {
-    console.error('A dropMenu menu is missing for the following dropdown', dropElem.value);
+  if (!ddm) {
+    console.error(
+      'A dropMenu menu is missing for the following dropdown',
+      dropElem.value
+    );
     return;
   }
 
+  dropMenu = ddm as HTMLElement;
   tmp.dropdownReady = true;
   uniqueId = utils.getUniqueId(settings.namespace);
-  dropMenu.setAttribute('data-view', settings.view);
+  dropMenu.setAttribute('data-view', tmp.view);
   dropMenu.setAttribute('data-ddid', uniqueId);
-  if (settings.page) dropMenu.classList.add('fixed');
-});
+  if (tmp.page) dropMenu.classList.add('fixed');
+  if (dropElem.value?.classList.contains('indicating'))
+    dropMenu.classList.add('indicating');
 
+  // configure dropdown to be selectable and searchable if that what it is.
 
-// configure dropdown to be selectable and searchable if that what it is.
-let
-  selectableContentBox,
-  selectablePlaceholder,
-  searchBox,
-  searchBoxSizer,
-  allFilteredMsgBox,
-  allSelectedMsgBox;
-
-onMounted(() => {
-  if (!tmp.dropdownReady) return;
-
-  if (settings.selectable) {
+  if (tmp.selectable) {
     // cache all concurrent elements for selectable dropdown
-    selectableContentBox = useTemplateRef('sContent');
-    selectablePlaceholder = useTemplateRef('sPlaceholder');
-
-    // // Warn if select dropdown does not have a name prop
-    // if (!props.name) console.warn("It might be difficult to get the data of a selection-dropdown on this page because its name prop is invalid.");
+    selectableContentBox = dropElem.value!.querySelector(
+      ':scope > .content'
+    ) as HTMLElement;
+    selectablePlaceholder = dropElem.value!.querySelector(
+      ':scope .placeholder'
+    ) as HTMLElement;
 
     // configure search box and cache concurrent element for searchable dropdown
-    if (settings.searchable) {
-      searchBox = useTemplateRef('searchBox');
-      searchBoxSizer = useTemplateRef('sbsizer');
+    if (tmp.searchable) {
+      searchBox = dropElem.value!.querySelector(
+        ':scope input.ssbox'
+      ) as HTMLInputElement;
+      searchBoxSizer = dropElem.value!.querySelector(
+        ':scope .ddss'
+      ) as HTMLElement;
 
       // add the message to show when no search result is found.
-      allFilteredMsgBox = dropMenu.querySelector(`:scrope > .ed-msg.all-filtered-msg`);
-      if (!allFilteredMsgBox) {
+      if (dropMenu.querySelector(`:scope > .ed-msg.all-filtered-msg`)) {
+        allFilteredMsgBox = dropMenu.querySelector(
+          `:scope > .ed-msg.all-filtered-msg`
+        ) as HTMLElement;
+      } else {
         allFilteredMsgBox = document.createElement('div');
         allFilteredMsgBox.classList.add('ed-msg', 'all-filtered-msg');
-        allFilteredMsgBox.innerHTML = `No result found.`;
+        allFilteredMsgBox.textContent = `No result found.`;
         dropMenu.append(allFilteredMsgBox);
       }
 
-      unwatch.allItemFiltered = watch(() => tmp.allItemFiltered, (filtered) => {
-        if (filtered) allFilteredMsgBox.classList.add('active');
-        else allFilteredMsgBox.classList.remove('active');
-      });
+      unwatch.allItemFiltered = watch(
+        () => tmp.allItemFiltered,
+        (filtered) => {
+          if (filtered) allFilteredMsgBox.classList.add('active');
+          else allFilteredMsgBox.classList.remove('active');
+        }
+      );
 
+      searchBox.setAttribute(
+        'tabindex',
+        dropElem.value!.getAttribute('tabindex') ?? '0'
+      );
+      dropElem.value!.removeAttribute('tabindex');
 
-      if (dropElem.value.hasAttribute('tabindex')) {
-        searchBox.setAttribute('tabindex', dropElem.value.getAttribute('tabindex'));
-        dropElem.value.removeAttribute('tabindex');
-      }
-
-      // open dropdown if user typed in the searchbox. And resize searchBox according to it content.
+      // open dropdown if user typed in the searchBox. And resize searchBox according to it content.
       searchBox.addEventListener('input', () => {
         if (searchBox.value) {
           selectablePlaceholder.classList.add('filtered');
-          if (!settings.multipleSelect) selectableContentBox.classList.add('filtered');
-        }
-        else {
+          if (!tmp.multipleSelect)
+            selectableContentBox.classList.add('filtered');
+        } else {
           selectablePlaceholder.classList.remove('filtered');
-          if (!settings.multipleSelect) selectableContentBox.classList.remove('filtered');
+          if (!tmp.multipleSelect)
+            selectableContentBox.classList.remove('filtered');
         }
 
         searchBoxSizer.textContent = searchBox.value;
-        searchBox.style.width = searchBoxSizer.clientWidth + 'px';
-        if (!showDropdown.value) dd_toggleDropdown('activate keyboard controls');
+        utils.afterNextRepaint(
+          () => (searchBox.style.width = searchBoxSizer.clientWidth + 'px')
+        );
+        if (!showDropdown.value) {
+          tmp.activateKeyboard = true;
+          showDropdown.value = true;
+        }
       });
     }
 
-    if (settings.multipleSelect) {
+    if (tmp.multipleSelect) {
       tmp.selectionContent = [];
       // click controls for multiple selectable dropdown
-      useEventListener(document, 'click', (e) => {
-        let sItems = [...dropElem.value.querySelectorAll(':scope > .content > .chip')];
-        let sItem = sItems.find(el => el.contains(e.target));
-        let sItemClose = [...dropElem.value.querySelectorAll(':scope > .content > .chip > .close')].find(el => el.contains(e.target));
-
-        // deselecting multiple dropdown item when not opened when user clicks on the close button of a chip
-        if (sItemClose && !showDropdown.value) dd_setDeselect(sItem);
-        else if (sItem) {
-          let sItemSiblings = sItems.filter(el => el != sItem);
-
-          // select a chip that is not selected if user clicks on them.
-          if (!sItem.matches('.active')) sItem.classList.add('active');
-          // deselect a chip that is selected if user click on them and there is no other chip selected
-          else if (!sItemSiblings.some(el => el.matches('.active'))) sItem.classList.remove('active');
-
-          // if the control key is not pressed when user clicks on a chip, deselect the siblings of the chip 
-          if (!e.ctrlKey) sItemSiblings.forEach(el => el.classList.remove('active'));
-        }
-        // if one or more chip(s) is selected and user clicks out, deselect the selected chips
-        else sItems.forEach(el => el.classList.remove('active'));
-      });
+      document.addEventListener('click', ms_clickEvt);
       // keyboard controls for multiple selectable dropdown
-      useEventListener(document, 'keydown', (e) => {
-        let activeSItems = [...dropElem.value.querySelectorAll(':scope > .content > .chip.active')];
-
-        if (activeSItems[0]) {
-          let prevSibling = activeSItems[0].previousElementSibling;
-          let nextSibling = activeSItems.slice(-1)[0].nextElementSibling;
-
-          // deselect items with keyboard when they are selected
-          if (e.key === 'Backspace' || e.key === 'Delete') {
-            if (e.key == 'Backspace') {
-              if (prevSibling) prevSibling.classList.add('active');
-              else if (nextSibling) nextSibling.classList.add('active');
-            }
-            else if (e.key == 'Delete') {
-              if (nextSibling) nextSibling.classList.add('active');
-              else if (prevSibling) prevSibling.classList.add('active');
-            }
-
-            activeSItems.forEach(el => dd_setDeselect(el));
-          }
-          // navigation within multiple selectable dropdown.
-          else if (e.key === 'ArrowRight' && nextSibling) {
-            if (nextSibling === searchBox) {
-              activeSItems.forEach(el => el.classList.remove('active'));
-              searchBox.focus();
-              return;
-            }
-            else if (nextSibling.matches('.chip')) {
-              if (!e.shiftKey) activeSItems.forEach(el => el.classList.remove('active'));
-              nextSibling.classList.add('active');
-            }
-          }
-          else if (e.key === 'ArrowLeft' && prevSibling && prevSibling.matches('.chip')) {
-            if (!e.shiftKey) activeSItems.forEach(el => el.classList.remove('active'));
-            prevSibling.classList.add('active');
-          }
-          else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-            activeSItems.forEach(el => el.classList.remove('active'));
-            if (e.key === 'ArrowDown') dd_toggleDropdown('activate keyboard controls');
-          }
-          else if (e.key === ' ' || e.key === 'Enter' /* || e.key === 'Tab' */) activeSItems.forEach(el => el.classList.remove('active'));
-        }
-        // delete the last chip in multiple dropdown if searchbox is focused-on and seachbox is empty and the backspace key is pressed
-        else if (settings.searchable && searchBox.matches(':focus') && !searchBox.value && e.key == 'Backspace' && [...dropElem.value.querySelectorAll(':scope > .content > .chip')][0]) dd_setDeselect([...dropElem.value.querySelectorAll(':scope > .content > .chip')].slice(-1)[0]);
-        // navigation in multiple selectable dropdown continues at the following.
-        else if ((dropElem.value.matches(':focus') || dropElem.value.querySelectorAll(':scope :focus')[0])) {
-          let sItems = [...dropElem.value.querySelectorAll(':scope > .content > .chip')];
-
-          if (sItems[0]) {
-            if (e.key == 'ArrowRight') sItems[0].classList.add('active');
-            else if (e.key == 'ArrowLeft') sItems.pop().classList.add('active');
-          }
-        }
-      });
+      document.addEventListener('keydown', ms_keyEvt);
       // add the message to show when all item is selected.
-      allSelectedMsgBox = dropMenu.querySelector(`:scrope > .ed-msg.all-selected-msg`);
-      if (!allSelectedMsgBox) {
+      if (dropElem.value!.querySelector(`:scope > .ed-msg.all-selected-msg`)) {
+        allSelectedMsgBox = dropElem.value!.querySelector(
+          `:scope > .ed-msg.all-selected-msg`
+        ) as HTMLElement;
+      } else {
         allSelectedMsgBox = document.createElement('div');
         allSelectedMsgBox.classList.add('ed-msg', 'all-selected-msg');
-        allSelectedMsgBox.innerHTML = `All available items are selected.`;
+        allSelectedMsgBox.textContent = `All available items are selected.`;
         dropMenu.append(allSelectedMsgBox);
       }
 
-      unwatch.allItemSelected = watch(() => tmp.allItemSelected, (selected) => {
-        if (selected) allSelectedMsgBox.classList.add('active');
-        else allSelectedMsgBox.classList.remove('active');
-      });
+      unwatch.allItemSelected = watch(
+        () => tmp.allItemSelected,
+        (allSelected) => {
+          if (allSelected) allSelectedMsgBox.classList.add('active');
+          else allSelectedMsgBox.classList.remove('active');
+        }
+      );
     }
 
     /* set select dropdown value for preselected value */
     let items = [...dropMenu.querySelectorAll(selectors.items)];
-    if (settings.multipleSelect && items.some(el => el.matches('.selected'))) items.filter(el => el.matches('.selected')).forEach(el => dd_setSelect(el));
-    else if (!settings.multipleSelect && items.some(el => el.matches('.active'))) dd_setSelect(items.find(el => el.matches('.active')));
+    if (tmp.multipleSelect && items.some((el) => el.matches('.selected')))
+      items
+        .filter((el) => el.matches('.selected'))
+        .forEach((el) => dd_setSelect(el));
+    else if (!tmp.multipleSelect && items.some((el) => el.matches('.active')))
+      dd_setSelect(items.find((el) => el.matches('.active')) as Element);
 
     // sychronize selectable dropdown value with it modelValue if it is two-way-binded from it parent
-    unwatch.modelValue = watch(() => props.modelValue, (newValue) => {
-      if (JSON.stringify(newValue) === JSON.stringify(compValue.value)) return;
-      let items = [...dropMenu.querySelectorAll(selectors.items)];
+    unwatch.modelValue = watch(
+      () => props.modelValue,
+      (newValue) => {
+        if (JSON.stringify(newValue) === JSON.stringify(compValue.value))
+          return;
+        let items = [
+          ...dropMenu.querySelectorAll(selectors.items),
+        ] as HTMLElement[];
 
-      if (settings.multipleSelect) {
-        if (!Array.isArray(newValue)) emit('update:modelValue', compValue.value);
-        else {
-          let modelItems = [];
+        if (tmp.multipleSelect) {
+          if (!Array.isArray(newValue))
+            emit('update:modelValue', compValue.value);
+          else {
+            let modelItems: HTMLElement[] = [];
 
-          newValue.forEach((val) => {
-            // avoid selecting an item more than once.
-            let pendingItems = items.filter(el => !modelItems.includes(el));
-            for (let i = 0; i < pendingItems.length; i++) {
-              if (val === (pendingItems[i].getAttribute('data-value') || pendingItems[i].textContent)) {
-                modelItems.push(pendingItems[i]);
-                break;
+            newValue.forEach((val) => {
+              // avoid selecting an item more than once.
+              let pendingItems = items.filter((el) => !modelItems.includes(el));
+              for (let i = 0; i < pendingItems.length; i++) {
+                if (
+                  val ===
+                  (pendingItems[i].getAttribute('data-value') ??
+                    pendingItems[i].textContent)
+                ) {
+                  modelItems.push(pendingItems[i]);
+                  break;
+                }
               }
-            }
-          });
-
-          // deselect all items in the multiple selectable drop menu
-          items.forEach(item => {
-            item.classList.remove('selected');
-            item.setAttribute('data-ddid', '');
-          });
-          tmp.selectionValue = {};
-          tmp.selectionContent = [];
-          selectableContentBox.classList.add('no-content');
-
-          // select all items that exist in the modelItems
-          if (modelItems[0]) {
-            modelItems.forEach((item) => {
-              let ddid = utils.getUniqueId('ddid');
-              let itemValue = item.getAttribute('data-value') || item.textContent;
-
-              item.classList.add('selected');
-              tmp.selectionValue[ddid] = itemValue;
-              item.setAttribute('data-ddid', ddid);
-              tmp.selectionContent.push({
-                html: `${item.innerHTML} <i class="svgv1 action close trailing icon"><svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48"><path d="M480.435-421.652 277.522-219.304q-12.131 12.13-29.392 12.413-17.26.282-28.826-12.848-12.695-12.131-12.478-28.674.217-16.544 12.913-29.674L422.217-480 219.304-683.348q-12.695-12.13-12.695-28.674 0-16.543 12.695-29.674 11.566-12.13 28.826-11.848 17.261.283 29.392 12.414l202.913 202.347L682.478-741.13q12.131-12.131 29.392-12.414 17.26-.282 28.826 11.848 12.695 13.131 12.478 29.674-.217 16.544-11.913 28.674L538.783-480l202.478 201.913q11.696 12.696 11.913 29.457.217 16.76-12.478 28.891-11.566 13.13-28.826 12.848-17.261-.283-29.392-12.413L480.435-421.652Z"/></svg></i>`,
-                index: ddid
-              });
             });
-            selectableContentBox.classList.remove('no-content');
-            // check if all items in the dropdown is selected.
-            if (!items.some(el => !el.matches('.selected'))) tmp.allItemSelected = true;
+
+            // deselect all items in the multiple selectable drop menu
+            items.forEach((item) => {
+              item.classList.remove('selected');
+              item.setAttribute('data-ddid', '');
+            });
+            tmp.selectionValue = {};
+            tmp.selectionContent = [];
+            selectableContentBox.classList.add('no-content');
+
+            // select all items that exist in the modelItems
+            if (modelItems[0]) {
+              modelItems.forEach((item) => {
+                let ddid = utils.getUniqueId('ddid');
+                let itemValue =
+                  item.getAttribute('data-value') ??
+                  (item.textContent as string);
+
+                item.classList.add('selected');
+                tmp.selectionValue[ddid] = itemValue;
+                item.setAttribute('data-ddid', ddid);
+                tmp.selectionContent.push({
+                  html: item.innerHTML,
+                  index: ddid,
+                });
+              });
+              selectableContentBox.classList.remove('no-content');
+              // check if all items in the dropdown is selected.
+              if (!items.some((el) => !el.matches('.selected')))
+                tmp.allItemSelected = true;
+            }
+
+            compValue.value = Object.values(tmp.selectionValue);
           }
+        } else {
+          items.forEach((item) => item.classList.remove('active'));
+          tmp.selectionContent = [];
+          compValue.value = undefined;
 
-          compValue.value = Object.values(tmp.selectionValue);
+          let item = items.find(
+            (item) =>
+              newValue === (item.getAttribute('data-value') ?? item.textContent)
+          );
+
+          if (item) {
+            item.classList.add('active');
+            tmp.selectionContent = [item.innerHTML];
+            compValue.value = newValue;
+          }
         }
-      }
-      else {
-        items.forEach(item => item.classList.remove('active'));
-        tmp.selectionContent = undefined;
-        compValue.value = undefined;
-
-        let item = items.find((item) => newValue === (item.getAttribute('data-value') || item.textContent));
-
-        if (item) {
-          item.classList.add('active');
-          tmp.selectionContent = item.innerHTML;
-          compValue.value = newValue;
-        }
-      }
-    }, { immediate: props.modelValue !== undefined });
-    unwatch.compValue = watch(compValue, (newValue) => {
-      if (JSON.stringify(newValue) === JSON.stringify(props.modelValue)) return;
-      emit('update:modelValue', newValue);
-    }, { immediate: props.modelValue === undefined });
+      },
+      { immediate: props.modelValue !== undefined }
+    );
+    unwatch.compValue = watch(
+      compValue,
+      (newValue) => {
+        if (JSON.stringify(newValue) === JSON.stringify(props.modelValue))
+          return;
+        emit('update:modelValue', newValue);
+      },
+      { immediate: props.modelValue === undefined }
+    );
   }
-});
 
-// decide wether to teleport dropdown menu or not
-onMounted(() => {
-  if (!tmp.dropdownReady) return;
-  if (settings.independentMenu) tmp.independentMenu = settings.independentMenu === true || ((!dropElem.value.classList.contains('sub') && !dropElem.value.classList.contains('select')) || settings.browseDm);
+  // decide wether to teleport dropdown menu or not
+  if (settings.independentMenu)
+    tmp.independentMenu =
+      settings.independentMenu === true ||
+      (!dropElem.value!.classList.contains('sub') &&
+        !dropElem.value!.classList.contains('select')) ||
+      Boolean(tmp.browseDm);
   if (tmp.independentMenu) document.body.append(dropMenu);
-});
 
-// cache all dropdowns and dropdown menus that can possibly close the dropdown in allExiter variable
-let allExiter = [];
-// checkerFill is a function that find all sub dropMenu that is linked to it dropdown by id and add it to allExiter array.
-function checkerFill(dm) {
-  if (dm.querySelectorAll(':scope .sub.dropdown[data-browse-dm]')[0]) {
-    [...dm.querySelectorAll(':scope .sub.dropdown[data-browse-dm]')].forEach(el => {
-      let newDm = document.querySelector(`.drop.menu[data-ddid="${el.getAttribute('data-ddid')}"]`);
-      if (newDm) {
-        allExiter.push(newDm);
-        checkerFill(newDm);
-      }
-    });
-  }
-}
-onMounted(() => {
-  if (!tmp.dropdownReady) return;
-  if (settings.browseDm) allExiter.push(dropElem.value, dropMenu);
-  else allExiter.push(dropElem.value);
+  // cache all dropdowns and dropdown menus that is dropdown family indirectly (ie. linked by id) in ddFamily variable
+  if (tmp.independentMenu)
+    ddFamily.push(dropElem.value as HTMLElement, dropMenu);
+  else ddFamily.push(dropElem.value as HTMLElement);
   checkerFill(dropMenu);
-});
 
-// configure how dropdown opens
-onMounted(() => {
-  if (!tmp.dropdownReady) return;
+  // configure how dropdown opens
   // open dropdown if the enter key or arrow down key is pressed while dropdown is focused-on
-  useEventListener(document, 'keydown', (e) => {
-    if ((e.key == "Enter" || e.key == "ArrowDown") && (dropElem.value.matches(':focus') || dropElem.value.querySelectorAll(':scope :focus')[0]) && !showDropdown.value) {
-      e.preventDefault();
-      dd_toggleDropdown('activate keyboard controls');
-    }
-  });
+  document.addEventListener('keydown', dd_keyEvt);
 
-  // get elements that opens dropdown
-  let target = settings.findToggler && dropElem.value.querySelectorAll(':scope > .dd-toggler:not(".drop.menu")')[0] ? dropElem.value.querySelectorAll(':scope > .dd-toggler:not(".drop.menu")')[0] : dropElem.value;
+  // get all elements that opens dropdown
+  let target =
+    tmp.findToggler &&
+    dropElem.value!.querySelectorAll(':scope > .dd-toggler')[0]
+      ? dropElem.value!.querySelectorAll(':scope > .dd-toggler')[0]
+      : dropElem.value!;
 
   // configure hoverable dropdown to open on mouse-over and touchstart
-  if (settings.openOnMouseover) {
-    target.addEventListener('mouseenter', dd_toggleDropdown);
-    target.addEventListener('touchstart', dd_toggleDropdown);
+  if (tmp.openOnMouseover) {
+    target.addEventListener('mouseenter', dd_toggleHandler);
+    target.addEventListener('touchstart', dd_toggleHandler);
   }
   // configure clickable dropdown to open on mouse click
-  else target.addEventListener('click', dd_toggleDropdown);
+  else target.addEventListener('click', dd_toggleHandler);
 
   // configure dropdown to be controlled using ddconsole-custom-event. controls include opening and closing dropdown and sub dropdowns
-  dropElem.value.addEventListener('ddconsole', (e) => {
+  dropElem.value!.addEventListener('ddconsole', (event) => {
+    let e = event as CustomEvent;
     if (e.detail === 'close') showDropdown.value = false;
-    else if (e.detail === 'close all ancestor dropdown') dd_toggleDropdown('close-all');
+    else if (e.detail === 'close all ancestor dropdown') dd_closeWithAncestor();
     else if (e.detail === 'open') showDropdown.value = true;
-    else if (e.detail === 'open with keyboard') dd_toggleDropdown('activate keyboard controls');
-    else if (e.detail.command === 'set hovered item' && e.detail.el) {
-      [...dropMenu.querySelectorAll(selectors.items)].forEach(el => el.classList.remove('hovered'));
-      setTimeout(() => e.detail.el.classList.add('hovered'), 10);
+    else if (e.detail === 'open with keyboard') {
+      tmp.activateKeyboard = true;
+      showDropdown.value = true;
+    } else if (e.detail.command === 'set hovered item' && e.detail.el) {
+      [...dropMenu.querySelectorAll(selectors.items)].forEach((el) =>
+        el.classList.remove('hovered')
+      );
+      utils.afterNextRepaint(() => e.detail.el.classList.add('hovered'));
     }
   });
+
+  if (settings.constrainWidth || settings.fluidMinWidth) {
+    sizeStream = new ResizeObserver(() => {
+      let dd_width = dropElem.value!.getBoundingClientRect().width;
+      if (settings.constrainWidth) dropMenu.style.maxWidth = `${dd_width}px`;
+      if (settings.fluidMinWidth) dropMenu.style.minWidth = `${dd_width}px`;
+    });
+
+    sizeStream.observe(dropElem.value!);
+  }
 });
+
+// checkerFill is a function that find all sub dropMenu that is linked to it dropdown by id and add it to ddFamily array.
+function checkerFill(dm: Element) {
+  if (dm.querySelectorAll(':scope .sub.dropdown[data-browse-dm]')[0]) {
+    [...dm.querySelectorAll(':scope .sub.dropdown[data-browse-dm]')].forEach(
+      (el) => {
+        let newDm = document.querySelector(
+          `.drop.menu[data-ddid="${el.getAttribute('data-ddid')}"]`
+        );
+        if (newDm) {
+          ddFamily.push(newDm);
+          checkerFill(newDm);
+        }
+      }
+    );
+  }
+}
 
 watch(showDropdown, (show) => {
   if (show) {
-    if (dropElem.value.matches('.disabled, [disabled]')) return;
-    let items = [...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown)];
-    let activeItem = items.find(el => el.matches('.active'));
+    if (dropElem.value!.matches('.disabled, [disabled]')) return;
+    let items = [
+      ...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown),
+    ];
+    let activeItem = items.find((el) => el.matches('.active'));
 
+    // register dropdown as to when it will respond Escape key press
     utils.trackEscOn(uniqueId);
 
-    if (settings.searchable) {
+    if (tmp.searchable) {
       searchBox.focus();
       // what to do when searching in a dropdown box
       searchBox.addEventListener('input', dd_searchEvt);
       utils.triggerEvent(searchBox, 'input');
     }
+
     document.addEventListener('click', dd_clickOnDomEvt);
     document.addEventListener('keyup', dd_escAndTabEvt);
     document.addEventListener('keydown', dd_KBControlEvt);
@@ -420,28 +507,41 @@ watch(showDropdown, (show) => {
 
     // highlight (add .hover class to) the active item or the first item in the menu list if dropdown is opened with with keyboard keys or it is a searchable dropdown. (default action)
     if (tmp.activateKeyboard) {
-      let itemToHover = activeItem || items[0];
+      let itemToHover = activeItem ?? items[0];
 
       if (itemToHover) {
-        itemToHover.classList.add('hovered')
-        items.filter(el => el != itemToHover).forEach(el => el.classList.remove('hovered'));
+        itemToHover.classList.add('hovered');
+        items
+          .filter((el) => el != itemToHover)
+          .forEach((el) => el.classList.remove('hovered'));
       }
     }
 
     // auto scroll dropdown-menu to active item position.
     setTimeout(() => {
       if (activeItem) {
-        let overflowParent = utils.getParents(activeItem, '', dropMenu).find(el => (utils.getCssVal(el, 'overflow-y') === 'auto' || utils.getCssVal(el, 'overflow-y') === 'scroll')) || dropMenu;
+        let overflowParent =
+          utils
+            .getParents(activeItem, '', dropMenu)
+            .find(
+              (el) =>
+                utils.getCssVal(el, 'overflow-y') === 'auto' ||
+                utils.getCssVal(el, 'overflow-y') === 'scroll'
+            ) || dropMenu;
         let scrollPosition = overflowParent.scrollTop;
-        let scrollAmount = activeItem.getBoundingClientRect().top - overflowParent.getBoundingClientRect().top + scrollPosition;
+        let scrollAmount =
+          activeItem.getBoundingClientRect().top -
+          overflowParent.getBoundingClientRect().top +
+          scrollPosition;
 
         overflowParent.scrollTop = scrollAmount;
       }
     }, settings.duration + 50);
-  }
-  else {
+  } else {
     // close all sub-dropdown first
-    [...dropMenu.querySelectorAll(':scope .dropdown.active')].forEach(el => utils.triggerEvent(el, 'ddconsole', 'close'));
+    [...dropMenu.querySelectorAll(':scope .dropdown.active')].forEach((el) =>
+      utils.triggerEvent(el, 'ddconsole', 'close')
+    );
 
     document.removeEventListener('click', dd_clickOnDomEvt);
     document.removeEventListener('keyup', dd_escAndTabEvt);
@@ -449,16 +549,19 @@ watch(showDropdown, (show) => {
     document.removeEventListener('mousemove', dd_mouseMover);
     window.removeEventListener('resize', dd_CalcPosition);
     window.removeEventListener('scroll', dd_CalcPosition, true);
-    [...dropMenu.querySelectorAll(selectors.items)].forEach(el => el.classList.remove('hovered'));
+    [...dropMenu.querySelectorAll(selectors.items)].forEach((el) =>
+      el.classList.remove('hovered')
+    );
 
-    if (settings.searchable) {
+    if (tmp.searchable) {
       searchBox.removeEventListener('input', dd_searchEvt);
       searchBox.value = '';
       selectableContentBox.classList.remove('filtered');
       selectablePlaceholder.classList.remove('filtered');
     }
 
-    if (settings.openOnMouseover) document.removeEventListener('mousemove', dd_toggleDropdown);
+    if (tmp.openOnMouseover)
+      document.removeEventListener('mousemove', dd_toggleHandler);
 
     // safely get out of escape track
     utils.checkEscStatus(uniqueId, true);
@@ -469,250 +572,407 @@ watch(showDropdown, (show) => {
 
 onBeforeUnmount(() => {
   // return dropMenu to it appropriate location.
-  if (dropMenu && !settings.browseDm && !settings.selectable) dropElem.value.append(dropMenu); // return drop menu to the drop down to get it removed also.
+  if (tmp.independentMenu && !tmp.browseDm) dropElem.value!.append(dropMenu); // return drop menu to the drop down to get it removed also.
 
   // stop all asynchronous watcher
-  Object.keys(unwatch).forEach(el => {
+  Object.keys(unwatch).forEach((el) => {
     if (typeof unwatch[el] === 'function') unwatch[el]();
   });
+  document.removeEventListener('click', ms_clickEvt);
+  document.removeEventListener('keydown', ms_keyEvt);
+  document.removeEventListener('keydown', dd_keyEvt);
   document.removeEventListener('click', dd_clickOnDomEvt);
   document.removeEventListener('keyup', dd_escAndTabEvt);
   document.removeEventListener('keydown', dd_KBControlEvt);
   document.removeEventListener('mousemove', dd_mouseMover);
+  document.removeEventListener('mousemove', dd_toggleHandler);
   window.removeEventListener('resize', dd_CalcPosition);
   window.removeEventListener('scroll', dd_CalcPosition, true);
+  sizeStream?.disconnect();
+  if (tmp.openOnMouseover)
+    document.removeEventListener('mousemove', dd_toggleHandler);
 
-  if (settings.openOnMouseover) document.removeEventListener('mousemove', dd_toggleDropdown);
-  
   // safely get out of escape track
   utils.checkEscStatus(uniqueId, true);
-
 });
 
-function dd_toggleDropdown(e) {
-  if (typeof (e) === 'object') {
-    // escape all ex-dropdown classed element from toggling dropdwon
-    if ([...dropElem.value.querySelectorAll(':scope > .content > .chip')].some(el => el.contains(e.target)) || (e.target && e.target.closest('.ex-dropdown'))) return;
+function ms_clickEvt(e: MouseEvent) {
+  let target = e.target as HTMLElement;
+  let sItems = [
+    ...dropElem.value!.querySelectorAll(':scope > .content > .chip'),
+  ];
+  let sItem = sItems.find((el) => el.contains(target));
+  let sItemClose = [
+    ...dropElem.value!.querySelectorAll(':scope > .content > .chip > .close'),
+  ].find((el) => el.contains(target));
 
-    if (settings.openOnMouseover) {
-      if (e.type === 'mouseenter') {
-        document.addEventListener('mousemove', dd_toggleDropdown);
-        clearTimeout(tmp.hideDropdownTimeout);
-        tmp.showDropdownTimeout = setTimeout(() => {
-          if (settings.searchable) dd_toggleDropdown('activate keyboard controls');
-          else showDropdown.value = true;
-        }, settings.delay / 2);
-      }
-      else if (e.type === 'mousemove') {
-        if (tmp.asdm.some(el => el.contains(e.target))) {
-          tmp.hidingDropdown = false;
-          clearTimeout(tmp.hideDropdownTimeout);
-          return;
-        }
-        // prevent tmp.hidingDropdown from triggering more than once.
-        if (tmp.hidingDropdown) return;
+  // deselecting multiple dropdown item when user clicks on the close button of a chip
+  if (sItemClose)
+    utils.afterNextRepaint(() => dd_setDeselect(sItem as Element));
+  else if (sItem) {
+    let sItemSiblings = sItems.filter((el) => el != sItem);
 
-        tmp.hidingDropdown = true;
-        clearTimeout(tmp.showDropdownTimeout);
-        tmp.hideDropdownTimeout = setTimeout(() => {
-          tmp.hidingDropdown = false;
-          showDropdown.value = false;
-        }, settings.delay);
-      }
-      else if (e.type === 'touchstart') {
-        // prevent event from interfering with dropMenu items actions.
-        if (dropMenu.contains(e.target)) return;
+    // select a chip that is not selected if user clicks on them.
+    if (!sItem.matches('.active')) sItem.classList.add('active');
+    // deselect a chip that is selected if user click on them and there is no other chip selected
+    else if (!sItemSiblings.some((el) => el.matches('.active')))
+      sItem.classList.remove('active');
 
-        if (showDropdown.value) {
-          clearTimeout(tmp.showDropdownTimeout);
-          showDropdown.value = false;
-        }
-        else {
-          document.addEventListener('mousemove', dd_toggleDropdown);
-          clearTimeout(tmp.hideDropdownTimeout);
-          if (settings.searchable) dd_toggleDropdown('activate keyboard controls');
-          else showDropdown.value = true;
-        }
+    // if the control key is not pressed when user clicks on a chip, deselect the siblings of the chip
+    if (!e.ctrlKey)
+      sItemSiblings.forEach((el) => el.classList.remove('active'));
+  }
+  // if one or more chip(s) is selected and user clicks out, deselect the selected chips
+  else sItems.forEach((el) => el.classList.remove('active'));
+}
+function ms_keyEvt(e: KeyboardEvent) {
+  let sItems = [
+    ...dropElem.value!.querySelectorAll(':scope > .content > .chip'),
+  ];
+  let activeSItems = sItems.filter((el) => el.matches('.active'));
+
+  if (activeSItems[0]) {
+    let prevSibling = activeSItems[0].previousElementSibling?.matches('.chip')
+      ? activeSItems[0].previousElementSibling
+      : null;
+    let nextSibling = activeSItems.slice(-1)[0].nextElementSibling;
+
+    // deselect items with keyboard when they are selected
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      if (e.key == 'Backspace') {
+        if (prevSibling) prevSibling.classList.add('active');
+        else if (nextSibling?.matches('.chip'))
+          nextSibling.classList.add('active');
+      } else if (e.key == 'Delete') {
+        if (nextSibling?.matches('.chip')) nextSibling.classList.add('active');
+        else if (prevSibling) prevSibling.classList.add('active');
       }
+
+      activeSItems.forEach((el) => dd_setDeselect(el));
     }
-    else {
-      // prevent event from interfering with dropMenu items actions.
-      if (dropMenu.contains(e.target)) return;
+    // navigation within multiple selectable dropdown.
+    else if (e.key === 'ArrowRight' && nextSibling) {
+      if (nextSibling === searchBox) {
+        activeSItems.forEach((el) => el.classList.remove('active'));
+        searchBox.focus();
+        return;
+      } else if (nextSibling.matches('.chip')) {
+        if (!e.shiftKey)
+          activeSItems.forEach((el) => el.classList.remove('active'));
+        nextSibling.classList.add('active');
+      }
+    } else if (e.key === 'ArrowLeft' && prevSibling) {
+      if (!e.shiftKey)
+        activeSItems.forEach((el) => el.classList.remove('active'));
+      prevSibling.classList.add('active');
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      activeSItems.forEach((el) => el.classList.remove('active'));
+      if (e.key === 'ArrowDown') {
+        tmp.activateKeyboard = true;
+        showDropdown.value = true;
+      }
+    } else if (e.key === ' ' || e.key === 'Enter' /* || e.key === 'Tab' */)
+      activeSItems.forEach((el) => el.classList.remove('active'));
+  }
+  // delete the last chip in multiple dropdown if searchBox is focused-on and seachbox is empty and the backspace key is pressed
+  else if (
+    tmp.searchable &&
+    searchBox.matches(':focus') &&
+    !searchBox.value &&
+    e.key == 'Backspace' &&
+    sItems[0]
+  )
+    dd_setDeselect(sItems.slice(-1)[0]);
+  // navigation in multiple selectable dropdown continues at the following.
+  else if (dropElem.value!.matches(':focus-within')) {
+    if (e.key == 'ArrowRight') sItems[0]?.classList.add('active');
+    else if (e.key == 'ArrowLeft') sItems.pop()?.classList.add('active');
+  }
+}
+function dd_keyEvt(e: KeyboardEvent) {
+  if (
+    (e.key == 'Enter' || e.key == 'ArrowDown') &&
+    dropElem.value!.matches(':focus-within') &&
+    !showDropdown.value
+  ) {
+    e.preventDefault();
+    tmp.activateKeyboard = true;
+    showDropdown.value = true;
+  }
+}
 
-      // I don't know why i called e.preventDefault here.
-      e.preventDefault();
-      // save event data to be used for a setting.page type dropdown dropMenu coordinate when showing it.
-      if (settings.page) tmp.evt = e;
+function dd_toggleHandler(e: Event) {
+  let target = e.target as Element;
+  // escape all ex-dropdown classed element from toggling dropdwon
+  if (
+    [...dropElem.value!.querySelectorAll(':scope > .content > .chip')].some(
+      (el) => el.contains(target)
+    ) ||
+    (target && target.closest('.ex-dropdown'))
+  )
+    return;
+
+  if (tmp.openOnMouseover) {
+    if (e.type === 'mouseenter') {
+      document.addEventListener('mousemove', dd_toggleHandler);
+      clearTimeout(tmp.hideDropdownTimeout);
+      tmp.showDropdownTimeout = setTimeout(() => {
+        if (tmp.searchable) tmp.activateKeyboard = true;
+        showDropdown.value = true;
+      }, tmp.delay / 2);
+    } else if (e.type === 'mousemove') {
+      if (ddFamily.some((el) => el.contains(target))) {
+        tmp.hidingDropdown = false;
+        clearTimeout(tmp.hideDropdownTimeout);
+        return;
+      }
+      // prevent tmp.hidingDropdown from triggering more than once.
+      if (tmp.hidingDropdown) return;
+
+      tmp.hidingDropdown = true;
+      clearTimeout(tmp.showDropdownTimeout);
+      tmp.hideDropdownTimeout = setTimeout(() => {
+        tmp.hidingDropdown = false;
+        showDropdown.value = false;
+      }, tmp.delay);
+    } else if (e.type === 'touchstart') {
+      // prevent event from interfering with dropMenu items actions.
+      if (dropMenu.contains(target)) return;
 
       if (showDropdown.value) {
-        if (settings.searchable && !dropElem.value.querySelector(':scope .ddico')?.contains(e.target)) {
-          searchBox.focus();
-          return;
-        }
-
-        setTimeout(() => showDropdown.value = false, settings.delay);
-      }
-      else {
-        setTimeout(() => {
-          if (settings.searchable) dd_toggleDropdown('activate keyboard controls');
-          else showDropdown.value = true;
-        }, settings.delay)
+        clearTimeout(tmp.showDropdownTimeout);
+        showDropdown.value = false;
+      } else {
+        document.addEventListener('mousemove', dd_toggleHandler);
+        clearTimeout(tmp.hideDropdownTimeout);
+        if (tmp.searchable) tmp.activateKeyboard = true;
+        showDropdown.value = true;
       }
     }
+  } else {
+    // prevent event from interfering with dropMenu items actions.
+    if (dropMenu.contains(target)) return;
 
-    return;
+    // I don't know why i called e.preventDefault here.
+    e.preventDefault();
+    // save event data to be used for a setting.page type dropdown dropMenu coordinate when showing it.
+    if (tmp.page) tmp.evt = e as MouseEvent;
+
+    if (showDropdown.value) {
+      if (
+        tmp.searchable &&
+        !dropElem.value!.querySelector(':scope .ddico')?.contains(target)
+      ) {
+        searchBox.focus();
+        return;
+      }
+
+      setTimeout(() => (showDropdown.value = false), tmp.delay);
+    } else {
+      setTimeout(() => {
+        if (tmp.searchable) tmp.activateKeyboard = true;
+        showDropdown.value = true;
+      }, tmp.delay);
+    }
   }
-  else if (e === 'activate keyboard controls') {
-    tmp.activateKeyboard = true;
-    if (showDropdown.value) return;
+}
+
+function dd_closeWithAncestor() {
+  showDropdown.value = false;
+  // get the ancestor dropdown of sub-dropdown and send it an event to close it self and it ancestors also
+  let parentDDMenu = utils.getParents(dropElem.value!, '.drop.menu')[0];
+  if (parentDDMenu && parentDDMenu.getAttribute('data-ddid')) {
+    let parentDropdown = document.querySelector(
+      `[data-ddid="${parentDDMenu.getAttribute('data-ddid')}"].dropdown`
+    ) as Element;
+
+    if (parentDropdown)
+      utils.triggerEvent(
+        parentDropdown,
+        'ddconsole',
+        'close all ancestor dropdown'
+      );
   }
-
-  if (showDropdown.value) showDropdown.value = false;
-  else if (e !== 'close-all') showDropdown.value = true;
-
-  if (e === 'close-all') {
-    let pDd = dd_getParentDropdown();
-    if (pDd) utils.triggerEvent(pDd, 'ddconsole', 'close all ancestor dropdown');
-  };
 }
 
 function dd_searchEvt() {
-  let items = [...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown)];
-  let filter = searchBox.value.toUpperCase();
+  let items = [
+    ...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown),
+  ];
+  let filter = searchBox.value.toUpperCase().trim();
 
-  items.forEach(el => {
-    if (el.textContent.toUpperCase().trim().indexOf(filter.trim()) !== 0) el.classList.add('filtered');
+  items.forEach((el) => {
+    if (el.textContent?.toUpperCase().trim().indexOf(filter) !== 0)
+      el.classList.add('filtered');
     else el.classList.remove('filtered');
   });
 
   items = [...dropMenu.querySelectorAll(selectors.items_filtered)];
 
   if (!items[0]) {
-    [...dropMenu.querySelectorAll(selectors.items)].forEach(el => el.classList.remove('hovered'));
+    [...dropMenu.querySelectorAll(selectors.items)].forEach((el) =>
+      el.classList.remove('hovered')
+    );
 
     if (filter && !tmp.allItemFiltered) tmp.allItemFiltered = true;
     else if (!filter && tmp.allItemFiltered) tmp.allItemFiltered = false;
-  }
-  else if (filter && !dropElem.value.matches('.indicating')) {
-    [...dropMenu.querySelectorAll(selectors.items)].forEach(el => el.classList.remove('hovered'));
+  } else if (filter && !dropElem.value!.matches('.indicating')) {
+    [...dropMenu.querySelectorAll(selectors.items)].forEach((el) =>
+      el.classList.remove('hovered')
+    );
     items[0].classList.add('hovered');
     tmp.allItemFiltered = false;
   }
 
-  if (settings.multipleSelect) {
+  if (tmp.multipleSelect) {
     if (filter) {
       selectableContentBox.classList.remove('no-content');
-      let sItems = [...dropElem.value.querySelectorAll(':scope > .content > .chip')];
-      if (sItems[0]) sItems.forEach(el => el.classList.remove('active'));
-    }
-    else if (!tmp.selectionContent[0]) selectableContentBox.classList.add('no-content');
+      let sItems = [
+        ...dropElem.value!.querySelectorAll(':scope > .content > .chip'),
+      ];
+      if (sItems[0]) sItems.forEach((el) => el.classList.remove('active'));
+    } else if (!tmp.selectionContent[0])
+      selectableContentBox.classList.add('no-content');
   }
 
   dd_CalcPosition();
 }
 
-function dd_clickOnDomEvt(e) {
+function dd_clickOnDomEvt(e: MouseEvent) {
+  let target = e.target as Element;
   let items = [...dropMenu.querySelectorAll(selectors.items)];
-  let item = items.find(el => el.contains(e.target));
-  let sItem = [...dropElem.value.querySelectorAll(':scope > .content > .chip')].find(el => el.contains(e.target));
-  let sItemClose = [...dropElem.value.querySelectorAll(':scope > .content > .chip > .close')].find(el => el.contains(e.target));
-  let exiter = dropMenu.contains(e.target) && e.target.closest(selectors.dropdown_exiter);
+  let item = items.find((el) => el.contains(target));
+  let ignore = [
+    ...dropElem.value!.querySelectorAll(':scope > .content > .chip'),
+  ].find((el) => el.contains(target));
+  let exiter =
+    dropMenu.contains(target) && target.closest(selectors.dropdown_exiter);
 
   // Close when an exiter is clicked or on "Click Out"
-  if (exiter || (!dropElem.value.contains(e.target) && !dropMenu.contains(e.target))) showDropdown.value = false;
+  if (exiter || (!ignore && !ddFamily.some((el) => el.contains(target)))) {
+    showDropdown.value = false;
+  }
   // respond when an item is clicked
   else if (item) {
     if (item.matches('.dropdown')) return;
 
-    if (settings.selectable) {
+    if (tmp.selectable) {
       // deselecting items for multiple select dropdown that has the indicating class
-      if (item.matches('.selected')) dd_setDeselect([...dropElem.value.querySelectorAll(':scope > .content > .chip')].find(el => el.getAttribute('data-ddid') === item.getAttribute('data-ddid')));
+      if (tmp.multipleSelect && item.matches('.selected'))
+        dd_setDeselect(
+          [
+            ...dropElem.value!.querySelectorAll(':scope > .content > .chip'),
+          ].find(
+            (el) =>
+              el.getAttribute('data-ddid') === item.getAttribute('data-ddid')
+          ) as Element
+        );
       // select item if dropdown is selectable
-      else dd_setSelect(item, (settings.multipleSelect ? true : false));
-    }
-    // close all dropdown including all sub dropdowns and parent dropdowns if dropdown is [1. set to close on item click and click target is not on .dd-xclose item.], [2. not set to close on item click but target is .dd-close item]
-    else if ((settings.closeOnItemClick && !item.matches('.dd-xclose')) || item.matches('.dd-close')) dd_toggleDropdown('close-all');
+      else dd_setSelect(item, tmp.multipleSelect);
+    } else if (
+      /*
+      close all dropdown including all sub dropdowns and parent dropdowns if dropdown is
+        1. set to close on item click and click target is not on .dd-xclose item.
+        2. not set to close on item click but target is .dd-close item
+    */
+      (settings.closeOnItemClick && !item.matches('.dd-xclose')) ||
+      item.matches('.dd-close')
+    )
+      dd_closeWithAncestor();
   }
-  else if (sItemClose) dd_setDeselect(sItem);
 }
 
-function dd_KBControlEvt(e) {
+function dd_KBControlEvt(e: KeyboardEvent) {
   let items = [...dropMenu.querySelectorAll(selectors.items_filtered)];
   /*
     The Enter key triggers the click action on an item
     Enter and right arrow key open a sub dropdown that is hovered.
   */
   if (e.key == 'Enter' || e.key == 'ArrowRight') {
-    let item = items.find(el => el.matches('.hovered'));
+    let item = items.find((el) => el.matches('.hovered')) as HTMLElement;
     if (!item) return;
     if (item.matches('.dropdown:not(.active)')) {
       e.preventDefault();
       utils.triggerEvent(item, 'ddconsole', 'open with keyboard');
-    }
-    else if (e.key == 'Enter') {
+    } else if (e.key == 'Enter') {
       e.preventDefault();
       item.click();
     }
   }
   // Arrow left key (Use to close a sub dropdown) support
-  else if (e.key == 'ArrowLeft' && dropElem.value.matches('.sub') && ![...dropMenu.querySelectorAll(':scope .dropdown.active')][0]) {
+  else if (
+    e.key == 'ArrowLeft' &&
+    dropElem.value!.matches('.sub') &&
+    ![...dropMenu.querySelectorAll(':scope .dropdown.active')][0]
+  ) {
     e.preventDefault();
     showDropdown.value = false;
-    // I don't know why I used setTimeout here
-    if (dropElem.value.matches('.sub') && dd_getParentDropdown()) setTimeout(() => dropElem.value.classList.add('hovered'), 10);
+    if (dropElem.value!.matches('.sub'))
+      nextTick(() => dropElem.value!.classList.add('hovered'));
   }
   // Up and down arrrow key navigation on dropdown menu item.
   else if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
-    let hvItem = items.find(el => el.matches('.hovered'));
-    let acItem = items.find(el => el.matches('.active'));
+    let hvItem = items.find((el) => el.matches('.hovered'));
+    let acItem = items.find((el) => el.matches('.active'));
 
     if (![...dropMenu.querySelectorAll(':scope .dropdown.active')][0]) {
       e.preventDefault();
       // cii is current-item-index
-      let cii = (hvItem)
+      let cii = hvItem
         ? items.indexOf(hvItem)
-        : (acItem)
-          ? items.indexOf(acItem)
-          : -1;
+        : acItem
+        ? items.indexOf(acItem)
+        : -1;
       // nii is new-item-index
-      let nii = (e.key == 'ArrowUp')
-        ? (cii <= 0)
-          ? items.length - 1
-          : cii - 1
-        : (cii === items.length - 1 || cii < 0)
+      let nii =
+        e.key == 'ArrowUp'
+          ? cii <= 0
+            ? items.length - 1
+            : cii - 1
+          : cii === items.length - 1 || cii < 0
           ? 0
           : cii + 1;
       // ci is new-current-item
-      let ci = items[nii];
+      let ci = items[nii] as HTMLElement;
 
-      /* Enable scroll of overflow parent to hovered-item to make the hovered item visible */
+      /* scroll overflow parent to make hovered-item visible in screen */
       if (ci) {
-        // auto scroll dropdown-menu to active item position.
-        let overflowParent = utils.getParents(ci, '', dropMenu).find(el => (utils.getCssVal(el, 'overflow-y') === 'auto' || utils.getCssVal(el, 'overflow-y') === 'scroll')) || dropMenu;
+        let overflowParent =
+          utils
+            .getParents(ci, '', dropMenu)
+            .find(
+              (el) =>
+                utils.getCssVal(el, 'overflow-y') === 'auto' ||
+                utils.getCssVal(el, 'overflow-y') === 'scroll'
+            ) || dropMenu;
         let scrollPosition = overflowParent.scrollTop;
         let overflowParentHeight = overflowParent.clientHeight;
         let ciHeight = ci.offsetHeight;
-        let ciTop = ci.getBoundingClientRect().top - overflowParent.getBoundingClientRect().top + scrollPosition;
+        let ciTop =
+          ci.getBoundingClientRect().top -
+          overflowParent.getBoundingClientRect().top +
+          scrollPosition;
         let availSpace = scrollPosition + overflowParentHeight - ciTop;
-        let scrollAmount = (e.key == 'ArrowUp')
-          ? ((nii === items.length - 1 && ciHeight > availSpace) || scrollPosition > ciTop)
-            ? ciTop
-            : ciTop > (scrollPosition + overflowParentHeight - ciHeight)
-              ? ciTop - overflowParentHeight + (ciHeight * 2)
+        let scrollAmount =
+          e.key == 'ArrowUp'
+            ? (nii === items.length - 1 && ciHeight > availSpace) ||
+              scrollPosition > ciTop
+              ? ciTop
+              : ciTop > scrollPosition + overflowParentHeight - ciHeight
+              ? ciTop - overflowParentHeight + ciHeight * 2
               : undefined
-          : (e.key == 'ArrowDown')
-            ? ((nii === 0 && scrollPosition > ciTop) || ciHeight > availSpace)
+            : e.key == 'ArrowDown'
+            ? (nii === 0 && scrollPosition > ciTop) || ciHeight > availSpace
               ? scrollPosition + ciHeight - availSpace
               : scrollPosition > ciTop
-                ? ciTop - ciHeight
-                : undefined
+              ? ciTop - ciHeight
+              : undefined
             : undefined;
 
-        overflowParent.scrollTop = scrollAmount;
-
-        items.forEach(el => el.classList.remove('hovered'));
+        if (scrollAmount !== undefined) overflowParent.scrollTop = scrollAmount;
+        items.forEach((el) => el.classList.remove('hovered'));
         ci.classList.add('hovered');
-        if (settings.selectable && !settings.multipleSelect) dd_setSelect(ci, true);
+        if (tmp.selectable && !tmp.multipleSelect) dd_setSelect(ci, true);
       }
     }
 
@@ -720,30 +980,33 @@ function dd_KBControlEvt(e) {
   }
 }
 
-function dd_escAndTabEvt(e) {
-  // you should use an Escape tracker here to stop other plugins like modal from triggering close on escape press if the dropdown is opened down.
+function dd_escAndTabEvt(e: KeyboardEvent) {
+  // check if it is this dropdown turn to respond to Esc press.
   if (e.key === 'Escape' && utils.checkEscStatus(uniqueId)) {
-    // I don't know why preventDefault is called here.
     e.preventDefault();
     showDropdown.value = false;
     // set sub dropdown to current hovered item in it parent dropdown.
-    // I don't know why I used setTimeout here
-    if (dropElem.value.matches('.sub') && dd_getParentDropdown()) setTimeout(() => dropElem.value.classList.add('hovered'), 10);
-  }
-  else if (e.key === 'Tab' && ![...dropElem.value.querySelectorAll(':scope :focus')][0] && ![...dropMenu.querySelectorAll(':scope :focus')][0] && ![...dropMenu.querySelectorAll(':scope .dropdown.active')][0]) {
-    // i don't know why preventDefault is called here.
+    if (dropElem.value!.matches('.sub'))
+      nextTick(() => dropElem.value!.classList.add('hovered'));
+  } else if (
+    e.key === 'Tab' &&
+    ![...dropElem.value!.querySelectorAll(':scope :focus')][0] &&
+    ![...dropMenu.querySelectorAll(':scope :focus')][0] &&
+    ![...dropMenu.querySelectorAll(':scope .dropdown.active')][0]
+  ) {
     e.preventDefault();
-    dd_toggleDropdown('close-all');
+    dd_closeWithAncestor();
   }
 }
 
 function dd_CalcPosition() {
   // position dropdown relative to window
-  if (settings.page) {
+  if (tmp.page) {
     let coords = {
-      left: tmp.evt.clientX || 0,
-      top: tmp.evt.clientY || 0,
-      right: undefined, bottom: undefined,
+      left: tmp.evt!.clientX,
+      top: tmp.evt!.clientY,
+      right: 0,
+      bottom: 0,
     };
 
     coords.right = document.documentElement.clientWidth - coords.left;
@@ -752,64 +1015,65 @@ function dd_CalcPosition() {
     dropMenu.style.bottom = 'auto';
 
     if (coords.right >= dropMenu.offsetWidth) {
-      dropMenu.style.left = coords.left;
+      dropMenu.style.left = `${coords.left}px`;
       dropMenu.classList.add('rhs');
-    }
-    else if (coords.left >= dropMenu.offsetWidth) {
-      dropMenu.style.left = coords.left - dropMenu.offsetWidth;
+    } else if (coords.left >= dropMenu.offsetWidth) {
+      dropMenu.style.left = `${coords.left - dropMenu.offsetWidth}px`;
       dropMenu.classList.add('lhs');
-    }
-    else if (coords.right >= coords.left) {
+    } else if (
+      coords.right >= coords.left &&
+      coords.right + coords.left >= dropMenu.offsetWidth
+    ) {
       dropMenu.classList.add('rhs');
-      if (coords.right + coords.left >= dropMenu.offsetWidth) dropMenu.style.left = document.documentElement.clientWidth - dropMenu.offsetWidth;
-      else {
-        dropMenu.style.left = 0;
-        dropMenu.style.maxWidth = document.documentElement.clientWidth;
-      }
-    }
-    else {
+      dropMenu.style.left = `${
+        coords.left + coords.right - dropMenu.offsetWidth
+      }px`;
+    } else {
       dropMenu.classList.add('lhs');
-      dropMenu.style.left = 0;
-      if (coords.right + coords.left < dropMenu.offsetWidth) dropMenu.style.maxWidth = document.documentElement.clientWidth;
+      dropMenu.style.left = '0px';
+      if (coords.right + coords.left < dropMenu.offsetWidth)
+        dropMenu.style.maxWidth = `${coords.right + coords.left}px`;
     }
 
     if (coords.bottom >= dropMenu.offsetHeight) {
-      dropMenu.style.top = coords.top;
+      dropMenu.style.top = `${coords.top}px`;
       dropMenu.classList.add('downward');
-    }
-    else if (coords.top >= dropMenu.offsetHeight) {
-      dropMenu.style.top = coords.top - dropMenu.offsetHeight;
+    } else if (coords.top >= dropMenu.offsetHeight) {
+      dropMenu.style.top = `${coords.top - dropMenu.offsetHeight}px`;
       dropMenu.classList.add('upward');
-    }
-    else if (coords.bottom >= coords.top) {
+    } else if (
+      coords.bottom >= coords.top &&
+      coords.bottom + coords.top >= dropMenu.offsetHeight
+    ) {
       dropMenu.classList.add('downward');
-      if (coords.bottom + coords.top >= dropMenu.offsetHeight) dropMenu.style.top = document.documentElement.clientHeight - dropMenu.offsetHeight;
-      else {
-        dropMenu.style.top = 0;
-        dropMenu.style.maxHeight = document.documentElement.clientHeight;
-      }
+      dropMenu.style.top = `${
+        document.documentElement.clientHeight - dropMenu.offsetHeight
+      }px`;
+    } else {
+      dropMenu.classList.add('upward');
+      dropMenu.style.top = '0px';
+      if (coords.bottom + coords.top < dropMenu.offsetHeight)
+        dropMenu.style.maxHeight = `${coords.bottom + coords.top}px`;
     }
-    else {
-      dropMenu.classList('upward');
-      dropMenu.style.top = 0;
-      if (coords.bottom + coords.top < dropMenu.offsetHeight) dropMenu.style.maxWidth = document.documentElement.clientHeight;
-    }
-  }
-  else {
+  } else {
     let rects = {
-      dd: dropElem.value.getBoundingClientRect(),
+      dd: dropElem.value!.getBoundingClientRect(),
       dm: {
         width: dropMenu.offsetWidth,
         height: dropMenu.offsetHeight,
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
       },
       window: {
         width: window.innerWidth - utils.getScrollbarWidth(),
         height: window.innerHeight,
-      }
+      },
     };
     let spacing;
 
-    if (settings.view === "vertical") {
+    if (tmp.view === 'vertical') {
       spacing = {
         top: rects.dd.top,
         bottom: rects.window.height - rects.dd.top - rects.dd.height,
@@ -825,8 +1089,7 @@ function dd_CalcPosition() {
           bottom: rects.dd.top + rects.dd.height,
         },
       };
-    }
-    else {
+    } else {
       spacing = {
         top: rects.dd.top + rects.dd.height,
         bottom: rects.window.height - rects.dd.top,
@@ -838,40 +1101,49 @@ function dd_CalcPosition() {
         ...{
           left: rects.dd.left - rects.dm.width,
           right: rects.dd.left + rects.dd.width,
-          top: rects.dd.top + rects.dd.width - rects.dm.height,
+          top: rects.dd.top + rects.dd.height - rects.dm.height,
           bottom: rects.dd.top,
-        }
+        },
       };
     }
 
     if (settings.directionPriority.x === 'right') {
-      if (spacing.right >= rects.dm.width || spacing.right >= spacing.left || rects.dm.width > spacing.left) {
+      if (
+        spacing.right >= rects.dm.width ||
+        spacing.right >= spacing.left ||
+        rects.dm.width > spacing.left
+      ) {
         if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.right}px`;
         if (!dropMenu.classList.contains('rhs')) {
           dropMenu.classList.add('rhs');
           dropMenu.classList.remove('lhs');
         }
-      }
-      else {
+      } else {
         if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.left}px`;
         if (!dropMenu.classList.contains('lhs')) {
           dropMenu.classList.add('lhs');
           dropMenu.classList.remove('rhs');
         }
       }
-    }
-    else if (settings.directionPriority.x === 'center' && settings.view === "vertical") {
-      dropMenu.style.left = `${Math.max(Math.min(Math.max(0, rects.dd.left + (rects.dd.width / 2) - (rects.dm.width / 2)), (rects.window.width - rects.dm.width)), 0)}px`;
-    }
-    else {
+    } else if (
+      settings.directionPriority.x === 'center' &&
+      tmp.view === 'vertical'
+    ) {
+      dropMenu.style.left = `${Math.max(
+        Math.min(
+          Math.max(0, rects.dd.left + rects.dd.width / 2 - rects.dm.width / 2),
+          rects.window.width - rects.dm.width
+        ),
+        0
+      )}px`;
+    } else {
       if (spacing.left >= rects.dm.width) {
         if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.left}px`;
         if (!dropMenu.classList.contains('lhs')) {
           dropMenu.classList.add('lhs');
           dropMenu.classList.remove('rhs');
         }
-      }
-      else {
+      } else {
         if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.right}px`;
         if (!dropMenu.classList.contains('rhs')) {
           dropMenu.classList.add('rhs');
@@ -881,33 +1153,42 @@ function dd_CalcPosition() {
     }
 
     if (settings.directionPriority.y === 'bottom') {
-      if (spacing.bottom >= rects.dm.height || spacing.bottom >= spacing.top || rects.dm.height > spacing.top) {
+      if (
+        spacing.bottom >= rects.dm.height ||
+        spacing.bottom >= spacing.top ||
+        rects.dm.height > spacing.top
+      ) {
         if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.bottom}px`;
         if (!dropMenu.classList.contains('downward')) {
           dropMenu.classList.add('downward');
           dropMenu.classList.remove('upward');
         }
-      }
-      else {
+      } else {
         if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.top}px`;
         if (!dropMenu.classList.contains('upward')) {
           dropMenu.classList.add('upward');
           dropMenu.classList.remove('downward');
         }
       }
-    }
-    else if (settings.directionPriority.y === 'center' && settings.view === "horizontal") {
-      dropMenu.style.top = `${Math.max(Math.min(Math.max(0, rects.dd.top + (rects.dd.height / 2) - (rects.dm.height / 2)), (rects.window.height - rects.dm.height)), 0)}px`;
-    }
-    else {
+    } else if (
+      settings.directionPriority.y === 'center' &&
+      tmp.view === 'horizontal'
+    ) {
+      dropMenu.style.top = `${Math.max(
+        Math.min(
+          Math.max(0, rects.dd.top + rects.dd.height / 2 - rects.dm.height / 2),
+          rects.window.height - rects.dm.height
+        ),
+        0
+      )}px`;
+    } else {
       if (spacing.top >= rects.dm.height) {
         if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.top}px`;
         if (!dropMenu.classList.contains('upward')) {
           dropMenu.classList.add('upward');
           dropMenu.classList.remove('downward');
         }
-      }
-      else {
+      } else {
         if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.bottom}px`;
         if (!dropMenu.classList.contains('downward')) {
           dropMenu.classList.add('downward');
@@ -917,100 +1198,114 @@ function dd_CalcPosition() {
     }
 
     // set arrow position variable
-    if (settings.view === "vertical") {
-      if (dropMenu.classList.contains('lhs')) dropMenu.style.setProperty('--arrow-center', `${rects.dm.width - rects.dd.width/2}px`);
-      else if (dropMenu.classList.contains('rhs')) dropMenu.style.setProperty('--arrow-center', `${rects.dd.width/2}px`);
-      else dropMenu.style.setProperty('--arrow-center', `${rects.dd.left - rects.dm.left + (rects.dd.width/2)}px`);
-    }
-    else {
-      if (dropMenu.classList.contains('upward')) dropMenu.style.setProperty('--arrow-center', `${rects.dm.height - rects.dd.height/2}px`);
-      else if (dropMenu.classList.contains('downward')) dropMenu.style.setProperty('--arrow-center', `${rects.dd.height/2}px`);
-      else dropMenu.style.setProperty('--arrow-center', `${rects.dd.top + (rects.dd.height/2) - rects.dm.top}px`);
-    }
+    utils.afterNextRepaint(() => {
+      let arrowPos = 0;
+      // set arrow position based on the dropdown view and direction
+      if (tmp.view === 'vertical') {
+        if (dropMenu.classList.contains('lhs'))
+          arrowPos = rects.dm.width - rects.dd.width / 2;
+        else if (dropMenu.classList.contains('rhs'))
+          arrowPos = rects.dd.width / 2;
+        else arrowPos = rects.dd.left - rects.dm.left + rects.dd.width / 2;
+      } else {
+        if (dropMenu.classList.contains('upward'))
+          arrowPos = rects.dm.height - rects.dd.height / 2;
+        else if (dropMenu.classList.contains('downward'))
+          arrowPos = rects.dd.height / 2;
+        else arrowPos = rects.dd.top - rects.dm.top + rects.dd.height / 2;
+      }
+
+      dropMenu.style.setProperty('--arrow-center', `${arrowPos}px`);
+    });
   }
 }
 
 // this function cancels active keyboard control on dropdown and enable mouse control.
-function dd_mouseMover(e) {
-  let items = [...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown)];
+function dd_mouseMover(e: MouseEvent) {
+  let target = e.target as Element;
+  let items = [
+    ...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown),
+  ];
 
-  if (dropElem.value.contains(e.target) || dropMenu.contains(e.target)) {
-    let item = items.find(el => el.contains(e.target));
+  if (dropElem.value!.contains(target) || dropMenu.contains(target)) {
+    let item = items.find((el) => el.contains(target));
     if (!item) {
-      items.forEach(el => el.classList.remove('hovered'));
+      items.forEach((el) => el.classList.remove('hovered'));
       return;
     }
     item.classList.add('hovered');
-    items.filter(el => el !== item).forEach(el => el.classList.remove('hovered'));
-  }
-  else if (settings.openOnMouseover) showDropdown.value = false;
-  else items.forEach(el => el.classList.remove('hovered'));
-}
-
-// this function returns the ancestor dropdown of a sub-dropdown
-function dd_getParentDropdown() {
-  let pDd = utils.getParents(dropElem.value, '.drop.menu')[0];
-  pDd = utils.getParents(dropElem.value, '.dropdown')[0] || (pDd && pDd.getAttribute('id'))
-    ? [...document.querySelectorAll(`[data-browse-dm="${pDd.getAttribute('id')}"]`)].find(el => el.matches('.dropdown'))
-    : undefined;
-  return pDd;
+    items
+      .filter((el) => el !== item)
+      .forEach((el) => el.classList.remove('hovered'));
+  } else if (tmp.openOnMouseover) showDropdown.value = false;
+  else items.forEach((el) => el.classList.remove('hovered'));
 }
 
 // this function set an item as selected in a selectable dropdown
 // xClose means don't close dropdown after selection.
-function dd_setSelect(item, xClose) {
-  if (!item || !settings.selectable) return;
+function dd_setSelect(item: Element, xClose?: boolean) {
+  if (!item || !tmp.selectable) return;
 
   let items = [...dropMenu.querySelectorAll(selectors.items)];
 
-  if (settings.multipleSelect) {
+  if (tmp.multipleSelect) {
     let itemIndex = items.indexOf(item);
     let ddid = utils.getUniqueId('ddid');
-    let itemValue = item.getAttribute('data-value') || item.textContent;
+    let itemValue = item.getAttribute('data-value') || item.textContent || '';
 
     item.classList.add('selected');
     tmp.selectionValue[ddid] = itemValue;
     compValue.value = Object.values(tmp.selectionValue);
     item.setAttribute('data-ddid', ddid);
     tmp.selectionContent.push({
-      html: `${item.innerHTML} <i class="svgv1 action close trailing icon"><svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48"><path d="M480.435-421.652 277.522-219.304q-12.131 12.13-29.392 12.413-17.26.282-28.826-12.848-12.695-12.131-12.478-28.674.217-16.544 12.913-29.674L422.217-480 219.304-683.348q-12.695-12.13-12.695-28.674 0-16.543 12.695-29.674 11.566-12.13 28.826-11.848 17.261.283 29.392 12.414l202.913 202.347L682.478-741.13q12.131-12.131 29.392-12.414 17.26-.282 28.826 11.848 12.695 13.131 12.478 29.674-.217 16.544-11.913 28.674L538.783-480l202.478 201.913q11.696 12.696 11.913 29.457.217 16.76-12.478 28.891-11.566 13.13-28.826 12.848-17.261-.283-29.392-12.413L480.435-421.652Z"/></svg></i>`,
-      index: ddid
+      html: item.innerHTML,
+      index: ddid,
     });
     selectableContentBox.classList.remove('no-content');
 
-    if (settings.searchable && showDropdown.value) {
+    if (tmp.searchable && showDropdown.value) {
       searchBox.value = '';
       utils.triggerEvent(searchBox, 'input');
       searchBox.focus();
     }
 
-    if (!items.some(el => !el.matches('.selected'))) tmp.allItemSelected = true;
+    if (!items.some((el) => !el.matches('.selected')))
+      tmp.allItemSelected = true;
 
-    if (!showDropdown.value || dropElem.value.matches('.indicating')) return;
+    if (!showDropdown.value || dropElem.value!.matches('.indicating')) return;
 
     item.classList.remove('hovered');
 
-    if (!settings.searchable) {
-      let next = items.find((el, i) => i > itemIndex && !el.matches('.selected'));
-      let prev = items.filter((el, i) => i < itemIndex && !el.matches('.selected')).slice(-1)[0];
-      if (next) next.classList.add('hovered');
-      else if (prev) prev.classList.add('hovered');
+    if (!tmp.searchable) {
+      let nextHv =
+        items.find((el, i) => i > itemIndex && !el.matches('.selected')) ??
+        items
+          .filter((el, i) => i < itemIndex && !el.matches('.selected'))
+          .pop();
+      if (nextHv) nextHv.classList.add('hovered');
     }
 
     dd_CalcPosition();
-  }
-  else {
+  } else {
     item.classList.add('active');
-    if (!showDropdown.value && items.some(el => el !== item && el.matches('.active'))) console.warn("A selection-dropdown on this page has multiple preselected value which is not suppose to be except it is a multiple-selection-dropdown. Only the first preselected value will be preselected.");
+    if (
+      !showDropdown.value &&
+      items.some((el) => el !== item && el.matches('.active'))
+    )
+      console.warn(
+        'A selection-dropdown on this page has multiple preselected value which is not suppose to be except it is a multiple-selection-dropdown. Only the first preselected value will be preselected.'
+      );
 
-    items.filter(el => el !== item).forEach(el => el.classList.remove('active'));
-    compValue.value = item.getAttribute('data-value') || item.textContent;
-    tmp.selectionContent = item.innerHTML;
+    items
+      .filter((el) => el !== item)
+      .forEach((el) => el.classList.remove('active'));
+    compValue.value = item.getAttribute('data-value') || item.textContent || '';
+    tmp.selectionContent = [item.innerHTML];
   }
 
   if (xClose) return;
 
-  if (settings.searchable) {
+  if (tmp.searchable) {
     searchBox.value = '';
     utils.triggerEvent(searchBox, 'input');
   }
@@ -1019,23 +1314,28 @@ function dd_setSelect(item, xClose) {
 }
 
 // this function de-select an item in a selection dropdown.
-function dd_setDeselect(sItem) {
-  if (!settings.multipleSelect) return;
+function dd_setDeselect(sItem: Element) {
+  if (!tmp.multipleSelect) return;
 
   let ddid = sItem.getAttribute('data-ddid');
-  let item = [...dropMenu.querySelectorAll(`:scope [data-ddid="${ddid}"]`)][0];
+  if (!ddid || !tmp.selectionValue[ddid]) return;
+  let item = dropMenu.querySelector(`:scope [data-ddid="${ddid}"]`);
 
   delete tmp.selectionValue[ddid];
   compValue.value = Object.values(tmp.selectionValue);
+  if (!item) return;
   item.classList.remove('selected');
   item.setAttribute('data-ddid', '');
-  tmp.selectionContent = tmp.selectionContent.filter(el => el.index !== ddid);
+  tmp.selectionContent = tmp.selectionContent.filter(
+    (el) => (el as { index: string }).index !== ddid
+  );
 
   if (tmp.allItemSelected) tmp.allItemSelected = false;
-  if (!tmp.selectionContent[0]) selectableContentBox.classList.add('no-content');
+  if (!tmp.selectionContent[0])
+    selectableContentBox.classList.add('no-content');
 
   if (showDropdown.value) {
-    if (settings.searchable) {
+    if (tmp.searchable) {
       searchBox.value = '';
       utils.triggerEvent(searchBox, 'input');
     }
@@ -1043,39 +1343,61 @@ function dd_setDeselect(sItem) {
     dd_CalcPosition();
   }
 
-  if (settings.searchable) searchBox.focus();
+  if (tmp.searchable) searchBox.focus();
 }
 </script>
 
 <template>
-  <div ref="dropdown" class="dropdown" :data-ddid="uniqueId" :class="{ active: showDropdown }"
-    :tabindex="settings.selectable ? 0 : null">
+  <div
+    ref="dropdown"
+    class="dropdown"
+    :data-ddid="uniqueId"
+    :class="{ active: showDropdown }"
+    :tabindex="tmp.selectable ? 0 : undefined"
+  >
     <slot></slot>
-    <template v-if="settings.selectable">
-      <div v-if="settings.multipleSelect" ref="sContent" class="content no-content">
-        <div v-for="item in tmp.selectionContent" :key="item.index" :data-ddid="item.index" v-html="item.html"
-          class="chip"></div>
-        <template v-if="settings.searchable">
-          <input ref="searchBox" class='ssbox' autocomplete='off' tabindex='0'>
-          <span ref="sbsizer" class='ddmss'></span>
+    <template v-if="tmp.selectable">
+      <div v-if="tmp.multipleSelect" class="content no-content">
+        <div
+          v-for="item in tmp.selectionContent  as MultipleSelectContent[]"
+          :key="item.index"
+          :data-ddid="item.index"
+          class="chip"
+        >
+          <span v-html="item.html"></span>
+          <Icon name="material-symbols:close-rounded" class="close trailing" />
+        </div>
+        <template v-if="tmp.searchable">
+          <input class="ssbox" autocomplete="off" tabindex="0" />
+          <span class="ddss"></span>
         </template>
         <div ref="sPlaceholder" class="placeholder">{{ placeholder }}</div>
       </div>
       <template v-else>
-        <template v-if="settings.searchable">
-          <input ref="searchBox" class='ssbox' autocomplete='off' tabindex='0'>
-          <span ref="sbsizer" class='ddmss'></span>
+        <template v-if="tmp.searchable">
+          <input class="ssbox" autocomplete="off" tabindex="0" />
+          <span class="ddss"></span>
         </template>
-        <div ref="sContent" v-html="tmp.selectionContent" class="content"></div>
-        <div ref="sPlaceholder" class="placeholder">{{ placeholder }}</div>
+        <div
+          ref="sContent"
+          v-html="tmp.selectionContent[0]"
+          class="content"
+        ></div>
+        <div class="placeholder">{{ placeholder }}</div>
       </template>
-      <button v-if="$attrs.class.split(' ').includes('select')" ref="ddIcon" class="ddico icon">
-        <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48">
+      <button v-if="tmp.isSelect" ref="ddIcon" class="ddico icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="48"
+          viewBox="0 -960 960 960"
+          width="48"
+        >
           <path
-            d="m480-222.609 108.913-108.913q13.202-12.696 30.21-12.696 17.007 0 29.138 13.299 12.13 11.734 12.13 29.552 0 17.817-11.13 29.758L509.957-132.87q-6.023 6.131-14.118 9.414-8.095 3.282-16.035 3.282-7.941 0-15.858-3.282-7.918-3.283-12.903-9.414L311.739-271.609q-12.13-12.071-12.13-29.927 0-17.855 12.233-29.769 12.234-12.913 29.834-12.63 17.6.283 29.976 12.413L480-222.609Zm0-512.651L371.087-626.348q-13.202 12.696-30.21 12.696-17.007 0-29.138-13.299-12.13-12.299-12.13-30.116 0-17.818 12.13-30.194l139.304-139.304q5.019-5.182 13.11-9.222 8.09-4.039 16.026-4.039 7.935 0 15.892 4.039 7.957 4.04 13.886 9.222l139.304 139.304q11.13 12.507 11.13 30.362 0 17.856-12.233 30.334-12.234 12.913-29.957 12.348-17.723-.565-29.853-12.696L480-735.26Z" />
+            d="m480-222.609 108.913-108.913q13.202-12.696 30.21-12.696 17.007 0 29.138 13.299 12.13 11.734 12.13 29.552 0 17.817-11.13 29.758L509.957-132.87q-6.023 6.131-14.118 9.414-8.095 3.282-16.035 3.282-7.941 0-15.858-3.282-7.918-3.283-12.903-9.414L311.739-271.609q-12.13-12.071-12.13-29.927 0-17.855 12.233-29.769 12.234-12.913 29.834-12.63 17.6.283 29.976 12.413L480-222.609Zm0-512.651L371.087-626.348q-13.202 12.696-30.21 12.696-17.007 0-29.138-13.299-12.13-12.299-12.13-30.116 0-17.818 12.13-30.194l139.304-139.304q5.019-5.182 13.11-9.222 8.09-4.039 16.026-4.039 7.935 0 15.892 4.039 7.957 4.04 13.886 9.222l139.304 139.304q11.13 12.507 11.13 30.362 0 17.856-12.233 30.334-12.234 12.913-29.957 12.348-17.723-.565-29.853-12.696L480-735.26Z"
+          />
         </svg>
       </button>
-      <input ref="sInput" :value="compValue" type="hidden" :name="name">
+      <input ref="sInput" :value="compValue" type="hidden" :name="name" />
     </template>
     <slot name="trailing"></slot>
   </div>

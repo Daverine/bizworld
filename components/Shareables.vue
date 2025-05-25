@@ -162,7 +162,7 @@ const searchStore = useSearchStore();
         </div>
         <div class="transparent compact divider"></div>
         <div class="xhover item 0-padding">
-          <button class="fluid button">Have a shop online</button>
+          <button class="fluid button open-modal" data-target="create-biz">Have a shop online</button>
         </div>
       </template>
       <template v-else>

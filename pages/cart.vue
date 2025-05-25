@@ -23,7 +23,7 @@ const allChecked = computed({
           <thead
             class="sticky z-level-3"
             style="
-              top: 64px;
+              top: 72px;
               box-shadow: 0px 1px 0px 0px var(--on-surface),
                 0px 5px 10px 5px var(--blend-bg);
             "
@@ -137,7 +137,10 @@ const allChecked = computed({
                           name="material-symbols:bookmark-add-outline-rounded"
                         />
                       </button>
-                      <button @click="cartStore.removeFromCart(item.id)" class="flat compact icon button">
+                      <button
+                        @click="cartStore.removeFromCart(item.id)"
+                        class="flat compact icon button"
+                      >
                         <Icon name="material-symbols:delete-outline-rounded" />
                       </button>
                     </div>
@@ -148,6 +151,7 @@ const allChecked = computed({
           </tbody>
         </table>
       </section>
+      <!-- checkout details -->
       <section
         class="page-sec2 desktop-screen-only"
         v-scrollPin="{
@@ -162,7 +166,8 @@ const allChecked = computed({
             <div>Subtotal</div>
             <div>
               ₦{{
-                cartStore.items.filter((item) => item.checked)
+                cartStore.items
+                  .filter((item) => item.checked)
                   .reduce((acc, item) => acc + item.price * item.quantity, 0)
                   .toLocaleString()
               }}
@@ -180,7 +185,8 @@ const allChecked = computed({
             <div>Total</div>
             <div>
               ₦{{
-                cartStore.items.filter((item) => item.checked)
+                cartStore.items
+                  .filter((item) => item.checked)
                   .reduce((acc, item) => acc + item.price * item.quantity, 0)
                   .toLocaleString()
               }}
@@ -191,6 +197,81 @@ const allChecked = computed({
           </div>
         </div>
       </section>
+
+      <!-- checkout details mobile -->
+      <div
+        class="mobile-screen-only sticky surface-bg fluid z-level-2 pin-bottom-blend"
+        style="bottom: 0px"
+      >
+        <div
+          class="container flexbox align-center guttered"
+          style="padding: 0.5rem 0rem"
+        >
+          <div class="flexbox flex-column">
+            <div class="flat as-text mute-interaction button open-modal" data-target="checkout-details">
+              <Icon name="material-symbols:keyboard-arrow-down-rounded" />
+              Checkout details
+            </div>
+            <Modal id="checkout-details">
+              <div class="dialog bottom-sheet padded">
+                <div class="flexbox flex-column guttered">
+                  <div class="flexbox flex-separate sm-guttered">
+                    <div>Subtotal</div>
+                    <div>
+                      ₦{{
+                        cartStore.items
+                          .filter((item) => item.checked)
+                          .reduce(
+                            (acc, item) => acc + item.price * item.quantity,
+                            0
+                          )
+                          .toLocaleString()
+                      }}
+                    </div>
+                  </div>
+                  <div class="flexbox flex-separate sm-guttered">
+                    <div>Delivery</div>
+                    <div>₦0</div>
+                  </div>
+                  <div class="flexbox flex-separate sm-guttered">
+                    <div>Tax</div>
+                    <div>₦0</div>
+                  </div>
+                  <div class="flexbox flex-separate sm-guttered h6 bold">
+                    <div>Total</div>
+                    <div>
+                      ₦{{
+                        cartStore.items
+                          .filter((item) => item.checked)
+                          .reduce(
+                            (acc, item) => acc + item.price * item.quantity,
+                            0
+                          )
+                          .toLocaleString()
+                      }}
+                    </div>
+                  </div>
+                  <div>
+                    <button class="primary fluid button">Checkout</button>
+                  </div>
+                </div>
+              </div>
+            </Modal>
+            <div class="flexbox flex-separate sm-guttered h6 bold">
+              <div>Total</div>
+              <div>
+                ₦{{
+                  cartStore.items
+                    .filter((item) => item.checked)
+                    .reduce((acc, item) => acc + item.price * item.quantity, 0)
+                    .toLocaleString()
+                }}
+              </div>
+            </div>
+          </div>
+          <button class="primary button flexible">Checkout</button>
+        </div>
+      </div>
     </div>
   </main>
 </template>

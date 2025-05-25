@@ -24,7 +24,7 @@ export const utils = {
     }
 
     if (!window.lui_EscTracker.includes(trackId) && !byForce) {
-      console.warn("The passed TrackId is not tracked", trackId);
+      console.warn('The passed TrackId is not tracked', trackId);
       return;
     }
 
@@ -42,17 +42,18 @@ export const utils = {
     if (!window.lui_ScrollLockers) window.lui_ScrollLockers = [];
     if (!window.lui_ScrollLockers.length) {
       let scrollBarWidth = `${this.getScrollbarWidth()}px`;
-      document.documentElement.classList.add("scroll-locked");
+      document.documentElement.classList.add('scroll-locked');
       document.documentElement.style.marginRight = scrollBarWidth;
-      document.documentElement.style.overflow = "hidden";
-      [...document.querySelectorAll(".respect-lock")].forEach((el) => {
-        const elem = el as HTMLElement;
-        elem.setAttribute(
-          "data-lui-styleBeforeLock",
-          elem.getAttribute("style") || ""
+      document.documentElement.style.overflow = 'hidden';
+      (
+        [...document.querySelectorAll('.respect-lock')] as HTMLElement[]
+      ).forEach((el) => {
+        el.setAttribute(
+          'data-lui-styleBeforeLock',
+          el.getAttribute('style') || ''
         );
-        elem.style.maxWidth = `calc(100% - ${scrollBarWidth})`;
-        elem.style.marginRight = scrollBarWidth;
+        el.style.maxWidth = `calc(100% - ${scrollBarWidth})`;
+        el.style.marginRight = scrollBarWidth;
       });
     }
     if (!window.lui_ScrollLockers.includes(lockerId))
@@ -68,33 +69,33 @@ export const utils = {
       );
 
       if (!window.lui_ScrollLockers.length) {
-        document.documentElement.style.marginRight = "";
-        document.documentElement.style.overflow = "";
-        document.documentElement.classList.remove("scroll-locked");
-        [...document.querySelectorAll(".respect-lock")].forEach((el) => {
+        document.documentElement.style.marginRight = '';
+        document.documentElement.style.overflow = '';
+        document.documentElement.classList.remove('scroll-locked');
+        [...document.querySelectorAll('.respect-lock')].forEach((el) => {
           el.setAttribute(
-            "style",
-            el.getAttribute("data-lui-styleBeforeLock") || ""
+            'style',
+            el.getAttribute('data-lui-styleBeforeLock') || ''
           );
-          el.removeAttribute("data-lui-styleBeforeLock");
+          el.removeAttribute('data-lui-styleBeforeLock');
         });
       }
     }
   },
   getUniqueId(nameSpace: string): string {
-    if (typeof window.lui_uuid !== "number") window.lui_uuid = 0;
+    if (typeof window.lui_uuid !== 'number') window.lui_uuid = 0;
     window.lui_uuid++;
     nameSpace =
-      nameSpace != undefined && typeof nameSpace === "string"
+      nameSpace != undefined && typeof nameSpace === 'string'
         ? nameSpace
-        : "unique-id";
+        : 'unique-id';
 
     return nameSpace + window.lui_uuid;
   },
-  getCssVal(el: HTMLElement, prop: string): string {
+  getCssVal(el: Element, prop: string): string {
     return window.getComputedStyle(el).getPropertyValue(prop);
   },
-  contentSize(el: HTMLElement): { height: number; width: number } {
+  contentSize(el: Element): { height: number; width: number } {
     let styleList = window.getComputedStyle(el),
       box = el.getBoundingClientRect();
     return {
@@ -112,7 +113,7 @@ export const utils = {
         parseFloat(styleList.borderRightWidth),
     };
   },
-  offsetPos(el: HTMLElement): { top: number; left: number } {
+  offsetPos(el: Element): { top: number; left: number } {
     let box = el.getBoundingClientRect();
     let docElem = document.documentElement;
     return {
@@ -121,21 +122,21 @@ export const utils = {
     };
   },
   getParents(
-    el: HTMLElement,
+    el: Element,
     selector?: string,
-    until?: HTMLElement | string
-  ): HTMLElement[] {
+    until?: Element | string
+  ): Element[] {
     if (until) {
-      if (typeof until === "string") {
-        until = [...document.querySelectorAll(until)].find((elem) =>
-          (elem as HTMLElement).contains(el)
-        ) as HTMLElement || document.documentElement;
+      if (typeof until === 'string') {
+        until =
+          [...document.querySelectorAll(until)].find((elem) =>
+            elem.contains(el)
+          ) || document.documentElement;
       } else if (!until.contains(el)) until = document.documentElement;
     } else until = document.documentElement;
 
-    let parents: HTMLElement[] = [];
-
-    while ((el = el.parentNode as HTMLElement) && el !== until) {
+    let parents: Element[] = [];
+    while ((el = el.parentNode as Element) && el !== until) {
       if (selector) {
         if (el.matches(selector)) parents.push(el);
         continue;
@@ -145,82 +146,71 @@ export const utils = {
 
     return parents;
   },
-  nextAll(el: HTMLElement): HTMLElement[] {
-    const nextElements: HTMLElement[] = [];
+  nextAll(el: Element): Element[] {
+    const nextElements = [];
     let nextElement = el;
 
     while (nextElement.nextElementSibling) {
-      nextElements.push(nextElement.nextElementSibling as HTMLElement);
-      nextElement = nextElement.nextElementSibling as HTMLElement;
+      nextElements.push(nextElement.nextElementSibling);
+      nextElement = nextElement.nextElementSibling;
     }
 
     return nextElements;
   },
   triggerEvent(
-    el: HTMLElement | Window,
+    el: Element | Window,
     eventType: string | Event,
     customData?: any
   ): void {
-    if (typeof eventType === "string") {
+    if (typeof eventType === 'string') {
       if (customData !== undefined)
         el.dispatchEvent(new CustomEvent(eventType, { detail: customData }));
-      else if (typeof (el as any)[eventType] === "function")
+      else if (typeof (el as any)[eventType] === 'function')
         (el as any)[eventType]();
       else el.dispatchEvent(new Event(eventType, { bubbles: true }));
     } else el.dispatchEvent(eventType);
   },
   isObject(value: any): boolean {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
   },
-  isClose(elem: HTMLElement, selectors: string | string[]): boolean {
-    function checkElem(elem: HTMLElement | null): boolean {
-      return typeof elem != "undefined" && elem != null;
-    }
-
-    if (typeof selectors === "string") {
-      return checkElem(elem.closest(selectors));
-    }
+  isClose(elem: Element, selectors: string | string[]): boolean {
+    if (typeof selectors === 'string') return Boolean(elem.closest(selectors));
 
     let isClose = false;
-
-    selectors.forEach(function (node) {
-      isClose = checkElem(elem.closest(node));
-    });
+    selectors.forEach((node) => (isClose = Boolean(elem.closest(node))));
 
     return isClose;
   },
-  focusRangeOnTab(range: HTMLElement, e: KeyboardEvent): void {
-    let focusableElements: HTMLElement[] = [];
-    [
+  focusRangeOnTab(range: Element, e: KeyboardEvent): void {
+    let focusableElements = [
       ...range.querySelectorAll(
-        '[href], button, input, textarea, select, details, object, [tabindex]:not([tabindex="-1"])'
+        ':scope [href], :scope button, :scope input, :scope textarea, :scope select, :scope details, :scope object, :scope [tabindex]:not([tabindex="-1"])'
       ),
-    ].forEach((el) => {
-      if (!el.hasAttribute("disabled") && !el.getAttribute("aria-hidden"))
-        focusableElements.push(el as HTMLElement);
-    });
+    ].filter(
+      (el) => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden')
+    ) as HTMLElement[];
 
-    if (focusableElements.length < 1) {
+    if (!focusableElements[0]) {
       e.preventDefault();
       return;
     }
 
     let first = focusableElements[0],
-      last = focusableElements[focusableElements.length - 1];
+      last = focusableElements.slice(-1)[0];
 
-    if (document.activeElement === last && !e.shiftKey && e.key === "Tab") {
+    if (document.activeElement === last && !e.shiftKey && e.key === 'Tab') {
       e.preventDefault();
       first.focus();
     } else if (
       document.activeElement === first &&
       e.shiftKey &&
-      e.key === "Tab"
+      e.key === 'Tab'
     ) {
       e.preventDefault();
       last.focus();
     }
   },
-  setHighlightRange(el: HTMLElement): void {
+  setHighlightRange(el: Element): void {
     let range, selection;
 
     if (window.getSelection) {
@@ -237,5 +227,5 @@ export const utils = {
   compareArrays: (a: any[], b: any[]): boolean =>
     a.length === b.length && a.every((element, index) => element === b[index]),
   durationInMilliseconds: (duration: string): number =>
-    parseFloat(duration) * (duration.includes("ms") ? 1 : 1000),
+    parseFloat(duration) * (duration.includes('ms') ? 1 : 1000),
 };

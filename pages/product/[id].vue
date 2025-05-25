@@ -1060,12 +1060,20 @@ function getItemForCart() {
               </div>
             </div>
             <div class="flexbox flex-wrap guttered flex-separate align-start">
-              <NuxtLink @click="cartStore.addToCart(getItemForCart())" to="/cart" class="flexible primary exit-modal button">
+              <NuxtLink
+                @click="cartStore.addToCart(getItemForCart())"
+                to="/cart"
+                class="flexible primary exit-modal button"
+              >
                 Add and Go to cart
               </NuxtLink>
-              <button class="flexible primary flat button">
+              <NuxtLink
+                :to="{ name: 'biz-products', params: { id: $route.params.id } }"
+                @click="cartStore.addToCart(getItemForCart())"
+                class="flexible primary flat button exit-modal"
+              >
                 Add and Continue Shopping
-              </button>
+              </NuxtLink>
             </div>
           </div>
         </div>
