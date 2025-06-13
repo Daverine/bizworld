@@ -2,7 +2,7 @@
 // Usage: const { showDialog, teleporter } = useDialoger(dialoger, 'dialoger-id', options);
 import type { ShallowRef } from 'vue';
 
-interface Options {
+interface Settings {
   namespace?: string;
   toBeConsidered?: string;
   toggler?: string;
@@ -19,22 +19,22 @@ interface Options {
   inDuration?: number;
   outDuration?: number;
   hashDialog?: boolean;
-  controller?: (dialoger: HTMLElement, settings: Options) => void;
-  ready?: (dialoger: HTMLElement, settings: Options) => void;
-  complete?: (dialoger: HTMLElement, settings: Options) => void;
+  controller?: (dialoger: HTMLElement, settings: Settings) => void;
+  ready?: (dialoger: HTMLElement, settings: Settings) => void;
+  complete?: (dialoger: HTMLElement, settings: Settings) => void;
   caller?: HTMLElement;
 }
 
 export function useDialoger(
   dialoger: ShallowRef<HTMLDivElement | null>,
   id: string,
-  options?: Options
+  options?: Partial<Settings>
 ) {
   const router = useRouter();
   const route = useRoute();
   const showDialog = ref(false);
   const teleporter = ref(false);
-  const settings: Options = {
+  const settings: Settings = {
     namespace: 'dialog',
     toBeConsidered: '.dialog, .dg-controls',
     toggler: '.open-dialog',
@@ -65,8 +65,7 @@ export function useDialoger(
 
   function exitByClick(e: MouseEvent) {
     if (
-      (settings.closeOnWrapperClick &&
-        !(e.target as HTMLElement).closest(settings.toBeConsidered!)) ||
+      (settings.closeOnWrapperClick && e.target === dialoger.value) ||
       (settings.dismissible &&
         (e.target as HTMLElement).closest(settings.dismisser!))
     )
@@ -94,23 +93,20 @@ export function useDialoger(
     showDialog.value = false;
   }
 
+  function toOpenDialog(e: MouseEvent) {
+    let target = e.target as HTMLElement;
+    let toggler = target.closest(`${settings.toggler}[data-target="${id}"]`);
+    if (!toggler || target.closest(settings.toExcuseToggler!)) return;
+    settings.caller = toggler as HTMLElement;
+    showDialog.value = !showDialog.value;
+  }
+
   onMounted(() => {
     bb.uniqueId = utils.getUniqueId(settings.namespace!);
     teleporter.value = true;
 
     // click on dialoger toggler to open dialog
-    document.addEventListener('click', (e) => {
-      let toggler = (e.target as HTMLElement).closest(
-        `${settings.toggler}[data-target="${id}"]`
-      );
-      if (
-        !toggler ||
-        (e.target as HTMLElement).closest(settings.toExcuseToggler!)
-      )
-        return;
-      settings.caller = toggler as HTMLElement;
-      showDialog.value = !showDialog.value;
-    });
+    document.addEventListener('click', toOpenDialog);
 
     dialoger.value!.addEventListener('dgconsole', ((e: CustomEvent<string>) => {
       if (e.detail === settings.commands!.open) showDialog.value = true;
@@ -217,6 +213,7 @@ export function useDialoger(
     });
     showDialog.value = false;
     document.removeEventListener('keydown', KBDControls);
+    document.removeEventListener('click', toOpenDialog);
     utils.unlockWindowScroll(bb.uniqueId!);
   });
 

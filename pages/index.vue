@@ -20,7 +20,7 @@ const userStore = useUserStore();
           <Icon name="material-symbols:menu-rounded" />
         </div>
         <div class="items md-and-down-hidden">
-          <div class="item">Have a shop online</div>
+          <div class="item open-modal" data-target="create-biz">Have a shop online</div>
           <Dropdown class="item">
             Support
             <Icon
@@ -113,6 +113,7 @@ const userStore = useUserStore();
           <input
             v-model="searchStore.searchBox"
             type="search"
+            autocomplete="off"
             id="searchinput"
             ref="inputbox"
             placeholder="Your search here."
@@ -131,7 +132,9 @@ const userStore = useUserStore();
         </label>
         <div style="margin-top: 0.5rem">
           Search in: <span class="bold">Nigeria</span>.
-          <a href="#">Change Location</a>
+          <div class="compact small icon button">
+            <Icon name="material-symbols:more-outline-rounded" />
+          </div>
         </div>
         <div
           class="flexbox flexible-items lg-guttered"

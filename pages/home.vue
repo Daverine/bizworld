@@ -41,7 +41,7 @@ onMounted(() => feedStore.getUpdate());
         </div>
         <div class="items r-aligned">
           <div class="items md-and-down-hidden">
-            <div class="item">Have a shop online</div>
+            <div class="item exit-modal open-modal" data-target="create-biz">Have a shop online</div>
             <Dropdown class="item">
               Support
               <Icon
@@ -89,6 +89,7 @@ onMounted(() => feedStore.getUpdate());
           <input
             v-model="searchStore.searchBox"
             type="search"
+            autocomplete="off"
             id="searchinput"
             ref="inputbox"
             placeholder="Your search here."
@@ -107,7 +108,9 @@ onMounted(() => feedStore.getUpdate());
         </label>
         <div style="margin-top: 0.5rem">
           Search in: <span class="bold">Nigeria</span>.
-          <a href="#">Change Location</a>
+          <div class="compact small icon button">
+            <Icon name="material-symbols:more-outline-rounded" />
+          </div>
         </div>
         <div
           class="flexbox flexible-items lg-guttered"

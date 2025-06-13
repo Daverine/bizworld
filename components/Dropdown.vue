@@ -150,27 +150,27 @@ onMounted(async () => {
   selectors = {
     // select all element in dropMenu regardless of it statuses
     items:
-      ':scope > .item:not(.xhover):not(.disabled), :scope > .items > .item:not(.xhover):not(.disabled)',
+      ':scope > .item:not(.xhover, .disabled, [disabled]), :scope > .items > .item:not(.xhover, .disabled, [disabled])',
     // select all element in dropMenu regarding it statuses
-    items_of_indicating_dropdown: `:scope > .item:not(.xhover):not(.disabled)${
+    items_of_indicating_dropdown: `:scope > .item:not(.xhover, .disabled, [disabled]${
       !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
-        ? ':not(.selected)'
+        ? ', .selected'
         : ''
-    }, :scope > .items > .item:not(.xhover):not(.disabled)${
+    }), :scope > .items > .item:not(.xhover, .disabled, [disabled]${
       !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
-        ? ':not(.selected)'
+        ? ', .selected'
         : ''
-    }`,
+    })`,
     // select all element in dropMenu regarding it statuses
-    items_filtered: `:scope > .item:not(.xhover):not(.disabled):not(.filtered)${
+    items_filtered: `:scope > .item:not(.xhover, .disabled, [disabled], .filtered${
       !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
-        ? ':not(.selected)'
+        ? ', .selected'
         : ''
-    }, :scope > .items > .item:not(.xhover):not(.disabled):not(.filtered)${
+    }), :scope > .items > .item:not(.xhover, .disabled, [disabled], .filtered${
       !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
-        ? ':not(.selected)'
+        ? ', .selected'
         : ''
-    }`,
+    })`,
     // exiter
     dropdown_exiter: `.exit-dd`,
   };
@@ -822,7 +822,7 @@ function dd_searchEvt() {
     );
     items[0].classList.add('hovered');
     tmp.allItemFiltered = false;
-  }
+  } else tmp.allItemFiltered = false;
 
   if (tmp.multipleSelect) {
     if (filter) {

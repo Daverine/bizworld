@@ -24,7 +24,7 @@ const nextBtn = useTemplateRef('nextBtn');
 const settings = {
   ...{
     namespace: 'lightbox',
-    toBeConsidered: '.slides, .lb-control',
+    toBeConsidered: '.slide, .lb-control',
     toggler: '.open-lightbox',
     toExcuseToggler: '.ex-open-lightbox',
     closeOnEsc: true,

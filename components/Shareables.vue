@@ -162,7 +162,7 @@ const searchStore = useSearchStore();
         </div>
         <div class="transparent compact divider"></div>
         <div class="xhover item 0-padding">
-          <button class="fluid button open-modal" data-target="create-biz">Have a shop online</button>
+          <button class="fluid button exit-modal open-modal" data-target="create-biz">Have a shop online</button>
         </div>
       </template>
       <template v-else>
@@ -180,7 +180,7 @@ const searchStore = useSearchStore();
         <div class="collapsible sub items">
           <rc-shareables name="supports" />
         </div>
-        <div class="item">
+        <div class="item open-modal" data-target="create-biz">
           <SvgIcon name="add_business" class="lead" />
           Have a shop online
         </div>
@@ -235,6 +235,7 @@ const searchStore = useSearchStore();
         <input
           v-model="searchStore.searchBox"
           type="search"
+          autocomplete="off"
           placeholder="Your search here."
           class="subject"
         />
