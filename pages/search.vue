@@ -57,8 +57,7 @@ onMounted(() => {
       </div>
     </IScroller>
     <ItemCard
-      v-for="(result, i) in searchStore.searchResults"
-      :key="i"
+      v-for="result in searchStore.searchResults"
       :details="result"
     />
 

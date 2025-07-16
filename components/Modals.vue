@@ -1,7 +1,6 @@
 <script setup>
 const searchStore = useSearchStore();
 const userStore = useUserStore();
-const sDetails = ref(false);
 
 function popupSubmitSearch(e) {
   e.currentTarget
@@ -24,11 +23,12 @@ function popupSubmitSearch(e) {
       </div>
       <div class="content">
         <form @submit.prevent="popupSubmitSearch">
-          <label class="input" style="font-size: 1.125rem">
+          <label class="input fluid" style="font-size: 1.125rem">
             <Icon name="material-symbols:search-rounded" class="xhover" />
             <input
               v-model="searchStore.searchBox"
               type="search"
+              autocomplete="off"
               placeholder="Your search here."
               class="subject"
               md-autofocus
@@ -51,24 +51,20 @@ function popupSubmitSearch(e) {
             </button>
           </label>
           <div
-            class="flexbox equal-cols"
+            class="flexbox flexible-items lg-guttered"
             style="gap: 1rem; margin: 1rem auto 0px; max-width: 300px"
           >
-            <div class="col">
-              <button type="submit" class="fluid button">
-                <Icon name="material-symbols:search-rounded" class="lead" />
-                SEARCH
-              </button>
-            </div>
-            <div class="col">
-              <button
-                type="button"
-                class="fluid button open-modal exit-modal"
-                data-target="explore-modal"
-              >
-                EXPLORE
-              </button>
-            </div>
+            <button type="submit" class="fluid button">
+              <Icon name="material-symbols:search-rounded" class="lead" />
+              SEARCH
+            </button>
+            <button
+              type="button"
+              class="fluid button open-modal exit-modal"
+              data-target="explore-modal"
+            >
+              EXPLORE
+            </button>
           </div>
         </form>
       </div>
@@ -351,112 +347,6 @@ function popupSubmitSearch(e) {
       </div>
     </div>
   </Modal>
-  <Modal id="create-biz">
-    <div class="dialog self-scroll">
-      <div class="header flexbox guttered">
-        <div class="bold truncate">Create business profile</div>
-        <button
-          class="circular flat button as-text exit-modal"
-          style="margin-left: auto"
-        >
-          <Icon name="material-symbols:close-rounded" />
-        </button>
-      </div>
-      <div class="content">
-        <div class="create1">
-          <h6 class="text-center">
-            Start building your business presence online
-          </h6>
-          <p class="text-center">
-            Follow and fill the following form to complete you Bizworld business
-            page.
-          </p>
-          <div class="field">
-            <label>Business name</label>
-            <input type="text" class="form-item" />
-          </div>
-          <div class="field">
-            <label>Business category</label>
-            <input type="text" class="form-item" />
-            <div class="supp-text">
-              You can change or add more categories later.
-            </div>
-          </div>
-          <p class="text-center">
-            By continuing you’re agreeing to these
-            <a href="">Terms of Service</a> and <a href="">Privacy Policy</a>.
-          </p>
-          <button class="primary button">Continue</button>
-        </div>
-        <div class="create2">
-          <h6 class="text-center">
-            Do you want to add a location where customers can visit, like a
-            store or office?
-          </h6>
-          <p>
-            This location will appear on your business profile on BizWorld and
-            will be used in deciding searches filtered with distance. You can
-            switch it off on your profile later perharps your business is going
-            remote.
-          </p>
-          <div class="field">
-            <label>
-              <input type="radio" class="form-item" />
-              Yes
-            </label>
-            <label>
-              <input type="radio" class="form-item" />
-              No
-            </label>
-          </div>
-          <div class="flexbox justify-end">
-            <button class="primary button">Next</button>
-          </div>
-        </div>
-        <div class="create3">
-          <h6>What is the address?</h6>
-          <div class="field">
-            <label>Country</label>
-            <Dropdown class="select search">
-              <div class="drop menu">
-                <div class="item">Nigeria</div>
-              </div>
-            </Dropdown>
-          </div>
-          <div class="field">
-            <label>State</label>
-            <Dropdown
-              :options="{ fluidMinWidth: true }"
-              class="multiple search selection"
-            >
-              <div class="drop menu">
-                <div class="item">Ogun</div>
-                <div class="item">Osun</div>
-              </div>
-            </Dropdown>
-          </div>
-          <div class="field">
-            <label>City</label>
-            <input type="text" class="form-item" />
-          </div>
-          <div class="field">
-            <label>Local government area</label>
-            <input type="text" class="form-item" />
-          </div>
-          <div class="field">
-            <label>Street address</label>
-            <input type="text" class="form-item" />
-          </div>
-          <div class="field">
-            <label>Postal code</label>
-            <input type="number" class="form-item" />
-          </div>
-          <div class="flexbox justify-end">
-            <button class="button">Next</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </Modal>
   <Lightbox id="lightbox1" class="dark-mode" />
+  <CreateBusiness />
 </template>

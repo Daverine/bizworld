@@ -40,7 +40,7 @@ interface Tmp {
 }
 
 export default {
-  mounted(el: HTMLElement, binding: DirectiveBinding) {
+  mounted(el: HTMLElement, binding: DirectiveBinding<Settings>) {
     const settings: Settings = {
       namespace: 'scrollPin',
       className: 'sticky',

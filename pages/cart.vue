@@ -47,7 +47,11 @@ const allChecked = computed({
               <td>
                 <div class="flexbox guttered">
                   <div class="flex-none">
-                    <img class="image thumbnail" :src="item.media" />
+                    <NuxtImg
+                      preset="thumbnail"
+                      class="image thumbnail"
+                      :src="item.media"
+                    />
                   </div>
                   <div class="flexible">
                     <div class="heading truncate" style="--line-clamp: 2">
@@ -208,7 +212,10 @@ const allChecked = computed({
           style="padding: 0.5rem 0rem"
         >
           <div class="flexbox flex-column">
-            <div class="flat as-text mute-interaction button open-modal" data-target="checkout-details">
+            <div
+              class="flat as-text mute-interaction button open-modal"
+              data-target="checkout-details"
+            >
               <Icon name="material-symbols:keyboard-arrow-down-rounded" />
               Checkout details
             </div>

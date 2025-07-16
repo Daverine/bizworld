@@ -5,7 +5,12 @@ defineProps(['details']);
   <div class="feed-card card">
     <div class="fcd-head">
       <div class="flex-none" style="position: relative">
-        <img class="fcd-logo" :src="details.bizDetails.logo" />
+        <NuxtImg
+          preset="logo"
+          class="fcd-logo"
+          :alt="`Logo for ${details.bizDetails.name}`"
+          :src="details.bizDetails.logo"
+        />
         <svg
           v-if="details.bizDetails.verified"
           style="position: absolute; bottom: 0px; right: 0px"
@@ -67,11 +72,13 @@ defineProps(['details']);
       </Dropdown>
     </div>
     <div v-if="details.media" class="fcd-media">
-      <img
+      <NuxtImg
         v-for="media in details.media"
+        format="webp"
+        sizes="600px"
+        densities="1x"
         class="image open-lightbox"
-        
-        :src="media.url"
+        :src="details.media[0].url"
         alt=""
       />
     </div>

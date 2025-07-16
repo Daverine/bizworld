@@ -20,7 +20,9 @@ const userStore = useUserStore();
           <Icon name="material-symbols:menu-rounded" />
         </div>
         <div class="items md-and-down-hidden">
-          <div class="item">Have a shop online</div>
+          <div class="item open-modal" data-target="create-biz">
+            Have a shop online
+          </div>
           <Dropdown class="item">
             Support
             <Icon
@@ -49,7 +51,8 @@ const userStore = useUserStore();
               data-tooltip="Your profile"
               class="xhover browse as-icon item"
             >
-              <img
+              <NuxtImg
+                preset="logo"
                 :src="userStore.userData.profileImg"
                 alt="profile"
                 class="fully-rounded logo"
@@ -97,7 +100,10 @@ const userStore = useUserStore();
     </div>
     <form class="hm-searchbox" @submit.prevent="searchStore.triggerSearch()">
       <div style="margin-bottom: 16px">
-        <img
+        <NuxtImg
+          format="webp"
+          sizes="900px"
+          densities="1x"
           src="/images/logo_full.png"
           alt="site logo"
           class="site-logo fluid image"
@@ -113,6 +119,7 @@ const userStore = useUserStore();
           <input
             v-model="searchStore.searchBox"
             type="search"
+            autocomplete="off"
             id="searchinput"
             ref="inputbox"
             placeholder="Your search here."
@@ -131,7 +138,9 @@ const userStore = useUserStore();
         </label>
         <div style="margin-top: 0.5rem">
           Search in: <span class="bold">Nigeria</span>.
-          <a href="#">Change Location</a>
+          <div class="compact small icon button">
+            <Icon name="material-symbols:more-outline-rounded" />
+          </div>
         </div>
         <div
           class="flexbox flexible-items lg-guttered"
@@ -200,7 +209,10 @@ const userStore = useUserStore();
     <section class="sec-block">
       <div class="container grid 1-cols md-2-cols">
         <div class="col">
-          <img
+          <NuxtImg
+            format="webp"
+            sizes="800px"
+            densities="1x"
             src="/images/explore.jpg"
             alt="picture depicting explore"
             class="image sm-rounded"
@@ -246,7 +258,10 @@ const userStore = useUserStore();
     <section class="sec-block">
       <div class="container grid 1-cols md-2-cols" style="direction: rtl">
         <div class="col">
-          <img
+          <NuxtImg
+            format="webp"
+            sizes="800px"
+            densities="1x"
             src="/images/qr.jpg"
             alt="picture depicting qr"
             class="image sm-rounded"
@@ -301,7 +316,11 @@ const userStore = useUserStore();
     >
       <div class="col">
         <div class="heading">
-          <img src="/images/logo.png" style="max-height: 1.25em" />
+          <NuxtImg
+            preset="logo"
+            src="/images/logo.png"
+            style="max-height: 1.25em"
+          />
         </div>
         <div class="vertical text menu">
           <div class="item open-modal" data-target="search-modal">

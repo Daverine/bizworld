@@ -368,8 +368,9 @@ function getItemForCart() {
               :value="option.label"
               v-model="tmp.spec[0]"
             />
-            <img
+            <NuxtImg
               v-if="option.media"
+              preset="logo"
               :src="option.media.thumbnail"
               class="thumbnail"
             />
@@ -399,8 +400,9 @@ function getItemForCart() {
                 :value="subOption.label"
                 v-model="tmp.spec[1]"
               />
-              <img
+              <NuxtImg
                 v-if="subOption.media"
+                preset="logo"
                 :src="subOption.media.thumbnail"
                 class="thumbnail"
               />
@@ -538,17 +540,24 @@ function getItemForCart() {
       >
         <Carousel :options="{ continuous: false }">
           <div v-for="slide in tmp.media" class="cs-slide">
-            <img
-              v-if="slide.type === 'pic'"
+            <NuxtImg
+              format="webp"
+              sizes="960px"
+              densities="1x"
+              class="image"
               :src="slide.url"
               :data-lightbox="slide.url"
               data-target="lightbox1"
-              class="image"
             />
           </div>
           <template v-if="!isSmallScreen" #trackers>
             <div v-for="slide in tmp.media" class="thumbnail cs-tracker">
-              <img :src="slide.thumbnail" />
+              <NuxtImg
+                sizes="150px"
+                format="webp"
+                densities="1x"
+                :src="slide.thumbnail"
+              />
             </div>
           </template>
         </Carousel>
@@ -643,7 +652,11 @@ function getItemForCart() {
           <div class="collapsible">
             <div class="a-block">
               <div class="lead" style="position: relative; align-self: center">
-                <img :src="details.bizData.logo" class="loose avatar image" />
+                <NuxtImg
+                  preset="logo"
+                  :src="details.bizData.logo"
+                  class="loose avatar image"
+                />
                 <SvgIcon
                   name="verified_sp"
                   v-tooltip.unblocking
@@ -783,9 +796,10 @@ function getItemForCart() {
                 >
                   <header class="flexbox flex-separate align-center guttered">
                     <div class="circular small avatar image">
-                      <img
-                        src="../../assets/Images/profilepic.jpg"
-                        alt="generic profile picture"
+                      <NuxtImg
+                        preset="logo"
+                        src="/Images/profilepic.jpg"
+                        alt="profile picture"
                       />
                     </div>
                     <div class="content flexible">
@@ -856,7 +870,7 @@ function getItemForCart() {
 
         <useTemplate />
         <div
-          class="flexbox guttered sticky surface-bg pin-bottom-blend"
+          class="flexbox guttered sticky surface-bg pin-bottom-blend z-level-1"
           style="bottom: 0px; padding: 0.5rem 0rem; margin-top: 0.5rem"
         >
           <button

@@ -7,7 +7,33 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@pinia/nuxt',
     '@nuxt/icon',
+    '@nuxt/image',
   ],
+  image: {
+    screens: {
+      sm: 448,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536,
+    },
+    presets: {
+      logo: {
+        modifiers: {
+          format: 'webp',
+          height: 128,
+          densities: '1x',
+        },
+      },
+      thumbnail: {
+        modifiers: {
+          format: 'webp',
+          width: 250,
+          densities: '1x',
+        }
+      }
+    },
+  },
   app: {
     head: {
       link: [

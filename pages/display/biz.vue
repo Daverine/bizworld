@@ -151,7 +151,7 @@ onUpdated(() => {
                 <td>
                   <table class="table compact clear 0-margined">
                     <tbody>
-                      <tr v-for="(hour, i) in details.hours" :key="i" :class="{ 'active': new Date().getDay() === i }">
+                      <tr v-for="(hour, i) in details.hours" :class="{ 'active': new Date().getDay() === i }">
                         <td>{{ whatDay(i) }}</td>
                         <td>{{ hour[0] === -1 ? 'Closed' : `${to12hrsTime(hour[0])} -
                           ${to12hrsTime(hour[1])}`

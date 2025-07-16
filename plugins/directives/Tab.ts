@@ -5,11 +5,10 @@ export default {
     function tabClick(e: Event | 'on' | undefined) {
       const tabs = [
           ...el.querySelectorAll(':scope [data-tab]'),
-        ] as HTMLElement[],
-        pages = [...document.querySelectorAll('.tab-page')].filter((el) =>
-          tabs
-            .map((tab) => tab.getAttribute('data-tab'))
-            .includes(el.getAttribute('data-tab'))
+        ] as HTMLElement[];
+      const tabsIds = tabs.map((el) => el.getAttribute('data-tab'));
+      const pages = [...document.querySelectorAll('.tab-page')].filter((el) =>
+          tabsIds.includes(el.getAttribute('data-tab'))
         ) as HTMLElement[];
 
       let currTab = tabs.find((el) =>
@@ -31,7 +30,7 @@ export default {
               currTab.getAttribute('data-tab') === el.getAttribute('data-tab')
           );
 
-          if (currPages.length) {
+          if (currPages[0]) {
             currPages.forEach((el) => el.classList.add('active'));
             pages
               .filter((el) => !currPages.includes(el))

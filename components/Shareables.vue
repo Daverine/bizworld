@@ -91,7 +91,8 @@ const searchStore = useSearchStore();
   </Dropdown>
   <div class="drop menu" v-else-if="name === 'profile_menu'">
     <div class="header centered xhover item">
-      <img
+      <NuxtImg
+        preset="logo"
         :src="userStore.userData.profileImg"
         class="free-img circular image"
       />{{ `${userStore.userData.firstName} ${userStore.userData.lastName}` }}
@@ -113,79 +114,105 @@ const searchStore = useSearchStore();
         <router-link
           to="/home"
           exact-active-class="active"
-          class="item exit-sidepanel"
+          class="item exit-sidepanel ac-viewbox-ref"
         >
-          <SvgIcon name="home" class="lead nview" />
-          <SvgIcon name="home_filled" class="lead aview" />
+          <i class="lead icon ac-viewbox">
+            <Icon name="material-symbols:home-outline-rounded" />
+            <Icon name="material-symbols:home-rounded" />
+          </i>
           Home
         </router-link>
         <router-link
           to="/messaging"
           exact-active-class="active"
-          class="item exit-sidepanel"
+          class="item exit-sidepanel ac-viewbox-ref"
         >
-          <SvgIcon name="chat" class="lead nview" />
-          <SvgIcon name="chat_filled" class="lead aview" />
+          <i class="lead icon ac-viewbox">
+            <Icon name="material-symbols:chat-outline-rounded" />
+            <Icon name="material-symbols:chat-rounded" />
+          </i>
           Messaging
         </router-link>
         <router-link
           to="/myshops"
           exact-active-class="active"
-          class="item exit-sidepanel"
+          class="item exit-sidepanel ac-viewbox-ref"
         >
-          <SvgIcon name="store" class="lead nview" />
-          <SvgIcon name="store_filled" class="lead aview" />
+          <i class="lead icon ac-viewbox">
+            <Icon name="material-symbols:store-outline-rounded" />
+            <Icon name="material-symbols:store-rounded" />
+          </i>
           My Shops
         </router-link>
-        <div v-collapser class="item xactive" :class="{ active: $route.path.includes('/account') }">
-          <SvgIcon name="person" class="lead nview" />
-          <SvgIcon name="person_filled" class="lead aview" />
+        <div
+          v-collapser
+          class="item xactive ac-viewbox-ref"
+          :class="{ active: $route.path.includes('/account') }"
+        >
+          <i class="lead icon ac-viewbox">
+            <Icon name="material-symbols:person-outline-rounded" />
+            <Icon name="material-symbols:person-rounded" />
+          </i>
           Account
-          <SvgIcon name="expand_more" class="trailing aview" />
-          <SvgIcon name="chevron_left" class="trailing nview" />
+          <i class="trailing icon ac-viewbox">
+            <Icon name="material-symbols:chevron-left-rounded" />
+            <Icon name="material-symbols:keyboard-arrow-down-rounded" />
+          </i>
         </div>
         <div class="collapsible sub items">
           <rc-shareables name="account" />
         </div>
-        <div v-collapser class="item xactive">
-          <SvgIcon name="contact_support" class="lead nview" />
-          <SvgIcon name="contact_support_filled" class="lead aview" />
+        <div v-collapser class="item xactive ac-viewbox-ref">
+          <i class="lead icon ac-viewbox">
+            <Icon name="material-symbols:contact-support-outline-rounded" />
+            <Icon name="material-symbols:contact-support-rounded" />
+          </i>
           Support
-          <SvgIcon name="expand_more" class="trailing aview" />
-          <SvgIcon name="chevron_left" class="trailing nview" />
+          <i class="trailing icon ac-viewbox">
+            <Icon name="material-symbols:chevron-left-rounded" />
+            <Icon name="material-symbols:keyboard-arrow-down-rounded" />
+          </i>
         </div>
         <div class="collapsible sub items">
           <rc-shareables name="supports" />
         </div>
         <div class="item" @click="userStore.logout()">
-          <SvgIcon name="logout" class="lead" /> Log out
+          <Icon name="material-symbols:logout-rounded" class="lead" /> Log out
         </div>
         <div class="transparent compact divider"></div>
         <div class="xhover item 0-padding">
-          <button class="fluid button open-modal" data-target="create-biz">Have a shop online</button>
+          <button
+            class="fluid button exit-modal open-modal"
+            data-target="create-biz"
+          >
+            Have a shop online
+          </button>
         </div>
       </template>
       <template v-else>
         <div v-collapser class="item xactive ac-viewbox-ref">
-          <i class="lead ac-viewbox icon">
-            <SvgIcon name="contact_support" />
-            <SvgIcon name="contact_support_filled" />
+          <i class="lead icon ac-viewbox">
+            <Icon name="material-symbols:contact-support-outline-rounded" />
+            <Icon name="material-symbols:contact-support-rounded" />
           </i>
           Support
-          <i class="trailing ac-viewbox icon">
-            <SvgIcon name="chevron_left" />
-            <SvgIcon name="expand_more" />
+          <i class="trailing icon ac-viewbox">
+            <Icon name="material-symbols:chevron-left-rounded" />
+            <Icon name="material-symbols:keyboard-arrow-down-rounded" />
           </i>
         </div>
         <div class="collapsible sub items">
           <rc-shareables name="supports" />
         </div>
-        <div class="item">
-          <SvgIcon name="add_business" class="lead" />
+        <div class="item open-modal" data-target="create-biz">
+          <Icon
+            name="material-symbols:add-business-outline-rounded"
+            class="lead"
+          />
           Have a shop online
         </div>
         <div class="item open-modal exit-sidepanel" data-target="login-modal">
-          <SvgIcon name="login" class="lead" />
+          <Icon name="material-symbols:login-rounded" class="lead" />
           Log in
         </div>
         <div class="transparent compact divider"></div>
@@ -211,13 +238,14 @@ const searchStore = useSearchStore();
       data-tooltip="Menu"
       data-target="msidepanel"
     >
-      <SvgIcon name="menu" />
+      <Icon name="material-symbols:menu-rounded" />
     </div>
     <router-link
       :to="userStore.auth ? '/home' : '/'"
       class="xhover item as-icon"
     >
-      <img
+      <NuxtImg
+        preset="logo"
         src="/images/logo_sqr.png"
         alt="site logo"
         class="logo-lg site-logo"
@@ -231,10 +259,11 @@ const searchStore = useSearchStore();
         class="input container-text transparent"
         style="background-color: var(--surface-v4) !important"
       >
-        <SvgIcon name="search" class="xhover" />
+        <Icon name="material-symbols:search-rounded" class="xhover" />
         <input
           v-model="searchStore.searchBox"
           type="search"
+          autocomplete="off"
           placeholder="Your search here."
           class="subject"
         />
@@ -245,7 +274,7 @@ const searchStore = useSearchStore();
           class="icon open-modal"
           data-target="scanqr-modal"
         >
-          <SvgIcon name="qr_code_scanner" />
+          <Icon name="material-symbols:qr-code-scanner-rounded" />
         </button>
         <button
           type="button"
@@ -254,7 +283,7 @@ const searchStore = useSearchStore();
           class="icon open-modal"
           data-target=""
         >
-          <SvgIcon name="location_on" />
+          <Icon name="material-symbols:location-on-outline-rounded" />
         </button>
       </label>
     </form>
@@ -265,24 +294,44 @@ const searchStore = useSearchStore();
         class="open-modal as-icon item md-and-up-hidden sm-and-down-hidden"
         data-target="search-modal"
       >
-        <SvgIcon name="search" />
+        <Icon name="material-symbols:search-rounded" />
       </div>
       <rc-shareables name="do_more_item" />
       <template v-if="userStore.auth">
-        <div
-          class="as-icon item"
+        <Dropdown
+          :options="{ directionPriority: { x: 'center', y: 'bottom' } }"
+          class="as-icon item ac-viewbox-ref"
           v-tooltip.unblocking
           data-tooltip="Notifications"
         >
-          <SvgIcon name="notifications" />
-        </div>
+          <i class="icon ac-viewbox">
+            <Icon name="material-symbols:notifications-outline-rounded" />
+            <Icon name="material-symbols:notifications-rounded" />
+          </i>
+          <div
+            class="pointing drop menu"
+            style="width: 300px; height: calc(100vh - 84px); max-height: 600px;"
+          >
+            <div class="flexbox flex-column padded" style="height: 100%;">
+              <div class="flexible flexbox flex-column align-center justify-center guttered">
+                <Icon name="material-symbols-light:notifications-off-outline-rounded" style="font-size: 6rem; color: var(--on-surface-v2);" />
+                <span class="text">You have no new notifications.</span>
+              </div>
+              <div class="transparent compact divider"></div>
+              <div class="item">
+                <button class="fluid button">View all</button>
+              </div>
+            </div>
+          </div>
+        </Dropdown>
         <Dropdown
           :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
           v-tooltip.unblocking
           data-tooltip="Your profile"
           class="xhover as-icon item"
         >
-          <img
+          <NuxtImg
+            preset="logo"
             :src="userStore.userData.profileImg"
             alt="profile"
             class="fully-rounded logo"
@@ -355,7 +404,7 @@ const searchStore = useSearchStore();
           </h6>
           <div class="ads">
             <div class="text-center ad">
-              <img src="/images/ads.jpg" alt="ad" class="image" />
+              <NuxtImg format="webp" src="/images/ads.jpg" alt="ad" class="image" />
               <div>
                 Fix your laptops and desktops (Hardware and Software).
                 <button class="primary button">contact us</button>

@@ -11,7 +11,9 @@ const isReady = computed(() => data.details && avail.value);
       class="dm-display"
       style="position: relative; padding-top: calc(100% / 6 * 2)"
     >
-      <img
+      <NuxtImg
+        format="webp"
+        sizes="1280px"
         class="image open-lightbox"
         data-target="lightbox1"
         :data-lightbox="data.details.coverPic"
@@ -170,7 +172,8 @@ const isReady = computed(() => data.details && avail.value);
           class="dm-logo flex-none"
           style="position: relative; width: max-content; line-height: 0"
         >
-          <img
+          <NuxtImg
+            preset="logo"
             class="logo image"
             style="width: 5rem; height: 5rem; object-fit: contain"
             :src="data.details.logo"

@@ -22,6 +22,33 @@ interface Settings {
   };
 }
 
+interface reactiveBrainBox {
+  dropdownReady: boolean;
+  selectionContent: (MultipleSelectContent | string)[];
+  selectionValue: {
+    [key: string]: string;
+  };
+  activateKeyboard: boolean;
+  allItemSelected: boolean;
+  allItemFiltered: boolean;
+  showDropdownTimeout?: ReturnType<typeof setTimeout>;
+  hideDropdownTimeout?: ReturnType<typeof setTimeout>;
+  hidingDropdown: boolean;
+  // event data to be used for a bb.page dropdown coordinates.
+  evt?: MouseEvent;
+  independentMenu: boolean;
+  isSelect: boolean;
+  view?: 'vertical' | 'horizontal';
+  openOnMouseover: boolean;
+  findToggler: boolean;
+  page: boolean;
+  browseDm: string | false;
+  selectable?: boolean;
+  multipleSelect?: boolean;
+  searchable?: boolean;
+  delay: number;
+}
+
 // get dropdown element and necessary dropdown properties
 const dropElem = useTemplateRef('dropdown');
 const props = defineProps<{
@@ -53,32 +80,7 @@ const settings: Settings = {
   ...(props.options || {}),
 };
 // create a workshop space variable
-const tmp = reactive<{
-  dropdownReady: boolean;
-  selectionContent: (MultipleSelectContent | string)[];
-  selectionValue: {
-    [key: string]: string;
-  };
-  activateKeyboard: boolean;
-  allItemSelected: boolean;
-  allItemFiltered: boolean;
-  showDropdownTimeout?: ReturnType<typeof setTimeout>;
-  hideDropdownTimeout?: ReturnType<typeof setTimeout>;
-  hidingDropdown: boolean;
-  // event data to be used for a tmp.page dropdown coordinates.
-  evt?: MouseEvent;
-  independentMenu: boolean;
-  isSelect: boolean;
-  view?: 'vertical' | 'horizontal';
-  openOnMouseover: boolean;
-  findToggler: boolean;
-  page: boolean;
-  browseDm: string | false;
-  selectable?: boolean;
-  multipleSelect?: boolean;
-  searchable?: boolean;
-  delay: number;
-}>({
+const bb = reactive<reactiveBrainBox>({
   dropdownReady: false,
   selectionContent: [],
   selectionValue: {},
@@ -114,63 +116,63 @@ let selectableContentBox: HTMLElement,
 let ddFamily: Element[] = [];
 
 onMounted(async () => {
-  tmp.view =
+  bb.view =
     settings.view === 'unset'
       ? dropElem.value!.classList.contains('sub')
         ? 'horizontal'
         : 'vertical'
       : settings.view;
-  tmp.openOnMouseover =
+  bb.openOnMouseover =
     (dropElem.value!.hasAttribute('data-hover') &&
       dropElem.value!.getAttribute('data-hover') !== 'false') ||
     (dropElem.value!.classList.contains('sub') && !settings.openOnMouseover);
-  tmp.findToggler =
+  bb.findToggler =
     settings.findToggler || dropElem.value!.hasAttribute('data-find-toggler');
-  tmp.page =
+  bb.page =
     Boolean(settings.page) &&
     !dropElem.value!.classList.contains('sub') &&
-    !tmp.openOnMouseover;
-  tmp.browseDm = dropElem.value!.getAttribute('data-browse-dm') ?? false; // replacement for settings.browser and settings.menuid
-  tmp.selectable =
+    !bb.openOnMouseover;
+  bb.browseDm = dropElem.value!.getAttribute('data-browse-dm') ?? false; // replacement for settings.browser and settings.menuid
+  bb.selectable =
     dropElem.value!.classList.contains('select') ||
     dropElem.value!.classList.contains('selection');
-  tmp.multipleSelect =
-    tmp.selectable && dropElem.value!.classList.contains('multiple');
-  tmp.searchable =
-    tmp.selectable && dropElem.value!.classList.contains('search');
-  tmp.delay =
+  bb.multipleSelect =
+    bb.selectable && dropElem.value!.classList.contains('multiple');
+  bb.searchable =
+    bb.selectable && dropElem.value!.classList.contains('search');
+  bb.delay =
     settings.delay === undefined
-      ? tmp.openOnMouseover
+      ? bb.openOnMouseover
         ? 300
         : 0
       : settings.delay;
-  tmp.isSelect = dropElem.value!.classList.contains('select');
+  bb.isSelect = dropElem.value!.classList.contains('select');
 
   // set up selectors for dropdown items
   selectors = {
     // select all element in dropMenu regardless of it statuses
     items:
-      ':scope > .item:not(.xhover):not(.disabled), :scope > .items > .item:not(.xhover):not(.disabled)',
+      ':scope > .item:not(.xhover, .disabled, [disabled]), :scope > .items > .item:not(.xhover, .disabled, [disabled])',
     // select all element in dropMenu regarding it statuses
-    items_of_indicating_dropdown: `:scope > .item:not(.xhover):not(.disabled)${
-      !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
-        ? ':not(.selected)'
+    items_of_indicating_dropdown: `:scope > .item:not(.xhover, .disabled, [disabled]${
+      !(bb.multipleSelect && dropElem.value!.classList.contains('indicating'))
+        ? ', .selected'
         : ''
-    }, :scope > .items > .item:not(.xhover):not(.disabled)${
-      !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
-        ? ':not(.selected)'
+    }), :scope > .items > .item:not(.xhover, .disabled, [disabled]${
+      !(bb.multipleSelect && dropElem.value!.classList.contains('indicating'))
+        ? ', .selected'
         : ''
-    }`,
+    })`,
     // select all element in dropMenu regarding it statuses
-    items_filtered: `:scope > .item:not(.xhover):not(.disabled):not(.filtered)${
-      !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
-        ? ':not(.selected)'
+    items_filtered: `:scope > .item:not(.xhover, .disabled, [disabled], .filtered${
+      !(bb.multipleSelect && dropElem.value!.classList.contains('indicating'))
+        ? ', .selected'
         : ''
-    }, :scope > .items > .item:not(.xhover):not(.disabled):not(.filtered)${
-      !(tmp.multipleSelect && dropElem.value!.classList.contains('indicating'))
-        ? ':not(.selected)'
+    }), :scope > .items > .item:not(.xhover, .disabled, [disabled], .filtered${
+      !(bb.multipleSelect && dropElem.value!.classList.contains('indicating'))
+        ? ', .selected'
         : ''
-    }`,
+    })`,
     // exiter
     dropdown_exiter: `.exit-dd`,
   };
@@ -178,8 +180,8 @@ onMounted(async () => {
   await nextTick();
 
   // get dropdown menu element,set-it-up and generate uniqueId
-  let ddm = tmp.browseDm
-    ? document.getElementById(tmp.browseDm)
+  let ddm = bb.browseDm
+    ? document.getElementById(bb.browseDm)
     : dropElem.value!.querySelector(':scope > .drop.menu');
   // check if dropdown Menu exist
   if (!ddm) {
@@ -191,17 +193,17 @@ onMounted(async () => {
   }
 
   dropMenu = ddm as HTMLElement;
-  tmp.dropdownReady = true;
+  bb.dropdownReady = true;
   uniqueId = utils.getUniqueId(settings.namespace);
-  dropMenu.setAttribute('data-view', tmp.view);
+  dropMenu.setAttribute('data-view', bb.view);
   dropMenu.setAttribute('data-ddid', uniqueId);
-  if (tmp.page) dropMenu.classList.add('fixed');
+  if (bb.page) dropMenu.classList.add('fixed');
   if (dropElem.value?.classList.contains('indicating'))
     dropMenu.classList.add('indicating');
 
   // configure dropdown to be selectable and searchable if that what it is.
 
-  if (tmp.selectable) {
+  if (bb.selectable) {
     // cache all concurrent elements for selectable dropdown
     selectableContentBox = dropElem.value!.querySelector(
       ':scope > .content'
@@ -211,7 +213,7 @@ onMounted(async () => {
     ) as HTMLElement;
 
     // configure search box and cache concurrent element for searchable dropdown
-    if (tmp.searchable) {
+    if (bb.searchable) {
       searchBox = dropElem.value!.querySelector(
         ':scope input.ssbox'
       ) as HTMLInputElement;
@@ -232,7 +234,7 @@ onMounted(async () => {
       }
 
       unwatch.allItemFiltered = watch(
-        () => tmp.allItemFiltered,
+        () => bb.allItemFiltered,
         (filtered) => {
           if (filtered) allFilteredMsgBox.classList.add('active');
           else allFilteredMsgBox.classList.remove('active');
@@ -249,11 +251,11 @@ onMounted(async () => {
       searchBox.addEventListener('input', () => {
         if (searchBox.value) {
           selectablePlaceholder.classList.add('filtered');
-          if (!tmp.multipleSelect)
+          if (!bb.multipleSelect)
             selectableContentBox.classList.add('filtered');
         } else {
           selectablePlaceholder.classList.remove('filtered');
-          if (!tmp.multipleSelect)
+          if (!bb.multipleSelect)
             selectableContentBox.classList.remove('filtered');
         }
 
@@ -262,14 +264,14 @@ onMounted(async () => {
           () => (searchBox.style.width = searchBoxSizer.clientWidth + 'px')
         );
         if (!showDropdown.value) {
-          tmp.activateKeyboard = true;
+          bb.activateKeyboard = true;
           showDropdown.value = true;
         }
       });
     }
 
-    if (tmp.multipleSelect) {
-      tmp.selectionContent = [];
+    if (bb.multipleSelect) {
+      bb.selectionContent = [];
       // click controls for multiple selectable dropdown
       document.addEventListener('click', ms_clickEvt);
       // keyboard controls for multiple selectable dropdown
@@ -287,7 +289,7 @@ onMounted(async () => {
       }
 
       unwatch.allItemSelected = watch(
-        () => tmp.allItemSelected,
+        () => bb.allItemSelected,
         (allSelected) => {
           if (allSelected) allSelectedMsgBox.classList.add('active');
           else allSelectedMsgBox.classList.remove('active');
@@ -297,11 +299,11 @@ onMounted(async () => {
 
     /* set select dropdown value for preselected value */
     let items = [...dropMenu.querySelectorAll(selectors.items)];
-    if (tmp.multipleSelect && items.some((el) => el.matches('.selected')))
+    if (bb.multipleSelect && items.some((el) => el.matches('.selected')))
       items
         .filter((el) => el.matches('.selected'))
         .forEach((el) => dd_setSelect(el));
-    else if (!tmp.multipleSelect && items.some((el) => el.matches('.active')))
+    else if (!bb.multipleSelect && items.some((el) => el.matches('.active')))
       dd_setSelect(items.find((el) => el.matches('.active')) as Element);
 
     // sychronize selectable dropdown value with it modelValue if it is two-way-binded from it parent
@@ -314,7 +316,7 @@ onMounted(async () => {
           ...dropMenu.querySelectorAll(selectors.items),
         ] as HTMLElement[];
 
-        if (tmp.multipleSelect) {
+        if (bb.multipleSelect) {
           if (!Array.isArray(newValue))
             emit('update:modelValue', compValue.value);
           else {
@@ -340,8 +342,8 @@ onMounted(async () => {
               item.classList.remove('selected');
               item.setAttribute('data-ddid', '');
             });
-            tmp.selectionValue = {};
-            tmp.selectionContent = [];
+            bb.selectionValue = {};
+            bb.selectionContent = [];
             selectableContentBox.classList.add('no-content');
 
             // select all items that exist in the modelItems
@@ -353,9 +355,9 @@ onMounted(async () => {
                   (item.textContent as string);
 
                 item.classList.add('selected');
-                tmp.selectionValue[ddid] = itemValue;
+                bb.selectionValue[ddid] = itemValue;
                 item.setAttribute('data-ddid', ddid);
-                tmp.selectionContent.push({
+                bb.selectionContent.push({
                   html: item.innerHTML,
                   index: ddid,
                 });
@@ -363,14 +365,14 @@ onMounted(async () => {
               selectableContentBox.classList.remove('no-content');
               // check if all items in the dropdown is selected.
               if (!items.some((el) => !el.matches('.selected')))
-                tmp.allItemSelected = true;
+                bb.allItemSelected = true;
             }
 
-            compValue.value = Object.values(tmp.selectionValue);
+            compValue.value = Object.values(bb.selectionValue);
           }
         } else {
           items.forEach((item) => item.classList.remove('active'));
-          tmp.selectionContent = [];
+          bb.selectionContent = [];
           compValue.value = undefined;
 
           let item = items.find(
@@ -380,7 +382,7 @@ onMounted(async () => {
 
           if (item) {
             item.classList.add('active');
-            tmp.selectionContent = [item.innerHTML];
+            bb.selectionContent = [item.innerHTML];
             compValue.value = newValue;
           }
         }
@@ -400,15 +402,15 @@ onMounted(async () => {
 
   // decide wether to teleport dropdown menu or not
   if (settings.independentMenu)
-    tmp.independentMenu =
+    bb.independentMenu =
       settings.independentMenu === true ||
       (!dropElem.value!.classList.contains('sub') &&
         !dropElem.value!.classList.contains('select')) ||
-      Boolean(tmp.browseDm);
-  if (tmp.independentMenu) document.body.append(dropMenu);
+      Boolean(bb.browseDm);
+  if (bb.independentMenu) document.body.append(dropMenu);
 
   // cache all dropdowns and dropdown menus that is dropdown family indirectly (ie. linked by id) in ddFamily variable
-  if (tmp.independentMenu)
+  if (bb.independentMenu)
     ddFamily.push(dropElem.value as HTMLElement, dropMenu);
   else ddFamily.push(dropElem.value as HTMLElement);
   checkerFill(dropMenu);
@@ -419,13 +421,13 @@ onMounted(async () => {
 
   // get all elements that opens dropdown
   let target =
-    tmp.findToggler &&
+    bb.findToggler &&
     dropElem.value!.querySelectorAll(':scope > .dd-toggler')[0]
       ? dropElem.value!.querySelectorAll(':scope > .dd-toggler')[0]
       : dropElem.value!;
 
   // configure hoverable dropdown to open on mouse-over and touchstart
-  if (tmp.openOnMouseover) {
+  if (bb.openOnMouseover) {
     target.addEventListener('mouseenter', dd_toggleHandler);
     target.addEventListener('touchstart', dd_toggleHandler);
   }
@@ -439,7 +441,7 @@ onMounted(async () => {
     else if (e.detail === 'close all ancestor dropdown') dd_closeWithAncestor();
     else if (e.detail === 'open') showDropdown.value = true;
     else if (e.detail === 'open with keyboard') {
-      tmp.activateKeyboard = true;
+      bb.activateKeyboard = true;
       showDropdown.value = true;
     } else if (e.detail.command === 'set hovered item' && e.detail.el) {
       [...dropMenu.querySelectorAll(selectors.items)].forEach((el) =>
@@ -488,7 +490,7 @@ watch(showDropdown, (show) => {
     // register dropdown as to when it will respond Escape key press
     utils.trackEscOn(uniqueId);
 
-    if (tmp.searchable) {
+    if (bb.searchable) {
       searchBox.focus();
       // what to do when searching in a dropdown box
       searchBox.addEventListener('input', dd_searchEvt);
@@ -506,7 +508,7 @@ watch(showDropdown, (show) => {
     dropMenu.classList.add('visible');
 
     // highlight (add .hover class to) the active item or the first item in the menu list if dropdown is opened with with keyboard keys or it is a searchable dropdown. (default action)
-    if (tmp.activateKeyboard) {
+    if (bb.activateKeyboard) {
       let itemToHover = activeItem ?? items[0];
 
       if (itemToHover) {
@@ -553,14 +555,14 @@ watch(showDropdown, (show) => {
       el.classList.remove('hovered')
     );
 
-    if (tmp.searchable) {
+    if (bb.searchable) {
       searchBox.removeEventListener('input', dd_searchEvt);
       searchBox.value = '';
       selectableContentBox.classList.remove('filtered');
       selectablePlaceholder.classList.remove('filtered');
     }
 
-    if (tmp.openOnMouseover)
+    if (bb.openOnMouseover)
       document.removeEventListener('mousemove', dd_toggleHandler);
 
     // safely get out of escape track
@@ -572,7 +574,7 @@ watch(showDropdown, (show) => {
 
 onBeforeUnmount(() => {
   // return dropMenu to it appropriate location.
-  if (tmp.independentMenu && !tmp.browseDm) dropElem.value!.append(dropMenu); // return drop menu to the drop down to get it removed also.
+  if (bb.independentMenu && !bb.browseDm) dropElem.value!.append(dropMenu); // return drop menu to the drop down to get it removed also.
 
   // stop all asynchronous watcher
   Object.keys(unwatch).forEach((el) => {
@@ -589,7 +591,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', dd_CalcPosition);
   window.removeEventListener('scroll', dd_CalcPosition, true);
   sizeStream?.disconnect();
-  if (tmp.openOnMouseover)
+  if (bb.openOnMouseover)
     document.removeEventListener('mousemove', dd_toggleHandler);
 
   // safely get out of escape track
@@ -668,7 +670,7 @@ function ms_keyEvt(e: KeyboardEvent) {
     } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       activeSItems.forEach((el) => el.classList.remove('active'));
       if (e.key === 'ArrowDown') {
-        tmp.activateKeyboard = true;
+        bb.activateKeyboard = true;
         showDropdown.value = true;
       }
     } else if (e.key === ' ' || e.key === 'Enter' /* || e.key === 'Tab' */)
@@ -676,7 +678,7 @@ function ms_keyEvt(e: KeyboardEvent) {
   }
   // delete the last chip in multiple dropdown if searchBox is focused-on and seachbox is empty and the backspace key is pressed
   else if (
-    tmp.searchable &&
+    bb.searchable &&
     searchBox.matches(':focus') &&
     !searchBox.value &&
     e.key == 'Backspace' &&
@@ -696,7 +698,7 @@ function dd_keyEvt(e: KeyboardEvent) {
     !showDropdown.value
   ) {
     e.preventDefault();
-    tmp.activateKeyboard = true;
+    bb.activateKeyboard = true;
     showDropdown.value = true;
   }
 }
@@ -712,40 +714,40 @@ function dd_toggleHandler(e: Event) {
   )
     return;
 
-  if (tmp.openOnMouseover) {
+  if (bb.openOnMouseover) {
     if (e.type === 'mouseenter') {
       document.addEventListener('mousemove', dd_toggleHandler);
-      clearTimeout(tmp.hideDropdownTimeout);
-      tmp.showDropdownTimeout = setTimeout(() => {
-        if (tmp.searchable) tmp.activateKeyboard = true;
+      clearTimeout(bb.hideDropdownTimeout);
+      bb.showDropdownTimeout = setTimeout(() => {
+        if (bb.searchable) bb.activateKeyboard = true;
         showDropdown.value = true;
-      }, tmp.delay / 2);
+      }, bb.delay / 2);
     } else if (e.type === 'mousemove') {
       if (ddFamily.some((el) => el.contains(target))) {
-        tmp.hidingDropdown = false;
-        clearTimeout(tmp.hideDropdownTimeout);
+        bb.hidingDropdown = false;
+        clearTimeout(bb.hideDropdownTimeout);
         return;
       }
-      // prevent tmp.hidingDropdown from triggering more than once.
-      if (tmp.hidingDropdown) return;
+      // prevent bb.hidingDropdown from triggering more than once.
+      if (bb.hidingDropdown) return;
 
-      tmp.hidingDropdown = true;
-      clearTimeout(tmp.showDropdownTimeout);
-      tmp.hideDropdownTimeout = setTimeout(() => {
-        tmp.hidingDropdown = false;
+      bb.hidingDropdown = true;
+      clearTimeout(bb.showDropdownTimeout);
+      bb.hideDropdownTimeout = setTimeout(() => {
+        bb.hidingDropdown = false;
         showDropdown.value = false;
-      }, tmp.delay);
+      }, bb.delay);
     } else if (e.type === 'touchstart') {
       // prevent event from interfering with dropMenu items actions.
       if (dropMenu.contains(target)) return;
 
       if (showDropdown.value) {
-        clearTimeout(tmp.showDropdownTimeout);
+        clearTimeout(bb.showDropdownTimeout);
         showDropdown.value = false;
       } else {
         document.addEventListener('mousemove', dd_toggleHandler);
-        clearTimeout(tmp.hideDropdownTimeout);
-        if (tmp.searchable) tmp.activateKeyboard = true;
+        clearTimeout(bb.hideDropdownTimeout);
+        if (bb.searchable) bb.activateKeyboard = true;
         showDropdown.value = true;
       }
     }
@@ -756,23 +758,23 @@ function dd_toggleHandler(e: Event) {
     // I don't know why i called e.preventDefault here.
     e.preventDefault();
     // save event data to be used for a setting.page type dropdown dropMenu coordinate when showing it.
-    if (tmp.page) tmp.evt = e as MouseEvent;
+    if (bb.page) bb.evt = e as MouseEvent;
 
     if (showDropdown.value) {
       if (
-        tmp.searchable &&
+        bb.searchable &&
         !dropElem.value!.querySelector(':scope .ddico')?.contains(target)
       ) {
         searchBox.focus();
         return;
       }
 
-      setTimeout(() => (showDropdown.value = false), tmp.delay);
+      setTimeout(() => (showDropdown.value = false), bb.delay);
     } else {
       setTimeout(() => {
-        if (tmp.searchable) tmp.activateKeyboard = true;
+        if (bb.searchable) bb.activateKeyboard = true;
         showDropdown.value = true;
-      }, tmp.delay);
+      }, bb.delay);
     }
   }
 }
@@ -814,24 +816,24 @@ function dd_searchEvt() {
       el.classList.remove('hovered')
     );
 
-    if (filter && !tmp.allItemFiltered) tmp.allItemFiltered = true;
-    else if (!filter && tmp.allItemFiltered) tmp.allItemFiltered = false;
+    if (filter && !bb.allItemFiltered) bb.allItemFiltered = true;
+    else if (!filter && bb.allItemFiltered) bb.allItemFiltered = false;
   } else if (filter && !dropElem.value!.matches('.indicating')) {
     [...dropMenu.querySelectorAll(selectors.items)].forEach((el) =>
       el.classList.remove('hovered')
     );
     items[0].classList.add('hovered');
-    tmp.allItemFiltered = false;
-  }
+    bb.allItemFiltered = false;
+  } else bb.allItemFiltered = false;
 
-  if (tmp.multipleSelect) {
+  if (bb.multipleSelect) {
     if (filter) {
       selectableContentBox.classList.remove('no-content');
       let sItems = [
         ...dropElem.value!.querySelectorAll(':scope > .content > .chip'),
       ];
       if (sItems[0]) sItems.forEach((el) => el.classList.remove('active'));
-    } else if (!tmp.selectionContent[0])
+    } else if (!bb.selectionContent[0])
       selectableContentBox.classList.add('no-content');
   }
 
@@ -856,9 +858,9 @@ function dd_clickOnDomEvt(e: MouseEvent) {
   else if (item) {
     if (item.matches('.dropdown')) return;
 
-    if (tmp.selectable) {
+    if (bb.selectable) {
       // deselecting items for multiple select dropdown that has the indicating class
-      if (tmp.multipleSelect && item.matches('.selected'))
+      if (bb.multipleSelect && item.matches('.selected'))
         dd_setDeselect(
           [
             ...dropElem.value!.querySelectorAll(':scope > .content > .chip'),
@@ -868,7 +870,7 @@ function dd_clickOnDomEvt(e: MouseEvent) {
           ) as Element
         );
       // select item if dropdown is selectable
-      else dd_setSelect(item, tmp.multipleSelect);
+      else dd_setSelect(item, bb.multipleSelect);
     } else if (
       /*
       close all dropdown including all sub dropdowns and parent dropdowns if dropdown is
@@ -972,7 +974,7 @@ function dd_KBControlEvt(e: KeyboardEvent) {
         if (scrollAmount !== undefined) overflowParent.scrollTop = scrollAmount;
         items.forEach((el) => el.classList.remove('hovered'));
         ci.classList.add('hovered');
-        if (tmp.selectable && !tmp.multipleSelect) dd_setSelect(ci, true);
+        if (bb.selectable && !bb.multipleSelect) dd_setSelect(ci, true);
       }
     }
 
@@ -1000,219 +1002,213 @@ function dd_escAndTabEvt(e: KeyboardEvent) {
 }
 
 function dd_CalcPosition() {
+  let rects = {
+    dd: dropElem.value!.getBoundingClientRect(),
+    dm: {
+      width: dropMenu.offsetWidth,
+      height: dropMenu.offsetHeight,
+    },
+    win: {
+      width: window.innerWidth - utils.winScrollbarSize().x,
+      height: window.innerHeight - utils.winScrollbarSize().y,
+    },
+    pad: {
+      x: 8,
+      y: 12,
+    }
+  };
   // position dropdown relative to window
-  if (tmp.page) {
-    let coords = {
-      left: tmp.evt!.clientX,
-      top: tmp.evt!.clientY,
-      right: 0,
-      bottom: 0,
+  if (bb.page) {
+    let spacing = {
+      left: bb.evt!.clientX - rects.pad.y,
+      top: bb.evt!.clientY - rects.pad.y,
+      right: rects.win.width - bb.evt!.clientX - rects.pad.x,
+      bottom: rects.win.height - bb.evt!.clientY - rects.pad.x,
     };
 
-    coords.right = document.documentElement.clientWidth - coords.left;
-    coords.bottom = document.documentElement.clientHeight - coords.top;
-    dropMenu.style.right = 'auto';
-    dropMenu.style.bottom = 'auto';
-
-    if (coords.right >= dropMenu.offsetWidth) {
-      dropMenu.style.left = `${coords.left}px`;
+    if (spacing.right >= Math.max(rects.dm.width, spacing.left)) {
+      dropMenu.style.left = `${Math.min(
+        spacing.left,
+        rects.win.width - rects.dm.width - rects.pad.x
+      )}px`;
       dropMenu.classList.add('rhs');
-    } else if (coords.left >= dropMenu.offsetWidth) {
-      dropMenu.style.left = `${coords.left - dropMenu.offsetWidth}px`;
-      dropMenu.classList.add('lhs');
-    } else if (
-      coords.right >= coords.left &&
-      coords.right + coords.left >= dropMenu.offsetWidth
-    ) {
-      dropMenu.classList.add('rhs');
-      dropMenu.style.left = `${
-        coords.left + coords.right - dropMenu.offsetWidth
-      }px`;
     } else {
+      dropMenu.style.left = `${Math.max(spacing.left - rects.dm.width, rects.pad.x)}px`;
       dropMenu.classList.add('lhs');
-      dropMenu.style.left = '0px';
-      if (coords.right + coords.left < dropMenu.offsetWidth)
-        dropMenu.style.maxWidth = `${coords.right + coords.left}px`;
     }
 
-    if (coords.bottom >= dropMenu.offsetHeight) {
-      dropMenu.style.top = `${coords.top}px`;
+    if (spacing.bottom >= Math.max(rects.dm.height, spacing.top)) {
+      dropMenu.style.top = `${Math.min(
+        spacing.top,
+        rects.win.height - rects.dm.height - rects.pad.y
+      )}px`;
       dropMenu.classList.add('downward');
-    } else if (coords.top >= dropMenu.offsetHeight) {
-      dropMenu.style.top = `${coords.top - dropMenu.offsetHeight}px`;
-      dropMenu.classList.add('upward');
-    } else if (
-      coords.bottom >= coords.top &&
-      coords.bottom + coords.top >= dropMenu.offsetHeight
-    ) {
-      dropMenu.classList.add('downward');
-      dropMenu.style.top = `${
-        document.documentElement.clientHeight - dropMenu.offsetHeight
-      }px`;
     } else {
+      dropMenu.style.top = `${Math.max(spacing.top - rects.dm.height, rects.pad.y)}px`;
       dropMenu.classList.add('upward');
-      dropMenu.style.top = '0px';
-      if (coords.bottom + coords.top < dropMenu.offsetHeight)
-        dropMenu.style.maxHeight = `${coords.bottom + coords.top}px`;
     }
   } else {
-    let rects = {
-      dd: dropElem.value!.getBoundingClientRect(),
-      dm: {
-        width: dropMenu.offsetWidth,
-        height: dropMenu.offsetHeight,
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-      },
-      window: {
-        width: window.innerWidth - utils.getScrollbarWidth(),
-        height: window.innerHeight,
-      },
-    };
-    let spacing;
+    if (bb.view === 'vertical') {
+      let spacing = {
+        top: rects.dd.top - rects.pad.y,
+        bottom: rects.win.height - rects.dd.top - rects.dd.height - rects.pad.y,
+      };
 
-    if (tmp.view === 'vertical') {
-      spacing = {
-        top: rects.dd.top,
-        bottom: rects.window.height - rects.dd.top - rects.dd.height,
-        left: rects.dd.left + rects.dd.width,
-        right: rects.window.width - rects.dd.left,
+      let dmY = {
+        top: rects.dd.top - rects.dm.height,
+        bottom: rects.dd.top + rects.dd.height,
       };
-      rects.dm = {
-        ...rects.dm,
-        ...{
-          left: rects.dd.left + rects.dd.width - rects.dm.width,
-          right: rects.dd.left,
-          top: rects.dd.top - rects.dm.height,
-          bottom: rects.dd.top + rects.dd.height,
-        },
-      };
+
+      if (settings.directionPriority.y === 'bottom') {
+        if (
+          spacing.bottom >= Math.max(rects.dm.height, spacing.top) ||
+          rects.dm.height > spacing.top
+        ) {
+          if (bb.independentMenu) dropMenu.style.top = `${dmY.bottom}px`;
+          if (!dropMenu.classList.contains('downward')) {
+            dropMenu.classList.add('downward');
+            dropMenu.classList.remove('upward');
+          }
+        } else {
+          if (bb.independentMenu) dropMenu.style.top = `${dmY.top}px`;
+          if (!dropMenu.classList.contains('upward')) {
+            dropMenu.classList.add('upward');
+            dropMenu.classList.remove('downward');
+          }
+        }
+      } else {
+        if (spacing.top >= rects.dm.height) {
+          if (bb.independentMenu) dropMenu.style.top = `${dmY.top}px`;
+          if (!dropMenu.classList.contains('upward')) {
+            dropMenu.classList.add('upward');
+            dropMenu.classList.remove('downward');
+          }
+        } else {
+          if (bb.independentMenu) dropMenu.style.top = `${dmY.bottom}px`;
+          if (!dropMenu.classList.contains('downward')) {
+            dropMenu.classList.add('downward');
+            dropMenu.classList.remove('upward');
+          }
+        }
+      }
+
+      let dmX = 0;
+
+      if (settings.directionPriority.x === 'right') {
+        dmX = rects.dd.left;
+        if (!dropMenu.classList.contains('rhs')) {
+          dropMenu.classList.add('rhs');
+          dropMenu.classList.remove('lhs');
+        }
+      } else if (settings.directionPriority.x === 'center') {
+        dmX = rects.dd.left + rects.dd.width / 2 - rects.dm.width / 2;
+      } else {
+        dmX = rects.dd.left + rects.dd.width - rects.dm.width;
+        if (!dropMenu.classList.contains('lhs')) {
+          dropMenu.classList.add('lhs');
+          dropMenu.classList.remove('rhs');
+        }
+      }
+
+      if (bb.independentMenu)
+        dropMenu.style.left = `${Math.min(
+          Math.max(rects.pad.x, dmX),
+          rects.win.width - rects.dm.width - rects.pad.x
+        )}px`;
     } else {
-      spacing = {
-        top: rects.dd.top + rects.dd.height,
-        bottom: rects.window.height - rects.dd.top,
+      let spacing = {
         left: rects.dd.left,
-        right: rects.window.width - rects.dd.left - rects.dd.width,
+        right: rects.win.width - rects.dd.left - rects.dd.width,
       };
-      rects.dm = {
+
+      let dmX = {
         ...rects.dm,
-        ...{
-          left: rects.dd.left - rects.dm.width,
-          right: rects.dd.left + rects.dd.width,
-          top: rects.dd.top + rects.dd.height - rects.dm.height,
-          bottom: rects.dd.top,
-        },
+        left: rects.dd.left - rects.dm.width,
+        right: rects.dd.left + rects.dd.width,
       };
-    }
 
-    if (settings.directionPriority.x === 'right') {
-      if (
-        spacing.right >= rects.dm.width ||
-        spacing.right >= spacing.left ||
-        rects.dm.width > spacing.left
-      ) {
-        if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.right}px`;
-        if (!dropMenu.classList.contains('rhs')) {
-          dropMenu.classList.add('rhs');
-          dropMenu.classList.remove('lhs');
+      if (settings.directionPriority.x === 'right') {
+        if (
+          spacing.right >= Math.max(rects.dm.width, spacing.left) ||
+          rects.dm.width > spacing.left
+        ) {
+          if (bb.independentMenu) dropMenu.style.left = `${dmX.right}px`;
+          if (!dropMenu.classList.contains('rhs')) {
+            dropMenu.classList.add('rhs');
+            dropMenu.classList.remove('lhs');
+          }
+        } else {
+          if (bb.independentMenu) dropMenu.style.left = `${dmX.left}px`;
+          if (!dropMenu.classList.contains('lhs')) {
+            dropMenu.classList.add('lhs');
+            dropMenu.classList.remove('rhs');
+          }
         }
       } else {
-        if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.left}px`;
-        if (!dropMenu.classList.contains('lhs')) {
-          dropMenu.classList.add('lhs');
-          dropMenu.classList.remove('rhs');
+        if (spacing.left >= rects.dm.width) {
+          if (bb.independentMenu) dropMenu.style.left = `${dmX.left}px`;
+          if (!dropMenu.classList.contains('lhs')) {
+            dropMenu.classList.add('lhs');
+            dropMenu.classList.remove('rhs');
+          }
+        } else {
+          if (bb.independentMenu) dropMenu.style.left = `${dmX.right}px`;
+          if (!dropMenu.classList.contains('rhs')) {
+            dropMenu.classList.add('rhs');
+            dropMenu.classList.remove('lhs');
+          }
         }
       }
-    } else if (
-      settings.directionPriority.x === 'center' &&
-      tmp.view === 'vertical'
-    ) {
-      dropMenu.style.left = `${Math.max(
-        Math.min(
-          Math.max(0, rects.dd.left + rects.dd.width / 2 - rects.dm.width / 2),
-          rects.window.width - rects.dm.width
-        ),
-        0
-      )}px`;
-    } else {
-      if (spacing.left >= rects.dm.width) {
-        if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.left}px`;
-        if (!dropMenu.classList.contains('lhs')) {
-          dropMenu.classList.add('lhs');
-          dropMenu.classList.remove('rhs');
-        }
-      } else {
-        if (tmp.independentMenu) dropMenu.style.left = `${rects.dm.right}px`;
-        if (!dropMenu.classList.contains('rhs')) {
-          dropMenu.classList.add('rhs');
-          dropMenu.classList.remove('lhs');
-        }
-      }
-    }
 
-    if (settings.directionPriority.y === 'bottom') {
-      if (
-        spacing.bottom >= rects.dm.height ||
-        spacing.bottom >= spacing.top ||
-        rects.dm.height > spacing.top
-      ) {
-        if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.bottom}px`;
+      let dmY = 0;
+
+      if (settings.directionPriority.y === 'bottom') {
+        dmY = rects.dd.top;
         if (!dropMenu.classList.contains('downward')) {
           dropMenu.classList.add('downward');
           dropMenu.classList.remove('upward');
         }
-      } else {
-        if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.top}px`;
+      } else if (settings.directionPriority.y === 'center')
+        dmY = rects.dd.top + rects.dd.height / 2 - rects.dm.height / 2;
+      else {
+        dmY = rects.dd.top + rects.dd.height - rects.dm.height;
         if (!dropMenu.classList.contains('upward')) {
           dropMenu.classList.add('upward');
           dropMenu.classList.remove('downward');
         }
       }
-    } else if (
-      settings.directionPriority.y === 'center' &&
-      tmp.view === 'horizontal'
-    ) {
-      dropMenu.style.top = `${Math.max(
-        Math.min(
-          Math.max(0, rects.dd.top + rects.dd.height / 2 - rects.dm.height / 2),
-          rects.window.height - rects.dm.height
-        ),
-        0
-      )}px`;
-    } else {
-      if (spacing.top >= rects.dm.height) {
-        if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.top}px`;
-        if (!dropMenu.classList.contains('upward')) {
-          dropMenu.classList.add('upward');
-          dropMenu.classList.remove('downward');
-        }
-      } else {
-        if (tmp.independentMenu) dropMenu.style.top = `${rects.dm.bottom}px`;
-        if (!dropMenu.classList.contains('downward')) {
-          dropMenu.classList.add('downward');
-          dropMenu.classList.remove('upward');
-        }
-      }
+
+      if (bb.independentMenu)
+        dropMenu.style.top = `${Math.min(
+          Math.max(rects.pad.y, dmY),
+          rects.win.height - rects.dm.height - rects.pad.y
+        )}px`;
     }
 
     // set arrow position variable
     utils.afterNextRepaint(() => {
       let arrowPos = 0;
       // set arrow position based on the dropdown view and direction
-      if (tmp.view === 'vertical') {
+      if (bb.view === 'vertical') {
         if (dropMenu.classList.contains('lhs'))
           arrowPos = rects.dm.width - rects.dd.width / 2;
         else if (dropMenu.classList.contains('rhs'))
           arrowPos = rects.dd.width / 2;
-        else arrowPos = rects.dd.left - rects.dm.left + rects.dd.width / 2;
+        else
+          arrowPos =
+            rects.dd.left +
+            rects.dd.width / 2 -
+            dropMenu.getBoundingClientRect().left;
       } else {
         if (dropMenu.classList.contains('upward'))
           arrowPos = rects.dm.height - rects.dd.height / 2;
         else if (dropMenu.classList.contains('downward'))
           arrowPos = rects.dd.height / 2;
-        else arrowPos = rects.dd.top - rects.dm.top + rects.dd.height / 2;
+        else
+          arrowPos =
+            rects.dd.top +
+            rects.dd.height / 2 -
+            dropMenu.getBoundingClientRect().top;
       }
 
       dropMenu.style.setProperty('--arrow-center', `${arrowPos}px`);
@@ -1237,46 +1233,46 @@ function dd_mouseMover(e: MouseEvent) {
     items
       .filter((el) => el !== item)
       .forEach((el) => el.classList.remove('hovered'));
-  } else if (tmp.openOnMouseover) showDropdown.value = false;
+  } else if (bb.openOnMouseover) showDropdown.value = false;
   else items.forEach((el) => el.classList.remove('hovered'));
 }
 
 // this function set an item as selected in a selectable dropdown
 // xClose means don't close dropdown after selection.
 function dd_setSelect(item: Element, xClose?: boolean) {
-  if (!item || !tmp.selectable) return;
+  if (!item || !bb.selectable) return;
 
   let items = [...dropMenu.querySelectorAll(selectors.items)];
 
-  if (tmp.multipleSelect) {
+  if (bb.multipleSelect) {
     let itemIndex = items.indexOf(item);
     let ddid = utils.getUniqueId('ddid');
     let itemValue = item.getAttribute('data-value') || item.textContent || '';
 
     item.classList.add('selected');
-    tmp.selectionValue[ddid] = itemValue;
-    compValue.value = Object.values(tmp.selectionValue);
+    bb.selectionValue[ddid] = itemValue;
+    compValue.value = Object.values(bb.selectionValue);
     item.setAttribute('data-ddid', ddid);
-    tmp.selectionContent.push({
+    bb.selectionContent.push({
       html: item.innerHTML,
       index: ddid,
     });
     selectableContentBox.classList.remove('no-content');
 
-    if (tmp.searchable && showDropdown.value) {
+    if (bb.searchable && showDropdown.value) {
       searchBox.value = '';
       utils.triggerEvent(searchBox, 'input');
       searchBox.focus();
     }
 
     if (!items.some((el) => !el.matches('.selected')))
-      tmp.allItemSelected = true;
+      bb.allItemSelected = true;
 
     if (!showDropdown.value || dropElem.value!.matches('.indicating')) return;
 
     item.classList.remove('hovered');
 
-    if (!tmp.searchable) {
+    if (!bb.searchable) {
       let nextHv =
         items.find((el, i) => i > itemIndex && !el.matches('.selected')) ??
         items
@@ -1300,12 +1296,12 @@ function dd_setSelect(item: Element, xClose?: boolean) {
       .filter((el) => el !== item)
       .forEach((el) => el.classList.remove('active'));
     compValue.value = item.getAttribute('data-value') || item.textContent || '';
-    tmp.selectionContent = [item.innerHTML];
+    bb.selectionContent = [item.innerHTML];
   }
 
   if (xClose) return;
 
-  if (tmp.searchable) {
+  if (bb.searchable) {
     searchBox.value = '';
     utils.triggerEvent(searchBox, 'input');
   }
@@ -1315,27 +1311,27 @@ function dd_setSelect(item: Element, xClose?: boolean) {
 
 // this function de-select an item in a selection dropdown.
 function dd_setDeselect(sItem: Element) {
-  if (!tmp.multipleSelect) return;
+  if (!bb.multipleSelect) return;
 
   let ddid = sItem.getAttribute('data-ddid');
-  if (!ddid || !tmp.selectionValue[ddid]) return;
+  if (!ddid || !bb.selectionValue[ddid]) return;
   let item = dropMenu.querySelector(`:scope [data-ddid="${ddid}"]`);
 
-  delete tmp.selectionValue[ddid];
-  compValue.value = Object.values(tmp.selectionValue);
+  delete bb.selectionValue[ddid];
+  compValue.value = Object.values(bb.selectionValue);
   if (!item) return;
   item.classList.remove('selected');
   item.setAttribute('data-ddid', '');
-  tmp.selectionContent = tmp.selectionContent.filter(
+  bb.selectionContent = bb.selectionContent.filter(
     (el) => (el as { index: string }).index !== ddid
   );
 
-  if (tmp.allItemSelected) tmp.allItemSelected = false;
-  if (!tmp.selectionContent[0])
+  if (bb.allItemSelected) bb.allItemSelected = false;
+  if (!bb.selectionContent[0])
     selectableContentBox.classList.add('no-content');
 
   if (showDropdown.value) {
-    if (tmp.searchable) {
+    if (bb.searchable) {
       searchBox.value = '';
       utils.triggerEvent(searchBox, 'input');
     }
@@ -1343,7 +1339,7 @@ function dd_setDeselect(sItem: Element) {
     dd_CalcPosition();
   }
 
-  if (tmp.searchable) searchBox.focus();
+  if (bb.searchable) searchBox.focus();
 }
 </script>
 
@@ -1353,13 +1349,13 @@ function dd_setDeselect(sItem: Element) {
     class="dropdown"
     :data-ddid="uniqueId"
     :class="{ active: showDropdown }"
-    :tabindex="tmp.selectable ? 0 : undefined"
+    :tabindex="bb.selectable ? 0 : undefined"
   >
     <slot></slot>
-    <template v-if="tmp.selectable">
-      <div v-if="tmp.multipleSelect" class="content no-content">
+    <template v-if="bb.selectable">
+      <div v-if="bb.multipleSelect" class="content no-content">
         <div
-          v-for="item in tmp.selectionContent  as MultipleSelectContent[]"
+          v-for="item in bb.selectionContent  as MultipleSelectContent[]"
           :key="item.index"
           :data-ddid="item.index"
           class="chip"
@@ -1367,25 +1363,25 @@ function dd_setDeselect(sItem: Element) {
           <span v-html="item.html"></span>
           <Icon name="material-symbols:close-rounded" class="close trailing" />
         </div>
-        <template v-if="tmp.searchable">
+        <template v-if="bb.searchable">
           <input class="ssbox" autocomplete="off" tabindex="0" />
           <span class="ddss"></span>
         </template>
         <div ref="sPlaceholder" class="placeholder">{{ placeholder }}</div>
       </div>
       <template v-else>
-        <template v-if="tmp.searchable">
+        <template v-if="bb.searchable">
           <input class="ssbox" autocomplete="off" tabindex="0" />
           <span class="ddss"></span>
         </template>
         <div
           ref="sContent"
-          v-html="tmp.selectionContent[0]"
+          v-html="bb.selectionContent[0]"
           class="content"
         ></div>
         <div class="placeholder">{{ placeholder }}</div>
       </template>
-      <button v-if="tmp.isSelect" ref="ddIcon" class="ddico icon">
+      <button v-if="bb.isSelect" ref="ddIcon" class="ddico icon">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           height="48"

@@ -255,7 +255,11 @@ onMounted(() => {
         <section>
           <div class="a-block">
             <div class="lead" style="position: relative; align-self: center">
-              <img :src="details.bizData.logo" class="loose avatar image" />
+              <NuxtImg
+                preset="logo"
+                :src="details.bizData.logo"
+                class="loose avatar image"
+              />
               <SvgIcon
                 name="verified_sp"
                 v-tooltip.unblocking
@@ -351,17 +355,22 @@ onMounted(() => {
         <!-- Media Section -->
         <Carousel>
           <div v-for="slide in details.media" class="cs-slide">
-            <img
-              v-if="slide.type === 'pic'"
+            <NuxtImg
+              format="webp"
+              sizes="960px"
+              densities="1x"
+              class="image"
               :src="slide.url"
               :data-lightbox="slide.url"
               data-target="lightbox1"
-              class="image"
             />
           </div>
           <template v-if="isSmallScreen" #trackers>
             <div v-for="slide in details.media" class="thumbnail cs-tracker">
-              <img :src="slide.thumbnail" />
+              <NuxtImg
+                preset="thumbnail"
+                :src="slide.thumbnail"
+              />
             </div>
           </template>
         </Carousel>
@@ -566,9 +575,10 @@ onMounted(() => {
                 >
                   <header class="flexbox flex-separate align-center guttered">
                     <div class="circular small avatar image">
-                      <img
-                        src="../../assets/Images/profilepic.jpg"
-                        alt="generic profile picture"
+                      <NuxtImg
+                        preset="logo"
+                        src="/Images/profilepic.jpg"
+                        alt="profile picture"
                       />
                     </div>
                     <div class="content flexible">
