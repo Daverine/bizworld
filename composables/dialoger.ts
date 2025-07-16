@@ -1,10 +1,9 @@
 // Usage: import { useDialoger } from 'components/composables/useDialoger.ts';
 // Usage: const { showDialog, teleporter } = useDialoger(dialoger, 'dialoger-id', options);
-import type { ShallowRef } from 'vue';
+import type { ShallowRef, WatchStopHandle } from 'vue';
 
 interface Settings {
   namespace?: string;
-  toBeConsidered?: string;
   toggler?: string;
   toExcuseToggler?: string;
   closeOnEsc?: boolean;
@@ -36,7 +35,6 @@ export function useDialoger(
   const teleporter = ref(false);
   const settings: Settings = {
     namespace: 'dialog',
-    toBeConsidered: '.dialog, .dg-controls',
     toggler: '.open-dialog',
     toExcuseToggler: '.ex-open-dialog',
     closeOnEsc: true,
@@ -58,10 +56,9 @@ export function useDialoger(
     openWithHash: false,
     scrollPosBeforeLock: { top: 0, left: 0 },
   };
-  const unwatch: { [key: string]: (() => void) | undefined } = {
-    openDialogFromRoute: undefined,
-    closeOnRouteChange: undefined,
-  };
+  const unwatch: {
+    [key: string]: WatchStopHandle;
+  } = {};
 
   function exitByClick(e: MouseEvent) {
     if (
@@ -130,6 +127,7 @@ export function useDialoger(
 
   watch(showDialog, (value) => {
     if (value) {
+      document.body.append(dialoger.value!);
       // teleporter.value = true;
       utils.afterNextRepaint(() => {
         if (settings.hashDialog) {
@@ -214,6 +212,7 @@ export function useDialoger(
     showDialog.value = false;
     document.removeEventListener('keydown', KBDControls);
     document.removeEventListener('click', toOpenDialog);
+    utils.checkEscStatus(bb.uniqueId!, true);
     utils.unlockWindowScroll(bb.uniqueId!);
   });
 

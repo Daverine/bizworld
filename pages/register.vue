@@ -21,7 +21,8 @@ const userStore = useUserStore();
           :to="userStore.auth ? '/home' : '/'"
           class="xhover item as-icon"
         >
-          <img
+          <NuxtImg
+            preset="logo"
             src="/images/logo_sqr.png"
             alt="site logo"
             class="logo-lg site-logo"

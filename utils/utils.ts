@@ -3,6 +3,7 @@ declare global {
     lui_EscTracker?: string[];
     lui_ScrollLockers?: string[];
     lui_uuid?: number;
+    lui_ScollbarSize?: number;
   }
 }
 
@@ -35,13 +36,28 @@ export const utils = {
       return true;
     }
   },
-  getScrollbarWidth(): number {
-    return window.innerWidth - document.documentElement.clientWidth;
+  getScrollbarSize() {
+    if (!window.lui_ScollbarSize) {
+      const el = document.createElement('div');
+      el.style.cssText =
+        'overflow: scroll; visibility: hidden; position: absolute;';
+      document.body.appendChild(el);
+      const scrollbarHeight = el.offsetHeight - el.clientHeight;
+      document.body.removeChild(el);
+      return scrollbarHeight;
+    }
+    return window.lui_ScollbarSize;
+  },
+  winScrollbarSize(): { x: number; y: number } {
+    return {
+      x: window.innerWidth - document.documentElement.clientWidth,
+      y: window.innerHeight - document.documentElement.clientHeight,
+    };
   },
   lockWindowScroll(lockerId: string): void {
     if (!window.lui_ScrollLockers) window.lui_ScrollLockers = [];
     if (!window.lui_ScrollLockers.length) {
-      let scrollBarWidth = `${this.getScrollbarWidth()}px`;
+      let scrollBarWidth = `${this.winScrollbarSize().x}px`;
       document.documentElement.classList.add('scroll-locked');
       document.documentElement.style.marginRight = scrollBarWidth;
       document.documentElement.style.overflow = 'hidden';

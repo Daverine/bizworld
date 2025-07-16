@@ -1,7 +1,6 @@
 <script setup>
 const searchStore = useSearchStore();
 const userStore = useUserStore();
-const sDetails = ref(false);
 
 function popupSubmitSearch(e) {
   e.currentTarget

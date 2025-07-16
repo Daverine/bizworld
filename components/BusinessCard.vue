@@ -8,7 +8,11 @@ const avail = useAvailability(props.details.hours);
   </div>
   <div class="itm-display">
     <div class="image">
-      <img :src="details.logo" :alt="`Business Logo for ${details.name}`" />
+      <NuxtImg
+        preset="logo"
+        :src="details.logo"
+        :alt="`Business Logo for ${details.name}`"
+      />
       <SvgIcon
         v-if="details.verified"
         name="verified_sp"
@@ -31,9 +35,7 @@ const avail = useAvailability(props.details.hours);
           name="material-symbols:location-on-outline-rounded"
           class="of-small r-spaced"
         />
-        {{
-          `${details.location.city}, ${details.location.state}`
-        }}
+        {{ `${details.location.city}, ${details.location.state}` }}
       </span>
     </div>
     <div class="semibold itm-gap">
@@ -82,9 +84,9 @@ const avail = useAvailability(props.details.hours);
                     avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
                   ][0]
                 } Tomorrow`
-              : `${
-                  details.hours[avail.nextOpenDay][0]
-                } on ${avail.whatDay(avail.nextOpenDay)}`
+              : `${details.hours[avail.nextOpenDay][0]} on ${avail.whatDay(
+                  avail.nextOpenDay
+                )}`
           }}
         </template>
         <template v-else>

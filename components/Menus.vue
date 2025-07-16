@@ -15,7 +15,8 @@ function toTop() {
             <Icon name="material-symbols:arrow-back-rounded" />
           </div>
           <NuxtLink to="/" class="xhover centered item exit-sidepanel">
-            <img
+            <NuxtImg
+              preset="logo"
               src="/images/logo.png"
               alt="site logo"
               class="logo-sm site-logo"

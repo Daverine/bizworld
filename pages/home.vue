@@ -33,7 +33,8 @@ onMounted(() => feedStore.getUpdate());
           <Icon name="material-symbols:menu-rounded" />
         </div>
         <div class="xhover item as-icon">
-          <img
+          <NuxtImg
+            preset="logo"
             src="/images/logo_sqr.png"
             alt="site logo"
             class="logo-lg site-logo"
@@ -68,7 +69,8 @@ onMounted(() => feedStore.getUpdate());
             data-tooltip="Your profile"
             class="xhover browse as-icon item"
           >
-            <img
+            <NuxtImg
+              preset="logo"
               :src="userStore.userData.profileImg"
               alt="profile"
               class="fully-rounded logo"
@@ -179,8 +181,7 @@ onMounted(() => feedStore.getUpdate());
           Update from page you're following (Feeds)
         </h6>
         <FeedCard
-          v-for="(feed, i) in feedStore.feeds"
-          :key="i"
+          v-for="feed in feedStore.feeds"
           :details="feed"
         />
         <div class="divider">

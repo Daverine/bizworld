@@ -4,7 +4,11 @@ const props = defineProps(['details']);
 <template>
   <NuxtLink :to="`/${details.type}/${details.id}`" class="page-prod item">
     <div class="prod-pic">
-      <img :src="details.media" alt="" />
+      <NuxtImg
+        preset="thumbnail"
+        :src="details.media"
+        alt=""
+      />
     </div>
     <div class="prod-content">
       <div class="prod-price">₦{{ details.price.toLocaleString() }}</div>

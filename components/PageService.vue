@@ -4,7 +4,11 @@ const props = defineProps(['details']);
 <template>
   <NuxtLink :to="`/${details.type}/${details.id}`" class="page-serv item">
     <div class="serv-pic">
-      <img :src="details.media" alt="" />
+      <NuxtImg
+        preset="thumbnail"
+        :src="details.media"
+        alt=""
+      />
     </div>
     <div class="serv-content">
       <div

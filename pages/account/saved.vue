@@ -8,7 +8,7 @@ onMounted(() => userStore.getSavedCards());
 <template>
 	<h6 class="text-center">Saved Cards</h6>
 
-	<ItemCard v-for="(result, i) in userStore.savedCards" :key="i" :details="result" :isSaved="true" />
+	<ItemCard v-for="result in userStore.savedCards" :details="result" :isSaved="true" />
 
 	<div class="divider"><button class="button">More results
 			<SvgIcon class="trailing" name="expand_more" />

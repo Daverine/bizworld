@@ -1,4 +1,41 @@
 <script lang="ts" setup>
+import * as z from 'zod/v4';
+
+const validateFormData = z.object({
+  create1: z.object({
+    bizName: z.string().min(1, 'Business name is required'),
+    bizCart: z.string().min(1, 'Business category is required'),
+  }),
+  create2: z.object({
+    physicalLocation: z.enum(['yes', 'no']),
+    country: z.string().min(1, 'Country is required'),
+    state: z.string().min(1, 'State is required'),
+    city: z.string().min(1, 'City is required'),
+    lga: z.string().optional(),
+    street: z.string().min(1, 'Street address is required'),
+    postal: z.string().optional(),
+  }),
+  create3: z.object({
+    map: z.string().url('Invalid map URL').optional(),
+  }),
+  create4: z.object({
+    tel: z.string().optional(),
+    email: z.email('Invalid email address').optional(),
+  }),
+  create5: z.object({
+    hours: z.array(
+      z.object({
+        day: z.string(),
+        avail: z.boolean(),
+        hours: z.array(z.string()).length(2),
+      })
+    ),
+  }),
+  create6: z.object({
+    desc: z.string().min(1, 'Business description is required'),
+  }),
+});
+
 const formData = ref({
   create1: {
     bizName: '',
@@ -6,8 +43,6 @@ const formData = ref({
   },
   create2: {
     physicalLocation: '',
-  },
-  create3: {
     country: '',
     state: '',
     city: '',
@@ -15,14 +50,14 @@ const formData = ref({
     street: '',
     postal: '',
   },
-  create4: {
+  create3: {
     map: '',
   },
-  create5: {
+  create4: {
     tel: '',
     email: '',
   },
-  create7: {
+  create5: {
     hours: [
       { day: 'Sunday', avail: false, hours: ['', ''] },
       { day: 'Monday', avail: false, hours: ['', ''] },
@@ -33,19 +68,19 @@ const formData = ref({
       { day: 'Saturday', avail: false, hours: ['', ''] },
     ],
   },
-  create8: {
+  create6: {
     desc: '',
   },
-  create9: {},
+  create7: {},
 });
 const currentTab = ref('create1');
-const nextTab = (e: Event) => {
+const nextTab = () => {
   const currentIndex = Object.keys(formData.value).indexOf(currentTab.value);
   if (currentIndex < Object.keys(formData.value).length - 1) {
     currentTab.value = Object.keys(formData.value)[currentIndex + 1];
   }
 };
-const prevTab = (e: Event) => {
+const prevTab = () => {
   const currentIndex = Object.keys(formData.value).indexOf(currentTab.value);
   if (currentIndex > 0) {
     currentTab.value = Object.keys(formData.value)[currentIndex - 1];
@@ -67,8 +102,9 @@ const prevTab = (e: Event) => {
       </div>
       <div class="content">
         <div
-          class="create1 tab-page"
-          :class="currentTab === 'create1' ? 'active' : ''"
+          class="tab-page"
+          v-for="id in ['create1']"
+          :class="currentTab === id ? 'active' : ''"
         >
           <h6 class="text-center">Build Your Online Business Presence</h6>
           <p class="text-center">
@@ -95,8 +131,9 @@ const prevTab = (e: Event) => {
           </div>
         </div>
         <div
-          class="create2 tab-page"
-          :class="currentTab === 'create2' ? 'active' : ''"
+          class="tab-page"
+          v-for="id in ['create2']"
+          :class="currentTab === id ? 'active' : ''"
         >
           <h6 class="text-center">Do You Have a Physical Location?</h6>
           <p>
@@ -127,61 +164,61 @@ const prevTab = (e: Event) => {
               </label>
             </fieldset>
           </div>
+          <fieldset>
+            <div class="field">
+              <label>Country</label>
+              <Dropdown
+                v-model="formData.create2.country"
+                class="select search"
+              >
+                <div class="drop menu">
+                  <div class="item">Nigeria</div>
+                </div>
+              </Dropdown>
+            </div>
+            <div class="field">
+              <label>State</label>
+              <Dropdown
+                v-model="formData.create2.state"
+                :options="{ fluidMinWidth: true }"
+                class="multiple search select"
+              >
+                <div class="drop menu">
+                  <div class="item">Ogun</div>
+                  <div class="item">Osun</div>
+                </div>
+              </Dropdown>
+            </div>
+            <div class="field">
+              <label>City</label>
+              <input
+                v-model="formData.create2.city"
+                type="text"
+                class="form-item"
+              />
+            </div>
+            <div class="field">
+              <label>Street address</label>
+              <input
+                v-model="formData.create2.street"
+                type="text"
+                class="form-item"
+              />
+            </div>
+            <div class="field">
+              <label>Postal code</label>
+              <input
+                v-model="formData.create2.postal"
+                type="number"
+                class="form-item"
+              />
+            </div>
+          </fieldset>
         </div>
         <div
-          class="create3 tab-page"
-          :class="currentTab === 'create3' ? 'active' : ''"
-        >
-          <h6 class="text-center">What is the address?</h6>
-          <div class="field">
-            <label>Country</label>
-            <Dropdown v-model="formData.create3.country" class="select search">
-              <div class="drop menu">
-                <div class="item">Nigeria</div>
-              </div>
-            </Dropdown>
-          </div>
-          <div class="field">
-            <label>State</label>
-            <Dropdown
-              v-model="formData.create3.state"
-              :options="{ fluidMinWidth: true }"
-              class="multiple search select"
-            >
-              <div class="drop menu">
-                <div class="item">Ogun</div>
-                <div class="item">Osun</div>
-              </div>
-            </Dropdown>
-          </div>
-          <div class="field">
-            <label>City</label>
-            <input
-              v-model="formData.create3.city"
-              type="text"
-              class="form-item"
-            />
-          </div>
-          <div class="field">
-            <label>Street address</label>
-            <input
-              v-model="formData.create3.street"
-              type="text"
-              class="form-item"
-            />
-          </div>
-          <div class="field">
-            <label>Postal code</label>
-            <input
-              v-model="formData.create3.postal"
-              type="number"
-              class="form-item"
-            />
-          </div>
-        </div>
-        <div
-          class="create4 tab-page"
-          :class="currentTab === 'create4' ? 'active' : ''"
+          class="tab-page"
+          v-for="id in ['create3']"
+          :class="currentTab === id ? 'active' : ''"
         >
           <h6 class="text-center">Confirm Your Business Location</h6>
           <p>We need your exact business address. Please:</p>
@@ -203,15 +240,16 @@ const prevTab = (e: Event) => {
           <div class="field">
             <label>Map URL</label>
             <input
-              v-model="formData.create4.map"
+              v-model="formData.create3.map"
               type="url"
               class="form-item"
             />
           </div>
         </div>
         <div
-          class="create5 tab-page"
-          :class="currentTab === 'create5' ? 'active' : ''"
+          class="tab-page"
+          v-for="id in ['create4']"
+          :class="currentTab === id ? 'active' : ''"
         >
           <h6 class="text-center">Add Contact Information</h6>
           <p>
@@ -222,7 +260,7 @@ const prevTab = (e: Event) => {
           <div class="field">
             <label>Phone number</label>
             <input
-              v-model="formData.create5.tel"
+              v-model="formData.create4.tel"
               type="tel"
               class="form-item"
             />
@@ -230,22 +268,23 @@ const prevTab = (e: Event) => {
           <div class="field">
             <label>Email</label>
             <input
-              v-model="formData.create5.email"
+              v-model="formData.create4.email"
               type="email"
               class="form-item"
             />
           </div>
         </div>
         <div
-          class="create7 tab-page"
-          :class="currentTab === 'create7' ? 'active' : ''"
+          class="tab-page"
+          v-for="id in ['create5']"
+          :class="currentTab === id ? 'active' : ''"
         >
           <h6 class="text-center">Set Your Business Hours</h6>
           <p>
             Enter your regular business hours so customers know when to reach
             you.
           </p>
-          <div v-for="day in formData.create7.hours" class="field">
+          <div v-for="day in formData.create5.hours" class="field">
             <label class="flexbox flex-separate">
               {{ day.day }}
               <input
@@ -270,8 +309,9 @@ const prevTab = (e: Event) => {
           </div>
         </div>
         <div
-          class="create8 tab-page"
-          :class="currentTab === 'create8' ? 'active' : ''"
+          class="tab-page"
+          v-for="id in ['create6']"
+          :class="currentTab === id ? 'active' : ''"
         >
           <h6 class="text-center">Add Business Description</h6>
           <p>
@@ -281,15 +321,16 @@ const prevTab = (e: Event) => {
           <div class="field">
             <label>Business description</label>
             <textarea
-              v-model="formData.create8.desc"
+              v-model="formData.create6.desc"
               class="form-item"
               placeholder="What does your business do?"
             ></textarea>
           </div>
         </div>
         <div
-          class="create9 tab-page"
-          :class="currentTab === 'create9' ? 'active' : ''"
+          class="tab-page"
+          v-for="id in ['create7']"
+          :class="currentTab === id ? 'active' : ''"
         >
           <h6 class="text-center">Add Your Business Logo</h6>
           <p>

@@ -6,7 +6,11 @@ const props = defineProps(['details']);
     <Icon name="material-symbols:shopping-bag-outline" />
   </div>
   <div class="itm-display">
-    <img :src="details.media" alt="" />
+    <NuxtImg
+      preset="thumbnail"
+      :src="details.media"
+      alt=""
+    />
   </div>
   <div class="itm-content">
     <div

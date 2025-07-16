@@ -6,5 +6,5 @@ onMounted(() => userStore.getReviews());
 
 <template>
     <h6 class="text-center">Your reviews</h6>
-    <ReviewCard v-for="(result, i) in userStore.yourReviews" :key="i" :details="result" />
+    <ReviewCard v-for="result in userStore.yourReviews" :details="result" />
 </template>

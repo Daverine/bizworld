@@ -50,7 +50,8 @@ const isReady = computed(() => data.details && avail.value);
           class="dm-logo flex-none"
           style="position: relative; width: max-content; line-height: 0"
         >
-          <img
+          <NuxtImg
+            preset="logo"
             class="logo image"
             style="width: 5rem; height: 5rem; object-fit: contain"
             :src="data.details.logo"
@@ -84,7 +85,8 @@ const isReady = computed(() => data.details && avail.value);
             :to="{ name: 'biz-home', params: { id: $route.params.id } }"
             class="xhover l-aligned item as-icon"
           >
-            <img
+            <NuxtImg
+              preset="logo"
               :src="data.details.logo"
               alt="site logo"
               class="logo-lg site-logo"
@@ -109,7 +111,8 @@ const isReady = computed(() => data.details && avail.value);
                     :to="{ name: 'biz-home', params: { id: $route.params.id } }"
                     class="xhover centered item exit-sidepanel"
                   >
-                    <img
+                    <NuxtImg
+                      preset="logo"
                       :src="data.details.logo"
                       alt="site logo"
                       class="logo-lg site-logo"
@@ -162,7 +165,8 @@ const isReady = computed(() => data.details && avail.value);
               class="dm-logo flex-none"
               style="position: relative; width: max-content; line-height: 0"
             >
-              <img
+              <NuxtImg
+                preset="logo"
                 class="logo image"
                 style="width: 4rem; height: 4rem; object-fit: contain"
                 :src="data.details.logo"

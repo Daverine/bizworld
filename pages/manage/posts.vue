@@ -14,7 +14,7 @@ onMounted(() => feedStore.getUpdate());
             </div>
         </header>
         <section style="display: flex; flex-direction: column; align-items: center;">
-            <FeedCard v-for="(feed, i) in feedStore.feeds" :key="i" :details="feed" />
+            <FeedCard v-for="feed in feedStore.feeds" :details="feed" />
         </section>
     </main>
 

@@ -1,4 +1,5 @@
 <script setup>
+import { NuxtImg } from '#components';
 import Common from './Common.vue';
 
 const userStore = useUserStore();
@@ -10,7 +11,8 @@ defineOptions({ title: 'Your account page | BizWorld' });
       <header>
         <div class="container guttered flexbox">
           <div class="flex-none">
-            <img
+            <NuxtImg
+              preset="logo"
               :src="userStore.userData.profileImg"
               class="profile-pic circular image"
               alt="Your profile Picture"
@@ -33,7 +35,7 @@ defineOptions({ title: 'Your account page | BizWorld' });
       <IScroller
         v-scrollPin="{ top: 68 }"
         class="z-level-3"
-        style="margin-top: 5rem"
+        style="margin-top: 1rem"
       >
         <div class="l-scroll">
           <SvgIcon name="double_arrow_left" class="mini" />

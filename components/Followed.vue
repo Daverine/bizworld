@@ -6,7 +6,7 @@ onMounted(() => userStore.getFollowedCards());
 <template>
 	<h6 class="text-center">Following</h6>
 	<div class="fluid" style="display: flex; flex-flow: row wrap; justify-content: center; gap: 1em; padding: 1rem;">
-		<BizCard v-for="(result, i) in userStore.followedCards" :key="i" :details="result" />
+		<BizCard v-for="result in userStore.followedCards" :details="result" />
 	</div>
 	<div class="divider"><button class="button">More results
 			<SvgIcon class="trailing" name="expand_more" />
