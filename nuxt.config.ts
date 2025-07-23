@@ -30,8 +30,8 @@ export default defineNuxtConfig({
           format: 'webp',
           width: 250,
           densities: '1x',
-        }
-      }
+        },
+      },
     },
   },
   app: {
@@ -46,4 +46,8 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/style.scss'],
+  devServer: {
+    port: 3000,
+    host: '0.0.0.0', // Or your desired host
+  },
 });

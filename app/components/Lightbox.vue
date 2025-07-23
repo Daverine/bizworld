@@ -22,6 +22,7 @@ type LightboxSettings = {
   closeOnWrapperClick: boolean;
   dismissible: boolean;
   dismisser: string;
+  maxZoom: number;
   inDuration: number;
   outDuration: number;
   slideshow: boolean;
@@ -47,8 +48,6 @@ type BrainBox = {
     y: number;
     zoom: number;
     pointOnContent?: {
-      cursorY: number;
-      cursorX: number;
       x: number;
       y: number;
     };
@@ -122,6 +121,7 @@ const settings: LightboxSettings = {
     closeOnWrapperClick: true,
     dismissible: true,
     dismisser: '.exit-lightbox',
+    maxZoom: 5,
     inDuration: 500,
     outDuration: 500,
     slideshow: true,
@@ -267,9 +267,12 @@ function toolbarControls(e: MouseEvent) {
   // Zoom-in and zoom-out funtionality on toolbar
   if (target.closest('.item.zoom-in, .item.zoom-out')) {
     stopSlideshow();
-    bb.newCoords.zoom = target.closest('.item.zoom-in')
-      ? bb.newCoords.zoom + 0.5
-      : bb.newCoords.zoom - 0.5;
+    bb.newCoords.zoom = Math.min(
+      settings.maxZoom,
+      target.closest('.item.zoom-in')
+        ? bb.newCoords.zoom + 0.5
+        : bb.newCoords.zoom - 0.5
+    );
     reAdjustSlide();
   }
   // Gallery-view toggler
@@ -390,9 +393,9 @@ function zoomToFit(coords: { x: number; y: number; zoom?: number }) {
   let pointOnContentY = (cursorY - bb.newCoords.y) / bb.newCoords.zoom;
 
   if (coords.zoom === undefined)
-    return { x: pointOnContentX, y: pointOnContentY, cursorX, cursorY };
+    return { x: pointOnContentX, y: pointOnContentY };
 
-  coords.zoom = Math.max(coords.zoom, 0.5);
+  coords.zoom = Math.min(settings.maxZoom, Math.max(coords.zoom, 0.5));
   bb.newCoords.x = cursorX - pointOnContentX * coords.zoom;
   bb.newCoords.y = cursorY - pointOnContentY * coords.zoom;
   bb.newCoords.zoom = coords.zoom;
@@ -410,7 +413,7 @@ function wheelToZoom(e: WheelEvent) {
     zoom: e.deltaY < 0 ? bb.newCoords.zoom * 1.2 : bb.newCoords.zoom / 1.2,
   });
   clearTimeout(bb.readjustTimeout);
-  bb.readjustTimeout = setTimeout(() => reAdjustSlide(), 350);
+  bb.readjustTimeout = setTimeout(reAdjustSlide, 350);
 }
 function gallerySwitch(e: MouseEvent) {
   let target = e.target as HTMLElement;
@@ -430,21 +433,32 @@ function exitOnWrapperClick(e: MouseEvent) {
 }
 function reAdjustSlide() {
   if (bb.newCoords.zoom > 1) {
-    // let xMax = Math.abs(
-    //   (currPic.clientWidth * bb.newCoords.zoom - currContent.clientWidth) / 2
-    // );
-    // let yMax = Math.abs(
-    //   (currPic.clientHeight * bb.newCoords.zoom - currContent.clientHeight) / 2
-    // );
+    if (bb.newCoords.zoom >= settings.maxZoom) {
+      bb.newCoords.zoom = settings.maxZoom;
+      [...toolbar.querySelectorAll(':scope .item.zoom-in')].forEach((el) =>
+        el.classList.add('disabled')
+      );
+    } else {
+      [...toolbar.querySelectorAll(':scope .item.zoom-in')].forEach((el) =>
+        el.classList.remove('disabled')
+      );
+    }
 
-    // bb.newCoords.x =
-    //   Math.abs(bb.newCoords.x) > xMax
-    //     ? Math.sign(bb.newCoords.x) * xMax
-    //     : bb.newCoords.x;
-    // bb.newCoords.y =
-    //   Math.abs(bb.newCoords.y) > yMax
-    //     ? Math.sign(bb.newCoords.y) * yMax
-    //     : bb.newCoords.y;
+    let xMax = Math.abs(
+      (currPic.clientWidth * bb.newCoords.zoom - currContent.clientWidth) / 2
+    );
+    let yMax = Math.abs(
+      (currPic.clientHeight * bb.newCoords.zoom - currContent.clientHeight) / 2
+    );
+
+    bb.newCoords.x =
+      Math.abs(bb.newCoords.x) > xMax
+        ? Math.sign(bb.newCoords.x) * xMax
+        : bb.newCoords.x;
+    bb.newCoords.y =
+      Math.abs(bb.newCoords.y) > yMax
+        ? Math.sign(bb.newCoords.y) * yMax
+        : bb.newCoords.y;
     [...toolbar.querySelectorAll(':scope .item.zoom-out')].forEach((el) =>
       el.classList.remove('disabled')
     );
@@ -454,6 +468,9 @@ function reAdjustSlide() {
     bb.newCoords.zoom = 1;
     [...toolbar.querySelectorAll(':scope .item.zoom-out')].forEach((el) =>
       el.classList.add('disabled')
+    );
+    [...toolbar.querySelectorAll(':scope .item.zoom-in')].forEach((el) =>
+      el.classList.remove('disabled')
     );
   }
   currContent.style.transform = `translate(${bb.newCoords.x}px, ${bb.newCoords.y}px) scale(${bb.newCoords.zoom})`;
@@ -659,7 +676,8 @@ watch(
       lightbox.value!.classList.remove('active');
 
       if (settings.hashLightbox) {
-        unwatch.closeOnRouteChange();
+        if (typeof unwatch.closeOnRouteChange === 'function')
+          unwatch.closeOnRouteChange();
         window.removeEventListener('popstate', backToExit);
         router.replace({ hash: bb.prevHash });
         bb.openWithHash = false;
@@ -837,17 +855,24 @@ function update(newSlideNo: number = vbb.currSlideNo) {
   });
 }
 function dist(e: TouchEvent | MouseEvent) {
-  if ('touches' in e && e.touches.length === 2) {
+  if ('touches' in e && e.touches.length > 1) {
     let [t1, t2] = e.touches;
-    return {
-      x: (t1.clientX + t2.clientX) / 2,
-      y: (t1.clientY + t2.clientY) / 2,
-      z: Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY),
-    };
+    if (t1 && t2) {
+      return {
+        x: (t1.clientX + t2.clientX) / 2,
+        y: (t1.clientY + t2.clientY) / 2,
+        z: Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY),
+      };
+    } else {
+      // fallback if touches are not available
+      return { x: 0, y: 0, z: 0 };
+    }
   } else {
     return {
-      x: 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX,
-      y: 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY,
+      x:
+        'touches' in e ? e.touches[0]?.clientX ?? 0 : (e as MouseEvent).clientX,
+      y:
+        'touches' in e ? e.touches[0]?.clientY ?? 0 : (e as MouseEvent).clientY,
       z: 0, // z is not used for mouse events
     };
   }
@@ -890,7 +915,11 @@ function gestureStart(e: TouchEvent | MouseEvent) {
       ) {
         if (bb.newCoords.zoom === 1) {
           const coords = dist(e);
-          zoomToFit({ x: coords.x, y: coords.y, zoom: 2 });
+          zoomToFit({
+            x: coords.x,
+            y: coords.y,
+            zoom: Math.min(2, settings.maxZoom),
+          });
           clearTimeout(bb.readjustTimeout);
           bb.readjustTimeout = setTimeout(reAdjustSlide, 350);
           toolbar
@@ -968,8 +997,7 @@ function gestureMove(e: TouchEvent | MouseEvent) {
       e.touches.length === 2 &&
       currContent.classList.contains('zooming')
     ) {
-      bb.newCoords.zoom =
-        bb.initCoords.zoom * (bb.endCoords.z / bb.startCoords.z);
+      bb.newCoords.zoom = bb.initCoords.zoom * (bb.endCoords.z / bb.startCoords.z);
       let zoomDiff = bb.initCoords.zoom - bb.newCoords.zoom;
 
       // This is the translation due to pinch-zooming
@@ -977,7 +1005,7 @@ function gestureMove(e: TouchEvent | MouseEvent) {
       let zoomingY = bb.initCoords.pointOnContent!.y * zoomDiff;
 
       // Total translation is from two components:
-      // (1) changing height and width from zooming and
+      // (1) translation due to zooming and
       // (2) from the two fingers translating in unity
       bb.newCoords.x = bb.initCoords.x + zoomingX + coordDiffX;
       bb.newCoords.y = bb.initCoords.y + zoomingY + coordDiffY;

@@ -16,11 +16,11 @@ const validateFormData = z.object({
     postal: z.string().optional(),
   }),
   create3: z.object({
-    map: z.string().url('Invalid map URL').optional(),
+    map: z.url('Invalid map URL').optional(),
   }),
   create4: z.object({
-    tel: z.string().optional(),
-    email: z.email('Invalid email address').optional(),
+    tel: z.string().min(1, 'Telephone number is required'),
+    email: z.email('Invalid email address').min(1, 'Email address is required'),
   }),
   create5: z.object({
     hours: z.array(
@@ -77,13 +77,13 @@ const currentTab = ref('create1');
 const nextTab = () => {
   const currentIndex = Object.keys(formData.value).indexOf(currentTab.value);
   if (currentIndex < Object.keys(formData.value).length - 1) {
-    currentTab.value = Object.keys(formData.value)[currentIndex + 1];
+    currentTab.value = Object.keys(formData.value)[currentIndex + 1] || '';
   }
 };
 const prevTab = () => {
   const currentIndex = Object.keys(formData.value).indexOf(currentTab.value);
   if (currentIndex > 0) {
-    currentTab.value = Object.keys(formData.value)[currentIndex - 1];
+    currentTab.value = Object.keys(formData.value)[currentIndex - 1] || '';
   }
 };
 </script>

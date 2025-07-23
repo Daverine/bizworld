@@ -1,4 +1,4 @@
-import sresults from '../jsons/sresults.json';
+import sresults from '@/assets/jsons/sresults.json';
 
 export const useSearchStore = defineStore('search', {
     state: () => ({

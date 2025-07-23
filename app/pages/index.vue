@@ -110,7 +110,7 @@ const userStore = useUserStore();
           style="max-width: 450px; background-color: rgba(128, 128, 128, 0.025)"
         />
         <p class="huge" style="margin-top: 0px">
-          Search for business names, products and services.
+          Search for businesses names, products and services.
         </p>
       </div>
       <div>
