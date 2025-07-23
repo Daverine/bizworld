@@ -83,7 +83,7 @@ onMounted(() => feedStore.getUpdate());
     <form class="hm-searchbox" @submit.prevent="searchStore.triggerSearch()">
       <div style="margin-bottom: 2rem">
         <h2 class="call-text">Let us do business</h2>
-        <p class="huge">Search for business names, products, and services.</p>
+        <p class="huge">Search for businesses names, products, and services.</p>
       </div>
       <div>
         <label class="input big fluid">

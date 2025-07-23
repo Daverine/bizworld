@@ -1,4 +1,4 @@
-import newFeeds from '../jsons/feeds.json'
+import newFeeds from '@/assets/jsons/feeds.json'
 
 export const useFeedStore = defineStore('feeds', {
     states: () => ({

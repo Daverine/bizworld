@@ -1,6 +1,6 @@
-import saved from '@/jsons/sresults.json';
-import followed from '@/jsons/followed.json';
-import reviews from '@/jsons/reviews.json';
+import saved from '@/assets/jsons/sresults.json';
+import followed from '@/assets/jsons/followed.json';
+import reviews from '@/assets/jsons/reviews.json';
 
 export const useUserStore = defineStore('user', {
     state: () => ({

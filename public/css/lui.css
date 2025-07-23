@@ -2299,7 +2299,7 @@ table.table tbody tr.i-selectable td:hover:before {
 .select.dropdown:focus-within,
 .select.dropdown.active {
   border-color: var(--form-focus-bd-color);
-  box-shadow: 0px 0px 0px 1px var(--form-focus-bd-color);
+  box-shadow: inset 0px 0px 0px 1px var(--form-focus-bd-color);
   outline: none;
 }
 .input-box[disabled] > .subject, .input[disabled] > .subject, .form-item[type=checkbox].switch:disabled, .form-item[type=checkbox]:not(.switch):disabled,
@@ -2391,8 +2391,7 @@ table.table tbody tr.i-selectable td:hover:before {
   border-radius: calc(var(--default-radius) / 5);
 }
 .form-item[type=checkbox]:not(.switch):before {
-  -webkit-clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-          clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
 }
 .form-item[type=checkbox]:not(.switch):checked:before {
   transform: scale(0.825);
@@ -2402,8 +2401,7 @@ table.table tbody tr.i-selectable td:hover:before {
   border-radius: 50%;
 }
 .form-item[type=radio]:not(.switch):before {
-  -webkit-clip-path: circle(50% at 50% 50%);
-          clip-path: circle(50% at 50% 50%);
+  clip-path: circle(50% at 50% 50%);
 }
 .form-item[type=radio]:not(.switch):checked:before {
   transform: scale(0.625);
@@ -2761,7 +2759,6 @@ table.table tbody tr.i-selectable td:hover:before {
   max-width: 100%;
   flex: 1 1 auto;
   margin: 0em;
-  z-index: 10;
 }
 .input-box[disabled] {
   cursor: not-allowed;
@@ -2781,9 +2778,6 @@ table.table tbody tr.i-selectable td:hover:before {
   border-radius: inherit;
   min-width: -moz-fit-content;
   min-width: fit-content;
-}
-.input-box > *:not(:first-child) {
-  margin-left: -1px;
 }
 .input-box > *:not(:first-child, :last-child) {
   border-radius: 0em;
@@ -3185,8 +3179,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
 }
 .label.tag::before {
   left: calc(-1.75em + 1px);
-  -webkit-clip-path: polygon(50% 50%, 100% 100%, 100% 0);
-          clip-path: polygon(50% 50%, 100% 100%, 100% 0);
+  clip-path: polygon(50% 50%, 100% 100%, 100% 0);
   border-bottom: 0px none;
   border-right: 0px none;
 }
@@ -3201,8 +3194,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
 }
 .label.alt-tag::before {
   right: calc(-1.75em + 1px);
-  -webkit-clip-path: polygon(50% 50%, 0 100%, 0 0);
-          clip-path: polygon(50% 50%, 0 100%, 0 0);
+  clip-path: polygon(50% 50%, 0 100%, 0 0);
   border-bottom: 0px none transparent;
   border-left: 0px none transparent;
 }
@@ -3235,8 +3227,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
 .label.ribbon::after {
   right: auto;
   left: 0%;
-  -webkit-clip-path: polygon(0% 0%, 100% 100%, 100% 0%);
-          clip-path: polygon(0% 0%, 100% 100%, 100% 0%);
+  clip-path: polygon(0% 0%, 100% 100%, 100% 0%);
 }
 
 .label.alt-ribbon {
@@ -3245,8 +3236,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
 .label.alt-ribbon::after {
   left: auto;
   right: 0%;
-  -webkit-clip-path: polygon(0% 100%, 0% 0%, 100% 0%);
-          clip-path: polygon(0% 100%, 0% 0%, 100% 0%);
+  clip-path: polygon(0% 100%, 0% 0%, 100% 0%);
 }
 
 .badge {
@@ -4130,14 +4120,12 @@ html.scroll-locked .fab-group.respect-lock .fab {
   left: calc(var(--arrow-center) - 0.5625em);
 }
 .drop.menu.pointing[data-view=vertical].upward:before {
-  -webkit-clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
-          clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
+  clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
   transform: translateY(-53%) rotate(45deg);
   top: 100%;
 }
 .drop.menu.pointing[data-view=vertical].downward:before {
-  -webkit-clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
-          clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
+  clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
   transform: translateY(53%) rotate(45deg);
   bottom: 100%;
 }
@@ -4145,14 +4133,12 @@ html.scroll-locked .fab-group.respect-lock .fab {
   top: calc(var(--arrow-center) - 0.5625em);
 }
 .drop.menu.pointing[data-view=horizontal].rhs:before {
-  -webkit-clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
-          clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
+  clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
   transform: translateX(53%) rotate(-45deg);
   right: 100%;
 }
 .drop.menu.pointing[data-view=horizontal].lhs:before {
-  -webkit-clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
-          clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
+  clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
   transform: translateX(-53%) rotate(-45deg);
   left: 100%;
 }
