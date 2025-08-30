@@ -11,7 +11,7 @@ defineProps(['details', 'isSaved']);
     <productCard v-else-if="details.type === 'product'" :details="details" />
     <serviceCard v-else-if="details.type === 'project'" :details="details" />
 
-    <Dropdown
+    <LimbDropdown
       v-if="isSaved"
       :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
       class="icon circular transparent compact button"
@@ -29,7 +29,7 @@ defineProps(['details', 'isSaved']);
           Unsave
         </div>
       </div>
-    </Dropdown>
+    </LimbDropdown>
   </NuxtLink>
 </template>
 

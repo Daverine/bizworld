@@ -211,8 +211,8 @@ export const utils = {
       return;
     }
 
-    let first = focusableElements[0],
-      last = focusableElements.slice(-1)[0];
+    let first = focusableElements[0];
+    let last = focusableElements.slice(-1)[0];
 
     if (document.activeElement === last && !e.shiftKey && e.key === 'Tab') {
       e.preventDefault();
@@ -223,7 +223,7 @@ export const utils = {
       e.key === 'Tab'
     ) {
       e.preventDefault();
-      last.focus();
+      last?.focus();
     }
   },
   setHighlightRange(el: Element): void {
@@ -237,8 +237,15 @@ export const utils = {
       selection?.addRange(range);
     }
   },
-  afterNextRepaint(func: () => void): void {
-    requestAnimationFrame(() => requestAnimationFrame(func));
+  afterNextRepaint(func?: () => void) {
+    return new Promise((resolve) =>
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          if (func) func();
+          resolve('void');
+        })
+      )
+    );
   },
   compareArrays: (a: any[], b: any[]): boolean =>
     a.length === b.length && a.every((element, index) => element === b[index]),

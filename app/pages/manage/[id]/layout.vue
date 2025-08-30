@@ -1,9 +1,9 @@
 <script setup>
-definePageMeta({layout: 'manage', auth: true, });
+definePageMeta({name: 'manage-biz-layout', layout: 'common', auth: true, });
 </script>
 <template>
     <main class="flexible col" id="feed">
-        <h3>Media</h3>
+        <h3>Page Layout</h3>
         <hr />
     </main>
 </template>

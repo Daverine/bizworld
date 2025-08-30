@@ -3,13 +3,7 @@ const props = defineProps(['details']);
 </script>
 <template>
   <NuxtLink :to="`/${details.type}/${details.id}`" class="page-serv item">
-    <div class="serv-pic">
-      <NuxtImg
-        preset="thumbnail"
-        :src="details.media"
-        alt=""
-      />
-    </div>
+    <NuxtImg class="serv-pic" preset="thumbnail" :src="details.media" alt="" />
     <div class="serv-content">
       <div
         class="semibold truncate big serv-title"
@@ -36,6 +30,7 @@ const props = defineProps(['details']);
 
 <style lang="scss">
 .page-serv {
+  display: flex;
   width: 32.5rem;
   position: relative;
   border-radius: var(--sm-radius);
@@ -61,11 +56,6 @@ const props = defineProps(['details']);
   position: relative;
   border-radius: inherit;
   width: 100%;
-
-  img {
-    border-radius: inherit;
-    object-fit: contain;
-  }
 }
 .serv-price {
   font-size: 2rem;

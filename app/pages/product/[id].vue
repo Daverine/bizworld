@@ -250,7 +250,7 @@ const details = ref({
   bizData: {
     logo: '/images/logo-sq.png',
     bizName: 'Emmadave Computer Technology Services',
-    bizUrl: 'https://www.edtech.com',
+    bizId: 'biz3884',
     mainCategory: 'Computer repair services',
     contacts: {
       tel: '08157483233',
@@ -538,7 +538,18 @@ function getItemForCart() {
           breakpoints: [{ maxWidth: 959, pinnable: false }],
         }"
       >
-        <Carousel :options="{ continuous: false }">
+        <LimbCarousel :options="{ continuous: false }">
+          <div class="cs-slide">
+            <NuxtImg
+              format="webp"
+              sizes="960px"
+              densities="1x"
+              class="image"
+              src="/images/product.jpeg"
+              data-lightbox="https://youtu.be/yGl3f0xTl_0?si=Tz7fFZj3NBCIuwRR"
+              data-target="lightbox1"
+            />
+          </div>
           <div v-for="slide in tmp.media" class="cs-slide">
             <NuxtImg
               format="webp"
@@ -560,7 +571,7 @@ function getItemForCart() {
               />
             </div>
           </template>
-        </Carousel>
+        </LimbCarousel>
         <h5 class="semibold 0-margined page-title">{{ details.title }}</h5>
         <div class="flexbox flex-separate guttered small semibold">
           <span
@@ -666,12 +677,13 @@ function getItemForCart() {
                 />
               </div>
               <div class="content">
-                <div
+                <NuxtLink
+                  :to="`/business/${details.bizData.bizId}`"
                   class="bold h6 truncate uppercased"
                   style="--line-clamp: 2"
                 >
                   {{ details.bizData.bizName }}
-                </div>
+                </NuxtLink>
                 <div
                   class="flexbox flex-separate flex-wrap semibold"
                   style="gap: 0.25em 0.75em"
@@ -774,7 +786,7 @@ function getItemForCart() {
                 style="margin-bottom: 1rem"
               >
                 <div class="semibold">Reviews</div>
-                <Dropdown
+                <LimbDropdown
                   :options="{ directionPriority: { x: 'left' } }"
                   class="outlined small button selection"
                 >
@@ -785,7 +797,7 @@ function getItemForCart() {
                     <div class="item">Highest</div>
                     <div class="item">Lowest</div>
                   </div>
-                </Dropdown>
+                </LimbDropdown>
               </div>
               <div class="dm-reviews">
                 <div
@@ -824,7 +836,7 @@ function getItemForCart() {
                         </div>
                       </div>
                     </div>
-                    <Dropdown>
+                    <LimbDropdown>
                       <Icon name="material-symbols:more-vert" />
                       <div class="drop menu small">
                         <div class="item">
@@ -835,7 +847,7 @@ function getItemForCart() {
                           Report
                         </div>
                       </div>
-                    </Dropdown>
+                    </LimbDropdown>
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
@@ -880,7 +892,7 @@ function getItemForCart() {
             <Icon name="material-symbols:add-shopping-cart" class="lead" />
             Add to cart
           </button>
-          <Dropdown
+          <LimbDropdown
             :options="{ directionPriority: { x: 'left', y: 'top' } }"
             v-tooltip.unblocking
             data-tooltip="More options"
@@ -921,7 +933,7 @@ function getItemForCart() {
                 Report
               </div>
             </div>
-          </Dropdown>
+          </LimbDropdown>
         </div>
         <div class="compact success note" style="margin-top: 0.5rem">
           <Icon
@@ -952,7 +964,7 @@ function getItemForCart() {
           <Icon name="material-symbols:add-shopping-cart" class="lead" />
           Add to cart
         </button>
-        <Dropdown
+        <LimbDropdown
           :options="{ directionPriority: { x: 'left', y: 'top' } }"
           v-tooltip.unblocking
           data-tooltip="More options"
@@ -990,10 +1002,10 @@ function getItemForCart() {
               Report
             </div>
           </div>
-        </Dropdown>
+        </LimbDropdown>
       </div>
     </div>
-    <Modal id="sp-details">
+    <LimbModal id="sp-details">
       <div class="dialog">
         <div class="header pin-top-blend flexbox guttered">
           <div class="bold truncate">Self Pickup Details</div>
@@ -1042,8 +1054,8 @@ function getItemForCart() {
           </table>
         </div>
       </div>
-    </Modal>
-    <Modal id="pre-cart">
+    </LimbModal> 
+    <LimbModal id="pre-cart">
       <div class="self-scroll dialog">
         <div class="header pin-top-blend flexbox guttered">
           <div class="bold truncate">Confirm options</div>
@@ -1082,7 +1094,10 @@ function getItemForCart() {
                 Add and Go to cart
               </NuxtLink>
               <NuxtLink
-                :to="{ name: 'biz-products', params: { id: $route.params.id } }"
+                :to="{
+                  name: 'biz-products',
+                  params: { id: details.bizData.bizId },
+                }"
                 @click="cartStore.addToCart(getItemForCart())"
                 class="flexible primary flat button exit-modal"
               >
@@ -1092,7 +1107,7 @@ function getItemForCart() {
           </div>
         </div>
       </div>
-    </Modal>
+    </LimbModal> 
   </main>
 </template>
 

@@ -97,7 +97,7 @@ const isReady = computed(() => data.details && avail.value);
     </div>
     <section>
       <div class="heading" style="padding: 1rem">New and Trending products</div>
-      <IScroller class="flexbox justify-center">
+      <LimbIScroller class="flexbox justify-center">
         <div class="scroll-items guttered">
           <PageProduct
             v-for="i in Math.min(6, data.products.length)"
@@ -125,11 +125,11 @@ const isReady = computed(() => data.details && avail.value);
             <Icon name="material-symbols:arrow-forward-ios-rounded" />
           </div>
         </div>
-      </IScroller>
+      </LimbIScroller>
     </section>
     <section>
       <div class="heading" style="padding: 1rem">Our projects listing</div>
-      <IScroller class="flexbox justify-center">
+      <LimbIScroller class="flexbox justify-center">
         <div class="scroll-items guttered">
           <PageService
             v-for="i in Math.min(6, data.projects.length)"
@@ -157,7 +157,7 @@ const isReady = computed(() => data.details && avail.value);
             <Icon name="material-symbols:arrow-forward-ios-rounded" />
           </div>
         </div>
-      </IScroller>
+      </LimbIScroller>
     </section>
     <section class="posts-sec">
       <div

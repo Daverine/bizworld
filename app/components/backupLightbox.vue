@@ -1109,10 +1109,10 @@ function stopSlideshow() {
               <Icon mode="svg" name="material-symbols:zoom-out" class="icon" />
             </div>
           </div>
-          <Dropdown
+          <LimbDropdown
             class="item as-icon resp-up-hidden"
             title="More options"
-            :options="{ independentMenu: false, closeOnItemClick: false }"
+            :options="{ teleportMenu: false, closeOnItemClick: false }"
           >
             <Icon mode="svg" name="material-symbols:more-vert" class="icon" />
             <div class="drop menu">
@@ -1163,7 +1163,7 @@ function stopSlideshow() {
                 Zoom-Out
               </div>
             </div>
-          </Dropdown>
+          </LimbDropdown>
           <a class="item as-icon pic-only" title="Picture only view">
             <Icon
               mode="svg"
@@ -1247,7 +1247,7 @@ function stopSlideshow() {
           <Icon mode="svg" name="material-symbols:chevron-right" />
         </div>
       </div>
-      <IScroller
+      <LimbIScroller
         :options="{
           autoSetup: false,
           scrollBody: '[data-thumbnails]',
@@ -1280,7 +1280,7 @@ function stopSlideshow() {
             class="icon"
           />
         </div>
-      </IScroller>
+      </LimbIScroller>
     </div>
   </Teleport>
 </template>

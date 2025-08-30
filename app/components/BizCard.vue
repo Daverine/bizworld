@@ -72,7 +72,7 @@ export default {
       >
         <SvgIcon name="public" class="lead" /> Visit
       </a>
-      <Dropdown
+      <LimbDropdown
         :options="{ directionPriority: { x: 'right', y: 'top' } }"
         class="compact button ex-open-modal"
       >
@@ -86,7 +86,7 @@ export default {
             <SvgIcon name="report" class="lead" /> Report page
           </div>
         </div>
-      </Dropdown>
+      </LimbDropdown>
     </div>
   </div>
 </template>

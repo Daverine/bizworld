@@ -181,7 +181,7 @@ const details = ref({
   bizData: {
     logo: '/images/logo-sq.png',
     bizName: 'Emmadave Computer Technology Services',
-    bizUrl: 'https://www.edtech.com',
+    bizId: 'biz3884',
     mainCategory: 'Computer repair services',
     contacts: {
       tel: '08157483233',
@@ -269,9 +269,12 @@ onMounted(() => {
               />
             </div>
             <div class="content">
-              <div class="bold truncate 0-margined">
+              <NuxtLink
+                :to="`/business/${details.bizData.bizId}`"
+                class="bold truncate 0-margined"
+              >
                 {{ details.bizData.bizName }}
-              </div>
+              </NuxtLink>
               <div
                 class="flexbox flex-wrap small semibold"
                 style="gap: 0.25em 0.75em"
@@ -353,7 +356,7 @@ onMounted(() => {
           </div>
         </section>
         <!-- Media Section -->
-        <Carousel>
+        <LimbCarousel>
           <div v-for="slide in details.media" class="cs-slide">
             <NuxtImg
               format="webp"
@@ -367,13 +370,10 @@ onMounted(() => {
           </div>
           <template v-if="isSmallScreen" #trackers>
             <div v-for="slide in details.media" class="thumbnail cs-tracker">
-              <NuxtImg
-                preset="thumbnail"
-                :src="slide.thumbnail"
-              />
+              <NuxtImg preset="thumbnail" :src="slide.thumbnail" />
             </div>
           </template>
-        </Carousel>
+        </LimbCarousel>
         <!-- Configurations Section -->
         <section
           class="specs mobile-screen-only"
@@ -553,7 +553,7 @@ onMounted(() => {
                 style="margin-bottom: 1rem"
               >
                 <div class="semibold">Reviews</div>
-                <Dropdown
+                <LimbDropdown
                   :options="{ directionPriority: { x: 'left' } }"
                   class="outlined small button selection"
                 >
@@ -564,7 +564,7 @@ onMounted(() => {
                     <div class="item">Highest</div>
                     <div class="item">Lowest</div>
                   </div>
-                </Dropdown>
+                </LimbDropdown>
               </div>
               <div class="dm-reviews">
                 <div
@@ -603,7 +603,7 @@ onMounted(() => {
                         </div>
                       </div>
                     </div>
-                    <Dropdown>
+                    <LimbDropdown>
                       <Icon name="material-symbols:more-vert" />
                       <div class="drop menu small">
                         <div class="item">
@@ -614,7 +614,7 @@ onMounted(() => {
                           Report
                         </div>
                       </div>
-                    </Dropdown>
+                    </LimbDropdown>
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
@@ -706,7 +706,7 @@ onMounted(() => {
               <Icon name="material-symbols:chat-outline-rounded" class="lead" />
               Chat Contractor
             </button>
-            <Dropdown
+            <LimbDropdown
               :options="{ directionPriority: { x: 'left', y: 'top' } }"
               v-tooltip.unblocking
               data-tooltip="More options"
@@ -747,7 +747,7 @@ onMounted(() => {
                   Report
                 </div>
               </div>
-            </Dropdown>
+            </LimbDropdown>
           </div>
         </div>
         <!-- Buyer's Protection Section -->
@@ -788,7 +788,7 @@ onMounted(() => {
           <Icon name="material-symbols:chat-outline-rounded" class="lead" />
           Chat Contractor
         </button>
-        <Dropdown
+        <LimbDropdown
           :options="{ directionPriority: { x: 'left', y: 'top' } }"
           v-tooltip.unblocking
           data-tooltip="More options"
@@ -826,7 +826,7 @@ onMounted(() => {
               Report
             </div>
           </div>
-        </Dropdown>
+        </LimbDropdown>
       </div>
     </div>
   </main>

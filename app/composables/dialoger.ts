@@ -2,7 +2,7 @@
 // Usage: const { showDialog, teleporter } = useDialoger(dialoger, 'dialoger-id', options);
 import type { ShallowRef, WatchStopHandle } from 'vue';
 
-interface Settings {
+export type DialogerSettings = {
   namespace?: string;
   toggler?: string;
   toExcuseToggler?: string;
@@ -17,23 +17,35 @@ interface Settings {
   };
   inDuration?: number;
   outDuration?: number;
-  hashDialog?: boolean;
-  controller?: (dialoger: HTMLElement, settings: Settings) => void;
-  ready?: (dialoger: HTMLElement, settings: Settings) => void;
-  complete?: (dialoger: HTMLElement, settings: Settings) => void;
+  hashControl?: boolean;
+  controller?: (event: {
+    target: HTMLElement;
+    settings: DialogerSettings;
+    caller?: HTMLElement;
+  }) => void;
+  ready?: (event: {
+    target: HTMLElement;
+    settings: DialogerSettings;
+    caller?: HTMLElement;
+  }) => void;
+  complete?: (event: {
+    target: HTMLElement;
+    settings: DialogerSettings;
+    caller?: HTMLElement;
+  }) => void;
   caller?: HTMLElement;
-}
+};
 
 export function useDialoger(
   dialoger: ShallowRef<HTMLDivElement | null>,
   id: string,
-  options?: Partial<Settings>
+  options?: DialogerSettings
 ) {
   const router = useRouter();
   const route = useRoute();
   const showDialog = ref(false);
   const teleporter = ref(false);
-  const settings: Settings = {
+  const settings: DialogerSettings = {
     namespace: 'dialog',
     toggler: '.open-dialog',
     toExcuseToggler: '.ex-open-dialog',
@@ -48,7 +60,7 @@ export function useDialoger(
     },
     inDuration: 500,
     outDuration: 500,
-    hashDialog: false,
+    hashControl: false,
     ...options,
   };
   const bb = {
@@ -110,7 +122,7 @@ export function useDialoger(
       else if (e.detail === settings.commands!.close) showDialog.value = false;
     }) as EventListener);
 
-    if (settings.hashDialog) {
+    if (settings.hashControl) {
       // open dialog from hash
       unwatch.openDialogFromRoute = watch(
         () => route.hash,
@@ -130,7 +142,7 @@ export function useDialoger(
       document.body.append(dialoger.value!);
       // teleporter.value = true;
       utils.afterNextRepaint(() => {
-        if (settings.hashDialog) {
+        if (settings.hashControl) {
           bb.scrollPosBeforeLock = {
             top: window.scrollY,
             left: window.scrollX,
@@ -153,7 +165,11 @@ export function useDialoger(
         // If a controller function is provided in the settings, call it with the lightbox element and settings.
         // The controller function can be used to perform additional setup or customization of the lightbox.
         if (typeof settings.controller === 'function')
-          settings.controller(dialoger.value!, settings);
+          settings.controller({
+            target: dialoger.value!,
+            settings,
+            caller: settings.caller,
+          });
 
         document.addEventListener('keydown', KBDControls);
         dialoger.value!.addEventListener('click', exitByClick);
@@ -164,7 +180,11 @@ export function useDialoger(
         dialoger.value!.classList.add('active');
         setTimeout(() => {
           if (typeof settings.ready === 'function')
-            settings.ready(dialoger.value!, settings);
+            settings.ready({
+              target: dialoger.value!,
+              settings,
+              caller: settings.caller,
+            });
           dialoger.value!.scrollTop = 0;
 
           let autoFocusEl = [
@@ -186,7 +206,7 @@ export function useDialoger(
       }
 
       dialoger.value!.classList.remove('active');
-      if (settings.hashDialog) {
+      if (settings.hashControl) {
         unwatch.closeOnRouteChange!();
         window.removeEventListener('popstate', backToExit);
         router.replace({ hash: '' });
@@ -195,7 +215,11 @@ export function useDialoger(
       }
       setTimeout(() => {
         if (typeof settings.complete === 'function')
-          settings.complete(dialoger.value!, settings);
+          settings.complete({
+            target: dialoger.value!,
+            settings,
+            caller: settings.caller,
+          });
         if (settings.caller) settings.caller.focus();
         settings.caller = undefined;
         utils.unlockWindowScroll(bb.uniqueId!);

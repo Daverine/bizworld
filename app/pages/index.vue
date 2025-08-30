@@ -23,7 +23,7 @@ const userStore = useUserStore();
           <div class="item open-modal" data-target="create-biz">
             Have a shop online
           </div>
-          <Dropdown class="item">
+          <LimbDropdown class="item">
             Support
             <Icon
               name="material-symbols:expand-more-rounded"
@@ -32,7 +32,7 @@ const userStore = useUserStore();
             <div class="drop menu">
               <Shareables name="supports" />
             </div>
-          </Dropdown>
+          </LimbDropdown>
         </div>
         <div class="items r-aligned">
           <Shareables name="do_more_item" />
@@ -44,7 +44,7 @@ const userStore = useUserStore();
             >
               <Icon name="material-symbols:notifications-outline-rounded" />
             </div>
-            <Dropdown
+            <LimbDropdown
               data-browse-dm="dm1_profile"
               :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
               v-tooltip.unblocking
@@ -57,7 +57,7 @@ const userStore = useUserStore();
                 alt="profile"
                 class="fully-rounded logo"
               />
-            </Dropdown>
+            </LimbDropdown>
             <Shareables id="dm1_profile" name="profile_menu" />
           </template>
           <template v-else>
@@ -74,7 +74,7 @@ const userStore = useUserStore();
                 </button>
               </div>
             </div>
-            <Dropdown class="as-icon item sm-and-up-hidden">
+            <LimbDropdown class="as-icon item sm-and-up-hidden">
               <Icon
                 name="material-symbols:person-add-outline-rounded"
                 class="lead"
@@ -93,7 +93,7 @@ const userStore = useUserStore();
                   </button>
                 </div>
               </div>
-            </Dropdown>
+            </LimbDropdown>
           </template>
         </div>
       </div>
@@ -178,7 +178,7 @@ const userStore = useUserStore();
       </div>
     </div>
   </header>
-  <div class="menu sticky z-level-2 mp-menu">
+  <div class="menu sticky z-level-3 mp-menu">
     <Shareables name="main_menu" />
   </div>
   <article id="firstSec">
@@ -304,7 +304,7 @@ const userStore = useUserStore();
           and get connected with new clients and customers.
         </p>
         <div class="text-center">
-          <button class="primary button">GET STARTED</button>
+          <button class="primary button open-modal" data-target="create-biz">GET STARTED</button>
         </div>
       </div>
     </section>
@@ -399,6 +399,7 @@ const userStore = useUserStore();
 
 .hm-header {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

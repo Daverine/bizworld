@@ -2,12 +2,16 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
+  typescript: {
+    strict: false,
+  },
   modules: [
     '@hypernym/nuxt-anime',
     '@vueuse/nuxt',
     '@pinia/nuxt',
     '@nuxt/icon',
     '@nuxt/image',
+    '@nuxt/scripts',
   ],
   image: {
     screens: {

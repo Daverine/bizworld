@@ -20,15 +20,4 @@ const isReady = computed(() => data.details && avail.value);
   align-items: center;
   flex-direction: column;
 }
-.products-grid {
-  display: grid;
-  align-items: center;
-  justify-items: center;
-  justify-content: center;
-  align-content: center;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  gap: 1rem;
-  padding-bottom: 3rem;
-  width: 100%;
-}
 </style>

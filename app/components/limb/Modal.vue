@@ -2,32 +2,14 @@
 
 defineOptions({ inheritAttrs: false });
 
-interface ModalOptions {
-  namespace?: string;
-  toBeConsidered?: string;
-  toggler?: string;
-  toExcuseToggler?: string;
-  setHighlightRange?: boolean;
-  setTabRange?: boolean;
-  closeOnEsc?: boolean;
-  closeOnWrapperClick?: boolean;
-  dismissible?: boolean;
-  autoFocusEl?: string;
-  dismisser?: string;
-  lockScreen?: boolean;
-  inDuration?: number;
-  outDuration?: number;
-}
-
 const props = defineProps<{
   id: string;
-  options?: ModalOptions;
+  options?: DialogerSettings;
 }>();
 
 const modal = useTemplateRef('modal');
-const options: ModalOptions = {
+const options: DialogerSettings = {
   namespace: 'modal',
-  toBeConsidered: '.dialog, .md-control',
   toggler: '.open-modal',
   toExcuseToggler: '.ex-open-modal',
   closeOnEsc: true,
@@ -35,7 +17,6 @@ const options: ModalOptions = {
   dismissible: true,
   autoFocusEl: '[md-autofocus]',
   dismisser: '.exit-modal',
-  lockScreen: true,
   inDuration: 500,
   outDuration: 500,
   ...props.options,

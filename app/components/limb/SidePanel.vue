@@ -2,39 +2,20 @@
 
 defineOptions({ inheritAttrs: false });
 
-interface PanelOptions {
-  namespace?: string;
-  toBeConsidered?: string;
-  toggler?: string;
-  toExcuseToggler?: string;
-  setHighlightRange?: boolean;
-  setTabRange?: boolean;
-  closeOnEsc?: boolean;
-  closeOnWrapperClick?: boolean;
-  dismissible?: boolean;
-  autoFocusEl?: string;
-  dismisser?: string;
-  lockScreen?: boolean;
-  inDuration?: number;
-  outDuration?: number;
-}
-
 const props = defineProps<{
   id: string;
-  options?: PanelOptions;
+  options?: DialogerSettings;
 }>();
 
 const sidepanel = useTemplateRef('panel');
-const options: PanelOptions = {
+const options: DialogerSettings = {
   namespace: 'sidepanel',
-  toBeConsidered: '.panel, .sp-control',
   toggler: '.open-sidepanel',
   closeOnEsc: true,
   closeOnWrapperClick: true,
   dismissible: true,
   autoFocusEl: '[sp-autofocus]',
   dismisser: '.exit-sidepanel',
-  lockScreen: true,
   inDuration: 500,
   outDuration: 500,
   ...props.options,

@@ -10,7 +10,7 @@ function popupSubmitSearch(e) {
 }
 </script>
 <template>
-  <Modal id="search-modal">
+  <LimbModal id="search-modal">
     <div class="dialog self-scroll">
       <div class="header flexbox guttered">
         <div class="bold truncate">Make your business search here ...</div>
@@ -69,8 +69,8 @@ function popupSubmitSearch(e) {
         </form>
       </div>
     </div>
-  </Modal>
-  <Modal id="scanqr-modal">
+  </LimbModal> 
+  <LimbModal id="scanqr-modal">
     <div class="dialog self-scroll">
       <div class="header flexbox guttered">
         <div class="bold truncate">Scan Business QR</div>
@@ -142,11 +142,11 @@ function popupSubmitSearch(e) {
         </div>
       </div>
     </div>
-  </Modal>
-  <Modal id="explore-modal">
+  </LimbModal> 
+  <LimbModal id="explore-modal">
     <Explore />
-  </Modal>
-  <Modal id="create-post">
+  </LimbModal> 
+  <LimbModal id="create-post">
     <div class="dialog">
       <div class="header flexbox guttered">
         <div class="bold truncate">Create post</div>
@@ -160,7 +160,7 @@ function popupSubmitSearch(e) {
       <div class="content">
         <div class="field">
           <label>Post as:</label>
-          <Dropdown
+          <LimbDropdown
             class="selection"
             style="display: flex; align-items: center"
           >
@@ -206,7 +206,7 @@ function popupSubmitSearch(e) {
                 </div>
               </div>
             </div>
-          </Dropdown>
+          </LimbDropdown>
         </div>
         <form @submit.prevent="">
           <div class="field">
@@ -239,8 +239,8 @@ function popupSubmitSearch(e) {
         </form>
       </div>
     </div>
-  </Modal>
-  <Modal id="register-modal">
+  </LimbModal> 
+  <LimbModal id="register-modal">
     <div class="dialog">
       <div class="header flexbox guttered">
         <div class="bold truncate">Join BizWorld</div>
@@ -302,8 +302,8 @@ function popupSubmitSearch(e) {
         </form>
       </div>
     </div>
-  </Modal>
-  <Modal id="login-modal">
+  </LimbModal> 
+  <LimbModal id="login-modal">
     <div class="dialog">
       <div class="header flexbox guttered">
         <div class="bold truncate">Login to BizWorld</div>
@@ -346,7 +346,7 @@ function popupSubmitSearch(e) {
         </form>
       </div>
     </div>
-  </Modal>
-  <Lightbox id="lightbox1" class="dark-mode" />
+  </LimbModal> 
+  <LimbLightbox id="lightbox1" class="dark-mode" />
   <CreateBusiness />
 </template>

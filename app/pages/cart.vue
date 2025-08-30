@@ -219,7 +219,7 @@ const allChecked = computed({
               <Icon name="material-symbols:keyboard-arrow-down-rounded" />
               Checkout details
             </div>
-            <Modal id="checkout-details">
+            <LimbModal id="checkout-details">
               <div class="dialog bottom-sheet padded">
                 <div class="flexbox flex-column guttered">
                   <div class="flexbox flex-separate sm-guttered">
@@ -263,7 +263,7 @@ const allChecked = computed({
                   </div>
                 </div>
               </div>
-            </Modal>
+            </LimbModal> 
             <div class="flexbox flex-separate sm-guttered h6 bold">
               <div>Total</div>
               <div>

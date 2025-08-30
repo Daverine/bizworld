@@ -1,18 +1,10 @@
 <script setup>
+import Common from '~/layouts/Common.vue';
 definePageMeta({ auth: true });
 const props = defineProps(['name']);
 const userStore = useUserStore();
 const searchStore = useSearchStore();
 const feedStore = useFeedStore();
-const main = useTemplateRef('main');
-
-function scrollToView() {
-  main.value.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start',
-    inline: 'nearest',
-  });
-}
 
 onMounted(() => feedStore.getUpdate());
 </script>
@@ -42,8 +34,10 @@ onMounted(() => feedStore.getUpdate());
         </div>
         <div class="items r-aligned">
           <div class="items md-and-down-hidden">
-            <div class="item exit-modal open-modal" data-target="create-biz">Have a shop online</div>
-            <Dropdown class="item">
+            <div class="item exit-modal open-modal" data-target="create-biz">
+              Have a shop online
+            </div>
+            <LimbDropdown class="item">
               Support
               <Icon
                 name="material-symbols:expand-more-rounded"
@@ -52,7 +46,7 @@ onMounted(() => feedStore.getUpdate());
               <div class="drop menu">
                 <Shareables name="supports" />
               </div>
-            </Dropdown>
+            </LimbDropdown>
           </div>
           <Shareables name="do_more_item" />
           <div
@@ -62,7 +56,7 @@ onMounted(() => feedStore.getUpdate());
           >
             <Icon name="material-symbols:notifications-outline-rounded" />
           </div>
-          <Dropdown
+          <LimbDropdown
             data-browse-dm="dm1_profile"
             :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
             v-tooltip.unblocking
@@ -75,7 +69,7 @@ onMounted(() => feedStore.getUpdate());
               alt="profile"
               class="fully-rounded logo"
             />
-          </Dropdown>
+          </LimbDropdown>
           <Shareables id="dm1_profile" name="profile_menu" />
         </div>
       </div>
@@ -150,15 +144,11 @@ onMounted(() => feedStore.getUpdate());
       </div>
     </div>
   </header>
-  <div class="menu sticky z-level-2 mp-menu">
-    <Shareables name="main_menu" />
-  </div>
-  <section id="firstSec" class="csection flexbox">
-    <Shareables name="page_nav" />
+  <Common>
     <main class="flexible container-md" style="padding: 1rem 1rem">
-      <IScroller
-        v-scrollPin="{ top: 65 }"
-        class="pin-top-blend z-level-3"
+      <LimbIScroller
+        v-scrollPin="{ top: 63 }"
+        class="pin-top-blend z-level-1"
         style="margin-bottom: 1rem"
       >
         <div class="rail fillable menu scroll-items">
@@ -173,17 +163,14 @@ onMounted(() => feedStore.getUpdate());
         <div class="r-scroll">
           <Icon name="material-symbols:keyboard-double-arrow-right" />
         </div>
-      </IScroller>
+      </LimbIScroller>
       <section
         style="display: flex; flex-direction: column; align-items: center"
       >
         <h6 class="text-center" style="margin-bottom: 2rem">
           Update from page you're following (Feeds)
         </h6>
-        <FeedCard
-          v-for="feed in feedStore.feeds"
-          :details="feed"
-        />
+        <FeedCard v-for="feed in feedStore.feeds" :details="feed" />
         <div class="divider">
           <button class="button">
             Load more
@@ -192,8 +179,7 @@ onMounted(() => feedStore.getUpdate());
         </div>
       </section>
     </main>
-    <Shareables name="ad_menu" />
-  </section>
+  </Common>
 </template>
 <style scoped>
 .mp-menu {

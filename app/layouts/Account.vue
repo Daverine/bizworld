@@ -32,9 +32,9 @@ defineOptions({ title: 'Your account page | BizWorld' });
           </div>
         </div>
       </header>
-      <IScroller
-        v-scrollPin="{ top: 68 }"
-        class="z-level-3"
+      <LimbIScroller
+        v-scrollPin="{ top: 63 }"
+        class="z-level-2"
         style="margin-top: 1rem"
       >
         <div class="l-scroll">
@@ -45,39 +45,39 @@ defineOptions({ title: 'Your account page | BizWorld' });
         </div>
         <div class="rail menu scroll-items">
           <div class="items" style="margin: 0px auto">
-            <router-link
+            <NuxtLink
               to="/account/profile"
               class="item"
               exact-active-class="active"
-              >Profile</router-link
+              >Profile</NuxtLink
             >
-            <router-link
+            <NuxtLink
               to="/account/reviews"
               class="item"
               exact-active-class="active"
-              >Reviews</router-link
+              >Reviews</NuxtLink
             >
-            <router-link
+            <NuxtLink
               to="/account/saved"
               class="item"
               exact-active-class="active"
-              >Saved cards</router-link
+              >Saved cards</NuxtLink
             >
-            <router-link
+            <NuxtLink
               to="/account/followed"
               class="item"
               exact-active-class="active"
-              >Followed providers</router-link
+              >Followed providers</NuxtLink
             >
-            <router-link
+            <NuxtLink
               to="/account/settings"
               class="item"
               exact-active-class="active"
-              >Settings</router-link
+              >Settings</NuxtLink
             >
           </div>
         </div>
-      </IScroller>
+      </LimbIScroller>
       <div>
         <slot />
       </div>

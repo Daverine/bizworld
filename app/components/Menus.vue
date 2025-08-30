@@ -7,7 +7,7 @@ function toTop() {
 </script>
 
 <template>
-  <SidePanel class="left" id="msidepanel">
+  <LimbSidePanel class="left" id="msidepanel">
     <div class="panel padded">
       <div class="vertical transparent menu">
         <div class="items" style="border-radius: var(--default-radius)">
@@ -23,11 +23,8 @@ function toTop() {
             />
           </NuxtLink>
         </div>
-        <ManageShareables
-          v-if="$route.matched.some((el) => el.path === '/manage')"
-          name="nav_menu"
-        />
-        <Shareables v-else name="nav_menu" />
+        <NavMenuManagement v-if="$route.path.split('/').includes('manage')" />
+        <NavMenu v-else />
       </div>
       <hr />
       <footer style="margin-top: auto">
@@ -35,15 +32,14 @@ function toTop() {
         <Shareables name="copyright" />
       </footer>
     </div>
-  </SidePanel>
+  </LimbSidePanel>
   <div v-if="!$route.meta.noFab" class="fab-group respect-lock">
-    <NuxtLink
-      to="/cart"
-      class="fab radius-lg secondary button"
-    >
+    <NuxtLink to="/cart" class="fab radius-lg secondary button">
       <Icon name="material-symbols:shopping-cart-outline" />
-      <div v-if="cartItems.length" class="floating badge">{{ cartItems.length }}</div>
-  </NuxtLink>
+      <div v-if="cartItems.length" class="floating badge">
+        {{ cartItems.length }}
+      </div>
+    </NuxtLink>
     <button
       id="qaction"
       @click="toTop"

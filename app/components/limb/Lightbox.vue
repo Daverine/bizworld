@@ -9,10 +9,6 @@ declare global {
 }
 declare var YT: any;
 
-interface slideElement extends HTMLElement {
-  youtubeRef?: any; // Use 'any' to avoid TS error if YT.Player type is not available
-}
-
 type LightboxSettings = {
   namespace: string;
   toBeConsidered: string;
@@ -29,10 +25,22 @@ type LightboxSettings = {
   slideshowDuration: number;
   transitionDuration: number;
   thumbnailsView: boolean;
-  hashLightbox: boolean;
-  controller?: (el: HTMLElement, settings: LightboxSettings) => void;
-  ready?: (el: HTMLElement, settings: LightboxSettings) => void;
-  complete?: (el: HTMLElement, settings: LightboxSettings) => void;
+  hashControl: boolean;
+  controller?: (event: {
+    target: HTMLElement;
+    settings: DialogerSettings;
+    caller?: HTMLElement;
+  }) => void;
+  ready?: (event: {
+    target: HTMLElement;
+    settings: DialogerSettings;
+    caller?: HTMLElement;
+  }) => void;
+  complete?: (event: {
+    target: HTMLElement;
+    settings: DialogerSettings;
+    caller?: HTMLElement;
+  }) => void;
   slidePlayer?: ReturnType<typeof setInterval>;
   caller?: HTMLElement;
   gallery?: boolean;
@@ -90,6 +98,9 @@ type reactiveBrainBox = {
 type slideContent = {
   url?: string;
   type?: string;
+  contentId?: string;
+  videoId?: string;
+  youtubeRef?: any; // Use 'any' to avoid TS error if YT.Player type is not available
   caption?: string;
   markup?: string;
   thumbnail?: string;
@@ -110,7 +121,7 @@ const props = defineProps({
   },
 });
 const lightbox = useTemplateRef('lightbox');
-const slides = useTemplateRef<slideElement[]>('slide');
+const slides = useTemplateRef('slide');
 const settings: LightboxSettings = {
   ...{
     namespace: 'lightbox',
@@ -128,7 +139,7 @@ const settings: LightboxSettings = {
     slideshowDuration: 6000,
     transitionDuration: 350,
     thumbnailsView: true,
-    hashLightbox: true,
+    hashControl: true,
   },
   ...(props.options || {}),
 };
@@ -162,13 +173,6 @@ const vbb = reactive<reactiveBrainBox>({
   playing: false,
 });
 
-const contentChecker = {
-  youtube:
-    /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})(?:\S+)?$/,
-  image: /\.(jpg|jpeg|png|webp|avif|gif|svg|bmp|tiff)$/,
-  video: /\.(mp4|webm|ogg)$/i,
-};
-
 const unwatch: {
   [key: string]: WatchStopHandle;
 } = {};
@@ -181,9 +185,9 @@ let nextBtn: HTMLElement;
 
 let slidesTogglers: HTMLElement[] = [];
 let gallery: HTMLElement;
-let currSlide: slideElement;
-let prevSlide: slideElement | null;
-let nextSlide: slideElement | null;
+let currSlide: HTMLElement;
+let prevSlide: HTMLElement | null;
+let nextSlide: HTMLElement | null;
 let currContent: HTMLElement;
 let currPic: HTMLElement | HTMLIFrameElement | HTMLVideoElement;
 let sizeStream: ResizeObserver;
@@ -222,12 +226,17 @@ async function init() {
     await nextTick();
     if (window.YT && window.YT.Player) {
       // If YT.Player is already available, we can proceed immediately
-      slides
-        .value!.filter((el) => el.getAttribute('data-cont-type') === 'youtube')
-        .forEach((el) => {
-          el.youtubeRef = new YT.Player(
-            el.querySelector(`:scope > .content > iframe`)
+      vbb.slidesData
+        ?.filter((el) => el.type === 'youtube' && el.youtubeRef === undefined)
+        .forEach((slide) => {
+          let slideElement = slides.value!.find(
+            (elem) => elem.getAttribute('data-cont-id') === slide.contentId
           );
+          if (slideElement) {
+            slide.youtubeRef = new YT.Player(
+              slideElement.querySelector(`:scope > .content > iframe`)
+            );
+          }
         });
     }
   }
@@ -252,15 +261,15 @@ function exitWithEscKey(e: KeyboardEvent) {
 }
 function resizeIframe() {
   if (!currPic || currPic.nodeName !== 'IFRAME') return;
-  let srcWidth = parseFloat(currPic.getAttribute('width') ?? '16');
-  let srcHeight = parseFloat(currPic.getAttribute('height') ?? '9');
+  let srcWidth = currPic.clientWidth;
+  let srcHeight = currPic.clientHeight;
   let ratio = Math.min(
     currContent.clientWidth / srcWidth,
     currContent.clientHeight / srcHeight
   );
 
-  currPic.setAttribute('width', `${srcWidth * ratio}`);
-  currPic.setAttribute('height', `${srcHeight * ratio}`);
+  currPic.style.width = `${srcWidth * ratio}px`;
+  currPic.style.height = `${srcHeight * ratio}px`;
 }
 function toolbarControls(e: MouseEvent) {
   let target = e.target as HTMLElement;
@@ -524,17 +533,18 @@ onMounted(async () => {
   });
   sizeStream.observe(slider);
 
-  await init();
+  init();
   vbb.currSlideNo = vbb.slidesNo ? 1 : 0;
 
-  if (settings.hashLightbox) {
+  if (settings.hashControl) {
     unwatch.openLightboxFromRoute = watch(
       () => route.hash,
       async (newHash) => {
         if (newHash === `#${props.id}` && !vbb.showLightbox) {
-          await init();
+          init();
           vbb.currSlideNo = vbb.slidesNo ? 1 : 0;
           bb.openWithHash = true;
+          await nextTick();
           vbb.showLightbox = true;
         }
         // else if (vbb.showLightbox) vbb.showLightbox = false;
@@ -550,7 +560,7 @@ onBeforeUnmount(() => {
   });
   document.removeEventListener('click', clickToOpenLightbox);
   if (document.fullscreenElement === lightbox.value!) document.exitFullscreen();
-  if (settings.hashLightbox) window.removeEventListener('popstate', backToExit);
+  if (settings.hashControl) window.removeEventListener('popstate', backToExit);
   document.removeEventListener('keydown', setInteractionRange);
   utils.checkEscStatus(bb.uniqueId!, true);
   document.removeEventListener('keyup', exitWithEscKey);
@@ -570,7 +580,7 @@ watch(
     if (value) {
       if (vbb.slidesNo) update();
 
-      if (settings.hashLightbox) {
+      if (settings.hashControl) {
         bb.scrollPosBeforeLock = { top: window.scrollY, left: window.scrollX };
         if (!bb.openWithHash) {
           bb.prevHash = route.hash;
@@ -609,7 +619,11 @@ watch(
       // If a controller function is provided in the settings, call it with the lightbox element and settings.
       // The controller function can be used to perform additional setup or customization of the lightbox.
       if (typeof settings.controller === 'function')
-        settings.controller(lightbox.value!, settings);
+        settings.controller({
+          target: lightbox.value!,
+          settings,
+          caller: settings.caller,
+        });
       // set focus and text-highlight range to only lightbox;
       document.addEventListener('keydown', setInteractionRange);
 
@@ -622,7 +636,11 @@ watch(
       clearTimeout(bb.inOutTimeout);
       bb.inOutTimeout = setTimeout(() => {
         if (typeof settings.ready === 'function')
-          settings.ready(lightbox.value!, settings);
+          settings.ready({
+            target: lightbox.value!,
+            settings,
+            caller: settings.caller,
+          });
         lightbox.value!.focus();
         if (vbb.slidesNo) resizeIframe();
 
@@ -647,6 +665,16 @@ watch(
         if (vbb.slidesNo) update();
       }, settings.inDuration);
     } else {
+      // pause youtube and html5 video when exiting lightbox
+      if (currSlide?.getAttribute('data-cont-type') === 'video')
+        (currPic as HTMLVideoElement).pause();
+      else if (currSlide?.getAttribute('data-cont-type') === 'youtube')
+        vbb.slidesData
+          ?.find(
+            (el) => el.contentId === currSlide.getAttribute('data-cont-id')
+          )
+          ?.youtubeRef?.pauseVideo();
+
       document.removeEventListener('keydown', setInteractionRange);
       stopSlideshow();
       lightbox.value!.removeEventListener('click', exitOnWrapperClick);
@@ -675,7 +703,7 @@ watch(
 
       lightbox.value!.classList.remove('active');
 
-      if (settings.hashLightbox) {
+      if (settings.hashControl) {
         if (typeof unwatch.closeOnRouteChange === 'function')
           unwatch.closeOnRouteChange();
         window.removeEventListener('popstate', backToExit);
@@ -686,7 +714,11 @@ watch(
       clearTimeout(bb.inOutTimeout);
       bb.inOutTimeout = setTimeout(() => {
         if (typeof settings.complete === 'function')
-          settings.complete(lightbox.value!, settings);
+          settings.complete({
+            target: lightbox.value!,
+            settings,
+            caller: settings.caller,
+          });
         slides.value!.forEach((el) =>
           el.classList.remove('active', 'prev-slide', 'next-slide')
         );
@@ -702,17 +734,17 @@ watch(
   }
 );
 
-async function triggerViewOf(toggler: HTMLElement) {
-  await init();
+function triggerViewOf(toggler: HTMLElement) {
+  init();
   vbb.currSlideNo = slidesTogglers.indexOf(toggler) + 1;
   vbb.showLightbox = true;
 }
-async function loadYouTubeAPI() {
+function loadYouTubeAPI() {
   return new Promise((resolve, reject) => {
     // This code loads the IFrame Youtube Player API code.
     const youtubeAPI = document.createElement('script');
     youtubeAPI.src = 'https://www.youtube.com/iframe_api';
-    // youtubeAPI.async = true;
+    youtubeAPI.async = true;
     youtubeAPI.onload = () => resolve(youtubeAPI);
     youtubeAPI.onerror = () =>
       reject(new Error('Failed to load the YouTube IFrame API'));
@@ -725,18 +757,49 @@ function getContent(el: HTMLElement) {
     let ref = el.getAttribute('data-lightbox');
 
     if (ref !== null) {
-      if (contentChecker.image.test(ref)) {
-        content.url = ref;
-        content.type = 'image';
-      } else if (contentChecker.video.test(ref)) {
-        content.url = ref;
-        content.type = 'video';
-      } else if (contentChecker.youtube.test(ref)) {
-        content.url = `https://www.youtube.com/embed/${
-          ref.match(contentChecker.youtube)![1]
-        }?enablejsapi=1`;
-        content.type = 'youtube';
-        if (!bb.youtubeSlides) bb.youtubeSlides = true;
+      try {
+        const parsedUrl = new URL(ref, window.location.href);
+        const hostname = parsedUrl.hostname.toLowerCase();
+        const pathname = parsedUrl.pathname;
+
+        if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+          content.url = ref;
+          content.type = 'youtube';
+          content.videoId =
+            parsedUrl.searchParams.get('v') || pathname.split('/').pop();
+          bb.youtubeSlides = true;
+        } else {
+          const extension = pathname
+            .split('.')
+            .pop()
+            ?.split('?')[0]
+            ?.split('#')[0];
+          const imageExtensions = [
+            'jpg',
+            'jpeg',
+            'png',
+            'webp',
+            'avif',
+            'gif',
+            'svg',
+            'bmp',
+            'tiff',
+          ];
+          const videoExtensions = ['mp4', 'webm', 'ogg', 'mov'];
+
+          if (imageExtensions.includes(extension!)) {
+            content.url = ref;
+            content.type = 'image';
+          } else if (videoExtensions.includes(extension!)) {
+            content.url = ref;
+            content.type = 'video';
+          } else {
+            content.url = ref;
+            content.type = 'unknown';
+          }
+        }
+      } catch (error) {
+        console.error('Invalid URL in data-lightbox:', ref, error);
       }
     }
   } else if (el.hasAttribute('data-find-lightbox-content')) {
@@ -762,16 +825,13 @@ function getContent(el: HTMLElement) {
     }
   }
 
+  content.contentId = utils.getUniqueId(content.type || 'content');
   content.thumbnail = el.hasAttribute('data-thumbnail')
     ? el.getAttribute('data-thumbnail') ?? ''
     : content.type === 'image'
     ? content.url
-    : content.type === 'youtube' &&
-      el.getAttribute('data-lightbox') &&
-      el.getAttribute('data-lightbox')!.match(contentChecker.youtube)
-    ? `https://img.youtube.com/vi/${
-        el.getAttribute('data-lightbox')!.match(contentChecker.youtube)![1]
-      }/default.jpg`
+    : content.type === 'youtube'
+    ? `https://img.youtube.com/vi/${content.videoId}/default.jpg`
     : `data:image/png;base64,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`;
 
   return content;
@@ -794,18 +854,20 @@ function update(newSlideNo: number = vbb.currSlideNo) {
     if (currSlide?.getAttribute('data-cont-type') === 'video')
       (currPic as HTMLVideoElement).pause();
     else if (currSlide?.getAttribute('data-cont-type') === 'youtube')
-      currSlide.youtubeRef?.pauseVideo();
+      vbb.slidesData
+        ?.find((el) => el.contentId === currSlide.getAttribute('data-cont-id'))
+        ?.youtubeRef?.pauseVideo();
   }
 
   vbb.currSlideNo = newSlideNo;
   currSlide = slides.value!.find(
     (el) => el.getAttribute('data-gallery-ref') === `${newSlideNo}`
-  ) as slideElement;
+  ) as HTMLElement;
   prevSlide = currSlide?.previousElementSibling?.matches('.slide')
-    ? (currSlide.previousElementSibling as slideElement)
+    ? (currSlide.previousElementSibling as HTMLElement)
     : null;
   nextSlide = currSlide?.nextElementSibling?.matches('.slide')
-    ? (currSlide.nextElementSibling as slideElement)
+    ? (currSlide.nextElementSibling as HTMLElement)
     : null;
   currSlide?.classList.add('active');
   prevSlide?.classList.add('prev-slide');
@@ -834,7 +896,11 @@ function update(newSlideNo: number = vbb.currSlideNo) {
         if (currSlide.getAttribute('data-cont-type') === 'video')
           (currPic as HTMLVideoElement).play();
         else if (currSlide.getAttribute('data-cont-type') === 'youtube')
-          currSlide.youtubeRef?.playVideo();
+          vbb.slidesData
+            ?.find(
+              (el) => el.contentId === currSlide.getAttribute('data-cont-id')
+            )
+            ?.youtubeRef?.playVideo();
       }
       // Remove full-text class from all slides caption
       slides.value!.forEach((el) =>
@@ -956,6 +1022,7 @@ function gestureStart(e: TouchEvent | MouseEvent) {
 
     //Zooming with pinch
     if ('touches' in e && e.touches.length === 2) {
+      if (slider.classList.contains('swiping') && bb.newCoords.change) return;
       // get the percentage of the pointer position relative to the content area
       bb.initCoords.pointOnContent = zoomToFit({
         x: bb.startCoords.x,
@@ -997,7 +1064,8 @@ function gestureMove(e: TouchEvent | MouseEvent) {
       e.touches.length === 2 &&
       currContent.classList.contains('zooming')
     ) {
-      bb.newCoords.zoom = bb.initCoords.zoom * (bb.endCoords.z / bb.startCoords.z);
+      bb.newCoords.zoom =
+        bb.initCoords.zoom * (bb.endCoords.z / bb.startCoords.z);
       let zoomDiff = bb.initCoords.zoom - bb.newCoords.zoom;
 
       // This is the translation due to pinch-zooming
@@ -1048,6 +1116,14 @@ function gestureEnd(e: TouchEvent | MouseEvent) {
   }
 
   if (currContent.matches('.zooming, .zoom-dragging')) {
+    // trigger zoomToFit function to adjust the content position and zoom level to the maximum zoom level
+    if (currContent.classList.contains('zooming'))
+      zoomToFit({
+        x: bb.endCoords.x,
+        y: bb.endCoords.y,
+        zoom: bb.newCoords.zoom,
+      });
+
     currContent.classList.remove('zooming', 'zoom-dragging');
     stopSlideshow();
     reAdjustSlide();
@@ -1115,7 +1191,9 @@ function startSlideshow() {
   if (currSlide.getAttribute('data-cont-type') === 'video')
     (currPic as HTMLVideoElement).pause();
   else if (currSlide.getAttribute('data-cont-type') === 'youtube')
-    currSlide.youtubeRef?.pauseVideo();
+    vbb.slidesData
+      ?.find((el) => el.contentId === currSlide.getAttribute('data-cont-id'))
+      ?.youtubeRef?.pauseVideo();
 
   [...toolbar.querySelectorAll(':scope .item.slideshow')].forEach((el) =>
     el.classList.add('active')
@@ -1206,10 +1284,10 @@ function stopSlideshow() {
               <Icon mode="svg" name="material-symbols:zoom-out" class="icon" />
             </div>
           </div>
-          <Dropdown
+          <LimbDropdown
             class="item as-icon resp-up-hidden"
             title="More options"
-            :options="{ independentMenu: false, closeOnItemClick: false }"
+            :options="{ teleportMenu: false, closeOnItemClick: false }"
           >
             <Icon mode="svg" name="material-symbols:more-vert" class="icon" />
             <div class="drop menu">
@@ -1260,7 +1338,7 @@ function stopSlideshow() {
                 Zoom-Out
               </div>
             </div>
-          </Dropdown>
+          </LimbDropdown>
           <a class="item as-icon pic-only" title="Picture only view">
             <Icon
               mode="svg"
@@ -1284,6 +1362,7 @@ function stopSlideshow() {
           v-for="(slide, index) in vbb.slidesData"
           :data-gallery-ref="index + 1"
           :data-cont-type="slide.type"
+          :data-cont-id="slide.contentId"
         >
           <figcaption v-if="slide.caption" class="caption">
             <div class="truncate-helper" v-html="slide.caption"></div>
@@ -1295,18 +1374,16 @@ function stopSlideshow() {
             </video>
             <iframe
               v-else-if="slide.type === 'youtube'"
-              :src="slide.url"
-              allow="autoplay"
-              allowtransparency="true"
+              :src="`https://www.youtube-nocookie.com/embed/${slide.videoId}?enablejsapi=1&playsinline=1`"
               frameborder="0"
-              scrolling="no"
               allowfullscreen
-              mozallowfullscreen
-              webkitallowfullscreen
-              oallowfullscreen
-              msallowfullscreen
-            >
-            </iframe>
+            ></iframe>
+            <iframe
+              v-else-if="slide.type === 'unknown'"
+              :src="slide.url"
+              frameborder="0"
+              allowfullscreen
+            ></iframe>
             <template v-else-if="slide.markup" v-html="slide.markup"></template>
           </div>
         </figure>
@@ -1341,7 +1418,7 @@ function stopSlideshow() {
           <Icon mode="svg" name="material-symbols:chevron-right" />
         </div>
       </div>
-      <IScroller
+      <LimbIScroller
         :options="{
           autoSetup: false,
           scrollBody: '[data-thumbnails]',
@@ -1374,7 +1451,7 @@ function stopSlideshow() {
             class="icon"
           />
         </div>
-      </IScroller>
+      </LimbIScroller>
     </div>
   </Teleport>
 </template>

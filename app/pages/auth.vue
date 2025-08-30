@@ -16,7 +16,7 @@ const userStore = useUserStore();
         >
           <SvgIcon name="menu" />
         </div>
-        <router-link
+        <NuxtLink
           :to="userStore.auth ? '/home' : '/'"
           class="xhover item as-icon"
         >
@@ -26,7 +26,7 @@ const userStore = useUserStore();
             alt="site logo"
             class="logo-lg site-logo"
           />
-        </router-link>
+        </NuxtLink>
       </div>
     </div>
   </header>
@@ -102,7 +102,7 @@ const userStore = useUserStore();
           <hr />
           <p>
             Already have an account?
-            <router-link to="/login">Login</router-link>
+            <NuxtLink to="/login">Login</NuxtLink>
           </p>
         </form>
       </div>
@@ -147,7 +147,7 @@ const userStore = useUserStore();
           </div>
           <hr />
           <p>
-            New to BizWorld? <router-link to="/register">Sign up</router-link>
+            New to BizWorld? <NuxtLink to="/register">Sign up</NuxtLink>
           </p>
         </form>
       </div>

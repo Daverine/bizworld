@@ -49,8 +49,8 @@ const settings: ScrollerOptions = {
   },
   ...(props.options || {}),
 };
-
 const coords: Coords = {};
+let contentSizeObserver: MutationObserver;
 
 let scrollElem: HTMLElement | null = null;
 
@@ -63,8 +63,9 @@ onMounted(async () => {
     console.warn('An IScrollable element does not exist');
     return;
   }
-  window.addEventListener('resize', onResizeMtd);
   scrollElem.addEventListener('scroll', onScrollMtd);
+  contentSizeObserver = new MutationObserver(() => onScrollMtd());
+  contentSizeObserver.observe(scrollElem, { childList: true, subtree: true, characterData: true });
 
   el.value.addEventListener('click', (e: MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -155,10 +156,10 @@ onMounted(async () => {
     );
   });
   await nextTick();
-  onResizeMtd();
+  onScrollMtd();
 });
 
-onBeforeUnmount(() => window.removeEventListener('resize', onResizeMtd));
+onBeforeUnmount(() => contentSizeObserver.disconnect());
 
 function getRect(): Rect {
   return {
@@ -170,30 +171,26 @@ function getRect(): Rect {
   };
 }
 
-function onResizeMtd(): void {
-  onScrollMtd();
-}
-
 function onScrollMtd(): void {
   if (!scrollElem || !el.value) return;
 
   const rect = getRect();
   if (Math.floor(scrollElem.scrollLeft) === 0)
     [...el.value.querySelectorAll(`:scope ${settings.prevCtrlBtn}`)].forEach(
-      (el) => el.classList.add('disabled')
+      (el) => el.classList.remove('active')
     );
   else
     [...el.value.querySelectorAll(`:scope ${settings.prevCtrlBtn}`)].forEach(
-      (el) => el.classList.remove('disabled')
+      (el) => el.classList.add('active')
     );
 
   if (Math.ceil(scrollElem.scrollLeft) >= rect.maxScroll) {
     [...el.value.querySelectorAll(`:scope ${settings.nextCtrlBtn}`)].forEach(
-      (el) => el.classList.add('disabled')
+      (el) => el.classList.remove('active')
     );
   } else
     [...el.value.querySelectorAll(`:scope ${settings.nextCtrlBtn}`)].forEach(
-      (el) => el.classList.remove('disabled')
+      (el) => el.classList.add('active')
     );
 }
 

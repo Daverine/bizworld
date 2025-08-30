@@ -3,13 +3,7 @@ const props = defineProps(['details']);
 </script>
 <template>
   <NuxtLink :to="`/${details.type}/${details.id}`" class="page-prod item">
-    <div class="prod-pic">
-      <NuxtImg
-        preset="thumbnail"
-        :src="details.media"
-        alt=""
-      />
-    </div>
+    <NuxtImg class="prod-pic" preset="thumbnail" :src="details.media" alt="" />
     <div class="prod-content">
       <div class="prod-price">₦{{ details.price.toLocaleString() }}</div>
       <div
@@ -29,6 +23,8 @@ const props = defineProps(['details']);
 
 <style scoped lang="scss">
 .page-prod {
+  display: flex;
+  flex-direction: column;
   width: 12.5rem;
   position: relative;
   text-align: center;
@@ -53,11 +49,6 @@ const props = defineProps(['details']);
   position: relative;
   border-radius: inherit;
   width: 100%;
-
-  img {
-    border-radius: inherit;
-    object-fit: contain;
-  }
 }
 .prod-price {
   font-size: 2rem;

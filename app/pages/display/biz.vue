@@ -215,7 +215,7 @@ onUpdated(() => {
         <div>
           <div class="dm-gap">
             <div class="sub heading">Latest Reviews</div>
-            <!-- <Dropdown class="outlined small button">
+            <!-- <LimbDropdown class="outlined small button">
                                 <SvgIcon name="sort" class="lead" />
                                 Sort
                                 <div class="drop menu">
@@ -223,7 +223,7 @@ onUpdated(() => {
                                     <div class="item">Highest</div>
                                     <div class="item">Lowest</div>
                                 </div>
-                            </Dropdown> -->
+                            </LimbDropdown> -->
           </div>
           <div class="dm-reviews">
             <div v-for="a in Math.min(5, details.reviews.length)" class="dm-review"
@@ -243,14 +243,14 @@ onUpdated(() => {
                     <div>Render Time here.</div>
                   </div>
                 </div>
-                <Dropdown>
+                <LimbDropdown>
                   <SvgIcon name="more_vert" />
                   <div class="drop menu small">
                     <div class="item">
                       <SvgIcon name="flag" class="lead" /> Report
                     </div>
                   </div>
-                </Dropdown>
+                </LimbDropdown>
               </header>
               <article>{{ review.review }}</article>
             </div>
@@ -272,7 +272,7 @@ onUpdated(() => {
         <button class="flat circular button" v-tooltip.unblocking data-tooltip="Save card">
           <SvgIcon name="bookmark_add" />
         </button>
-        <Dropdown :options="{ directionPriority: { x: 'left', y: 'top' } }" v-tooltip.unblocking
+        <LimbDropdown :options="{ directionPriority: { x: 'left', y: 'top' } }" v-tooltip.unblocking
           data-tooltip="More options" class="flat circular button">
           <SvgIcon name="more_vert" />
           <div class="drop menu">
@@ -289,7 +289,7 @@ onUpdated(() => {
               <SvgIcon name="report" class="lead" /> Report page
             </div>
           </div>
-        </Dropdown>
+        </LimbDropdown>
       </div>
     </div>
   </div>

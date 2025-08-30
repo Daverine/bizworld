@@ -7,7 +7,10 @@ const searchStore = useSearchStore();
     <div class="menu sticky z-level-3">
       <Shareables name="main_menu" />
     </div>
-    <div style="border-bottom: 1px solid var(--outline); padding: 0.5rem 0rem">
+    <div
+      v-if="!$route.path.split('/').includes('manage')"
+      style="border-bottom: 1px solid var(--outline); padding: 0.5rem 0rem"
+    >
       <div class="md-and-down-hidden container-lg flexbox" style="gap: 0.5em">
         <button
           class="compact transparent button bold open-modal"
@@ -16,7 +19,7 @@ const searchStore = useSearchStore();
           <Icon name="material-symbols:manage-search-rounded" class="lead" />
           Explore:
         </button>
-        <IScroller class="flexible" style="padding: 0.25rem 0rem">
+        <LimbIScroller class="flexible" style="padding: 0.25rem 0rem">
           <div class="scroll-items" style="gap: 0.5rem">
             <button class="chip">
               <Icon name="material-symbols:restaurant-rounded" class="lead" />
@@ -81,14 +84,17 @@ const searchStore = useSearchStore();
           <div class="r-scroll">
             <Icon name="material-symbols:keyboard-double-arrow-right" />
           </div>
-        </IScroller>
+        </LimbIScroller>
       </div>
     </div>
 
     <section class="csection flexbox">
-      <Shareables name="page_nav" />
+      <PageNav />
       <slot />
-      <Shareables name="ad_menu" />
+      <Shareables
+        v-if="!$route.path.split('/').includes('manage')"
+        name="ad_menu"
+      />
     </section>
   </div>
 </template>

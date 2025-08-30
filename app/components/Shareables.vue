@@ -1,15 +1,6 @@
 <script setup>
 defineOptions({ name: 'rc-shareables' });
 defineProps(['name']);
-function timeInDateJs(time) {
-  time = time.split(':');
-  let result = new Date();
-  result.setHours(Number(time[0]));
-  result.setMinutes(Number(time[1]));
-  result.setSeconds(0);
-  result.setMilliseconds(0);
-  return result;
-}
 
 const mainStore = useMainStore();
 const userStore = useUserStore();
@@ -18,64 +9,64 @@ const searchStore = useSearchStore();
 
 <template>
   <template v-if="name === 'account'">
-    <router-link
+    <NuxtLink
       to="/account/profile"
       class="item exit-sidepanel"
       exact-active-class="active"
     >
-      <SvgIcon name="person" class="lead" /> Your profile
-    </router-link>
-    <router-link
+      <Icon name="material-symbols:person-outline-rounded" class="lead" /> Your profile
+    </NuxtLink>
+    <NuxtLink
       to="/account/reviews"
       class="item exit-sidepanel"
       exact-active-class="active"
     >
-      <SvgIcon name="reviews" class="lead" /> Your reviews
-    </router-link>
-    <router-link
+      <Icon name="material-symbols:reviews-outline-rounded" class="lead" /> Your reviews
+    </NuxtLink>
+    <NuxtLink
       to="/account/saved"
       class="item exit-sidepanel"
       exact-active-class="active"
     >
-      <SvgIcon name="bookmarks" class="lead" />Saved cards
-    </router-link>
-    <router-link
+      <Icon name="material-symbols:bookmarks-outline-rounded" class="lead" /> Saved cards
+    </NuxtLink>
+    <NuxtLink
       to="/account/followed"
       class="item exit-sidepanel"
       exact-active-class="active"
     >
-      <SvgIcon name="groups" class="lead" />Followed providers
-    </router-link>
+      <Icon name="material-symbols:groups-outline-rounded" class="lead" /> Followed providers
+    </NuxtLink>
   </template>
-  <Dropdown
+  <LimbDropdown
     v-else-if="name === 'do_more_item'"
     :options="{ directionPriority: { x: 'center', y: 'bottom' } }"
     v-tooltip.unblocking
     data-tooltip="Do more"
     class="as-icon item"
   >
-    <SvgIcon name="apps" />
+    <Icon name="material-symbols:apps" />
     <div class="drop menu">
-      <div class="menu grid 3-cols app-items">
+      <div class="compact grid menu 3-cols app-items">
         <div
           class="bar-item item open-modal exit-dd"
           data-target="search-modal"
         >
-          <SvgIcon name="search" />
+          <Icon name="material-symbols:search-rounded" />
           <span class="text label">Search</span>
         </div>
         <div
           class="bar-item item open-modal exit-dd"
           data-target="explore-modal"
         >
-          <SvgIcon name="manage_search" />
+          <Icon name="material-symbols:manage-search-rounded" />
           <span class="text label">Explore</span>
         </div>
         <div
           class="bar-item item open-modal exit-dd"
           data-target="scanqr-modal"
         >
-          <SvgIcon name="qr_code_scanner" />
+          <Icon name="material-symbols:qr-code-scanner-rounded" />
           <span class="text label">Scan QR</span>
         </div>
         <div
@@ -83,12 +74,12 @@ const searchStore = useSearchStore();
           class="bar-item item open-modal exit-dd"
           data-target="create-post"
         >
-          <SvgIcon name="edit_square" />
+          <Icon name="material-symbols:edit-square-outline-rounded" />
           <span class="text label">Post</span>
         </div>
       </div>
     </div>
-  </Dropdown>
+  </LimbDropdown>
   <div class="drop menu" v-else-if="name === 'profile_menu'">
     <div class="header centered xhover item">
       <NuxtImg
@@ -99,132 +90,13 @@ const searchStore = useSearchStore();
     </div>
     <rc-shareables name="account" />
     <div class="item" @click="userStore.logout()">
-      <SvgIcon name="logout" class="lead" /> Log out
+      <Icon name="material-symbols:logout-rounded" class="lead" /> Log out
     </div>
   </div>
   <template v-else-if="name === 'supports'">
-    <div class="item"><SvgIcon name="help" class="lead" /> Help center</div>
+    <div class="item"><Icon name="material-symbols:help-outline-rounded" class="lead" /> Help center</div>
     <div class="item">
-      <SvgIcon name="feedback" class="lead" /> Give feedback
-    </div>
-  </template>
-  <template v-else-if="name === 'nav_menu'">
-    <div class="items" style="border-radius: var(--default-radius)">
-      <template v-if="userStore.auth">
-        <router-link
-          to="/home"
-          exact-active-class="active"
-          class="item exit-sidepanel ac-viewbox-ref"
-        >
-          <i class="lead icon ac-viewbox">
-            <Icon name="material-symbols:home-outline-rounded" />
-            <Icon name="material-symbols:home-rounded" />
-          </i>
-          Home
-        </router-link>
-        <router-link
-          to="/messaging"
-          exact-active-class="active"
-          class="item exit-sidepanel ac-viewbox-ref"
-        >
-          <i class="lead icon ac-viewbox">
-            <Icon name="material-symbols:chat-outline-rounded" />
-            <Icon name="material-symbols:chat-rounded" />
-          </i>
-          Messaging
-        </router-link>
-        <router-link
-          to="/myshops"
-          exact-active-class="active"
-          class="item exit-sidepanel ac-viewbox-ref"
-        >
-          <i class="lead icon ac-viewbox">
-            <Icon name="material-symbols:store-outline-rounded" />
-            <Icon name="material-symbols:store-rounded" />
-          </i>
-          My Shops
-        </router-link>
-        <div
-          v-collapser
-          class="item xactive ac-viewbox-ref"
-          :class="{ active: $route.path.includes('/account') }"
-        >
-          <i class="lead icon ac-viewbox">
-            <Icon name="material-symbols:person-outline-rounded" />
-            <Icon name="material-symbols:person-rounded" />
-          </i>
-          Account
-          <i class="trailing icon ac-viewbox">
-            <Icon name="material-symbols:chevron-left-rounded" />
-            <Icon name="material-symbols:keyboard-arrow-down-rounded" />
-          </i>
-        </div>
-        <div class="collapsible sub items">
-          <rc-shareables name="account" />
-        </div>
-        <div v-collapser class="item xactive ac-viewbox-ref">
-          <i class="lead icon ac-viewbox">
-            <Icon name="material-symbols:contact-support-outline-rounded" />
-            <Icon name="material-symbols:contact-support-rounded" />
-          </i>
-          Support
-          <i class="trailing icon ac-viewbox">
-            <Icon name="material-symbols:chevron-left-rounded" />
-            <Icon name="material-symbols:keyboard-arrow-down-rounded" />
-          </i>
-        </div>
-        <div class="collapsible sub items">
-          <rc-shareables name="supports" />
-        </div>
-        <div class="item" @click="userStore.logout()">
-          <Icon name="material-symbols:logout-rounded" class="lead" /> Log out
-        </div>
-        <div class="transparent compact divider"></div>
-        <div class="xhover item 0-padding">
-          <button
-            class="fluid button exit-modal open-modal"
-            data-target="create-biz"
-          >
-            Have a shop online
-          </button>
-        </div>
-      </template>
-      <template v-else>
-        <div v-collapser class="item xactive ac-viewbox-ref">
-          <i class="lead icon ac-viewbox">
-            <Icon name="material-symbols:contact-support-outline-rounded" />
-            <Icon name="material-symbols:contact-support-rounded" />
-          </i>
-          Support
-          <i class="trailing icon ac-viewbox">
-            <Icon name="material-symbols:chevron-left-rounded" />
-            <Icon name="material-symbols:keyboard-arrow-down-rounded" />
-          </i>
-        </div>
-        <div class="collapsible sub items">
-          <rc-shareables name="supports" />
-        </div>
-        <div class="item open-modal" data-target="create-biz">
-          <Icon
-            name="material-symbols:add-business-outline-rounded"
-            class="lead"
-          />
-          Have a shop online
-        </div>
-        <div class="item open-modal exit-sidepanel" data-target="login-modal">
-          <Icon name="material-symbols:login-rounded" class="lead" />
-          Log in
-        </div>
-        <div class="transparent compact divider"></div>
-        <div class="xhover item 0-padding">
-          <button
-            class="fluid primary button open-modal exit-sidepanel"
-            data-target="register-modal"
-          >
-            Sign Up
-          </button>
-        </div>
-      </template>
+      <Icon name="material-symbols:feedback-outline-rounded" class="lead" /> Give feedback
     </div>
   </template>
   <div
@@ -240,7 +112,7 @@ const searchStore = useSearchStore();
     >
       <Icon name="material-symbols:menu-rounded" />
     </div>
-    <router-link
+    <NuxtLink
       :to="userStore.auth ? '/home' : '/'"
       class="xhover item as-icon"
     >
@@ -250,7 +122,7 @@ const searchStore = useSearchStore();
         alt="site logo"
         class="logo-lg site-logo"
       />
-    </router-link>
+    </NuxtLink>
     <form
       class="xhover adaptable item md-and-down-hidden"
       @submit.prevent="searchStore.triggerSearch()"
@@ -298,7 +170,7 @@ const searchStore = useSearchStore();
       </div>
       <rc-shareables name="do_more_item" />
       <template v-if="userStore.auth">
-        <Dropdown
+        <LimbDropdown
           :options="{ directionPriority: { x: 'center', y: 'bottom' } }"
           class="as-icon item ac-viewbox-ref"
           v-tooltip.unblocking
@@ -310,11 +182,16 @@ const searchStore = useSearchStore();
           </i>
           <div
             class="pointing drop menu"
-            style="width: 300px; height: calc(100vh - 84px); max-height: 600px;"
+            style="width: 300px; height: calc(100vh - 84px); max-height: 600px"
           >
-            <div class="flexbox flex-column padded" style="height: 100%;">
-              <div class="flexible flexbox flex-column align-center justify-center guttered">
-                <Icon name="material-symbols-light:notifications-off-outline-rounded" style="font-size: 6rem; color: var(--on-surface-v2);" />
+            <div class="flexbox flex-column padded" style="height: 100%">
+              <div
+                class="flexible flexbox flex-column align-center justify-center guttered"
+              >
+                <Icon
+                  name="material-symbols-light:notifications-off-outline-rounded"
+                  style="font-size: 6rem; color: var(--on-surface-v2)"
+                />
                 <span class="text">You have no new notifications.</span>
               </div>
               <div class="transparent compact divider"></div>
@@ -323,8 +200,8 @@ const searchStore = useSearchStore();
               </div>
             </div>
           </div>
-        </Dropdown>
-        <Dropdown
+        </LimbDropdown>
+        <LimbDropdown
           :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
           v-tooltip.unblocking
           data-tooltip="Your profile"
@@ -337,7 +214,7 @@ const searchStore = useSearchStore();
             class="fully-rounded logo"
           />
           <rc-shareables name="profile_menu" />
-        </Dropdown>
+        </LimbDropdown>
       </template>
       <template v-else>
         <div class="items lg-and-down-hidden">
@@ -351,13 +228,13 @@ const searchStore = useSearchStore();
             </button>
           </div>
         </div>
-        <Dropdown
+        <LimbDropdown
           :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
           v-tooltip.unblocking
           data-tooltip="Account"
           class="item as-icon lg-and-up-hidden"
         >
-          <SvgIcon name="person_add" />
+          <Icon name="material-symbols:person-add-outline-rounded" />
           <span class="sm-and-down-hidden">Account</span>
           <div class="drop menu">
             <div class="item open-modal" data-target="login-modal">Log in</div>
@@ -365,7 +242,7 @@ const searchStore = useSearchStore();
               Sign Up
             </div>
           </div>
-        </Dropdown>
+        </LimbDropdown>
       </template>
     </div>
   </div>
@@ -384,17 +261,6 @@ const searchStore = useSearchStore();
     <div class="item">@ Copyright 2023</div>
     <div class="item">Emmadave Inc.</div>
   </div>
-
-  <template v-else-if="name === 'page_nav'">
-    <aside id="navmenu" class="flex-none col sidemenu">
-      <div
-        v-scrollPin="{ top: 84, bottom: 16 }"
-        class="vertical transparent menu"
-      >
-        <rc-shareables name="nav_menu" />
-      </div>
-    </aside>
-  </template>
   <template v-else-if="name === 'ad_menu'">
     <aside class="flex-none col sidemenu lg-and-down-hidden">
       <div id="admenu" v-scrollPin="{ top: 84, bottom: 16 }">
@@ -404,7 +270,12 @@ const searchStore = useSearchStore();
           </h6>
           <div class="ads">
             <div class="text-center ad">
-              <NuxtImg format="webp" src="/images/ads.jpg" alt="ad" class="image" />
+              <NuxtImg
+                format="webp"
+                src="/images/ads.jpg"
+                alt="ad"
+                class="image"
+              />
               <div>
                 Fix your laptops and desktops (Hardware and Software).
                 <button class="primary button">contact us</button>
@@ -429,15 +300,15 @@ const searchStore = useSearchStore();
           type="radio"
           value="light-mode"
         />
-        <SvgIcon name="light_mode" />
+        <Icon name="material-symbols:light-mode-outline-rounded" />
       </label>
       <label>
         <input v-model="mainStore.colorScheme" type="radio" value="auto-mode" />
-        <SvgIcon name="desktop_windows" />
+        <Icon name="material-symbols:desktop-windows-outline-rounded" />
       </label>
       <label>
         <input v-model="mainStore.colorScheme" type="radio" value="dark-mode" />
-        <SvgIcon name="dark_mode" />
+        <Icon name="material-symbols:dark-mode-outline-rounded" />
       </label>
     </div>
   </div>

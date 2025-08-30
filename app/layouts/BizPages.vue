@@ -101,7 +101,7 @@ const isReady = computed(() => data.details && avail.value);
           >
             <SvgIcon name="menu" class="lead" />
             Menu
-            <SidePanel class="right" id="bizsidepanel">
+            <LimbSidePanel class="right" id="bizsidepanel">
               <div class="padded panel">
                 <div class="vertical menu">
                   <div class="centered item exit-sidepanel">
@@ -126,10 +126,10 @@ const isReady = computed(() => data.details && avail.value);
                   <Shareables name="copyright" />
                 </footer>
               </div>
-            </SidePanel>
+            </LimbSidePanel>
           </div>
           <div class="xhover 0-l-padding item">
-            <Dropdown
+            <LimbDropdown
               :options="{ directionPriority: { x: 'left' } }"
               v-tooltip.unblocking
               data-tooltip="More options"
@@ -150,7 +150,7 @@ const isReady = computed(() => data.details && avail.value);
                   <SvgIcon name="report" class="lead" /> Report page
                 </div>
               </div>
-            </Dropdown>
+            </LimbDropdown>
           </div>
         </div>
       </div>

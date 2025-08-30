@@ -15,15 +15,15 @@ onMounted(() => {
 <template>
   <Title>BizWorld | Search: {{ route.query.q }}</Title>
   <main class="flexible container-md" style="padding: 1rem 1.5rem">
-    <IScroller
-      v-scrollPin="{ top: 65 }"
-      class="pin-top-blend z-level-3"
+    <LimbIScroller
+      v-scrollPin="{ top: 63 }"
+      class="pin-top-blend z-level-1"
       style="margin-bottom: 1rem"
     >
       <div class="rail small menu scroll-items">
         <div class="compact item xhover">
           Search in:
-          <Dropdown class="selection iflexbox">
+          <LimbDropdown class="selection iflexbox">
             <Icon
               name="material-symbols:category-search-outline-rounded"
               class="primary-text r-spaced"
@@ -34,7 +34,7 @@ onMounted(() => {
               <div class="item">Products</div>
               <div class="item">Projects</div>
             </div>
-          </Dropdown>
+          </LimbDropdown>
           <div>
             <Icon
               name="material-symbols:location-on-outline-rounded"
@@ -55,7 +55,27 @@ onMounted(() => {
       <div class="r-scroll">
         <Icon name="material-symbols:keyboard-double-arrow-right" />
       </div>
-    </IScroller>
+    </LimbIScroller>
+    <ItemCard
+      v-for="result in searchStore.searchResults"
+      :details="result"
+    />
+    <ItemCard
+      v-for="result in searchStore.searchResults"
+      :details="result"
+    />
+    <ItemCard
+      v-for="result in searchStore.searchResults"
+      :details="result"
+    />
+    <ItemCard
+      v-for="result in searchStore.searchResults"
+      :details="result"
+    />
+    <ItemCard
+      v-for="result in searchStore.searchResults"
+      :details="result"
+    />
     <ItemCard
       v-for="result in searchStore.searchResults"
       :details="result"

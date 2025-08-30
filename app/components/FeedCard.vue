@@ -51,7 +51,7 @@ defineProps(['details']);
           </div>
         </div>
       </div>
-      <Dropdown
+      <LimbDropdown
         class="flat icon button"
         :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
       >
@@ -69,7 +69,7 @@ defineProps(['details']);
             Report post
           </div>
         </div>
-      </Dropdown>
+      </LimbDropdown>
     </div>
     <div v-if="details.media" class="fcd-media">
       <NuxtImg

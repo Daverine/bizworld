@@ -209,7 +209,7 @@ function init() {
         else
           slider?.insertBefore(
             slideClone.cloneNode(true),
-            slider.children[index]
+            slider.children[index] as Node
           );
       }
     });
@@ -222,7 +222,7 @@ function init() {
       .find((el) => el.classList.contains('active'))
       ?.getAttribute('data-csid') || 1
   );
-  currSlide = slides[tmp.currSlideNo - 1];
+  currSlide = slides[tmp.currSlideNo - 1] as HTMLElement;
   tmp.spaceBetween =
     typeof tmp.breakpoint.spaceBetween === 'number'
       ? `${tmp.breakpoint.spaceBetween}px`
@@ -268,7 +268,7 @@ function update(newSlideNo: number = tmp.currSlideNo || 1) {
 
   prevSlide = currSlide;
   tmp.currSlideNo = newSlideNo;
-  currSlide = slides[tmp.currSlideNo - 1];
+  currSlide = slides[tmp.currSlideNo - 1] as HTMLElement;
 
   tmp.newCoord = Math.min(
     tmp.minExt,
@@ -319,12 +319,8 @@ function update(newSlideNo: number = tmp.currSlideNo || 1) {
 
 function dist(e: MouseEvent | TouchEvent) {
   if (settings.direction === 'vertical')
-    return e.type.indexOf('touch') > -1
-      ? (e as TouchEvent).touches[0].clientY
-      : (e as MouseEvent).clientY;
-  return e.type.indexOf('touch') > -1
-    ? (e as TouchEvent).touches[0].clientX
-    : (e as MouseEvent).clientX;
+    return 'touches' in e ? e.touches[0]?.clientY || 0 : e.clientY;
+  return 'touches' in e ? e.touches[0]?.clientX || 0 : e.clientX;
 }
 
 function gestureStart(e: MouseEvent | TouchEvent) {
@@ -541,7 +537,7 @@ function stopAutoslider() {
           </button>
         </div>
       </div>
-      <IScroller
+      <LimbIScroller
         :options="{
           autoSetup: false,
           scrollBody: '.cs-trackers',
@@ -565,7 +561,7 @@ function stopAutoslider() {
         <div class="r-scroll">
           <Icon name="material-symbols:keyboard-double-arrow-right" />
         </div>
-      </IScroller>
+      </LimbIScroller>
     </template>
     <slot v-else></slot>
   </div>
