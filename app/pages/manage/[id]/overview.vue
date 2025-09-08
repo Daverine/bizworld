@@ -5,8 +5,8 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
   <main class="flexible container-md padded">
     <header
       v-scrollPin="{ notifyStuckState: true, top: 63 }"
-      class="scrollpin fluid z-level-1 pin-top-blend"
-      style="background-color: var(--surface); margin-bottom: 1rem"
+      class="scrollpin z-level-1 pin-top-blend surface-bg"
+      style="margin-bottom: 1rem"
     >
       <div
         class="p-h3 lined heading h3 0-margined align-end flexbox guttered flex-separate"

@@ -5,6 +5,13 @@ defineProps(['name']);
 const mainStore = useMainStore();
 const userStore = useUserStore();
 const searchStore = useSearchStore();
+const colorMode = useColorMode({
+  modes: {
+    light: 'light-mode',
+    dark: 'dark-mode',
+  },
+  emitAuto: true,
+});
 </script>
 
 <template>
@@ -14,28 +21,32 @@ const searchStore = useSearchStore();
       class="item exit-sidepanel"
       exact-active-class="active"
     >
-      <Icon name="material-symbols:person-outline-rounded" class="lead" /> Your profile
+      <Icon name="material-symbols:person-outline-rounded" class="lead" /> Your
+      profile
     </NuxtLink>
     <NuxtLink
       to="/account/reviews"
       class="item exit-sidepanel"
       exact-active-class="active"
     >
-      <Icon name="material-symbols:reviews-outline-rounded" class="lead" /> Your reviews
+      <Icon name="material-symbols:reviews-outline-rounded" class="lead" /> Your
+      reviews
     </NuxtLink>
     <NuxtLink
       to="/account/saved"
       class="item exit-sidepanel"
       exact-active-class="active"
     >
-      <Icon name="material-symbols:bookmarks-outline-rounded" class="lead" /> Saved cards
+      <Icon name="material-symbols:bookmarks-outline-rounded" class="lead" />
+      Saved cards
     </NuxtLink>
     <NuxtLink
       to="/account/followed"
       class="item exit-sidepanel"
       exact-active-class="active"
     >
-      <Icon name="material-symbols:groups-outline-rounded" class="lead" /> Followed providers
+      <Icon name="material-symbols:groups-outline-rounded" class="lead" />
+      Followed providers
     </NuxtLink>
   </template>
   <LimbDropdown
@@ -94,9 +105,13 @@ const searchStore = useSearchStore();
     </div>
   </div>
   <template v-else-if="name === 'supports'">
-    <div class="item"><Icon name="material-symbols:help-outline-rounded" class="lead" /> Help center</div>
     <div class="item">
-      <Icon name="material-symbols:feedback-outline-rounded" class="lead" /> Give feedback
+      <Icon name="material-symbols:help-outline-rounded" class="lead" /> Help
+      center
+    </div>
+    <div class="item">
+      <Icon name="material-symbols:feedback-outline-rounded" class="lead" />
+      Give feedback
     </div>
   </template>
   <div
@@ -112,10 +127,7 @@ const searchStore = useSearchStore();
     >
       <Icon name="material-symbols:menu-rounded" />
     </div>
-    <NuxtLink
-      :to="userStore.auth ? '/home' : '/'"
-      class="xhover item as-icon"
-    >
+    <NuxtLink :to="userStore.auth ? '/home' : '/'" class="xhover item as-icon">
       <NuxtImg
         preset="logo"
         src="/images/logo_sqr.png"
@@ -295,19 +307,15 @@ const searchStore = useSearchStore();
     <label>Color scheme settings</label>
     <div class="icon fluid option-group">
       <label>
-        <input
-          v-model="mainStore.colorScheme"
-          type="radio"
-          value="light-mode"
-        />
+        <input v-model="colorMode" type="radio" value="light" />
         <Icon name="material-symbols:light-mode-outline-rounded" />
       </label>
       <label>
-        <input v-model="mainStore.colorScheme" type="radio" value="auto-mode" />
+        <input v-model="colorMode" type="radio" value="auto" />
         <Icon name="material-symbols:desktop-windows-outline-rounded" />
       </label>
       <label>
-        <input v-model="mainStore.colorScheme" type="radio" value="dark-mode" />
+        <input v-model="colorMode" type="radio" value="dark" />
         <Icon name="material-symbols:dark-mode-outline-rounded" />
       </label>
     </div>

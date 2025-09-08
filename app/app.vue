@@ -9,18 +9,8 @@ function handleScroll() {
 onMounted(() => {
   window.dispatchEvent(new Event('scroll'));
   window.addEventListener('scroll', handleScroll);
-  watch(
-    () => mainStore.colorScheme,
-    (value) => {
-      document.documentElement.classList.remove('dark-mode');
-      document.documentElement.classList.remove('light-mode');
-      if (value !== 'auto-mode') document.documentElement.classList.add(value);
-    },
-    { immediate: true }
-  );
 });
 onUnmounted(() => window.removeEventListener('scroll', handleScroll));
-onUpdated(() => window.dispatchEvent(new Event('scroll')));
 </script>
 <template>
   <Title>BizWorld | The Web World of Business</Title>

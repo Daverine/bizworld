@@ -1,13 +1,13 @@
 <script setup>
 import Details from './Details.vue';
-const [newTemplate, useTemplate] = createReusableTemplate();
+const [DefinePageNav, PageNav] = createReusableTemplate();
 const data = useBizStore();
 const avail = useAvailability(data.details.hours);
 const isReady = computed(() => data.details && avail.value);
 </script>
 
 <template>
-  <newTemplate>
+  <DefinePageNav>
     <NuxtLink
       :to="{ name: 'biz-home', params: { id: $route.params.id } }"
       exact-active-class="active"
@@ -38,16 +38,16 @@ const isReady = computed(() => data.details && avail.value);
       class="item exit-sidepanel"
       >About Us</NuxtLink
     >
-  </newTemplate>
-  
+  </DefinePageNav>
+
   <Details>
     <div v-if="isReady" class="grid-layout">
       <header
-        class="flexbox dm-gap"
+        class="flexbox"
         style="padding-top: 0.5rem; align-items: center; gap: 1rem"
       >
         <div
-          class="dm-logo flex-none"
+          class="flex-none"
           style="position: relative; width: max-content; line-height: 0"
         >
           <NuxtImg
@@ -65,25 +65,29 @@ const isReady = computed(() => data.details && avail.value);
             style="position: absolute; bottom: 0.5em; right: 0.5em"
           />
         </div>
-        <div class="dm-heading flexible">
+        <div class="flexible">
           <h5 class="0-margined">{{ data.details.bizName }}</h5>
           <div class="faint-text">{{ data.details.mainCategory }}</div>
         </div>
         <button
           class="flex-none flat button auto-l-margined md-and-down-hidden"
         >
-          <SvgIcon name="follow" class="lead" /> Follow
+          <Icon
+            name="material-symbols:add-to-queue-outline-rounded"
+            class="lead"
+          />
+          Follow
         </button>
       </header>
       <div
-        v-scrollPin="{ top: 64 }"
-        class="fluid z-level-2 r-aligned basic menu surface-v2-bg"
+        v-scrollPin="{ top: 63, notifyStuckState: true }"
+        class="scrollpin fluid z-level-2 r-aligned basic menu surface-v2-bg"
         style="height: 3.5rem; margin-bottom: 0.5rem"
       >
         <div class="container items">
           <NuxtLink
             :to="{ name: 'biz-home', params: { id: $route.params.id } }"
-            class="xhover l-aligned item as-icon"
+            class="xhover item as-icon visible-on-stuck"
           >
             <NuxtImg
               preset="logo"
@@ -92,8 +96,8 @@ const isReady = computed(() => data.details && avail.value);
               class="logo-lg site-logo"
             />
           </NuxtLink>
-          <div class="items md-and-down-hidden">
-            <useTemplate />
+          <div class="r-aligned items md-and-down-hidden">
+            <PageNav />
           </div>
           <div
             class="item open-sidepanel md-and-up-hidden"
@@ -118,7 +122,7 @@ const isReady = computed(() => data.details && avail.value);
                       class="logo-lg site-logo"
                     />
                   </NuxtLink>
-                  <useTemplate />
+                  <PageNav />
                 </div>
                 <hr />
                 <footer style="margin-top: auto">
@@ -162,7 +166,7 @@ const isReady = computed(() => data.details && avail.value);
         <div class="footer-main">
           <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
             <div
-              class="dm-logo flex-none"
+              class="flex-none"
               style="position: relative; width: max-content; line-height: 0"
             >
               <NuxtImg
@@ -212,7 +216,7 @@ const isReady = computed(() => data.details && avail.value);
           <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
             <div class="bold">Menus</div>
             <div class="text vertical menu">
-              <useTemplate />
+              <PageNav />
             </div>
           </div>
           <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">

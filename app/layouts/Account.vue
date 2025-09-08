@@ -1,5 +1,4 @@
 <script setup>
-import { NuxtImg } from '#components';
 import Common from './Common.vue';
 
 const userStore = useUserStore();
@@ -7,28 +6,27 @@ defineOptions({ title: 'Your account page | BizWorld' });
 </script>
 <template>
   <Common>
-    <main class="flexible col" id="feed">
-      <header>
-        <div class="container guttered flexbox">
-          <div class="flex-none">
-            <NuxtImg
-              preset="logo"
-              :src="userStore.userData.profileImg"
-              class="profile-pic circular image"
-              alt="Your profile Picture"
-            />
-          </div>
-          <div class="flexible">
-            <h5>
-              {{
-                `${userStore.userData.firstName} ${userStore.userData.lastName}`
-              }}
-            </h5>
-            <div class="semibold">
-              <span>{{ userStore.userData.following.length }} Following </span>
-              |
-              <span>{{ userStore.userData.bookmarks.length }} Bookmarks </span>
-            </div>
+    <div class="container-md">
+      <header class="container guttered flexbox" style="margin-top: 0.5rem">
+        <div class="flex-none">
+          <NuxtImg
+            preset="logo"
+            :src="userStore.userData.profileImg"
+            class="profile-pic circular image"
+            style="width: 5rem; height: 5rem"
+            alt="Your profile Picture"
+          />
+        </div>
+        <div class="flexible">
+          <h5>
+            {{
+              `${userStore.userData.firstName} ${userStore.userData.lastName}`
+            }}
+          </h5>
+          <div class="semibold">
+            <span>{{ userStore.userData.following.length }} Following </span>
+            |
+            <span>{{ userStore.userData.bookmarks.length }} Bookmarks </span>
           </div>
         </div>
       </header>
@@ -78,37 +76,7 @@ defineOptions({ title: 'Your account page | BizWorld' });
           </div>
         </div>
       </LimbIScroller>
-      <div>
-        <slot />
-      </div>
-    </main>
+      <slot />
+    </div>
   </Common>
 </template>
-<style lang="scss" scoped>
-#feed {
-  header {
-    position: relative;
-    width: 100%;
-  }
-
-  .profile-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    padding: 1rem;
-  }
-
-  .cover-pic {
-    width: 100%;
-    padding-top: calc(100% / 3 * 1);
-    background-color: gray;
-  }
-
-  .profile-pic {
-    width: 5rem;
-    height: 5rem;
-    border: 4px solid var(--surface);
-    // margin-top: calc(-7.5rem / 2 - 1rem);
-  }
-}
-</style>

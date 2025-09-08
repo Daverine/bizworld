@@ -178,7 +178,7 @@ const userStore = useUserStore();
       </div>
     </div>
   </header>
-  <div class="menu sticky z-level-3 mp-menu">
+  <div class="menu sticky z-level-2 mp-menu">
     <Shareables name="main_menu" />
   </div>
   <article id="firstSec">

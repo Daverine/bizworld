@@ -1,6 +1,4 @@
 <script setup>
-import { get } from '@vueuse/core';
-
 definePageMeta({ layout: 'details', name: 'product-page' });
 const cartStore = useCartStore();
 const [newTemplate, useTemplate] = createReusableTemplate();
@@ -19,7 +17,7 @@ const details = ref({
   ],
   overview:
     'This product is suitable for office use and it also presentable. It has a long lasting battery and its capable of handling comming computer daily tasks.',
-  specification: {
+  specifications: {
     Type: 'Laptop',
     Condition: 'Used',
     Brand: 'Dell',
@@ -626,14 +624,14 @@ function getItemForCart() {
           <div class="heading">Seller's review</div>
           <p>{{ details.overview }}</p>
         </section>
-        <!-- Specification Section -->
+        <!-- Specifications Section -->
         <section class="spec">
           <div v-collapser class="ac-viewbox-ref active lined heading a-block">
             <Icon
               name="material-symbols:list-alt-outline-rounded"
               class="lead"
             />
-            Specification
+            Specifications
             <i class="ac-viewbox trailing icon">
               <Icon name="material-symbols:chevron-left-rounded" />
               <Icon name="material-symbols:expand-more-rounded" />
@@ -642,7 +640,7 @@ function getItemForCart() {
           <div class="collapsible">
             <table class="basic definition table">
               <tbody>
-                <tr v-for="(value, key) in details.specification">
+                <tr v-for="(value, key) in details.specifications">
                   <td>{{ key }}</td>
                   <td>{{ value }}</td>
                 </tr>
@@ -1054,7 +1052,7 @@ function getItemForCart() {
           </table>
         </div>
       </div>
-    </LimbModal> 
+    </LimbModal>
     <LimbModal id="pre-cart">
       <div class="self-scroll dialog">
         <div class="header pin-top-blend flexbox guttered">
@@ -1107,7 +1105,7 @@ function getItemForCart() {
           </div>
         </div>
       </div>
-    </LimbModal> 
+    </LimbModal>
   </main>
 </template>
 

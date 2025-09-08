@@ -3,6 +3,71 @@
 * Copyright 2011-2017 Emmadave, Inc.
 * Licensed under DONT KNOW YET
 */
+:root {
+  color-scheme: dark light;
+  --root-font: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol";
+  --base-size: 16px;
+  --xs-size: 0.75;
+  --sm-size: 0.875;
+  --md-size: 1;
+  --lg-size: 1.125;
+  --xl-size: 1.25;
+  --mega-size: 6.875rem;
+  --h1-size: 3.5rem;
+  --h2-size: 3.125rem;
+  --h3-size: 2.25rem;
+  --h4-size: 1.75rem;
+  --h5-size: 1.5rem;
+  --h6-size: 1.25rem;
+  --heading-size: 1.125rem;
+  --line-height: 1.5;
+  --light-weight: 300;
+  --semibold-weight: 500;
+  --bold-weight: bold;
+  --extrabold-weight: bolder;
+  --z-level-5: 9999;
+  --z-level-4: 9000;
+  --z-level-3: 8000;
+  --z-level-2: 7000;
+  --z-level-1: 6000;
+  --z-depth-0: 0px 0px 0px 0px rgba(0, 0, 0, 0.2),
+    0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
+  --z-depth-1: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  --z-depth-2: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
+    0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+  --z-depth-3: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  --z-depth-4: 0px 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+  --z-depth-5: 0px 7px 8px -4px rgba(0, 0, 0, 0.2),
+    0px 12px 17px 2px rgba(0, 0, 0, 0.14), 0px 5px 22px 4px rgba(0, 0, 0, 0.12);
+  --md-radius: 1rem;
+  --sm-radius: 0.5rem;
+  --max-radius: 1000rem;
+  --comp-radius: 0.375rem;
+  --default-radius: 0.125rem;
+  --hover-state: 0.08;
+  --focus-state: 0.08;
+  --press-state: 0.125;
+  --drag-state: 0.2;
+  --text-faint-v1: 0.65;
+  --text-faint-v2: 0.45;
+  --block-margin: 1em;
+  --inline-margin: 0.5em;
+  --container-lg: 85rem;
+  --container: 72rem;
+  --container-md: 45rem;
+  --container-sm: 32rem;
+  --container-xs: 25rem;
+  --outline: var(--surface-v3);
+  --outline-burnt: var(--surface-v4);
+  --scrim-color: var(--on-surface-v2);
+  --scrim-opacity: 0.7;
+}
+
 @media screen and (prefers-color-scheme: light) {
   :root {
     color-scheme: light;
@@ -103,70 +168,6 @@
   --success-cont: hsl(134deg 70% 16%);
   --warning-cont: hsl(39deg 100% 16%);
   --error-cont: hsl(2deg 72% 16%);
-}
-
-:root {
-  --root-font: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol";
-  --base-size: 16px;
-  --xs-size: 0.75;
-  --sm-size: 0.875;
-  --md-size: 1;
-  --lg-size: 1.125;
-  --xl-size: 1.25;
-  --mega-size: 6.875rem;
-  --h1-size: 3.5rem;
-  --h2-size: 3.125rem;
-  --h3-size: 2.25rem;
-  --h4-size: 1.75rem;
-  --h5-size: 1.5rem;
-  --h6-size: 1.25rem;
-  --heading-size: 1.125rem;
-  --line-height: 1.5;
-  --light-weight: 300;
-  --semibold-weight: 500;
-  --bold-weight: bold;
-  --extrabold-weight: bolder;
-  --z-level-5: 9999;
-  --z-level-4: 9000;
-  --z-level-3: 8000;
-  --z-level-2: 7000;
-  --z-level-1: 6000;
-  --z-depth-0: 0px 0px 0px 0px rgba(0, 0, 0, 0.2),
-    0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
-  --z-depth-1: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
-  --z-depth-2: 0px 3px 3px -2px rgba(0, 0, 0, 0.2),
-    0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
-  --z-depth-3: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
-    0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
-  --z-depth-4: 0px 5px 5px -3px rgba(0, 0, 0, 0.2),
-    0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
-  --z-depth-5: 0px 7px 8px -4px rgba(0, 0, 0, 0.2),
-    0px 12px 17px 2px rgba(0, 0, 0, 0.14), 0px 5px 22px 4px rgba(0, 0, 0, 0.12);
-  --md-radius: 1rem;
-  --sm-radius: 0.5rem;
-  --max-radius: 1000rem;
-  --comp-radius: 0.375rem;
-  --default-radius: 0.125rem;
-  --hover-state: 0.08;
-  --focus-state: 0.08;
-  --press-state: 0.125;
-  --drag-state: 0.2;
-  --text-faint-v1: 0.65;
-  --text-faint-v2: 0.45;
-  --block-margin: 1em;
-  --inline-margin: 0.5em;
-  --container-lg: 85rem;
-  --container: 72rem;
-  --container-md: 45rem;
-  --container-sm: 32rem;
-  --container-xs: 25rem;
-  --outline: var(--surface-v3);
-  --outline-burnt: var(--surface-v4);
-  --scrim-color: var(--on-surface-v2);
-  --scrim-opacity: 0.7;
 }
 
 html {
@@ -367,24 +368,7 @@ h6 {
   font-weight: var(--bold-weight);
   margin-top: 0.5em;
   margin-bottom: 0.5rem;
-}
-h1 + p,
-h2 + p,
-h3 + p,
-h4 + p,
-h5 + p,
-h6 + p {
-  margin-top: 0;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
   line-height: 1.25;
-  text-wrap: balance;
 }
 
 h1 {
@@ -412,8 +396,10 @@ h6 {
 }
 
 p {
-  line-height: var(--line-height);
-  margin: 1em 0;
+  margin: 0;
+}
+p:not(:last-child) {
+  margin-bottom: 1rem;
 }
 
 code,
@@ -2623,7 +2609,10 @@ table.table tbody tr.i-selectable td:hover:before {
   display: inline-flex;
   align-items: center;
   position: relative;
-  padding: 0em;
+  gap: 0.75em;
+}
+.input > * {
+  font-size: inherit;
 }
 .input > .subject {
   flex: 1 1 auto;
@@ -2631,6 +2620,7 @@ table.table tbody tr.i-selectable td:hover:before {
   min-height: 100%;
   min-width: 3em;
   margin: 0em;
+  padding: 0em;
 }
 .input > .subject, .input > .subject:hover, .input > .subject:focus-within, .input > .subject.active {
   color: inherit;
@@ -2638,12 +2628,6 @@ table.table tbody tr.i-selectable td:hover:before {
   background: transparent;
   border: 0px none;
   box-shadow: none;
-}
-.input > .subject:not(:first-child) {
-  padding-left: 0px;
-}
-.input > .subject:not(:last-child) {
-  padding-right: 0px;
 }
 .input[disabled] {
   cursor: not-allowed;
@@ -2655,9 +2639,8 @@ table.table tbody tr.i-selectable td:hover:before {
   opacity: 0.45;
 }
 .select.dropdown > .icon, .input > .icon {
-  line-height: inherit;
+  display: inline-flex;
   z-index: 20;
-  margin: 0em 0.5625em;
   opacity: 0.6;
   transition: opacity 0.3s ease;
   padding: 0em;
@@ -2674,7 +2657,7 @@ table.table tbody tr.i-selectable td:hover:before {
   cursor: default;
   pointer-events: none;
 }
-.select.dropdown > .icon:hover, .input > .icon:hover, .select.dropdown > .icon:focus .select.dropdown:focus-within > .icon, .input > .icon:focus .select.dropdown:focus-within > .icon, .select.dropdown > .icon:focus .input:focus-within > .icon, .input > .icon:focus .input:focus-within > .icon {
+.select.dropdown > .icon:hover, .input > .icon:hover, .select.dropdown > .icon:focus, .input > .icon:focus, .select.dropdown:focus-within > .icon, .input:focus-within > .icon {
   opacity: 1;
 }
 .text-fit.select.dropdown > .icon:first-child, .text-fit.input > .icon:first-child, .text-fit.select.dropdown > .icon:last-child, .text-fit.input > .icon:last-child, .lined.select.dropdown > .icon:first-child, .lined.input > .icon:first-child, .lined.select.dropdown > .icon:last-child, .lined.input > .icon:last-child {
@@ -2922,9 +2905,6 @@ fieldset > .supp-text,
   border: 2px solid var(--bd-color);
   padding: calc(var(--button-padding-tb) - 2px) calc(var(--button-padding-lr) - 1px);
 }
-.button.as-text {
-  padding: 0px;
-}
 .button > .lead.icon {
   margin-left: -0.5em;
 }
@@ -2947,7 +2927,7 @@ fieldset > .supp-text,
   outline: 2px solid var(--on-surface);
   outline-offset: 1px;
 }
-.button:not(.mute-interaction):before {
+.button:not(.mute-interaction, .as-text):before {
   content: "";
   position: absolute;
   width: 100%;
@@ -2979,7 +2959,10 @@ fieldset > .supp-text,
 .button > .emphasized {
   background: rgba(0, 0, 0, 0.06);
 }
-.button.transparent {
+.button.as-text {
+  padding: 0px;
+}
+.button.transparent, .button.as-text {
   color: inherit;
   background-color: transparent;
   border-color: transparent;
@@ -5470,66 +5453,6 @@ hr {
   transform: rotateZ(315deg);
 }
 
-.padded {
-  padding: 1em !important;
-}
-
-.t-padded {
-  padding-top: 1em !important;
-}
-
-.b-padded {
-  padding-bottom: 1em !important;
-}
-
-.l-padded {
-  padding-left: 1em !important;
-}
-
-.r-padded {
-  padding-right: 1em !important;
-}
-
-.v-padded {
-  padding-top: 1em;
-  padding-bottom: 1em !important;
-}
-
-.h-padded {
-  padding-left: 1em;
-  padding-right: 1em !important;
-}
-
-.padded-sm {
-  padding: 0.5em !important;
-}
-
-.t-padded-sm {
-  padding-top: 0.5em !important;
-}
-
-.b-padded-sm {
-  padding-bottom: 0.5em !important;
-}
-
-.l-padded-sm {
-  padding-left: 0.5em !important;
-}
-
-.r-padded-sm {
-  padding-right: 0.5em !important;
-}
-
-.v-padded-sm {
-  padding-top: 0.5em;
-  padding-bottom: 0.5em !important;
-}
-
-.h-padded-sm {
-  padding-left: 0.5em;
-  padding-right: 0.5em !important;
-}
-
 .\30 -padding {
   padding: 0px !important;
 }
@@ -5898,36 +5821,36 @@ html.scroll-locked {
   margin-right: auto !important;
 }
 
-.padded {
-  padding: 1rem !important;
-}
-
-.l-padded,
-.h-padded {
-  padding-left: 1rem !important;
-}
-
-.r-padded,
-.h-padded {
-  padding-right: 1rem !important;
-}
-
-.t-padded,
-.v-padded {
-  padding-top: 1rem !important;
-}
-
-.b-padded,
-.v-padded {
-  padding-bottom: 1rem !important;
-}
-
 .indented {
   margin-left: 1.5rem !important;
 }
 
 .sm-indented {
   margin-left: 1rem !important;
+}
+
+.l-padded,
+.x-padded,
+.padded {
+  padding-left: 1rem !important;
+}
+
+.r-padded,
+.x-padded,
+.padded {
+  padding-right: 1rem !important;
+}
+
+.t-padded,
+.y-padded,
+.padded {
+  padding-top: 1rem !important;
+}
+
+.b-padded,
+.y-padded,
+.padded {
+  padding-bottom: 1rem !important;
 }
 
 .fluid {
@@ -5944,8 +5867,38 @@ html.scroll-locked {
 .container-nano,
 .container-pico {
   position: relative;
-  width: calc(100% - 3rem);
+  width: calc(100% - var(--edge, 1.5rem) * 2);
   margin: 0 auto;
+}
+@media screen and (max-width: 600px) {
+  .container,
+  .container-text,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container-xs,
+  .container-micro,
+  .container-nano,
+  .container-pico {
+    --edge: 1rem;
+  }
+}
+@media screen and (max-width: 350px) {
+  .container,
+  .container-text,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container-xs,
+  .container-micro,
+  .container-nano,
+  .container-pico {
+    --edge: 0.5rem;
+  }
+}
+
+.no-edge {
+  --edge: 0rem;
 }
 
 .container {
@@ -6039,6 +5992,10 @@ html.scroll-locked {
 
 .flex-nowrap {
   flex-wrap: nowrap !important;
+}
+
+.flex-row {
+  flex-direction: row !important;
 }
 
 .flex-column {

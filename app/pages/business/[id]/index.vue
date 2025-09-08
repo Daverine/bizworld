@@ -169,7 +169,7 @@ const isReady = computed(() => data.details && avail.value);
         class="page-aside biz-pin text-center"
       >
         <div
-          class="dm-logo flex-none"
+          class="flex-none"
           style="position: relative; width: max-content; line-height: 0"
         >
           <NuxtImg

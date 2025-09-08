@@ -6,7 +6,7 @@ definePageMeta({ name: 'manage-biz-info', layout: 'common', auth: true });
     <header class="sp-wrapper fluid z-level-1 p-h" style="margin-bottom: 1rem">
       <div
         v-scrollPin="{ top: 63, independent: true }"
-        style="background-color: var(--surface)"
+        class="surface-bg"
       >
         <div class="fluid l-aligned">
           <div

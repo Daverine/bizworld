@@ -1,12 +1,11 @@
 <script setup>
+import Details from './Details.vue';
+
 const searchStore = useSearchStore();
 </script>
 
 <template>
-  <div class="as-page">
-    <div class="menu sticky z-level-3">
-      <Shareables name="main_menu" />
-    </div>
+  <Details>
     <div
       v-if="!$route.path.split('/').includes('manage')"
       style="border-bottom: 1px solid var(--outline); padding: 0.5rem 0rem"
@@ -87,16 +86,14 @@ const searchStore = useSearchStore();
         </LimbIScroller>
       </div>
     </div>
-
     <section class="csection flexbox">
       <PageNav />
-      <slot />
-      <Shareables
-        v-if="!$route.path.split('/').includes('manage')"
-        name="ad_menu"
-      />
+      <div class="flexible">
+        <slot />
+      </div>
+      <Shareables name="ad_menu" />
     </section>
-  </div>
+  </Details>
 </template>
 
 <style scoped>
@@ -105,10 +102,5 @@ const searchStore = useSearchStore();
   min-height: 70vh;
   max-width: 1440px;
   margin: 0rem auto;
-}
-.menu {
-  top: 0px;
-  border-bottom: 1px solid var(--outline);
-  background-color: var(--surface);
 }
 </style>
