@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   typescript: {
-    strict: false,
+    strict: true,
   },
   modules: [
     '@hypernym/nuxt-anime',
@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxt/scripts',
+    '@nuxt/fonts',
   ],
   image: {
     screens: {

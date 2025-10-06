@@ -9,8 +9,8 @@ const props = defineProps(['details']);
       <div
         class="semibold truncate"
         style="--line-clamp: 3"
-        v-tooltip.unblocking
-        :data-tooltip="details.title"
+        v-tooltip:aria.unblocking
+        :aria-label="details.title"
       >
         {{ details.title }}
       </div>
@@ -26,6 +26,7 @@ const props = defineProps(['details']);
   display: flex;
   flex-direction: column;
   width: 12.5rem;
+  max-width: 100%;
   position: relative;
   text-align: center;
   border-radius: var(--sm-radius);

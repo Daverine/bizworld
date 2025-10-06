@@ -53,7 +53,7 @@ const userStore = useUserStore();
         </i>
       </div>
       <div class="collapsible sub items">
-        <Shareables name="account" />
+        <AccountNavItems />
       </div>
       <div v-collapser class="item xactive ac-viewbox-ref">
         <i class="lead icon ac-viewbox">
@@ -97,17 +97,17 @@ const userStore = useUserStore();
       <div class="collapsible sub items">
         <Shareables name="supports" />
       </div>
-      <div class="item open-modal" data-target="create-biz">
+      <button class="item open-modal" data-target="create-biz">
         <Icon
           name="material-symbols:add-business-outline-rounded"
           class="lead"
         />
         Have a shop online
-      </div>
-      <div class="item open-modal exit-sidepanel" data-target="login-modal">
+      </button>
+      <button class="item open-modal exit-sidepanel" data-target="login-modal">
         <Icon name="material-symbols:login-rounded" class="lead" />
         Log in
-      </div>
+      </button>
       <div class="transparent compact divider"></div>
       <div class="xhover item 0-padding">
         <button

@@ -1,12 +1,8 @@
 <script setup lang="ts">
-
-defineOptions({ inheritAttrs: false });
-
 const props = defineProps<{
   id: string;
   options?: DialogerSettings;
 }>();
-
 const sidepanel = useTemplateRef('panel');
 const options: DialogerSettings = {
   namespace: 'sidepanel',
@@ -20,13 +16,10 @@ const options: DialogerSettings = {
   outDuration: 500,
   ...props.options,
 };
-
-const { teleporter } = useDialoger(sidepanel, props.id, options);
+useDialoger(sidepanel, props.id, options);
 </script>
 <template>
-  <Teleport to="body" :disabled="!teleporter">
-    <div ref="panel" class="sidepanel" v-bind="$attrs" :id="id" tabindex="-1">
-      <slot></slot>
-    </div>
-  </Teleport>
+  <div ref="panel" :id="id" role="dialog" aria-modal="true" class="sidepanel">
+    <slot></slot>
+  </div>
 </template>

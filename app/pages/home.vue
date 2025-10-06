@@ -1,9 +1,7 @@
 <script setup>
 import Common from '~/layouts/Common.vue';
 definePageMeta({ auth: true });
-const props = defineProps(['name']);
 const userStore = useUserStore();
-const searchStore = useSearchStore();
 const feedStore = useFeedStore();
 
 onMounted(() => feedStore.getUpdate());
@@ -18,8 +16,8 @@ onMounted(() => feedStore.getUpdate());
       >
         <div
           class="item as-icon open-sidepanel"
-          v-tooltip.unblocking
-          data-tooltip="Menu"
+          v-tooltip:aria.unblocking
+          aria-label="Menu"
           data-target="msidepanel"
         >
           <Icon name="material-symbols:menu-rounded" />
@@ -51,16 +49,16 @@ onMounted(() => feedStore.getUpdate());
           <Shareables name="do_more_item" />
           <div
             class="as-icon item"
-            v-tooltip.unblocking
-            data-tooltip="Notifications"
+            v-tooltip:aria.unblocking
+            aria-label="Notifications"
           >
             <Icon name="material-symbols:notifications-outline-rounded" />
           </div>
           <LimbDropdown
             data-browse-dm="dm1_profile"
             :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
-            v-tooltip.unblocking
-            data-tooltip="Your profile"
+            v-tooltip:aria.unblocking
+            aria-label="Your profile"
             class="xhover browse as-icon item"
           >
             <NuxtImg
@@ -74,55 +72,7 @@ onMounted(() => feedStore.getUpdate());
         </div>
       </div>
     </div>
-    <form class="hm-searchbox" @submit.prevent="searchStore.triggerSearch()">
-      <div style="margin-bottom: 2rem">
-        <h2 class="call-text">Let us do business</h2>
-        <p class="huge">Search for businesses names, products, and services.</p>
-      </div>
-      <div>
-        <label class="input big fluid">
-          <Icon name="material-symbols:search-rounded" class="xhover" />
-          <input
-            v-model="searchStore.searchBox"
-            type="search"
-            autocomplete="off"
-            id="searchinput"
-            ref="inputbox"
-            placeholder="Your search here."
-            class="subject"
-            autofocus
-          />
-          <button
-            type="button"
-            v-tooltip.unblocking
-            data-tooltip="Scan QR"
-            class="icon open-modal"
-            data-target="scanqr-modal"
-          >
-            <Icon name="material-symbols:qr-code-scanner-rounded" />
-          </button>
-        </label>
-        <div style="margin-top: 0.5rem">
-          Search in: <span class="bold">Nigeria</span>.
-          <div class="compact small icon button">
-            <Icon name="material-symbols:more-outline-rounded" />
-          </div>
-        </div>
-        <div
-          class="flexbox flexible-items lg-guttered"
-          style="margin: 2rem auto 0px; max-width: 19rem"
-        >
-          <button class="button">SEARCH</button>
-          <button
-            type="button"
-            class="button open-modal"
-            data-target="explore-modal"
-          >
-            EXPLORE
-          </button>
-        </div>
-      </div>
-    </form>
+    <SearchBoxMain />
     <div
       role="button"
       class="text-center"

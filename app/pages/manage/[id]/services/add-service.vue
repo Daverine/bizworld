@@ -2,13 +2,13 @@
 import type { DialogEvent } from '~/composables/dialoger';
 
 definePageMeta({
-  name: 'add-product',
+  name: 'add-service',
   layout: 'details',
   auth: false,
   noCart: true,
 });
 
-const newProduct = reactive<{
+const newService = reactive<{
   tab1: {
     category: string;
     newCategory?: string;
@@ -65,7 +65,7 @@ const optionPlaceholder = ref<{
   label: '',
 });
 const optionPlaceholderModifying = ref(false);
-const productCategories = {
+const serviceCategories = {
   'Computers & Accessories': [
     'Brand',
     'Model',
@@ -156,15 +156,15 @@ const productCategories = {
 };
 
 watch(
-  () => newProduct.tab2.subOptionGroup?.options,
+  () => newService.tab2.subOptionGroup?.options,
   (newVal) => {
-    if (newVal === undefined && newProduct.tab2.optionGroup) {
-      newProduct.tab2.optionGroup.options.forEach((option) => {
+    if (newVal === undefined && newService.tab2.optionGroup) {
+      newService.tab2.optionGroup.options.forEach((option) => {
         option.subOptions = undefined;
       });
-    } else if (newProduct.tab2.optionGroup) {
-      newProduct.tab2.optionGroup.options.forEach((option) => {
-        option.subOptions = newProduct.tab2.subOptionGroup?.options.map(() => [
+    } else if (newService.tab2.optionGroup) {
+      newService.tab2.optionGroup.options.forEach((option) => {
+        option.subOptions = newService.tab2.subOptionGroup?.options.map(() => [
           true,
           undefined,
         ]);
@@ -183,26 +183,26 @@ function fileToURL(file: File) {
 function handleNewPhoto(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files[0]) {
-    newProduct.tab1.photo.push(input.files[0]);
+    newService.tab1.photo.push(input.files[0]);
     input.value = '';
   }
 }
-function createNewProductOption() {
-  if (newProduct.tab2.optionGroup) {
-    newProduct.tab2.subOptionGroup = {
+function createNewServiceOption() {
+  if (newService.tab2.optionGroup) {
+    newService.tab2.subOptionGroup = {
       title: '',
       options: [],
     };
     nextTick(() => document.getElementById('sub-option-group-title')?.focus());
   } else {
-    newProduct.tab2.optionGroup = {
+    newService.tab2.optionGroup = {
       title: '',
       options: [],
     };
     nextTick(() => document.getElementById('option-group-title')?.focus());
   }
 }
-function configProductOption(event: DialogEvent) {
+function configServiceOption(event: DialogEvent) {
   let caller = event.caller!;
   let callergroup = caller.hasAttribute('data-sub-category') ? 'sub' : 'main';
 
@@ -210,8 +210,8 @@ function configProductOption(event: DialogEvent) {
     let optionId = parseInt(caller.dataset.optionId);
     const option =
       callergroup === 'sub'
-        ? newProduct.tab2.subOptionGroup?.options[optionId]
-        : newProduct.tab2.optionGroup?.options[optionId];
+        ? newService.tab2.subOptionGroup?.options[optionId]
+        : newService.tab2.optionGroup?.options[optionId];
     if (option) {
       optionPlaceholderModifying.value = true;
       optionPlaceholder.value = { ...option };
@@ -223,36 +223,36 @@ function configProductOption(event: DialogEvent) {
     };
   }
 }
-function processProductOption(event: DialogEvent) {
+function processServiceOption(event: DialogEvent) {
   let caller = event.caller!;
   let callergroup = caller.hasAttribute('data-sub-category') ? 'sub' : 'main';
 
   if (caller.dataset.optionId !== undefined) {
     const optionId = parseInt(caller.dataset.optionId);
     if (callergroup === 'sub') {
-      if (newProduct.tab2.subOptionGroup?.options[optionId]) {
+      if (newService.tab2.subOptionGroup?.options[optionId]) {
         if (optionPlaceholder.value.label.trim())
-          newProduct.tab2.subOptionGroup.options[optionId] = {
+          newService.tab2.subOptionGroup.options[optionId] = {
             ...optionPlaceholder.value,
           };
-        else newProduct.tab2.subOptionGroup.options.splice(optionId, 1);
+        else newService.tab2.subOptionGroup.options.splice(optionId, 1);
       }
     } else if (callergroup === 'main') {
-      if (newProduct.tab2.optionGroup?.options[optionId]) {
+      if (newService.tab2.optionGroup?.options[optionId]) {
         if (optionPlaceholder.value.label.trim())
-          newProduct.tab2.optionGroup.options[optionId] = {
+          newService.tab2.optionGroup.options[optionId] = {
             ...optionPlaceholder.value,
           };
-        else newProduct.tab2.optionGroup.options.splice(optionId, 1);
+        else newService.tab2.optionGroup.options.splice(optionId, 1);
       }
     }
   } else if (optionPlaceholder.value.label.trim()) {
     if (callergroup === 'sub')
-      newProduct.tab2.subOptionGroup?.options.push({
+      newService.tab2.subOptionGroup?.options.push({
         ...optionPlaceholder.value,
       });
     else if (callergroup === 'main')
-      newProduct.tab2.optionGroup?.options.push({ ...optionPlaceholder.value });
+      newService.tab2.optionGroup?.options.push({ ...optionPlaceholder.value });
   }
 
   optionPlaceholder.value = {
@@ -260,21 +260,21 @@ function processProductOption(event: DialogEvent) {
   };
 }
 function addSpecification() {
-  newProduct.tab3.specifications.push({ name: '', value: '' });
+  newService.tab3.specifications.push({ name: '', value: '' });
 }
 
 const currentTab = ref('tab1');
 const nextTab = () => {
-  const currentIndex = Object.keys(newProduct).indexOf(currentTab.value);
-  if (currentIndex < Object.keys(newProduct).length - 1) {
-    currentTab.value = Object.keys(newProduct)[currentIndex + 1] || '';
+  const currentIndex = Object.keys(newService).indexOf(currentTab.value);
+  if (currentIndex < Object.keys(newService).length - 1) {
+    currentTab.value = Object.keys(newService)[currentIndex + 1] || '';
   }
   nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
 };
 const prevTab = () => {
-  const currentIndex = Object.keys(newProduct).indexOf(currentTab.value);
+  const currentIndex = Object.keys(newService).indexOf(currentTab.value);
   if (currentIndex > 0) {
-    currentTab.value = Object.keys(newProduct)[currentIndex - 1] || '';
+    currentTab.value = Object.keys(newService)[currentIndex - 1] || '';
   }
   nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
 };
@@ -289,10 +289,10 @@ const prevTab = () => {
       <div
         class="p-h3 lined heading h3 flexbox guttered flex-separate align-end surface-bg pin-top-blend 0-margined"
       >
-        Add product
+        Add service
         <NuxtLink
           :to="{
-            name: 'manage-biz-products',
+            name: 'manage-biz-services',
             params: { id: $route.params.id },
           }"
           class="compact small button"
@@ -302,7 +302,7 @@ const prevTab = () => {
         </NuxtLink>
       </div>
     </header>
-    <div id="add-product" class="container-sm no-edge" style="min-height: 80vh">
+    <div id="add-service" class="container-sm no-edge" style="min-height: 80vh">
       <div
         class="tab-page"
         v-for="id in ['tab1']"
@@ -311,12 +311,12 @@ const prevTab = () => {
         <div class="field">
           <label for="prod-category">Category</label>
           <div class="supp-text faint-text">
-            Choose a category from the dropdown below that best fits the product
+            Choose a category from the dropdown below that best fits the service
             you're adding. You can also select “Others” from the dropdown to
             make a new one.
           </div>
           <LimbDropdown
-            v-model="newProduct.tab1.category"
+            v-model="newService.tab1.category"
             class="search select"
             id="prod-category"
             placeholder="Select category"
@@ -324,7 +324,7 @@ const prevTab = () => {
             <div class="drop menu">
               <div
                 class="item"
-                v-for="category in Object.keys(productCategories)"
+                v-for="category in Object.keys(serviceCategories)"
               >
                 {{ category }}
               </div>
@@ -334,14 +334,14 @@ const prevTab = () => {
             </div>
           </LimbDropdown>
         </div>
-        <div v-if="newProduct.tab1.category === 'others'" class="field">
+        <div v-if="newService.tab1.category === 'others'" class="field">
           <label for="prod-category-new">New category name</label>
           <div class="supp-text faint-text">
-            Note: Your product will stay in the “Others” category of our explore
+            Note: Your service will stay in the “Others” category of our explore
             section until the new category is reviewed and standardized.
           </div>
           <input
-            v-model="newProduct.tab1.newCategory"
+            v-model="newService.tab1.newCategory"
             id="prod-category-new"
             class="form-item"
             type="text"
@@ -356,28 +356,28 @@ const prevTab = () => {
             model, and key features.
           </div>
           <input
-            v-model="newProduct.tab1.title"
+            v-model="newService.tab1.title"
             id="prod-title"
             class="form-item"
             type="text"
-            placeholder="Product title"
+            placeholder="Service title"
             required
           />
         </div>
         <div class="field">
           <label>Add photo</label>
           <div class="supp-text faint-text">
-            Photos help customers to see the product. Use clear, well-lit images
-            that showcase the product from different angles.
+            Photos help customers to see the service. Use clear, well-lit images
+            that showcase the service from different angles.
           </div>
           <LimbIScroller :options="{ autoSetup: true }">
             <div
-              v-for="(photo, index) in newProduct.tab1.photo"
+              v-for="(photo, index) in newService.tab1.photo"
               class="thumbnail image"
             >
-              <img :src="fileToURL(photo)" alt="Product photo" />
+              <img :src="fileToURL(photo)" alt="Service photo" />
               <button
-                @click="newProduct.tab1.photo.splice(index, 1)"
+                @click="newService.tab1.photo.splice(index, 1)"
                 class="small circular icon button"
                 style="position: absolute; top: 0.25rem; right: 0.25rem"
               >
@@ -387,14 +387,14 @@ const prevTab = () => {
           </LimbIScroller>
           <label class="icon button design-takeover">
             <Icon name="material-symbols:add" /> Add
-            {{ newProduct.tab1.photo.length ? 'another' : '' }} photo
+            {{ newService.tab1.photo.length ? 'another' : '' }} photo
             <input type="file" @change="handleNewPhoto" accept="image/*" />
           </label>
         </div>
         <div class="field">
           <label>Link to youtube or Facebook video</label>
           <input
-            v-model="newProduct.tab1.videoLink"
+            v-model="newService.tab1.videoLink"
             class="form-item"
             type="text"
             placeholder="e.g. https://youtube.com/..."
@@ -409,33 +409,33 @@ const prevTab = () => {
         <div class="field">
           <label for="prod-price">Price</label>
           <div class="supp-text faint-text">
-            If there is a product options, price here should be the lower price
-            option. Price can also be added with product options.
+            If there is a service options, price here should be the lower price
+            option. Price can also be added with service options.
           </div>
           <LimbCurrencyInput
-            v-model="newProduct.tab2.price"
+            v-model="newService.tab2.price"
             id="prod-price"
             class="form-item"
-            placeholder="Product price"
+            placeholder="Service price"
             required
           />
         </div>
         <div class="field">
-          <label>Product options</label>
+          <label>Service options</label>
           <div class="supp-text faint-text">
-            Product options are variations of the product, such as color, size,
+            Service options are variations of the service, such as color, size,
             or config option. You can add a maximum of two option groups.
           </div>
           <button
-            v-if="!newProduct.tab2.optionGroup"
-            @click="createNewProductOption"
+            v-if="!newService.tab2.optionGroup"
+            @click="createNewServiceOption"
             class="compact button"
           >
             Add an option group
           </button>
-          <fieldset v-if="newProduct.tab2.optionGroup">
+          <fieldset v-if="newService.tab2.optionGroup">
             <button
-              @click="newProduct.tab2.optionGroup = undefined"
+              @click="newService.tab2.optionGroup = undefined"
               v-tooltip:aria.unblocking
               aria-label="Remove option group"
               class="auto-l-margined small circular outlined icon button"
@@ -445,7 +445,7 @@ const prevTab = () => {
             <div class="field">
               <label>Option group title</label>
               <input
-                v-model="newProduct.tab2.optionGroup.title"
+                v-model="newService.tab2.optionGroup.title"
                 class="form-item"
                 id="option-group-title"
                 type="text"
@@ -455,12 +455,12 @@ const prevTab = () => {
             <div class="lined sub heading a-block">
               Options for:
               <div class="trailing">
-                {{ newProduct.tab2.optionGroup.title }}
+                {{ newService.tab2.optionGroup.title }}
               </div>
             </div>
             <div class="wrappable menu">
               <div
-                v-for="(option, index) in newProduct.tab2.optionGroup.options"
+                v-for="(option, index) in newService.tab2.optionGroup.options"
                 class="item open-modal"
                 data-target="app-option"
                 :data-option-id="index"
@@ -477,7 +477,7 @@ const prevTab = () => {
                   </div>
                 </div>
                 <button
-                  @click="newProduct.tab2.optionGroup.options.splice(index, 1)"
+                  @click="newService.tab2.optionGroup.options.splice(index, 1)"
                   class="small circular trailing icon button ex-open-modal"
                 >
                   <Icon name="material-symbols:delete-outline-rounded" />
@@ -490,14 +490,14 @@ const prevTab = () => {
             </div>
           </fieldset>
         </div>
-        <div v-if="newProduct.tab2.optionGroup" class="field">
-          <label>Product sub-options</label>
+        <div v-if="newService.tab2.optionGroup" class="field">
+          <label>Service sub-options</label>
           <div class="supp-text faint-text">
             <p>
               A sub-options group can also be added if necessary. For example,
               if your main option group is "Size," your sub-option group could
               be "Colour." This enables customers to select a combination of
-              size and colour for the product.
+              size and colour for the service.
             </p>
             <p>
               Just so you know, sub-options can only be added if there are
@@ -505,15 +505,15 @@ const prevTab = () => {
             </p>
           </div>
           <button
-            v-if="!newProduct.tab2.subOptionGroup"
-            @click="createNewProductOption"
+            v-if="!newService.tab2.subOptionGroup"
+            @click="createNewServiceOption"
             class="compact button"
           >
             Add a sub option group
           </button>
-          <fieldset v-if="newProduct.tab2.subOptionGroup">
+          <fieldset v-if="newService.tab2.subOptionGroup">
             <button
-              @click="newProduct.tab2.subOptionGroup = undefined"
+              @click="newService.tab2.subOptionGroup = undefined"
               v-tooltip:aria.unblocking
               aria-label="Remove sub-option group"
               class="auto-l-margined small circular outlined icon button"
@@ -523,7 +523,7 @@ const prevTab = () => {
             <div class="field">
               <label>Sub-option group title</label>
               <input
-                v-model="newProduct.tab2.subOptionGroup.title"
+                v-model="newService.tab2.subOptionGroup.title"
                 class="form-item"
                 id="sub-option-group-title"
                 type="text"
@@ -533,12 +533,12 @@ const prevTab = () => {
             <div class="lined sub heading a-block">
               Options for:
               <div class="trailing">
-                {{ newProduct.tab2.subOptionGroup.title }}
+                {{ newService.tab2.subOptionGroup.title }}
               </div>
             </div>
             <div class="wrappable menu">
               <div
-                v-for="(option, index) in newProduct.tab2.subOptionGroup
+                v-for="(option, index) in newService.tab2.subOptionGroup
                   .options"
                 class="item open-modal"
                 data-target="app-option"
@@ -558,7 +558,7 @@ const prevTab = () => {
                 </div>
                 <button
                   @click="
-                    newProduct.tab2.subOptionGroup.options.splice(index, 1)
+                    newService.tab2.subOptionGroup.options.splice(index, 1)
                   "
                   class="small circular trailing icon button ex-open-modal"
                 >
@@ -579,8 +579,8 @@ const prevTab = () => {
         <LimbModal
           id="app-option"
           :options="{
-            controller: configProductOption,
-            complete: processProductOption,
+            controller: configServiceOption,
+            complete: processServiceOption,
           }"
         >
           <div class="dialog">
@@ -620,7 +620,7 @@ const prevTab = () => {
                 <div v-if="optionPlaceholder.photo" class="thumbnail image">
                   <img
                     :src="fileToURL(optionPlaceholder.photo)"
-                    alt="Product photo"
+                    alt="Service photo"
                   />
                   <button
                     @click="optionPlaceholder.photo = undefined"
@@ -657,11 +657,11 @@ const prevTab = () => {
                   Toggle the sub-options you want to add to this option.
                 </div>
                 <div
-                  v-if="newProduct.tab2.subOptionGroup"
+                  v-if="newService.tab2.subOptionGroup"
                   class="wrappable menu"
                 >
                   <div
-                    v-for="(option, index) in newProduct.tab2.subOptionGroup
+                    v-for="(option, index) in newService.tab2.subOptionGroup
                       .options"
                     class="item"
                     @click="
@@ -705,11 +705,11 @@ const prevTab = () => {
         :class="currentTab === id ? 'active' : ''"
       >
         <div class="field">
-          <label>Product Specifications</label>
+          <label>Service Specifications</label>
           <div class="supp-text faint-text">
             <p>
-              Product specifications provide detailed information about the
-              product's features, dimensions, materials, and other relevant
+              Service specifications provide detailed information about the
+              service's features, dimensions, materials, and other relevant
               details that help customers make informed purchasing decisions.
             </p>
             <p>
@@ -726,9 +726,9 @@ const prevTab = () => {
               <div class="drop menu">
                 <div
                   class="item"
-                  v-for="(template, templateName) in productCategories"
+                  v-for="(template, templateName) in serviceCategories"
                   @click="
-                    newProduct.tab3.specifications = template.map((spec) => ({
+                    newService.tab3.specifications = template.map((spec) => ({
                       name: spec,
                       value: '',
                     }))
@@ -748,7 +748,7 @@ const prevTab = () => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(spec, index) in newProduct.tab3.specifications">
+              <tr v-for="(spec, index) in newService.tab3.specifications">
                 <td>
                   <input
                     v-model="spec.name"
@@ -767,7 +767,7 @@ const prevTab = () => {
                 </td>
                 <td class="text-center">
                   <button
-                    @click="newProduct.tab3.specifications.splice(index, 1)"
+                    @click="newService.tab3.specifications.splice(index, 1)"
                     v-tooltip:aria.unblocking
                     aria-label="Remove specification"
                     class="small circular outlined icon button"
@@ -794,12 +794,12 @@ const prevTab = () => {
         <div class="field">
           <label>Your review</label>
           <p class="supp-text faint-text">
-            Share your personal review of the product. Highlight its key
+            Share your personal review of the service. Highlight its key
             features, benefits, and what makes it a great choice for customers.
             A compelling description can help buyers make an informed decision.
           </p>
           <textarea
-            v-model="newProduct.tab3.overview"
+            v-model="newService.tab3.overview"
             class="form-item"
             rows="3"
             placeholder="Write your review here..."
@@ -820,13 +820,13 @@ const prevTab = () => {
       </div>
       <div v-else class="flexbox flex-separate align-center guttered">
         <span class="text-muted">
-          {{ Object.keys(newProduct).indexOf(currentTab) + 1 }} of
-          {{ Object.keys(newProduct).length }}
+          {{ Object.keys(newService).indexOf(currentTab) + 1 }} of
+          {{ Object.keys(newService).length }}
         </span>
         <div class="flexbox guttered">
           <button @click="prevTab" class="flat button">Previous</button>
           <button
-            v-if="currentTab === Object.keys(newProduct).pop()"
+            v-if="currentTab === Object.keys(newService).pop()"
             class="primary button exit-modal"
           >
             Finish

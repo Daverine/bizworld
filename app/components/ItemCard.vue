@@ -1,16 +1,17 @@
-<script setup>
+<script setup lang="ts">
 defineProps(['details', 'isSaved']);
 </script>
 <template>
+  <BusinessCard v-if="details.type === 'business'" :details="details" />
+  <ProductCard v-else-if="details.type === 'product'" :details="details" />
+  <ServiceCard v-else-if="details.type === 'project'" :details="details" />
+
   <NuxtLink
+    v-else
     :to="`/${details.type}/${details.id}`"
     class="fluid item-card card"
     :data-type="details.type"
   >
-    <businessCard v-if="details.type === 'business'" :details="details" />
-    <productCard v-else-if="details.type === 'product'" :details="details" />
-    <serviceCard v-else-if="details.type === 'project'" :details="details" />
-
     <LimbDropdown
       v-if="isSaved"
       :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
@@ -113,7 +114,6 @@ defineProps(['details', 'isSaved']);
       rgba(255, 252, 0, 1) 75%,
       rgba(255, 218, 0, 1) 100%
     );
-    // background-color: #e53427;
     color: #000;
     font-size: 0.65rem;
   }

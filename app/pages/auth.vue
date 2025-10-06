@@ -10,8 +10,8 @@ const userStore = useUserStore();
       >
         <div
           class="item as-icon open-sidepanel"
-          v-tooltip.unblocking
-          data-tooltip="Menu"
+          v-tooltip:aria.unblocking
+          aria-label="Menu"
           data-target="msidepanel"
         >
           <SvgIcon name="menu" />

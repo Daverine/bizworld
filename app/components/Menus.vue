@@ -34,7 +34,7 @@ function toTop() {
     </div>
   </LimbSidePanel>
   <div v-if="!$route.meta.noFab" class="fab-group respect-lock">
-    <NuxtLink to="/cart" class="fab radius-lg secondary button">
+    <NuxtLink v-if="!$route.meta.noCart" to="/cart" class="fab radius-lg secondary button">
       <Icon name="material-symbols:shopping-cart-outline" />
       <div v-if="cartItems.length" class="floating badge">
         {{ cartItems.length }}

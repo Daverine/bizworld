@@ -5,8 +5,8 @@
 */
 :root {
   color-scheme: dark light;
-  --root-font: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+  --root-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", "Helvetica", Arial, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol";
   --base-size: 16px;
   --xs-size: 0.75;
@@ -263,12 +263,10 @@ select {
   text-transform: none;
 }
 
-button,
-input[type=button],
-input[type=reset],
-input[type=submit] {
-  -webkit-appearance: button;
+button {
   cursor: pointer;
+  border: 0px none;
+  background: none;
 }
 
 input[type=checkbox],
@@ -333,13 +331,12 @@ th {
 
 /* --- TYPOGRAPHY --- */
 html {
-  font-family: var(--root-font);
   font-size: var(--base-size);
   background-color: var(--surface-v2);
 }
 
 body {
-  font-family: inherit;
+  font-family: var(--root-font);
   font-size: 1rem;
   font-weight: var(--normal-weight);
   line-height: var(--line-height);
@@ -354,9 +351,6 @@ a {
 }
 a:hover, a:focus {
   text-decoration: underline;
-}
-a:focus {
-  outline: 1px dotted var(--on-surface);
 }
 
 h1,
@@ -1054,12 +1048,15 @@ hr.vertical:empty,
   color: inherit;
   text-decoration: none;
   padding: var(--menu-padding-tb) var(--menu-padding-lr);
-  outline: 0px none;
   border-radius: var(--comp-radius);
   min-width: -moz-fit-content;
   min-width: fit-content;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
+}
+.menu > .item:not(:focus-visible),
+.menu .items > .item:not(:focus-visible) {
+  outline: 0px none;
 }
 .menu > .item.free-me,
 .menu .items > .item.free-me {
@@ -1292,6 +1289,7 @@ hr.vertical:empty,
 .menu.bordered .items,
 .menu.bordered .items > .item {
   border: inherit;
+  border-radius: inherit;
   border-style: none;
 }
 .menu.bordered > .item:not(:first-child, :last-child, :only-child),
@@ -1661,6 +1659,28 @@ hr.vertical:empty,
   font-weight: bold;
 }
 .text.menu .item:not(.xhover):hover:before, .text.menu .item:not(.xhover).hovered:before, .text.menu .item:not(.xactive).active:before, .text.menu .item:not(.xactive).selected:before {
+  opacity: 0;
+}
+
+.menu.pills {
+  --bg-color: var(--surface-v2);
+  --text-color: var(--on-surface-v1);
+  border-radius: var(--comp-radius);
+  padding: 0.3125rem;
+}
+.menu.pills > .item,
+.menu.pills .items > .item {
+  border-radius: inherit;
+}
+.menu.pills > .item:not(.xactive).active, .menu.pills > .item:not(.xactive).selected,
+.menu.pills .items > .item:not(.xactive).active,
+.menu.pills .items > .item:not(.xactive).selected {
+  color: var(--on-surface);
+  background-color: var(--surface);
+}
+.menu.pills > .item:not(.xactive).active:before, .menu.pills > .item:not(.xactive).selected:before,
+.menu.pills .items > .item:not(.xactive).active:before,
+.menu.pills .items > .item:not(.xactive).selected:before {
   opacity: 0;
 }
 
@@ -2194,7 +2214,7 @@ table.table tbody tr.i-selectable td:hover:before {
 .input > .subject,
 .input-box > .subject,
 .select.dropdown {
-  display: inline-block;
+  display: inline-flex;
   outline: none;
   text-align: left;
   padding: var(--form-padding);
@@ -2275,7 +2295,11 @@ table.table tbody tr.i-selectable td:hover:before {
 }
 
 .form-item::-moz-placeholder {
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  overflow: hidden;
   color: inherit;
   opacity: 0.5;
   line-height: var(--form-line-height);
@@ -2286,7 +2310,11 @@ table.table tbody tr.i-selectable td:hover:before {
 
 .form-item::placeholder,
 .select.dropdown .placeholder {
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  overflow: hidden;
   color: inherit;
   opacity: 0.5;
   line-height: var(--form-line-height);
@@ -2506,6 +2534,8 @@ table.table tbody tr.i-selectable td:hover:before {
   display: inline-flex;
   align-items: center;
   position: relative;
+  min-width: -moz-fit-content;
+  min-width: fit-content;
 }
 .select.dropdown > .content {
   min-width: 4.5em;
@@ -2547,61 +2577,6 @@ table.table tbody tr.i-selectable td:hover:before {
 .select.dropdown.multiple {
   padding-top: calc(var(--form-tb-padding) / 2);
   padding-bottom: calc(var(--form-tb-padding) / 2);
-}
-
-.option-group {
-  display: inline-flex;
-  flex-flow: row nowrap;
-  gap: 0.25em;
-  border: 1px solid var(--form-bd-color);
-  border-radius: var(--default-radius);
-  padding: calc(var(--form-tb-padding) / 2 - 1px);
-  position: relative;
-}
-.option-group > label {
-  display: flex;
-  flex-flow: row nowrap;
-  flex: 1 0 auto;
-  position: relative;
-  gap: 0.75em;
-  justify-content: center;
-  align-items: center;
-  border-radius: inherit;
-  padding: calc(var(--form-tb-padding) / 2) var(--form-tb-padding);
-  background-color: var(--surface);
-  color: var(--on-surface);
-  cursor: pointer;
-}
-.option-group > label input[type=checkbox], .option-group > label input[type=radio] {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0px;
-  left: 0px;
-  background-color: var(--on-surface);
-  border: 0px none;
-  border-radius: inherit;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
-  pointer-events: none;
-  -webkit-tap-highlight-color: transparent;
-  opacity: 0;
-}
-.option-group > label input[type=checkbox]:hover, .option-group > label input[type=radio]:hover {
-  opacity: var(--hover-state);
-}
-.option-group > label input[type=checkbox]:checked, .option-group > label input[type=radio]:checked {
-  opacity: var(--press-state);
-}
-.option-group.icon {
-  display: inline-flex;
-}
-.option-group.icon > label {
-  padding: calc(var(--form-tb-padding) / 2);
 }
 
 .input {
@@ -2647,11 +2622,13 @@ table.table tbody tr.i-selectable td:hover:before {
   background-color: transparent;
   border-radius: inherit;
   color: inherit;
-  outline: 0px none;
   border: 0px none;
   box-shadow: none;
   position: relative;
   flex: 0 0 auto;
+}
+.select.dropdown > .icon:not(:focus-visible), .input > .icon:not(:focus-visible) {
+  outline: 0px none;
 }
 .select.dropdown > .icon:not(a, button), .input > .icon:not(a, button) {
   cursor: default;
@@ -2837,7 +2814,9 @@ fieldset > .supp-text,
   --button-line-height: 1.5;
   --button-padding-tb: 0.5em;
   --button-padding-lr: 1.5em;
-  --button-height: calc(var(--button-padding-tb) * 2 + (var(--button-line-height) * 1em));
+  --button-height: calc(
+    var(--button-padding-tb) * 2 + (var(--button-line-height) * 1em)
+  );
   --button-disabled-opacity: 0.5;
   --bg-color: var(--surface-v3);
   --text-color: var(--on-surface);
@@ -2890,10 +2869,12 @@ fieldset > .supp-text,
   color: var(--text-color);
   background-color: var(--bg-color);
   border: 0px none;
-  outline: 0px none;
   text-decoration: none;
   text-transform: none;
   text-shadow: none;
+}
+.button:not(:focus-visible) {
+  outline: 0px none;
 }
 .button.outlined, .button.flat {
   background-color: var(--surface);
@@ -2923,7 +2904,7 @@ fieldset > .supp-text,
   outline: none;
   text-decoration: none;
 }
-.button:focus-visible {
+.button:focus-visible, .button.design-takeover:focus-within {
   outline: 2px solid var(--on-surface);
   outline-offset: 1px;
 }
@@ -3693,9 +3674,11 @@ html.scroll-locked .fab-group.respect-lock .fab {
   filter: drop-shadow(0px 0px 5px var(--surface));
   background-color: transparent;
   border: 0px none;
-  outline: 0px none;
   pointer-events: initial;
   transition: transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s, opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
+}
+.lightbox > .slides > .c-prev:not(:focus-visible), .lightbox > .slides > .c-next:not(:focus-visible) {
+  outline: 0px none;
 }
 .lightbox > .slides > .c-prev:hover, .lightbox > .slides > .c-prev:focus, .lightbox > .slides > .c-next:hover, .lightbox > .slides > .c-next:focus {
   opacity: 1;
@@ -3789,27 +3772,21 @@ html.scroll-locked .fab-group.respect-lock .fab {
 }
 .lightbox > .gallery-view .l-scroll,
 .lightbox > .gallery-view .r-scroll {
-  display: flex;
   cursor: pointer;
-  position: absolute;
-  justify-content: center;
-  align-items: center;
-  top: 50%;
-  transform: translate(0px, -50%);
-  height: 100%;
   width: 1.5em;
   font-size: 1.5rem;
-  color: var(--on-surface);
   text-shadow: 0px 0px 5px var(--surface);
   border: 0px none;
-  outline: 0px none;
   border-radius: 0px;
   box-shadow: none;
-  z-index: 1000;
   transition: transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s, opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
 }
-.lightbox > .gallery-view .l-scroll.disabled,
-.lightbox > .gallery-view .r-scroll.disabled {
+.lightbox > .gallery-view .l-scroll:not(:focus-visible),
+.lightbox > .gallery-view .r-scroll:not(:focus-visible) {
+  outline: 0px none;
+}
+.lightbox > .gallery-view .l-scroll:not(.active),
+.lightbox > .gallery-view .r-scroll:not(.active) {
   opacity: 0;
   pointer-events: none;
 }
@@ -3940,6 +3917,12 @@ html.scroll-locked .fab-group.respect-lock .fab {
 .dropdown {
   cursor: pointer;
   position: relative;
+  color: inherit;
+}
+.dropdown, .dropdown:hover, .dropdown:focus, .dropdown:active {
+  text-decoration: none;
+}
+.dropdown:not(:focus-visible) {
   outline: 0px none;
 }
 .dropdown .indicator {
@@ -3953,7 +3936,6 @@ html.scroll-locked .fab-group.respect-lock .fab {
   margin: 0 -0.25em 0 0.5em;
 }
 .dropdown.select .placeholder, .dropdown.selection .placeholder {
-  display: inline-block;
   position: relative;
   pointer-events: none;
 }
@@ -3995,7 +3977,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
   font-size: 1em;
   min-height: auto;
   background: transparent;
-  border-color: transparent;
+  border: 0px none;
   padding: 0em;
   box-shadow: none;
   margin: 0em;
@@ -5111,80 +5093,76 @@ html.scroll-locked .fab-group.respect-lock .fab {
   color: #fff;
 }
 
-.transparent-bg {
-  background-color: transparent;
-}
-
 .primary-text {
-  color: var(--primary);
+  color: var(--primary) !important;
 }
 
 .secondary-text {
-  color: var(--secondary);
+  color: var(--secondary) !important;
 }
 
 .error-text {
-  color: var(--error);
+  color: var(--error) !important;
 }
 
 .warning-text {
-  color: var(--warning);
+  color: var(--warning) !important;
 }
 
 .success-text {
-  color: var(--success);
+  color: var(--success) !important;
 }
 
 .text-color {
-  color: var(--on-surface);
+  color: var(--on-surface) !important;
 }
 
 .text-v1-color {
-  color: var(--on-surface-v1);
+  color: var(--on-surface-v1) !important;
 }
 
 .text-v2-color {
-  color: var(--on-surface-v2);
+  color: var(--on-surface-v2) !important;
 }
 
 .text-invert-color {
-  color: var(--on-surface-invert);
+  color: var(--on-surface-invert) !important;
 }
 
 .surface-bg {
-  background-color: var(--surface);
+  background-color: var(--surface) !important;
 }
 
 .surface-v1-bg {
-  background-color: var(--surface-v1);
+  background-color: var(--surface-v1) !important;
 }
 
 .surface-v2-bg {
-  background-color: var(--surface-v2);
+  background-color: var(--surface-v2) !important;
 }
 
 .surface-v3-bg {
-  background-color: var(--surface-v3);
+  background-color: var(--surface-v3) !important;
 }
 
 .surface-v4-bg {
-  background-color: var(--surface-v4);
+  background-color: var(--surface-v4) !important;
 }
 
 .surface-invert-bg {
-  background-color: var(--surface-invert);
+  background-color: var(--surface-invert) !important;
 }
 
 .primary-bg {
-  background-color: var(--primary);
+  background-color: var(--primary) !important;
 }
 
 .secondary-bg {
-  color: var(--secondary);
+  background-color: var(--secondary) !important;
 }
 
 .transparent-bg {
-  background-color: transparent;
+  background-color: transparent !important;
 }
 
 /* --- GLOBAL --- */
@@ -5547,11 +5525,12 @@ hr {
 }
 
 .i-scroller {
+  display: flex;
   position: relative;
 }
 .i-scroller > .scroll-items {
   display: flex;
-  width: 100%;
+  max-width: 100%;
   flex-flow: row nowrap;
   overflow: hidden;
   scroll-behavior: auto;
@@ -5571,7 +5550,7 @@ hr {
   color: var(--on-surface);
   align-items: center;
   justify-content: center;
-  z-index: var(--z-level-1);
+  z-index: 300;
 }
 .i-scroller > .l-scroll.active, .i-scroller > .r-scroll.active {
   display: flex;
@@ -5999,6 +5978,7 @@ html.scroll-locked {
 }
 
 .flex-column {
+  display: flex !important;
   flex-direction: column !important;
 }
 

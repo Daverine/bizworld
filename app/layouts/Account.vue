@@ -32,7 +32,7 @@ defineOptions({ title: 'Your account page | BizWorld' });
       </header>
       <LimbIScroller
         v-scrollPin="{ top: 63 }"
-        class="z-level-2"
+        class="z-level-1"
         style="margin-top: 1rem"
       >
         <div class="l-scroll">

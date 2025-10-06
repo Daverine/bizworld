@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { WatchStopHandle } from 'vue';
-interface MultipleSelectContent {
+type MultipleSelectContent = {
   html: string;
   index: string;
-}
-interface Settings {
+};
+type Settings = {
   namespace: string;
   delay?: number;
   duration: number;
@@ -17,13 +17,12 @@ interface Settings {
   page?: boolean;
   view: 'unset' | 'vertical' | 'horizontal';
   directionPriority: {
-    x: 'left' | 'right' | 'center';
-    y: 'top' | 'bottom' | 'center';
+    x?: 'left' | 'right' | 'center';
+    y?: 'top' | 'bottom' | 'center';
   };
-}
+};
 
-interface reactiveBrainBox {
-  dropdownReady: boolean;
+type reactiveBrainBox = {
   selectionContent: (MultipleSelectContent | string)[];
   selectionValue: {
     [key: string]: string;
@@ -42,22 +41,24 @@ interface reactiveBrainBox {
   findToggler: boolean;
   page: boolean;
   browseDm: string | false;
+  menuId: string;
   selectable?: boolean;
   multipleSelect?: boolean;
   searchable?: boolean;
   delay: number;
-}
+};
 
 // get dropdown element and necessary dropdown properties
 const dropElem = useTemplateRef('dropdown');
+const model = defineModel<string[] | string>();
 const props = defineProps<{
-  modelValue?: string[] | string;
   name?: string;
   placeholder?: string;
   options?: Partial<Settings>;
 }>();
-const emit = defineEmits(['update:modelValue']);
-const compValue = ref();
+const emit = defineEmits<{
+  change: [value?: string[] | string];
+}>();
 const showDropdown = ref(false);
 
 // setup dropdown settings
@@ -80,7 +81,6 @@ const settings: Settings = {
 };
 // create a workshop space variable
 const bb = reactive<reactiveBrainBox>({
-  dropdownReady: false,
   selectionContent: [],
   selectionValue: {},
   activateKeyboard: false,
@@ -92,6 +92,7 @@ const bb = reactive<reactiveBrainBox>({
   findToggler: false,
   page: false,
   browseDm: false,
+  menuId: '',
   delay: 0,
 });
 let sizeStream: ResizeObserver;
@@ -144,6 +145,9 @@ onMounted(async () => {
         : 0
       : settings.delay;
   bb.isSelect = dropElem.value!.classList.contains('select');
+  // dropdown direction priority
+  settings.directionPriority.x = settings.directionPriority.x ?? 'right';
+  settings.directionPriority.y = settings.directionPriority.y ?? 'bottom';
   // contrain drop menu width to the width of dropdown if settings.constrainWidth is true or dropdown has class select
   settings.fluidMinWidth =
     props.options?.fluidMinWidth ??
@@ -198,10 +202,13 @@ onMounted(async () => {
   }
 
   dropMenu = ddm as HTMLElement;
-  bb.dropdownReady = true;
   uniqueId = utils.getUniqueId(settings.namespace);
-  dropMenu.setAttribute('data-view', bb.view);
-  dropMenu.setAttribute('data-ddid', uniqueId);
+  bb.menuId = dropMenu.id || uniqueId;
+  dropMenu.id = bb.menuId;
+  if (!dropMenu.role) dropMenu.role = bb.selectable ? 'listbox' : 'menu';
+  if (!dropMenu.tabIndex) dropMenu.tabIndex = -1;
+  dropMenu.dataset.view = bb.view;
+  dropMenu.dataset.ddid = uniqueId;
   if (bb.page) dropMenu.classList.add('fixed');
   if (dropElem.value?.classList.contains('indicating'))
     dropMenu.classList.add('indicating');
@@ -311,75 +318,68 @@ onMounted(async () => {
     else if (!bb.multipleSelect && items.some((el) => el.matches('.active')))
       dd_setSelect(items.find((el) => el.matches('.active')) as Element);
 
-    // sychronize selectable dropdown value with it modelValue if it is two-way-binded from it parent
-    unwatch.modelValue = watch(
-      () => props.modelValue,
+    watch(
+      model,
       (newValue) => {
-        if (JSON.stringify(newValue) === JSON.stringify(compValue.value))
-          return;
         let items = [
           ...dropMenu.querySelectorAll(selectors.items),
         ] as HTMLElement[];
 
         if (bb.multipleSelect) {
-          if (!Array.isArray(newValue))
-            emit('update:modelValue', compValue.value);
-          else {
-            let modelItems: HTMLElement[] = [];
+          if (!Array.isArray(newValue)) newValue = [];
 
-            newValue.forEach((val) => {
-              // avoid selecting an item more than once.
-              let pendingItems = items.filter((el) => !modelItems.includes(el));
-              for (let i = 0; i < pendingItems.length; i++) {
-                let pendingItem = pendingItems[i] as HTMLElement;
-                if (
-                  val ===
-                  (pendingItem.getAttribute('data-value') ??
-                    pendingItem.textContent)
-                ) {
-                  modelItems.push(pendingItem);
-                  break;
-                }
+          let modelItems: HTMLElement[] = [];
+
+          newValue.forEach((val) => {
+            // avoid selecting an item more than once.
+            let pendingItems = items.filter((el) => !modelItems.includes(el));
+            for (let i = 0; i < pendingItems.length; i++) {
+              let pendingItem = pendingItems[i] as HTMLElement;
+              if (
+                val ===
+                (pendingItem.getAttribute('data-value') ??
+                  pendingItem.textContent)
+              ) {
+                modelItems.push(pendingItem);
+                break;
               }
-            });
-
-            // deselect all items in the multiple selectable drop menu
-            items.forEach((item) => {
-              item.classList.remove('selected');
-              item.setAttribute('data-ddid', '');
-            });
-            bb.selectionValue = {};
-            bb.selectionContent = [];
-            selectableContentBox.classList.add('no-content');
-
-            // select all items that exist in the modelItems
-            if (modelItems[0]) {
-              modelItems.forEach((item) => {
-                let ddid = utils.getUniqueId('ddid');
-                let itemValue =
-                  item.getAttribute('data-value') ??
-                  (item.textContent as string);
-
-                item.classList.add('selected');
-                bb.selectionValue[ddid] = itemValue;
-                item.setAttribute('data-ddid', ddid);
-                bb.selectionContent.push({
-                  html: item.innerHTML,
-                  index: ddid,
-                });
-              });
-              selectableContentBox.classList.remove('no-content');
-              // check if all items in the dropdown is selected.
-              if (!items.some((el) => !el.matches('.selected')))
-                bb.allItemSelected = true;
             }
+          });
 
-            compValue.value = Object.values(bb.selectionValue);
+          // deselect all items in the multiple selectable drop menu
+          items.forEach((item) => {
+            item.classList.remove('selected');
+            item.setAttribute('data-ddid', '');
+          });
+          bb.selectionValue = {};
+          bb.selectionContent = [];
+          selectableContentBox.classList.add('no-content');
+
+          // select all items that exist in the modelItems
+          if (modelItems[0]) {
+            modelItems.forEach((item) => {
+              let ddid = utils.getUniqueId('ddid');
+              let itemValue =
+                item.getAttribute('data-value') ?? (item.textContent as string);
+
+              item.classList.add('selected');
+              bb.selectionValue[ddid] = itemValue;
+              item.setAttribute('data-ddid', ddid);
+              bb.selectionContent.push({
+                html: item.innerHTML,
+                index: ddid,
+              });
+            });
+            selectableContentBox.classList.remove('no-content');
+            // check if all items in the dropdown is selected.
+            if (!items.some((el) => !el.matches('.selected')))
+              bb.allItemSelected = true;
           }
+
+          newValue = Object.values(bb.selectionValue);
         } else {
           items.forEach((item) => item.classList.remove('active'));
           bb.selectionContent = [];
-          compValue.value = undefined;
 
           let item = items.find(
             (item) =>
@@ -389,20 +389,11 @@ onMounted(async () => {
           if (item) {
             item.classList.add('active');
             bb.selectionContent = [item.innerHTML];
-            compValue.value = newValue;
-          }
+          } else newValue = '';
         }
+        emit('change', model.value);
       },
-      { immediate: props.modelValue !== undefined }
-    );
-    unwatch.compValue = watch(
-      compValue,
-      (newValue) => {
-        if (JSON.stringify(newValue) === JSON.stringify(props.modelValue))
-          return;
-        emit('update:modelValue', newValue);
-      },
-      { immediate: props.modelValue === undefined }
+      { immediate: true }
     );
   }
 
@@ -417,7 +408,7 @@ onMounted(async () => {
   checkerFill(dropMenu);
 
   // configure how dropdown opens
-  // open dropdown if the enter key or arrow down key is pressed while dropdown is focused-on
+  // open dropdown if the enter key, spacebar key or arrow down key is pressed while dropdown is focused-on
   document.addEventListener('keydown', dd_keyEvt);
 
   // configure hoverable dropdown to open on mouse-over and touchstart
@@ -475,7 +466,10 @@ function checkerFill(dm: Element) {
 
 watch(showDropdown, (show) => {
   if (show) {
-    if (dropElem.value!.matches('.disabled, [disabled]')) return;
+    if (dropElem.value!.matches('.disabled, [disabled]')) {
+      showDropdown.value = false;
+      return;
+    }
     let items = [
       ...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown),
     ] as HTMLElement[];
@@ -499,42 +493,27 @@ watch(showDropdown, (show) => {
     document.addEventListener('mousemove', dd_mouseMover);
 
     dd_CalcPosition();
+    dropMenu.style.visibility = 'visible';
     dropMenu.classList.add('visible');
 
     // highlight (add .hover class to) the active item or the first item in the menu list if dropdown is opened with with keyboard keys or it is a searchable dropdown. (default action)
-    if (bb.activateKeyboard) {
-      let itemToHover = activeItem ?? items[0];
+    let itemToHover = activeItem ?? items[0];
 
-      if (itemToHover) {
+    if (itemToHover) {
+      itemToHover.focus();
+      if (bb.activateKeyboard) {
         itemToHover.classList.add('hovered');
         items
           .filter((el) => el != itemToHover)
           .forEach((el) => el.classList.remove('hovered'));
+        bb.activateKeyboard = false;
       }
-    }
+    } else dropMenu.focus();
 
     // auto scroll dropdown-menu to active item position.
     setTimeout(() => {
       if (activeItem) {
-        let overflowParent =
-          utils
-            .getParents(activeItem, '', dropMenu)
-            .find(
-              (el) =>
-                utils.getCssVal(el, 'overflow-y') === 'auto' ||
-                utils.getCssVal(el, 'overflow-y') === 'scroll'
-            ) || dropMenu;
-        let scrollPosition = overflowParent.scrollTop;
-        let overflowParentHeight = overflowParent.clientHeight;
-        let aiHeight = activeItem.offsetHeight;
-        let aiTop =
-          activeItem.getBoundingClientRect().top -
-          overflowParent.getBoundingClientRect().top +
-          scrollPosition;
-        let availSpace = scrollPosition + overflowParentHeight - aiTop;
-
-        if (aiHeight > availSpace || scrollPosition > aiTop)
-          overflowParent.scrollTop = aiTop - aiHeight + 4; // scroll to the active item position with a little offset.
+        activeItem.scrollIntoView({ block: 'nearest' });
       }
     }, settings.duration + 50);
   } else {
@@ -567,6 +546,13 @@ watch(showDropdown, (show) => {
     utils.checkEscStatus(uniqueId, true);
 
     dropMenu.classList.remove('visible');
+    dropElem.value!.focus();
+    setTimeout(
+      () => (dropMenu.style.visibility = 'hidden'),
+      utils.durationInMilliseconds(
+        utils.getCssVal(dropMenu, 'transition-duration')
+      )
+    );
   }
 });
 
@@ -691,7 +677,7 @@ function ms_keyEvt(e: KeyboardEvent) {
 }
 function dd_keyEvt(e: KeyboardEvent) {
   if (
-    (e.key == 'Enter' || e.key == 'ArrowDown') &&
+    (e.key == 'Enter' || e.key == 'ArrowDown' || e.key == ' ') &&
     dropElem.value!.matches(':focus-within') &&
     !showDropdown.value
   ) {
@@ -701,7 +687,7 @@ function dd_keyEvt(e: KeyboardEvent) {
   }
 }
 
-function dd_toggleHandler(e: Event) {
+function dd_toggleHandler(e: MouseEvent | TouchEvent) {
   let target = e.target as Element;
   // escape all ex-dropdown classed element from toggling dropdwon also trigger only on toggler in dropdown if specified to do so.
   if (
@@ -884,7 +870,9 @@ function dd_clickOnDomEvt(e: MouseEvent) {
 }
 
 function dd_KBControlEvt(e: KeyboardEvent) {
-  let items = [...dropMenu.querySelectorAll(selectors.items_filtered)];
+  let items = [
+    ...dropMenu.querySelectorAll(selectors.items_filtered),
+  ] as HTMLElement[];
   /*
     The Enter key triggers the click action on an item
     Enter and right arrow key open a sub dropdown that is hovered.
@@ -938,49 +926,21 @@ function dd_KBControlEvt(e: KeyboardEvent) {
 
       /* scroll overflow parent to make hovered-item visible in screen */
       if (ci) {
-        let overflowParent =
-          utils
-            .getParents(ci, '', dropMenu)
-            .find(
-              (el) =>
-                utils.getCssVal(el, 'overflow-y') === 'auto' ||
-                utils.getCssVal(el, 'overflow-y') === 'scroll'
-            ) || dropMenu;
-        let scrollPosition = overflowParent.scrollTop;
-        let overflowParentHeight = overflowParent.clientHeight;
-        let ciHeight = ci.offsetHeight;
-        let ciTop =
-          ci.getBoundingClientRect().top -
-          overflowParent.getBoundingClientRect().top +
-          scrollPosition;
-        let availSpace = scrollPosition + overflowParentHeight - ciTop;
-        let scrollAmount =
-          e.key == 'ArrowUp'
-            ? (nii === items.length - 1 && ciHeight > availSpace) ||
-              scrollPosition > ciTop
-              ? ciTop
-              : ciTop > scrollPosition + overflowParentHeight - ciHeight
-              ? ciTop - overflowParentHeight + ciHeight * 2
-              : undefined
-            : e.key == 'ArrowDown'
-            ? (nii === 0 && scrollPosition > ciTop) || ciHeight > availSpace
-              ? scrollPosition + ciHeight - availSpace
-              : scrollPosition > ciTop
-              ? ciTop - ciHeight
-              : undefined
-            : undefined;
-
-        if (scrollAmount !== undefined)
-          overflowParent.scrollTop =
-            scrollAmount + (e.key == 'ArrowDown' ? 1 : -1) * 4; // scroll to the hovered item position with a little offset.
-        items.forEach((el) => el.classList.remove('hovered'));
+        ci.scrollIntoView({ block: 'nearest' });
+        items.forEach((el) => {
+          el.classList.remove('hovered');
+          el.blur();
+        });
         ci.classList.add('hovered');
+        ci.focus();
         if (bb.selectable && !bb.multipleSelect) dd_setSelect(ci, true);
       }
     }
 
     document.addEventListener('mousemove', dd_mouseMover);
   }
+  // manage tab key navigation within dropdown menu and out of it.
+  else if (e.key === 'Tab') utils.focusRangeOnTab(dropMenu, e);
 }
 
 function dd_escAndTabEvt(e: KeyboardEvent) {
@@ -989,8 +949,11 @@ function dd_escAndTabEvt(e: KeyboardEvent) {
     e.preventDefault();
     showDropdown.value = false;
     // set sub dropdown to current hovered item in it parent dropdown.
-    if (dropElem.value!.matches('.sub'))
-      nextTick(() => dropElem.value!.classList.add('hovered'));
+    nextTick(() => {
+      dropElem.value!.focus();
+      if (dropElem.value!.matches('.sub'))
+        dropElem.value!.classList.add('hovered');
+    });
   } else if (
     e.key === 'Tab' &&
     ![...dropElem.value!.querySelectorAll(':scope :focus')][0] &&
@@ -1256,7 +1219,8 @@ function dd_setSelect(item: Element, xClose?: boolean) {
 
     item.classList.add('selected');
     bb.selectionValue[ddid] = itemValue;
-    compValue.value = Object.values(bb.selectionValue);
+    model.value = Object.values(bb.selectionValue);
+    emit('change', model.value);
     item.setAttribute('data-ddid', ddid);
     bb.selectionContent.push({
       html: item.innerHTML,
@@ -1300,7 +1264,8 @@ function dd_setSelect(item: Element, xClose?: boolean) {
     items
       .filter((el) => el !== item)
       .forEach((el) => el.classList.remove('active'));
-    compValue.value = item.getAttribute('data-value') || item.textContent || '';
+    model.value = item.getAttribute('data-value') || item.textContent || '';
+    emit('change', model.value);
     bb.selectionContent = [item.innerHTML];
   }
 
@@ -1323,7 +1288,8 @@ function dd_setDeselect(sItem: Element) {
   let item = dropMenu.querySelector(`:scope [data-ddid="${ddid}"]`);
 
   delete bb.selectionValue[ddid];
-  compValue.value = Object.values(bb.selectionValue);
+  model.value = Object.values(bb.selectionValue);
+  emit('change', model.value);
   if (!item) return;
   item.classList.remove('selected');
   item.setAttribute('data-ddid', '');
@@ -1348,12 +1314,16 @@ function dd_setDeselect(sItem: Element) {
 </script>
 
 <template>
-  <div
+  <a
     ref="dropdown"
     class="dropdown"
     :data-ddid="uniqueId"
     :class="{ active: showDropdown }"
-    :tabindex="bb.selectable ? 0 : undefined"
+    :role="bb.selectable ? 'combobox' : 'button'"
+    :aria-haspopup="bb.selectable ? 'listbox' : 'menu'"
+    :aria-expanded="showDropdown"
+    :aria-controls="bb.menuId"
+    tabindex="0"
   >
     <slot></slot>
     <template v-if="bb.selectable">
@@ -1397,8 +1367,8 @@ function dd_setDeselect(sItem: Element) {
           />
         </svg>
       </button>
-      <input ref="sInput" :value="compValue" type="hidden" :name="name" />
+      <input ref="sInput" :value="model" type="hidden" :name="name" />
     </template>
     <slot name="trailing"></slot>
-  </div>
+  </a>
 </template>

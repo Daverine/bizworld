@@ -573,8 +573,8 @@ function getItemForCart() {
         <h5 class="semibold 0-margined page-title">{{ details.title }}</h5>
         <div class="flexbox flex-separate guttered small semibold">
           <span
-            v-tooltip.unblocking
-            data-tooltip="Average Rate (Number of raters)"
+            v-tooltip:aria.unblocking
+            aria-label="Average Rate (Number of raters)"
           >
             <Icon name="material-symbols:star-rounded" class="yellow-text" />
             {{
@@ -586,8 +586,8 @@ function getItemForCart() {
             ({{ details.reviews.length }} reviews)
           </span>
           <span
-            v-tooltip.unblocking
-            :data-tooltip="details.bizData.location.address"
+            v-tooltip:aria.unblocking
+            :aria-label="details.bizData.location.address"
           >
             <Icon name="material-symbols:location-on-outline-rounded" />
             {{ details.bizData.location.city }},
@@ -668,8 +668,8 @@ function getItemForCart() {
                 />
                 <SvgIcon
                   name="verified_sp"
-                  v-tooltip.unblocking
-                  data-tooltip="Verified"
+                  v-tooltip:aria.unblocking
+                  aria-label="Verified"
                   class="small green-text"
                   style="position: absolute; bottom: 0px; right: 0px"
                 />
@@ -692,8 +692,8 @@ function getItemForCart() {
                   <span
                     v-if="details.bizData.rating"
                     class="semibold"
-                    v-tooltip.unblocking
-                    data-tooltip="Average Rate (Number of raters)"
+                    v-tooltip:aria.unblocking
+                    aria-label="Average Rate (Number of raters)"
                   >
                     <Icon
                       name="material-symbols:star-rounded"
@@ -892,8 +892,8 @@ function getItemForCart() {
           </button>
           <LimbDropdown
             :options="{ directionPriority: { x: 'left', y: 'top' } }"
-            v-tooltip.unblocking
-            data-tooltip="More options"
+            v-tooltip:aria.unblocking
+            aria-label="More options"
             class="flat circular button"
           >
             <Icon name="material-symbols:more-vert" />
@@ -964,8 +964,8 @@ function getItemForCart() {
         </button>
         <LimbDropdown
           :options="{ directionPriority: { x: 'left', y: 'top' } }"
-          v-tooltip.unblocking
-          data-tooltip="More options"
+          v-tooltip:aria.unblocking
+          aria-label="More options"
           class="flat circular button"
         >
           <Icon name="material-symbols:more-vert" />

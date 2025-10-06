@@ -245,8 +245,8 @@ onMounted(() => {
           <h4 class="semibold 0-margined page-title">{{ details.title }}</h4>
           <button
             class="outlined icon button"
-            v-tooltip.unblocking
-            data-tooltip="Add to favourite"
+            v-tooltip:aria.unblocking
+            aria-label="Add to favourite"
           >
             <Icon name="material-symbols:bookmark-outline-rounded" />
           </button>
@@ -262,8 +262,8 @@ onMounted(() => {
               />
               <SvgIcon
                 name="verified_sp"
-                v-tooltip.unblocking
-                data-tooltip="Verified"
+                v-tooltip:aria.unblocking
+                aria-label="Verified"
                 class="small green-text"
                 style="position: absolute; bottom: 0px; right: 0px"
               />
@@ -280,8 +280,8 @@ onMounted(() => {
                 style="gap: 0.25em 0.75em"
               >
                 <span
-                  v-tooltip.unblocking
-                  :data-tooltip="
+                  v-tooltip:aria.unblocking
+                  :aria-label="
                     !avail.openTime
                       ? 'Did not open today at all.'
                       : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
@@ -328,8 +328,8 @@ onMounted(() => {
                 style="gap: 0.25em 0.75em"
               >
                 <span
-                  v-tooltip.unblocking
-                  data-tooltip="Average Rate (Number of raters)"
+                  v-tooltip:aria.unblocking
+                  aria-label="Average Rate (Number of raters)"
                 >
                   <Icon
                     name="material-symbols:star-rounded"
@@ -343,8 +343,8 @@ onMounted(() => {
                   }}
                 </span>
                 <span
-                  v-tooltip.unblocking
-                  :data-tooltip="details.bizData.location.address"
+                  v-tooltip:aria.unblocking
+                  :aria-label="details.bizData.location.address"
                 >
                   <Icon name="material-symbols:location-on-outline-rounded" />
                   {{
@@ -708,8 +708,8 @@ onMounted(() => {
             </button>
             <LimbDropdown
               :options="{ directionPriority: { x: 'left', y: 'top' } }"
-              v-tooltip.unblocking
-              data-tooltip="More options"
+              v-tooltip:aria.unblocking
+              aria-label="More options"
               class="flat circular button"
             >
               <Icon name="material-symbols:more-vert" />
@@ -769,8 +769,8 @@ onMounted(() => {
     </div>
     <!-- Call to Action Section -->
     <div
-      v-scrollPin="{ pinPriority: 'bottom' }"
-      class="mobile-screen-only surface-bg fluid z-level-2 p-f"
+      class="mobile-screen-only sticky surface-bg fluid z-level-2 pin-bottom-blend"
+      style="bottom: 0px;"
     >
       <div class="container flexbox guttered" style="padding: 0.5rem 0rem">
         <button class="flexible primary button">
@@ -790,8 +790,8 @@ onMounted(() => {
         </button>
         <LimbDropdown
           :options="{ directionPriority: { x: 'left', y: 'top' } }"
-          v-tooltip.unblocking
-          data-tooltip="More options"
+          v-tooltip:aria.unblocking
+          aria-label="More options"
           class="flat circular button"
         >
           <Icon name="material-symbols:more-vert" />

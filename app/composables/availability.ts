@@ -1,18 +1,29 @@
-export const useAvailability = (hours: ([string, string] | false)[]) => {
+export type processedTime = [number, number];
+export type unprocessedTime = [string, string];
+export type weeklySchedule = [
+  unprocessedTime | false,
+  unprocessedTime | false,
+  unprocessedTime | false,
+  unprocessedTime | false,
+  unprocessedTime | false,
+  unprocessedTime | false,
+  unprocessedTime | false
+];
+export const useAvailability = (weeklySchedule: weeklySchedule) => {
   const now = useNow({ interval: 10000 });
-  const openTime = computed(() =>
-    hours[now.value.getDay()] === false
+  const openTime = computed<processedTime | false>(() =>
+    weeklySchedule[now.value.getDay()] === false
       ? false
-      : (hours[now.value.getDay()] as Array<string>)[0]
+      : ((weeklySchedule[now.value.getDay()] as unprocessedTime)[0]
           .split(':')
-          .map((el) => Number(el))
+          .map((el) => Number(el)) as processedTime)
   );
-  const closeTime = computed(() =>
+  const closeTime = computed<processedTime | false>(() =>
     openTime.value === false
       ? false
-      : (hours[now.value.getDay()] as Array<String>)[1]
+      : ((weeklySchedule[now.value.getDay()] as unprocessedTime)[1]
           .split(':')
-          .map((el) => Number(el))
+          .map((el) => Number(el)) as processedTime)
   );
   const isClosed = computed(
     () =>
@@ -47,7 +58,7 @@ export const useAvailability = (hours: ([string, string] | false)[]) => {
     let result: number | boolean = false;
 
     for (; i < 6; i++) {
-      if (hours[ex > 5 ? -1 + i : ex + i] !== false) {
+      if (weeklySchedule[ex > 5 ? -1 + i : ex + i] !== false) {
         result = ex > 5 ? -1 + i : ex + i;
         break;
       }

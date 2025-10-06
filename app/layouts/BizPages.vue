@@ -60,8 +60,8 @@ const isReady = computed(() => data.details && avail.value);
           <SvgIcon
             v-if="data.details.verified"
             name="verified_sp"
-            v-tooltip.unblocking
-            data-tooltip="Verified"
+            v-tooltip:aria.unblocking
+            aria-label="Verified"
             style="position: absolute; bottom: 0.5em; right: 0.5em"
           />
         </div>
@@ -81,7 +81,7 @@ const isReady = computed(() => data.details && avail.value);
       </header>
       <div
         v-scrollPin="{ top: 63, notifyStuckState: true }"
-        class="scrollpin fluid z-level-2 r-aligned basic menu surface-v2-bg"
+        class="scrollpin fluid z-level-1 r-aligned basic menu surface-v2-bg"
         style="height: 3.5rem; margin-bottom: 0.5rem"
       >
         <div class="container items">
@@ -96,65 +96,70 @@ const isReady = computed(() => data.details && avail.value);
               class="logo-lg site-logo"
             />
           </NuxtLink>
-          <div class="r-aligned items md-and-down-hidden">
-            <PageNav />
-          </div>
-          <div
-            class="item open-sidepanel md-and-up-hidden"
-            data-target="bizsidepanel"
-          >
-            <SvgIcon name="menu" class="lead" />
-            Menu
-            <LimbSidePanel class="right" id="bizsidepanel">
-              <div class="padded panel">
-                <div class="vertical menu">
-                  <div class="centered item exit-sidepanel">
-                    <SvgIcon name="arrow_back" />
-                  </div>
-                  <NuxtLink
-                    :to="{ name: 'biz-home', params: { id: $route.params.id } }"
-                    class="xhover centered item exit-sidepanel"
-                  >
-                    <NuxtImg
-                      preset="logo"
-                      :src="data.details.logo"
-                      alt="site logo"
-                      class="logo-lg site-logo"
-                    />
-                  </NuxtLink>
-                  <PageNav />
-                </div>
-                <hr />
-                <footer style="margin-top: auto">
-                  <Shareables name="color_scheme" />
-                  <Shareables name="copyright" />
-                </footer>
-              </div>
-            </LimbSidePanel>
-          </div>
-          <div class="xhover 0-l-padding item">
-            <LimbDropdown
-              :options="{ directionPriority: { x: 'left' } }"
-              v-tooltip.unblocking
-              data-tooltip="More options"
-              class="transparent button"
+          <div class="r-aligned items">
+            <div class="items md-and-down-hidden">
+              <PageNav />
+            </div>
+            <div
+              class="item open-sidepanel md-and-up-hidden"
+              data-target="bizsidepanel"
             >
-              <SvgIcon name="more_horiz" />
-              <div class="drop menu">
-                <div class="item">
-                  <SvgIcon name="follow" class="lead" /> Follow page
+              <SvgIcon name="menu" class="lead" />
+              Menu
+              <LimbSidePanel class="right" id="bizsidepanel">
+                <div class="padded panel">
+                  <div class="vertical menu">
+                    <div class="centered item exit-sidepanel">
+                      <SvgIcon name="arrow_back" />
+                    </div>
+                    <NuxtLink
+                      :to="{
+                        name: 'biz-home',
+                        params: { id: $route.params.id },
+                      }"
+                      class="xhover centered item exit-sidepanel"
+                    >
+                      <NuxtImg
+                        preset="logo"
+                        :src="data.details.logo"
+                        alt="site logo"
+                        class="logo-lg site-logo"
+                      />
+                    </NuxtLink>
+                    <PageNav />
+                  </div>
+                  <hr />
+                  <footer style="margin-top: auto">
+                    <Shareables name="color_scheme" />
+                    <Shareables name="copyright" />
+                  </footer>
                 </div>
-                <div class="item">
-                  <SvgIcon name="bookmark_add" class="lead" /> Save card
+              </LimbSidePanel>
+            </div>
+            <div class="xhover 0-l-padding item">
+              <LimbDropdown
+                :options="{ directionPriority: { x: 'left' } }"
+                v-tooltip:aria.unblocking
+                aria-label="More options"
+                class="transparent button"
+              >
+                <SvgIcon name="more_horiz" />
+                <div class="drop menu">
+                  <div class="item">
+                    <SvgIcon name="follow" class="lead" /> Follow page
+                  </div>
+                  <div class="item">
+                    <SvgIcon name="bookmark_add" class="lead" /> Save card
+                  </div>
+                  <div class="item">
+                    <SvgIcon name="share" class="lead" /> Share
+                  </div>
+                  <div class="item">
+                    <SvgIcon name="report" class="lead" /> Report page
+                  </div>
                 </div>
-                <div class="item">
-                  <SvgIcon name="share" class="lead" /> Share
-                </div>
-                <div class="item">
-                  <SvgIcon name="report" class="lead" /> Report page
-                </div>
-              </div>
-            </LimbDropdown>
+              </LimbDropdown>
+            </div>
           </div>
         </div>
       </div>
@@ -179,8 +184,8 @@ const isReady = computed(() => data.details && avail.value);
               <SvgIcon
                 v-if="data.details.verified"
                 name="verified_sp"
-                v-tooltip.unblocking
-                data-tooltip="Verified"
+                v-tooltip:aria.unblocking
+                aria-label="Verified"
                 class="mini"
                 style="position: absolute; bottom: 0.5em; right: 0.5em"
               />

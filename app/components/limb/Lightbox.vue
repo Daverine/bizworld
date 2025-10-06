@@ -85,7 +85,6 @@ type BrainBox = {
 };
 
 type reactiveBrainBox = {
-  initialized: boolean;
   showLightbox: boolean;
   thumbnailsView: boolean;
   caller: HTMLElement | undefined;
@@ -106,7 +105,6 @@ type slideContent = {
   thumbnail?: string;
 };
 
-defineOptions({ inheritAttrs: false });
 const router = useRouter();
 const route = useRoute();
 
@@ -143,7 +141,6 @@ const settings: LightboxSettings = {
   },
   ...(props.options || {}),
 };
-
 const bb: BrainBox = {
   // brainbox
   startCoords: { x: 0, y: 0, z: 0 },
@@ -160,10 +157,8 @@ const bb: BrainBox = {
   prevHash: '',
   openWithHash: false,
 };
-
 const vbb = reactive<reactiveBrainBox>({
   //view brainbox
-  initialized: false,
   showLightbox: false,
   thumbnailsView: true,
   caller: undefined,
@@ -172,7 +167,6 @@ const vbb = reactive<reactiveBrainBox>({
   slidesData: undefined,
   playing: false,
 });
-
 const unwatch: {
   [key: string]: WatchStopHandle;
 } = {};
@@ -217,7 +211,6 @@ async function init() {
     vbb.slidesData = slidesData;
     vbb.slidesNo = vbb.slidesData.length;
   }
-  vbb.initialized = true;
   if (bb.youtubeSlides) {
     // Wait for the YouTube API to be ready
     let youtubeAPIState = await loadYouTubeAPI();
@@ -576,10 +569,12 @@ onBeforeUnmount(() => {
 
 watch(
   () => vbb.showLightbox,
-  (value) => {
+  async (value) => {
     if (value) {
+      document.body.append(lightbox.value!);
+      await utils.afterNextRepaint();
+      lightbox.value!.style.visibility = 'visible';
       if (vbb.slidesNo) update();
-
       if (settings.hashControl) {
         bb.scrollPosBeforeLock = { top: window.scrollY, left: window.scrollX };
         if (!bb.openWithHash) {
@@ -713,6 +708,7 @@ watch(
       }
       clearTimeout(bb.inOutTimeout);
       bb.inOutTimeout = setTimeout(() => {
+        lightbox.value!.style.visibility = 'hidden';
         if (typeof settings.complete === 'function')
           settings.complete({
             target: lightbox.value!,
@@ -1222,34 +1218,96 @@ function stopSlideshow() {
 // a data-thumbnails to set a thumbnail picture
 </script>
 <template>
-  <Teleport to="body" :disabled="!vbb.initialized">
-    <div
-      ref="lightbox"
-      v-bind="$attrs"
-      class="lightbox"
-      :class="{ 'show-gallery': vbb.thumbnailsView }"
-      :id="props.id"
-    >
-      <div class="progress-bar">
-        <div class="determinate"></div>
+  <div
+    ref="lightbox"
+    :id="props.id"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Media lightbox dialog"
+    class="lightbox"
+    :class="{ 'show-gallery': vbb.thumbnailsView }"
+  >
+    <div class="progress-bar">
+      <div class="determinate"></div>
+    </div>
+    <div class="icon-bar lb-control inverted menu">
+      <div class="xhover status item">
+        {{ vbb.currSlideNo }} / {{ vbb.slidesNo }}
       </div>
-      <div class="icon-bar lb-control inverted menu">
-        <div class="xhover status item">
-          {{ vbb.currSlideNo }} / {{ vbb.slidesNo }}
+      <div class="r-aligned items">
+        <div class="resp-down-hidden items">
+          <button
+            class="item active as-icon gallery-switch"
+            v-tooltip:aria.unblocking
+            aria-label="Show all slides"
+          >
+            <Icon mode="svg" name="material-symbols:apps" class="icon" />
+          </button>
+          <button
+            v-if="settings.slideshow"
+            class="item as-icon slideshow"
+            :class="{ disabled: vbb.slidesNo < 2 }"
+            v-tooltip:aria.unblocking
+            aria-label="Slideshow Play or Pause"
+          >
+            <Icon
+              mode="svg"
+              name="material-symbols:play-circle-outline"
+              class="nview icon"
+            />
+            <Icon
+              mode="svg"
+              name="material-symbols:pause-circle-outline"
+              class="aview icon"
+            />
+          </button>
+          <button
+            class="item as-icon fullscreen-switch dd-close"
+            v-tooltip:aria.unblocking
+            aria-label="Toggle fullscreen"
+          >
+            <Icon
+              mode="svg"
+              name="material-symbols:fullscreen"
+              class="nview icon"
+            />
+            <Icon
+              mode="svg"
+              name="material-symbols:fullscreen-exit"
+              class="aview icon"
+            />
+          </button>
+          <button
+            class="item as-icon zoom-in"
+            v-tooltip:aria.unblocking
+            aria-label="Zoom in"
+          >
+            <Icon mode="svg" name="material-symbols:zoom-in" class="icon" />
+          </button>
+          <button
+            class="disabled item zoom-out"
+            v-tooltip:aria.unblocking
+            aria-label="Zoom out"
+          >
+            <Icon mode="svg" name="material-symbols:zoom-out" class="icon" />
+          </button>
         </div>
-        <div class="r-aligned items">
-          <div class="resp-down-hidden items">
-            <div
-              class="item active as-icon gallery-switch"
-              title="Show all slides"
-            >
+        <LimbDropdown
+          class="item as-icon resp-up-hidden"
+          aria-label="More options"
+          :options="{ teleportMenu: false, closeOnItemClick: false }"
+        >
+          <Icon mode="svg" name="material-symbols:more-vert" class="icon" />
+          <div class="drop menu">
+            <div role="menuitem" class="item active gallery-switch dd-close">
               <Icon mode="svg" name="material-symbols:apps" class="icon" />
+              Show All
             </div>
             <div
+              role="menuitem"
               v-if="settings.slideshow"
-              class="item as-icon slideshow"
+              class="item slideshow dd-close"
               :class="{ disabled: vbb.slidesNo < 2 }"
-              title="Slideshow Play or Pause"
             >
               <Icon
                 mode="svg"
@@ -1261,11 +1319,9 @@ function stopSlideshow() {
                 name="material-symbols:pause-circle-outline"
                 class="aview icon"
               />
+              Slideshow
             </div>
-            <div
-              class="item as-icon fullscreen-switch dd-close"
-              title="Toggle fullscreen"
-            >
+            <div role="menuitem" class="item fullscreen-switch dd-close">
               <Icon
                 mode="svg"
                 name="material-symbols:fullscreen"
@@ -1276,182 +1332,135 @@ function stopSlideshow() {
                 name="material-symbols:fullscreen-exit"
                 class="aview icon"
               />
+              Toggle Fullscreen
             </div>
-            <div class="item as-icon zoom-in" title="Zoom in">
+            <div role="menuitem" class="item zoom-in" title="Zoom in">
               <Icon mode="svg" name="material-symbols:zoom-in" class="icon" />
+              Zoom-In
             </div>
-            <div class="disabled item zoom-out" title="Zoom out">
+            <div role="menuitem" class="disabled item zoom-out" title="Zoom out">
               <Icon mode="svg" name="material-symbols:zoom-out" class="icon" />
+              Zoom-Out
             </div>
           </div>
-          <LimbDropdown
-            class="item as-icon resp-up-hidden"
-            title="More options"
-            :options="{ teleportMenu: false, closeOnItemClick: false }"
-          >
-            <Icon mode="svg" name="material-symbols:more-vert" class="icon" />
-            <div class="drop menu">
-              <div class="item active gallery-switch dd-close">
-                <Icon mode="svg" name="material-symbols:apps" class="icon" />
-                Show All
-              </div>
-              <div
-                v-if="settings.slideshow"
-                class="item slideshow dd-close"
-                :class="{ disabled: vbb.slidesNo < 2 }"
-              >
-                <Icon
-                  mode="svg"
-                  name="material-symbols:play-circle-outline"
-                  class="nview icon"
-                />
-                <Icon
-                  mode="svg"
-                  name="material-symbols:pause-circle-outline"
-                  class="aview icon"
-                />
-                Slideshow
-              </div>
-              <div class="item fullscreen-switch dd-close">
-                <Icon
-                  mode="svg"
-                  name="material-symbols:fullscreen"
-                  class="nview icon"
-                />
-                <Icon
-                  mode="svg"
-                  name="material-symbols:fullscreen-exit"
-                  class="aview icon"
-                />
-                Toggle Fullscreen
-              </div>
-              <div class="item zoom-in" title="Zoom in">
-                <Icon mode="svg" name="material-symbols:zoom-in" class="icon" />
-                Zoom-In
-              </div>
-              <div class="disabled item zoom-out" title="Zoom out">
-                <Icon
-                  mode="svg"
-                  name="material-symbols:zoom-out"
-                  class="icon"
-                />
-                Zoom-Out
-              </div>
-            </div>
-          </LimbDropdown>
-          <a class="item as-icon pic-only" title="Picture only view">
-            <Icon
-              mode="svg"
-              name="material-symbols:image-outline"
-              class="icon"
-            />
-          </a>
-          <a class="item as-icon exit-lightbox" title="Exit lightbox">
-            <Icon mode="svg" name="material-symbols:close" class="icon" />
-          </a>
-        </div>
+        </LimbDropdown>
+        <button
+          class="item as-icon pic-only"
+          v-tooltip:aria.unblocking
+          aria-label="Picture only view"
+        >
+          <Icon mode="svg" name="material-symbols:image-outline" class="icon" />
+        </button>
+        <button
+          class="item as-icon exit-lightbox"
+          v-tooltip:aria.unblocking
+          aria-label="Exit lightbox"
+        >
+          <Icon mode="svg" name="material-symbols:close" class="icon" />
+        </button>
       </div>
-      <div
-        class="slides"
-        :data-slidesNo="settings.gallery ? vbb.slidesNo : null"
-      >
-        <figure
-          v-if="vbb.slidesNo"
-          ref="slide"
-          class="slide"
-          v-for="(slide, index) in vbb.slidesData"
-          :data-gallery-ref="index + 1"
-          :data-cont-type="slide.type"
-          :data-cont-id="slide.contentId"
-        >
-          <figcaption v-if="slide.caption" class="caption">
-            <div class="truncate-helper" v-html="slide.caption"></div>
-          </figcaption>
-          <div class="content">
-            <img v-if="slide.type === 'image'" :src="slide.url" alt="" />
-            <video v-else-if="slide.type === 'video'" controls>
-              <source :src="slide.url" />
-            </video>
-            <iframe
-              v-else-if="slide.type === 'youtube'"
-              :src="`https://www.youtube-nocookie.com/embed/${slide.videoId}?enablejsapi=1&playsinline=1`"
-              frameborder="0"
-              allowfullscreen
-            ></iframe>
-            <iframe
-              v-else-if="slide.type === 'unknown'"
-              :src="slide.url"
-              frameborder="0"
-              allowfullscreen
-            ></iframe>
-            <template v-else-if="slide.markup" v-html="slide.markup"></template>
-          </div>
-        </figure>
-        <div v-else class="lb-placeholder" style="text-align: center">
-          <svg
-            style="fill: currentColor; width: 200px; height: auto"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:v="https://vecta.io/nano"
-            width="517"
-            height="469"
-            viewBox="0 0 296.08 268.47"
-            shape-rendering="geometricPrecision"
-            image-rendering="optimizeQuality"
-            fill-rule="evenodd"
-          >
-            <path
-              d="M.19 126.34l38.86 133.92c3.17 5.54 9.12 9.58 15.33 7.78l95.66-27.88 72.87 21.32c11.08 3.54 17.08-3.67 19.89-13.1l53.28-183.84c0-6.37-3.6-12.32-9.75-14.12L117.3.89c-7.77-2.23-16.27-.56-18.84 8.18l-24.9 84.71-68.12 22.66c-3.59 1.2-6.19 6.66-5.25 9.9zm46.87 71.35c0 4.44 2.49 8.94 6.76 10.65l167.54 49.15c8.62 2.51 14.7 1.67 17.67-8.31l53.44-182.65c.79-5.41-.78-9.21-5.8-12.27L115.15 3.8c-5.55-1.47-10.96 1.06-13.5 6.41L47.06 197.69zm9.17 3.01l170 50.13c3.43.95 4.3-.8 5.14-3.72l53.03-181.1c.96-3.31-.33-4.52-3.27-5.35l-166.1-48.63c-4.22-1.26-5.45-1.01-6.71 3.34L55.33 196.34c-.47 1.56-.44 3.18.9 4.36zm24.35-38.79c0 2.27 1.81 1.76 2.82 2.05l142.93 41.87c2.22.65 2.94.89 3.7-1.74l38.55-131.68c.85-2.92-1.04-2.84-3.43-3.53L124.04 27.56c-2.54-.74-3.46-1.43-4.34 1.66L80.58 161.91zm33.78-67.47c-.33 0-1.27 1.6-2.95.83-.79-.37-1.17-1.19-1.1-2.03l-5.35-1.58-18.51 63.25c.61-.33 2.96-.73 3.69-.84 20.25-3.22 43.04 3.25 65.62-1.18 2.7-.52 2.55-.98 1.38-3.33-2.85-5.69-10.41-14.73 1.98-16.48 15.61-2.19 25.62 3.59 42.29-2.59l-1.87-2.97c-.63-.94-.45-1.49-.14-2.51l4.85-17.13-3.15-23.64-6.55 2.86c-.45.18-.73.63-1.06.97-1.9 1.91-9.75 10.14-10.52 10.39-15.08 4.78-21.58 8.69-35.65 15.54-.68.34-1.39.77-2.15.77-1.05 0-1.93-.96-1.93-1.99 0-1.15.74-1.68 1.63-2.09l7.54-3.68-7.43-.95c-.69-.16-1.23-.72-1.44-1.37l-.4-9.42c0-1.43-.15-1.14.33-2.39.63-1.74 2.1-5.05 2.39-6.74l1.74-10.2c-.13.01-.46.15-.58.2l-17.57 6.53c-2.95 1.22-12.14 9.22-15.09 11.77zM185.1 165c-15.37 6.3-43.92-.09-54.44 5.76-1.26.7-1.39 1.74-1.39 3.1l97.72 28.6 14.8-50.64c-.09.02-.19.11-.28.17-.96.64-2.26.23-2.83-.74l-9.7-17.7c-4.29 1-13.22-.84-17.58 1.68-.68.4-1.33.89-1.9 1.43-7.59 7.32-35.7 2.64-34.58 6.38 1.37 4.51 11.46 11 13.27 16.39.92 2.73-.62 4.56-3.09 5.57zm-33.62-87.66c-1.46 6.27-1.91 10.62-4.23 16.98-.22.56.14 6.9.18 7.98 2.9.07 8.12 1.03 11.01 1.39.81.12.69.08 1.35-.25 8.05-4.03 12.2-6.89 21.07-8.67 1.01-.2 5.53-5.27 6.57-6.34l-1.06-3.91c-.79.53-1.55 1.62-2.49 1.9-3.88 1.17-9.75-14.08-12.48-17.18-.17 3.16-1.48 20.69-2.83 21.83-4.06 3.43-14.96-12.31-17.09-13.73zm56.9 31.11l-4.99 17.29 2.07 3.52c.4 0 1.25-.2 1.68-.28 6.04-.83 13.34-.07 19.51-.07l-8.99-16.08-4.2-15.33c-.63.3-1.84.93-2.47.93-2.28 0-3.78-5.37-4.81-6.56l2.2 16.58zm25.03 24.76l8.96 16.51 4.84-16.41-8.65-2.51c-.41 1.56-3.92 2.12-5.15 2.41zm-75.62-56.32c-1.44 1.99 5.26 7.3 7.46 8.87 1.31.92 2.2-16.29 2.2-18.06-5.54 6.14-3.94.81-9.66 9.19z"
-            />
-          </svg>
-          <div class="semibold huge">No Lightbox Element Present</div>
-        </div>
-        <div
-          class="lb-control c-prev"
-          :class="{ disabled: vbb.currSlideNo <= 1 }"
-        >
-          <Icon mode="svg" name="material-symbols:chevron-left" class="icon" />
-        </div>
-        <div
-          class="lb-control c-next"
-          :class="{ disabled: vbb.currSlideNo === vbb.slidesNo }"
-        >
-          <Icon mode="svg" name="material-symbols:chevron-right" />
-        </div>
-      </div>
-      <LimbIScroller
-        :options="{
-          autoSetup: false,
-          scrollBody: '[data-thumbnails]',
-          scrollChildren: '.thumbnail',
-          prevCtrlBtn: '.l-scroll',
-          nextCtrlBtn: '.r-scroll',
-        }"
-        class="lb-control gallery-view"
-      >
-        <div data-thumbnails>
-          <div
-            v-for="(slide, index) in vbb.slidesData"
-            class="thumbnail"
-            :data-gallery-ref="index + 1"
-          >
-            <img :src="slide.thumbnail" alt="a thumbnail picture" />
-          </div>
-        </div>
-        <div class="l-scroll">
-          <Icon
-            mode="svg"
-            name="material-symbols:keyboard-double-arrow-left"
-            class="icon"
-          />
-        </div>
-        <div class="r-scroll">
-          <Icon
-            mode="svg"
-            name="material-symbols:keyboard-double-arrow-right"
-            class="icon"
-          />
-        </div>
-      </LimbIScroller>
     </div>
-  </Teleport>
+    <div class="slides" :data-slidesNo="settings.gallery ? vbb.slidesNo : null">
+      <figure
+        v-if="vbb.slidesNo"
+        ref="slide"
+        class="slide"
+        v-for="(slide, index) in vbb.slidesData"
+        :data-gallery-ref="index + 1"
+        :data-cont-type="slide.type"
+        :data-cont-id="slide.contentId"
+      >
+        <figcaption v-if="slide.caption" class="caption">
+          <div class="truncate-helper" v-html="slide.caption"></div>
+        </figcaption>
+        <div class="content">
+          <img v-if="slide.type === 'image'" :src="slide.url" alt="" />
+          <video v-else-if="slide.type === 'video'" controls>
+            <source :src="slide.url" />
+          </video>
+          <iframe
+            v-else-if="slide.type === 'youtube'"
+            :src="`https://www.youtube-nocookie.com/embed/${slide.videoId}?enablejsapi=1&playsinline=1`"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+          <iframe
+            v-else-if="slide.type === 'unknown'"
+            :src="slide.url"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+          <template v-else-if="slide.markup" v-html="slide.markup"></template>
+        </div>
+      </figure>
+      <figure v-else class="lb-placeholder" style="text-align: center">
+        <svg
+          style="fill: currentColor; width: 200px; height: auto"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:v="https://vecta.io/nano"
+          width="517"
+          height="469"
+          viewBox="0 0 296.08 268.47"
+          shape-rendering="geometricPrecision"
+          image-rendering="optimizeQuality"
+          fill-rule="evenodd"
+        >
+          <path
+            d="M.19 126.34l38.86 133.92c3.17 5.54 9.12 9.58 15.33 7.78l95.66-27.88 72.87 21.32c11.08 3.54 17.08-3.67 19.89-13.1l53.28-183.84c0-6.37-3.6-12.32-9.75-14.12L117.3.89c-7.77-2.23-16.27-.56-18.84 8.18l-24.9 84.71-68.12 22.66c-3.59 1.2-6.19 6.66-5.25 9.9zm46.87 71.35c0 4.44 2.49 8.94 6.76 10.65l167.54 49.15c8.62 2.51 14.7 1.67 17.67-8.31l53.44-182.65c.79-5.41-.78-9.21-5.8-12.27L115.15 3.8c-5.55-1.47-10.96 1.06-13.5 6.41L47.06 197.69zm9.17 3.01l170 50.13c3.43.95 4.3-.8 5.14-3.72l53.03-181.1c.96-3.31-.33-4.52-3.27-5.35l-166.1-48.63c-4.22-1.26-5.45-1.01-6.71 3.34L55.33 196.34c-.47 1.56-.44 3.18.9 4.36zm24.35-38.79c0 2.27 1.81 1.76 2.82 2.05l142.93 41.87c2.22.65 2.94.89 3.7-1.74l38.55-131.68c.85-2.92-1.04-2.84-3.43-3.53L124.04 27.56c-2.54-.74-3.46-1.43-4.34 1.66L80.58 161.91zm33.78-67.47c-.33 0-1.27 1.6-2.95.83-.79-.37-1.17-1.19-1.1-2.03l-5.35-1.58-18.51 63.25c.61-.33 2.96-.73 3.69-.84 20.25-3.22 43.04 3.25 65.62-1.18 2.7-.52 2.55-.98 1.38-3.33-2.85-5.69-10.41-14.73 1.98-16.48 15.61-2.19 25.62 3.59 42.29-2.59l-1.87-2.97c-.63-.94-.45-1.49-.14-2.51l4.85-17.13-3.15-23.64-6.55 2.86c-.45.18-.73.63-1.06.97-1.9 1.91-9.75 10.14-10.52 10.39-15.08 4.78-21.58 8.69-35.65 15.54-.68.34-1.39.77-2.15.77-1.05 0-1.93-.96-1.93-1.99 0-1.15.74-1.68 1.63-2.09l7.54-3.68-7.43-.95c-.69-.16-1.23-.72-1.44-1.37l-.4-9.42c0-1.43-.15-1.14.33-2.39.63-1.74 2.1-5.05 2.39-6.74l1.74-10.2c-.13.01-.46.15-.58.2l-17.57 6.53c-2.95 1.22-12.14 9.22-15.09 11.77zM185.1 165c-15.37 6.3-43.92-.09-54.44 5.76-1.26.7-1.39 1.74-1.39 3.1l97.72 28.6 14.8-50.64c-.09.02-.19.11-.28.17-.96.64-2.26.23-2.83-.74l-9.7-17.7c-4.29 1-13.22-.84-17.58 1.68-.68.4-1.33.89-1.9 1.43-7.59 7.32-35.7 2.64-34.58 6.38 1.37 4.51 11.46 11 13.27 16.39.92 2.73-.62 4.56-3.09 5.57zm-33.62-87.66c-1.46 6.27-1.91 10.62-4.23 16.98-.22.56.14 6.9.18 7.98 2.9.07 8.12 1.03 11.01 1.39.81.12.69.08 1.35-.25 8.05-4.03 12.2-6.89 21.07-8.67 1.01-.2 5.53-5.27 6.57-6.34l-1.06-3.91c-.79.53-1.55 1.62-2.49 1.9-3.88 1.17-9.75-14.08-12.48-17.18-.17 3.16-1.48 20.69-2.83 21.83-4.06 3.43-14.96-12.31-17.09-13.73zm56.9 31.11l-4.99 17.29 2.07 3.52c.4 0 1.25-.2 1.68-.28 6.04-.83 13.34-.07 19.51-.07l-8.99-16.08-4.2-15.33c-.63.3-1.84.93-2.47.93-2.28 0-3.78-5.37-4.81-6.56l2.2 16.58zm25.03 24.76l8.96 16.51 4.84-16.41-8.65-2.51c-.41 1.56-3.92 2.12-5.15 2.41zm-75.62-56.32c-1.44 1.99 5.26 7.3 7.46 8.87 1.31.92 2.2-16.29 2.2-18.06-5.54 6.14-3.94.81-9.66 9.19z"
+          />
+        </svg>
+        <figcaption class="semibold huge">
+          No Lightbox Element Present
+        </figcaption>
+      </figure>
+      <button
+        aria-label="Previous Slide"
+        :disabled="vbb.currSlideNo <= 1"
+        class="lb-control c-prev"
+      >
+        <Icon mode="svg" name="material-symbols:chevron-left" class="icon" />
+      </button>
+      <button
+        aria-label="Next Slide"
+        :disabled="vbb.currSlideNo === vbb.slidesNo"
+        class="lb-control c-next"
+      >
+        <Icon mode="svg" name="material-symbols:chevron-right" />
+      </button>
+    </div>
+    <LimbIScroller
+      :options="{
+        autoSetup: false,
+        scrollBody: '[data-thumbnails]',
+        scrollChildren: '.thumbnail',
+        prevCtrlBtn: '.l-scroll',
+        nextCtrlBtn: '.r-scroll',
+      }"
+      class="lb-control gallery-view"
+    >
+      <div data-thumbnails>
+        <div
+          v-for="(slide, index) in vbb.slidesData"
+          class="thumbnail"
+          :data-gallery-ref="index + 1"
+        >
+          <img :src="slide.thumbnail" alt="a thumbnail picture" />
+        </div>
+      </div>
+      <div class="l-scroll">
+        <Icon
+          mode="svg"
+          name="material-symbols:keyboard-double-arrow-left"
+          class="icon"
+        />
+      </div>
+      <div class="r-scroll">
+        <Icon
+          mode="svg"
+          name="material-symbols:keyboard-double-arrow-right"
+          class="icon"
+        />
+      </div>
+    </LimbIScroller>
+  </div>
 </template>

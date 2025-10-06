@@ -8,8 +8,8 @@ const props = defineProps(['details']);
       <div
         class="semibold truncate big serv-title"
         style="--line-clamp: 2"
-        v-tooltip.unblocking
-        :data-tooltip="details.title"
+        v-tooltip:aria.unblocking
+        :aria-label="details.title"
       >
         {{ details.title }}
       </div>
@@ -32,6 +32,7 @@ const props = defineProps(['details']);
 .page-serv {
   display: flex;
   width: 32.5rem;
+  max-width: 100%;
   position: relative;
   border-radius: var(--sm-radius);
   border: 1px solid transparent;

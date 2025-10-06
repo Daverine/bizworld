@@ -1,8 +1,7 @@
-<script setup>
+<script lang="ts" setup>
 defineOptions({ name: 'rc-shareables' });
 defineProps(['name']);
 
-const mainStore = useMainStore();
 const userStore = useUserStore();
 const searchStore = useSearchStore();
 const colorMode = useColorMode({
@@ -10,62 +9,20 @@ const colorMode = useColorMode({
     light: 'light-mode',
     dark: 'dark-mode',
   },
-  emitAuto: true,
 });
 </script>
 
 <template>
-  <template v-if="name === 'account'">
-    <NuxtLink
-      to="/account/profile"
-      class="item exit-sidepanel"
-      exact-active-class="active"
-    >
-      <Icon name="material-symbols:person-outline-rounded" class="lead" /> Your
-      profile
-    </NuxtLink>
-    <NuxtLink
-      to="/account/reviews"
-      class="item exit-sidepanel"
-      exact-active-class="active"
-    >
-      <Icon name="material-symbols:reviews-outline-rounded" class="lead" /> Your
-      reviews
-    </NuxtLink>
-    <NuxtLink
-      to="/account/saved"
-      class="item exit-sidepanel"
-      exact-active-class="active"
-    >
-      <Icon name="material-symbols:bookmarks-outline-rounded" class="lead" />
-      Saved cards
-    </NuxtLink>
-    <NuxtLink
-      to="/account/followed"
-      class="item exit-sidepanel"
-      exact-active-class="active"
-    >
-      <Icon name="material-symbols:groups-outline-rounded" class="lead" />
-      Followed providers
-    </NuxtLink>
-  </template>
   <LimbDropdown
-    v-else-if="name === 'do_more_item'"
+    v-if="name === 'do_more_item'"
     :options="{ directionPriority: { x: 'center', y: 'bottom' } }"
-    v-tooltip.unblocking
-    data-tooltip="Do more"
+    v-tooltip:aria.unblocking
+    aria-label="Do more"
     class="as-icon item"
   >
     <Icon name="material-symbols:apps" />
     <div class="drop menu">
-      <div class="compact grid menu 3-cols app-items">
-        <div
-          class="bar-item item open-modal exit-dd"
-          data-target="search-modal"
-        >
-          <Icon name="material-symbols:search-rounded" />
-          <span class="text label">Search</span>
-        </div>
+      <div class="compact grid menu 2-cols app-items">
         <div
           class="bar-item item open-modal exit-dd"
           data-target="explore-modal"
@@ -99,7 +56,7 @@ const colorMode = useColorMode({
         class="free-img circular image"
       />{{ `${userStore.userData.firstName} ${userStore.userData.lastName}` }}
     </div>
-    <rc-shareables name="account" />
+    <AccountNavItems />
     <div class="item" @click="userStore.logout()">
       <Icon name="material-symbols:logout-rounded" class="lead" /> Log out
     </div>
@@ -119,14 +76,14 @@ const colorMode = useColorMode({
     class="container-lg items auto-margined"
     style="border-radius: var(--default-radius)"
   >
-    <div
+    <button
       class="item as-icon open-sidepanel"
-      v-tooltip.unblocking
-      data-tooltip="Menu"
+      v-tooltip:aria.unblocking
+      aria-label="Menu"
       data-target="msidepanel"
     >
       <Icon name="material-symbols:menu-rounded" />
-    </div>
+    </button>
     <NuxtLink :to="userStore.auth ? '/home' : '/'" class="xhover item as-icon">
       <NuxtImg
         preset="logo"
@@ -153,8 +110,8 @@ const colorMode = useColorMode({
         />
         <button
           type="button"
-          v-tooltip.unblocking
-          data-tooltip="Scan Business QR"
+          v-tooltip:aria.unblocking
+          aria-label="Scan Business QR"
           class="icon open-modal"
           data-target="scanqr-modal"
         >
@@ -162,31 +119,35 @@ const colorMode = useColorMode({
         </button>
         <button
           type="button"
-          v-tooltip.unblocking
-          data-tooltip="Search location is set to Nigeria. Click to change it."
+          v-tooltip:aria.unblocking
+          aria-label="Configure search"
           class="icon open-modal"
-          data-target=""
+          data-target="search-modal"
         >
-          <Icon name="material-symbols:location-on-outline-rounded" />
+          <Icon name="material-symbols:settings-applications-outline-rounded" />
         </button>
       </label>
     </form>
     <div class="items r-aligned">
       <div
-        v-tooltip.unblocking
-        data-tooltip="Search"
+        v-tooltip:aria.unblocking
+        aria-label="Search"
         class="open-modal as-icon item md-and-up-hidden sm-and-down-hidden"
         data-target="search-modal"
       >
         <Icon name="material-symbols:search-rounded" />
       </div>
-      <rc-shareables name="do_more_item" />
+      <div class="item open-modal" data-target="explore-modal">
+        <Icon name="material-symbols:manage-search-rounded" class="lead" />
+        Explore
+      </div>
+      <!-- <rc-shareables name="do_more_item" /> -->
       <template v-if="userStore.auth">
         <LimbDropdown
-          :options="{ directionPriority: { x: 'center', y: 'bottom' } }"
+          :options="{ directionPriority: { x: 'center' } }"
           class="as-icon item ac-viewbox-ref"
-          v-tooltip.unblocking
-          data-tooltip="Notifications"
+          v-tooltip:aria.unblocking
+          aria-label="Notifications"
         >
           <i class="icon ac-viewbox">
             <Icon name="material-symbols:notifications-outline-rounded" />
@@ -214,9 +175,9 @@ const colorMode = useColorMode({
           </div>
         </LimbDropdown>
         <LimbDropdown
-          :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
-          v-tooltip.unblocking
-          data-tooltip="Your profile"
+          :options="{ directionPriority: { x: 'left' } }"
+          v-tooltip:aria.unblocking
+          aria-label="Your profile"
           class="xhover as-icon item"
         >
           <NuxtImg
@@ -241,9 +202,9 @@ const colorMode = useColorMode({
           </div>
         </div>
         <LimbDropdown
-          :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
-          v-tooltip.unblocking
-          data-tooltip="Account"
+          :options="{ directionPriority: { x: 'left' } }"
+          v-tooltip:aria.unblocking
+          aria-label="Account"
           class="item as-icon lg-and-up-hidden"
         >
           <Icon name="material-symbols:person-add-outline-rounded" />
@@ -305,19 +266,22 @@ const colorMode = useColorMode({
     style="align-self: flex-end"
   >
     <label>Color scheme settings</label>
-    <div class="icon fluid option-group">
-      <label>
-        <input v-model="colorMode" type="radio" value="light" />
-        <Icon name="material-symbols:light-mode-outline-rounded" />
-      </label>
-      <label>
-        <input v-model="colorMode" type="radio" value="auto" />
-        <Icon name="material-symbols:desktop-windows-outline-rounded" />
-      </label>
-      <label>
-        <input v-model="colorMode" type="radio" value="dark" />
-        <Icon name="material-symbols:dark-mode-outline-rounded" />
-      </label>
+    <div class="fillable compact pills menu fluid">
+      <ClientOnly>
+        <label class="as-icon item" :class="{ active: colorMode === 'light' }">
+          <input
+            v-model="colorMode"
+            class="hidden"
+            type="radio"
+            value="light"
+          />
+          <Icon name="material-symbols:light-mode-outline-rounded" />
+        </label>
+        <label class="as-icon item" :class="{ active: colorMode === 'dark' }">
+          <input v-model="colorMode" class="hidden" type="radio" value="dark" />
+          <Icon name="material-symbols:dark-mode-outline-rounded" />
+        </label>
+      </ClientOnly>
     </div>
   </div>
 </template>

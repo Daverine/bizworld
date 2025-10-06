@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ name: 'manage-biz-products', layout: 'common', auth: false });
+definePageMeta({ name: 'manage-biz-services', layout: 'common', auth: false });
 const data = useBizStore();
 </script>
 <template>
@@ -12,22 +12,22 @@ const data = useBizStore();
       <div
         class="p-h3 lined heading h3 flexbox guttered flex-separate align-end surface-bg pin-top-blend 0-margined"
       >
-        Products
+        Services
         <NuxtLink
-          :to="{ name: 'add-product', params: { id: $route.params.id } }"
+          :to="{ name: 'add-service', params: { id: $route.params.id } }"
           class="compact button"
         >
-          Add a product
+          Add a service
         </NuxtLink>
       </div>
     </header>
     <section class="body-sec">
       <p>
-        Let customers discover your business by adding products to your Business
+        Let customers discover your business by adding services to your Business
         Page on Bizworld.
       </p>
-      <div class="products-grid">
-        <PageProduct v-for="product in data.products" :details="product" />
+      <div class="services-grid">
+        <PageService v-for="service in data.projects" :details="service" />
       </div>
     </section>
   </main>

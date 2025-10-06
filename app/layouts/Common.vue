@@ -18,7 +18,11 @@ const searchStore = useSearchStore();
           <Icon name="material-symbols:manage-search-rounded" class="lead" />
           Explore:
         </button>
-        <LimbIScroller class="flexible" style="padding: 0.25rem 0rem">
+        <LimbIScroller
+          :options="{ scrollChildren: '.chip' }"
+          class="flexible"
+          style="padding: 0.25rem 0rem"
+        >
           <div class="scroll-items" style="gap: 0.5rem">
             <button class="chip">
               <Icon name="material-symbols:restaurant-rounded" class="lead" />
