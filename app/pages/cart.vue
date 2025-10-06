@@ -21,7 +21,7 @@ const allChecked = computed({
         <h3>Shopping Cart</h3>
         <table class="compact clear table">
           <thead
-            class="sticky z-level-3"
+            class="sticky z-level-1"
             style="
               top: 72px;
               box-shadow: 0px 1px 0px 0px var(--on-surface),
@@ -219,7 +219,7 @@ const allChecked = computed({
               <Icon name="material-symbols:keyboard-arrow-down-rounded" />
               Checkout details
             </div>
-            <Modal id="checkout-details">
+            <LimbModal id="checkout-details">
               <div class="dialog bottom-sheet padded">
                 <div class="flexbox flex-column guttered">
                   <div class="flexbox flex-separate sm-guttered">
@@ -263,7 +263,7 @@ const allChecked = computed({
                   </div>
                 </div>
               </div>
-            </Modal>
+            </LimbModal> 
             <div class="flexbox flex-separate sm-guttered h6 bold">
               <div>Total</div>
               <div>

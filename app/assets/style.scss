@@ -1,7 +1,7 @@
 svg.icon {
   width: 1.5em;
   height: 1.5em;
-  vertical-align: -0.25em;
+  vertical-align: -0.35em;
 }
 :root {
   --default-radius: 0.5em;
@@ -9,6 +9,9 @@ svg.icon {
   --blend-bg: var(--surface);
   // --container-text: 700px;
   // --container: 90rem;
+}
+h1,h2,h3,h4,h5,h6 {
+  font-family: Spectral;
 }
 
 @mixin light-mode() {
@@ -133,6 +136,23 @@ svg.icon {
   }
 }
 
+.scrollpin {
+  &:not(.is-stuck) .visible-on-stuck {
+    display: none !important;
+  }
+  &.is-stuck {
+    .hidden-on-stuck {
+      display: none !important;
+    }
+    .p-h3 {
+      font-size: 1.5rem !important;
+    }
+  }
+  .p-h3 {
+    transition: font-size 0.1s linear;
+  }
+}
+
 .pin-top-blend {
   box-shadow: 0px 5px 10px 5px var(--blend-bg);
 }
@@ -142,4 +162,28 @@ svg.icon {
 
 .p-f > .pinned {
   box-shadow: 0px -5px 10px var(--blend-bg);
+}
+
+.products-grid {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  align-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
+  gap: 1rem;
+  padding-bottom: 3rem;
+  width: 100%;
+}
+
+.services-grid {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  align-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(min(34rem, 100%), 1fr));
+  gap: 1rem;
+  padding-bottom: 3rem;
+  width: 100%;
 }

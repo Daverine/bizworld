@@ -18,9 +18,10 @@ interface Settings {
   top: number;
   bottom: number;
   breakpoints: Breakpoint[];
-  independent: boolean;
+  independent: boolean; // this option tells if the scrollpin element can stay pinned outside of it container.
   wrapper: string;
   streamHeightToWrapper: boolean;
+  notifyStuckState: boolean;
 }
 
 interface Tmp {
@@ -37,6 +38,8 @@ interface Tmp {
   scrollAmt?: number;
   currState?: string;
   overflow?: boolean;
+  needMonitoring: boolean; // if the element needs to be monitored for its stuck state
+  isStuckChecker?: (rect: DOMRect) => boolean; // function to check if the element is pinned);
 }
 
 export default {
@@ -52,6 +55,7 @@ export default {
       independent: false,
       wrapper: '.sp-wrapper',
       streamHeightToWrapper: true,
+      notifyStuckState: false,
       breakpoints: [],
       ...(typeof binding.value === 'object' ? binding.value : {}),
     };
@@ -65,9 +69,10 @@ export default {
       bottom: settings.bottom,
       eBox: el.getBoundingClientRect(),
       eOffset: utils.offsetPos(el),
+      needMonitoring: false,
     };
     const guardian = el.parentNode as HTMLElement;
-    let sizeStreamId: number;
+    let sizeStreamId: ReturnType<typeof requestAnimationFrame>;
 
     settings.pinPriority = settings.pinPriority !== 'bottom' ? 'top' : 'bottom';
     settings.independent = settings.sticky ? false : settings.independent;
@@ -82,6 +87,21 @@ export default {
       if (utils.getCssVal(guardian, 'position') === 'static')
         guardian.style.position = 'relative';
     } else settings.streamHeightToWrapper = false;
+
+    const stuckStateObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          tmp.needMonitoring = true;
+          pinnedStatusCallback();
+        } else {
+          tmp.needMonitoring = false;
+        }
+      },
+      {
+        threshold: [0, 1],
+        rootMargin: `-${tmp.top + 1}px 0px -${tmp.bottom + 1}px 0px`,
+      }
+    );
 
     window.addEventListener('resize', getGeometry);
     el.addEventListener('stopScrollPin', stopScrollPin);
@@ -133,8 +153,27 @@ export default {
 
         if (settings.pinPriority === 'bottom') {
           el.style.bottom = `${tmp.bottom}px`;
+          if (settings.notifyStuckState) {
+            tmp.isStuckChecker = (rect: DOMRect) => {
+              return Math.abs(Math.round(rect.bottom) % tmp.bottom) <= 1;
+            };
+          }
         } else {
           el.style.top = `${tmp.top}px`;
+          if (settings.notifyStuckState) {
+            tmp.isStuckChecker = (rect: DOMRect) => {
+              let topCheck = Math.round(rect.top) / tmp.top === 1;
+              if (!tmp.overflow && !settings.sticky) return topCheck;
+              let bottomCheck =
+                (tmp.windowHeight - Math.round(rect.bottom)) / tmp.bottom === 1;
+              return (topCheck && rect.top === tmp.top) || bottomCheck;
+            };
+          }
+        }
+
+        if (settings.notifyStuckState) {
+          stuckStateObserver.unobserve(el);
+          stuckStateObserver.observe(el);
         }
       }
 
@@ -143,6 +182,16 @@ export default {
       // start wrapperSize streaming if applicable
       if (settings.streamHeightToWrapper)
         sizeStreamId = requestAnimationFrame(streamCallback);
+    }
+
+    function pinnedStatusCallback() {
+      el.classList.toggle(
+        'is-stuck',
+        tmp.isStuckChecker && tmp.isStuckChecker(el.getBoundingClientRect())
+      );
+      if (tmp.needMonitoring)
+        setTimeout(() => requestAnimationFrame(pinnedStatusCallback), 30);
+      else el.classList.remove('is-pinned');
     }
 
     function onScrollMtd() {

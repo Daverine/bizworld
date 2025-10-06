@@ -1,6 +1,4 @@
 <script setup>
-import { get } from '@vueuse/core';
-
 definePageMeta({ layout: 'details', name: 'product-page' });
 const cartStore = useCartStore();
 const [newTemplate, useTemplate] = createReusableTemplate();
@@ -19,7 +17,7 @@ const details = ref({
   ],
   overview:
     'This product is suitable for office use and it also presentable. It has a long lasting battery and its capable of handling comming computer daily tasks.',
-  specification: {
+  specifications: {
     Type: 'Laptop',
     Condition: 'Used',
     Brand: 'Dell',
@@ -250,7 +248,7 @@ const details = ref({
   bizData: {
     logo: '/images/logo-sq.png',
     bizName: 'Emmadave Computer Technology Services',
-    bizUrl: 'https://www.edtech.com',
+    bizId: 'biz3884',
     mainCategory: 'Computer repair services',
     contacts: {
       tel: '08157483233',
@@ -538,7 +536,18 @@ function getItemForCart() {
           breakpoints: [{ maxWidth: 959, pinnable: false }],
         }"
       >
-        <Carousel :options="{ continuous: false }">
+        <LimbCarousel :options="{ continuous: false }">
+          <div class="cs-slide">
+            <NuxtImg
+              format="webp"
+              sizes="960px"
+              densities="1x"
+              class="image"
+              src="/images/product.jpeg"
+              data-lightbox="https://youtu.be/yGl3f0xTl_0?si=Tz7fFZj3NBCIuwRR"
+              data-target="lightbox1"
+            />
+          </div>
           <div v-for="slide in tmp.media" class="cs-slide">
             <NuxtImg
               format="webp"
@@ -560,12 +569,12 @@ function getItemForCart() {
               />
             </div>
           </template>
-        </Carousel>
+        </LimbCarousel>
         <h5 class="semibold 0-margined page-title">{{ details.title }}</h5>
         <div class="flexbox flex-separate guttered small semibold">
           <span
-            v-tooltip.unblocking
-            data-tooltip="Average Rate (Number of raters)"
+            v-tooltip:aria.unblocking
+            aria-label="Average Rate (Number of raters)"
           >
             <Icon name="material-symbols:star-rounded" class="yellow-text" />
             {{
@@ -577,8 +586,8 @@ function getItemForCart() {
             ({{ details.reviews.length }} reviews)
           </span>
           <span
-            v-tooltip.unblocking
-            :data-tooltip="details.bizData.location.address"
+            v-tooltip:aria.unblocking
+            :aria-label="details.bizData.location.address"
           >
             <Icon name="material-symbols:location-on-outline-rounded" />
             {{ details.bizData.location.city }},
@@ -615,14 +624,14 @@ function getItemForCart() {
           <div class="heading">Seller's review</div>
           <p>{{ details.overview }}</p>
         </section>
-        <!-- Specification Section -->
+        <!-- Specifications Section -->
         <section class="spec">
           <div v-collapser class="ac-viewbox-ref active lined heading a-block">
             <Icon
               name="material-symbols:list-alt-outline-rounded"
               class="lead"
             />
-            Specification
+            Specifications
             <i class="ac-viewbox trailing icon">
               <Icon name="material-symbols:chevron-left-rounded" />
               <Icon name="material-symbols:expand-more-rounded" />
@@ -631,7 +640,7 @@ function getItemForCart() {
           <div class="collapsible">
             <table class="basic definition table">
               <tbody>
-                <tr v-for="(value, key) in details.specification">
+                <tr v-for="(value, key) in details.specifications">
                   <td>{{ key }}</td>
                   <td>{{ value }}</td>
                 </tr>
@@ -659,19 +668,20 @@ function getItemForCart() {
                 />
                 <SvgIcon
                   name="verified_sp"
-                  v-tooltip.unblocking
-                  data-tooltip="Verified"
+                  v-tooltip:aria.unblocking
+                  aria-label="Verified"
                   class="small green-text"
                   style="position: absolute; bottom: 0px; right: 0px"
                 />
               </div>
               <div class="content">
-                <div
+                <NuxtLink
+                  :to="`/business/${details.bizData.bizId}`"
                   class="bold h6 truncate uppercased"
                   style="--line-clamp: 2"
                 >
                   {{ details.bizData.bizName }}
-                </div>
+                </NuxtLink>
                 <div
                   class="flexbox flex-separate flex-wrap semibold"
                   style="gap: 0.25em 0.75em"
@@ -682,8 +692,8 @@ function getItemForCart() {
                   <span
                     v-if="details.bizData.rating"
                     class="semibold"
-                    v-tooltip.unblocking
-                    data-tooltip="Average Rate (Number of raters)"
+                    v-tooltip:aria.unblocking
+                    aria-label="Average Rate (Number of raters)"
                   >
                     <Icon
                       name="material-symbols:star-rounded"
@@ -774,7 +784,7 @@ function getItemForCart() {
                 style="margin-bottom: 1rem"
               >
                 <div class="semibold">Reviews</div>
-                <Dropdown
+                <LimbDropdown
                   :options="{ directionPriority: { x: 'left' } }"
                   class="outlined small button selection"
                 >
@@ -785,7 +795,7 @@ function getItemForCart() {
                     <div class="item">Highest</div>
                     <div class="item">Lowest</div>
                   </div>
-                </Dropdown>
+                </LimbDropdown>
               </div>
               <div class="dm-reviews">
                 <div
@@ -824,7 +834,7 @@ function getItemForCart() {
                         </div>
                       </div>
                     </div>
-                    <Dropdown>
+                    <LimbDropdown>
                       <Icon name="material-symbols:more-vert" />
                       <div class="drop menu small">
                         <div class="item">
@@ -835,7 +845,7 @@ function getItemForCart() {
                           Report
                         </div>
                       </div>
-                    </Dropdown>
+                    </LimbDropdown>
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
@@ -880,10 +890,10 @@ function getItemForCart() {
             <Icon name="material-symbols:add-shopping-cart" class="lead" />
             Add to cart
           </button>
-          <Dropdown
+          <LimbDropdown
             :options="{ directionPriority: { x: 'left', y: 'top' } }"
-            v-tooltip.unblocking
-            data-tooltip="More options"
+            v-tooltip:aria.unblocking
+            aria-label="More options"
             class="flat circular button"
           >
             <Icon name="material-symbols:more-vert" />
@@ -921,7 +931,7 @@ function getItemForCart() {
                 Report
               </div>
             </div>
-          </Dropdown>
+          </LimbDropdown>
         </div>
         <div class="compact success note" style="margin-top: 0.5rem">
           <Icon
@@ -952,10 +962,10 @@ function getItemForCart() {
           <Icon name="material-symbols:add-shopping-cart" class="lead" />
           Add to cart
         </button>
-        <Dropdown
+        <LimbDropdown
           :options="{ directionPriority: { x: 'left', y: 'top' } }"
-          v-tooltip.unblocking
-          data-tooltip="More options"
+          v-tooltip:aria.unblocking
+          aria-label="More options"
           class="flat circular button"
         >
           <Icon name="material-symbols:more-vert" />
@@ -990,10 +1000,10 @@ function getItemForCart() {
               Report
             </div>
           </div>
-        </Dropdown>
+        </LimbDropdown>
       </div>
     </div>
-    <Modal id="sp-details">
+    <LimbModal id="sp-details">
       <div class="dialog">
         <div class="header pin-top-blend flexbox guttered">
           <div class="bold truncate">Self Pickup Details</div>
@@ -1042,8 +1052,8 @@ function getItemForCart() {
           </table>
         </div>
       </div>
-    </Modal>
-    <Modal id="pre-cart">
+    </LimbModal>
+    <LimbModal id="pre-cart">
       <div class="self-scroll dialog">
         <div class="header pin-top-blend flexbox guttered">
           <div class="bold truncate">Confirm options</div>
@@ -1082,7 +1092,10 @@ function getItemForCart() {
                 Add and Go to cart
               </NuxtLink>
               <NuxtLink
-                :to="{ name: 'biz-products', params: { id: $route.params.id } }"
+                :to="{
+                  name: 'biz-products',
+                  params: { id: details.bizData.bizId },
+                }"
                 @click="cartStore.addToCart(getItemForCart())"
                 class="flexible primary flat button exit-modal"
               >
@@ -1092,7 +1105,7 @@ function getItemForCart() {
           </div>
         </div>
       </div>
-    </Modal>
+    </LimbModal>
   </main>
 </template>
 

@@ -9,7 +9,7 @@ interface ScrollerOptions {
   autoProvideCtrls: boolean;
   scrollwithVerticalWheel: boolean;
   scrollwithHorizontalWheel: boolean;
-  tolerance: number;
+  controlOverlay: boolean;
   duration: number;
 }
 
@@ -44,13 +44,14 @@ const settings: ScrollerOptions = {
     autoProvideCtrls: true,
     scrollwithVerticalWheel: false,
     scrollwithHorizontalWheel: true,
-    tolerance: 32,
+    controlOverlay: true,
     duration: 300,
   },
   ...(props.options || {}),
 };
-
 const coords: Coords = {};
+let contentSizeObserver: MutationObserver;
+let sizeObserver: ResizeObserver;
 
 let scrollElem: HTMLElement | null = null;
 
@@ -63,8 +64,15 @@ onMounted(async () => {
     console.warn('An IScrollable element does not exist');
     return;
   }
-  window.addEventListener('resize', onResizeMtd);
   scrollElem.addEventListener('scroll', onScrollMtd);
+  contentSizeObserver = new MutationObserver(() => onScrollMtd());
+  contentSizeObserver.observe(scrollElem, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
+  sizeObserver = new ResizeObserver(() => onScrollMtd());
+  sizeObserver.observe(scrollElem);
 
   el.value.addEventListener('click', (e: MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -75,14 +83,18 @@ onMounted(async () => {
     let checker: number[] = [];
 
     if (target.closest(settings.prevCtrlBtn)) {
+      let tolerance = settings.controlOverlay
+        ? (target.closest(settings.prevCtrlBtn) as HTMLElement).offsetWidth
+        : 0;
+
       if (items[0]) {
         checker = items.reduce((acc, el) => {
           if (
-            utils.offsetPos(el).left - rect.left > 0 ||
+            utils.offsetPos(el).left - rect.left > tolerance ||
             utils.offsetPos(el).left +
               el.getBoundingClientRect().width -
               rect.left <
-              0
+              tolerance
           )
             return acc;
           else
@@ -98,20 +110,23 @@ onMounted(async () => {
       }
       animateScroll(
         checker.length &&
-          Math.abs(Math.min(...checker) + settings.tolerance - rect.scrollPos) >
-            4
-          ? Math.min(...checker) + settings.tolerance
-          : rect.scrollPos - rect.width + settings.tolerance > 0
-          ? rect.scrollPos - rect.width + settings.tolerance
+          Math.abs(Math.min(...checker) + tolerance - rect.scrollPos) > 4
+          ? Math.min(...checker) + tolerance
+          : rect.scrollPos - rect.width + tolerance > 0
+          ? rect.scrollPos - rect.width + tolerance
           : 0
       );
     } else if (target.closest(settings.nextCtrlBtn)) {
+      let tolerance = settings.controlOverlay
+        ? (target.closest(settings.nextCtrlBtn) as HTMLElement).offsetWidth
+        : 0;
+        
       if (items[0]) {
         checker = items.reduce((acc, el) => {
           if (
-            utils.offsetPos(el).left - rect.left < 0 ||
+            utils.offsetPos(el).left - rect.left < tolerance ||
             utils.offsetPos(el).left + el.getBoundingClientRect().width <
-              rect.left + rect.width
+              rect.left + rect.width - tolerance
           )
             return acc;
           else
@@ -121,13 +136,13 @@ onMounted(async () => {
             ];
         }, [] as number[]);
       }
+
       animateScroll(
         checker.length &&
-          Math.abs(Math.min(...checker) - settings.tolerance - rect.scrollPos) >
-            4
-          ? Math.min(...checker) - settings.tolerance
-          : rect.maxScroll > rect.scrollPos + rect.width - settings.tolerance
-          ? rect.scrollPos + rect.width - settings.tolerance
+          Math.abs(Math.min(...checker) - tolerance - rect.scrollPos) > 4
+          ? Math.min(...checker) - tolerance
+          : rect.maxScroll > rect.scrollPos + rect.width - tolerance
+          ? rect.scrollPos + rect.width - tolerance
           : rect.maxScroll + 10 // overscroll to prevent not reaching the end
       );
     }
@@ -155,10 +170,10 @@ onMounted(async () => {
     );
   });
   await nextTick();
-  onResizeMtd();
+  onScrollMtd();
 });
 
-onBeforeUnmount(() => window.removeEventListener('resize', onResizeMtd));
+onBeforeUnmount(() => contentSizeObserver.disconnect());
 
 function getRect(): Rect {
   return {
@@ -170,30 +185,26 @@ function getRect(): Rect {
   };
 }
 
-function onResizeMtd(): void {
-  onScrollMtd();
-}
-
 function onScrollMtd(): void {
   if (!scrollElem || !el.value) return;
 
   const rect = getRect();
   if (Math.floor(scrollElem.scrollLeft) === 0)
     [...el.value.querySelectorAll(`:scope ${settings.prevCtrlBtn}`)].forEach(
-      (el) => el.classList.add('disabled')
+      (el) => el.classList.remove('active')
     );
   else
     [...el.value.querySelectorAll(`:scope ${settings.prevCtrlBtn}`)].forEach(
-      (el) => el.classList.remove('disabled')
+      (el) => el.classList.add('active')
     );
 
   if (Math.ceil(scrollElem.scrollLeft) >= rect.maxScroll) {
     [...el.value.querySelectorAll(`:scope ${settings.nextCtrlBtn}`)].forEach(
-      (el) => el.classList.add('disabled')
+      (el) => el.classList.remove('active')
     );
   } else
     [...el.value.querySelectorAll(`:scope ${settings.nextCtrlBtn}`)].forEach(
-      (el) => el.classList.remove('disabled')
+      (el) => el.classList.add('active')
     );
 }
 
@@ -201,8 +212,8 @@ function gestureStart(e: TouchEvent): void {
   if (!scrollElem) return;
 
   if (scrollElem.contains(e.target as Node) || e.target === scrollElem) {
-    coords.start = e.touches[0].clientX;
-    coords.end = e.touches[0].clientX;
+    coords.start = e.touches[0]!.clientX;
+    coords.end = e.touches[0]!.clientX;
     coords.change = false;
     coords.scrollPos = getRect().scrollPos;
     coords.velocity = 0; // reset velocity
@@ -214,8 +225,8 @@ function gestureStart(e: TouchEvent): void {
 
 function gestureMove(e: TouchEvent): void {
   if (!scrollElem) return;
-  coords.velocity = e.touches[0].clientX - coords.end!; // update velocity
-  coords.end = e.touches[0].clientX;
+  coords.velocity = e.touches[0]!.clientX - coords.end!; // update velocity
+  coords.end = e.touches[0]!.clientX;
   if (Math.abs(coords.end! - coords.start!) > 5 && !coords.change)
     coords.change = true;
   if (coords.change)
@@ -285,12 +296,12 @@ function animateScroll(scrollExt: number): void {
       <div class="scroll-items">
         <slot />
       </div>
-      <div class="l-scroll">
+      <button class="l-scroll">
         <Icon name="material-symbols:keyboard-double-arrow-left" />
-      </div>
-      <div class="r-scroll">
+      </button>
+      <button class="r-scroll">
         <Icon name="material-symbols:keyboard-double-arrow-right" />
-      </div>
+      </button>
     </template>
     <slot v-else />
   </div>

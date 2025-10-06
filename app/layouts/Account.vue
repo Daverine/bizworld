@@ -1,5 +1,4 @@
 <script setup>
-import { NuxtImg } from '#components';
 import Common from './Common.vue';
 
 const userStore = useUserStore();
@@ -7,34 +6,33 @@ defineOptions({ title: 'Your account page | BizWorld' });
 </script>
 <template>
   <Common>
-    <main class="flexible col" id="feed">
-      <header>
-        <div class="container guttered flexbox">
-          <div class="flex-none">
-            <NuxtImg
-              preset="logo"
-              :src="userStore.userData.profileImg"
-              class="profile-pic circular image"
-              alt="Your profile Picture"
-            />
-          </div>
-          <div class="flexible">
-            <h5>
-              {{
-                `${userStore.userData.firstName} ${userStore.userData.lastName}`
-              }}
-            </h5>
-            <div class="semibold">
-              <span>{{ userStore.userData.following.length }} Following </span>
-              |
-              <span>{{ userStore.userData.bookmarks.length }} Bookmarks </span>
-            </div>
+    <div class="container-md">
+      <header class="container guttered flexbox" style="margin-top: 0.5rem">
+        <div class="flex-none">
+          <NuxtImg
+            preset="logo"
+            :src="userStore.userData.profileImg"
+            class="profile-pic circular image"
+            style="width: 5rem; height: 5rem"
+            alt="Your profile Picture"
+          />
+        </div>
+        <div class="flexible">
+          <h5>
+            {{
+              `${userStore.userData.firstName} ${userStore.userData.lastName}`
+            }}
+          </h5>
+          <div class="semibold">
+            <span>{{ userStore.userData.following.length }} Following </span>
+            |
+            <span>{{ userStore.userData.bookmarks.length }} Bookmarks </span>
           </div>
         </div>
       </header>
-      <IScroller
-        v-scrollPin="{ top: 68 }"
-        class="z-level-3"
+      <LimbIScroller
+        v-scrollPin="{ top: 63 }"
+        class="z-level-1"
         style="margin-top: 1rem"
       >
         <div class="l-scroll">
@@ -45,70 +43,40 @@ defineOptions({ title: 'Your account page | BizWorld' });
         </div>
         <div class="rail menu scroll-items">
           <div class="items" style="margin: 0px auto">
-            <router-link
+            <NuxtLink
               to="/account/profile"
               class="item"
               exact-active-class="active"
-              >Profile</router-link
+              >Profile</NuxtLink
             >
-            <router-link
+            <NuxtLink
               to="/account/reviews"
               class="item"
               exact-active-class="active"
-              >Reviews</router-link
+              >Reviews</NuxtLink
             >
-            <router-link
+            <NuxtLink
               to="/account/saved"
               class="item"
               exact-active-class="active"
-              >Saved cards</router-link
+              >Saved cards</NuxtLink
             >
-            <router-link
+            <NuxtLink
               to="/account/followed"
               class="item"
               exact-active-class="active"
-              >Followed providers</router-link
+              >Followed providers</NuxtLink
             >
-            <router-link
+            <NuxtLink
               to="/account/settings"
               class="item"
               exact-active-class="active"
-              >Settings</router-link
+              >Settings</NuxtLink
             >
           </div>
         </div>
-      </IScroller>
-      <div>
-        <slot />
-      </div>
-    </main>
+      </LimbIScroller>
+      <slot />
+    </div>
   </Common>
 </template>
-<style lang="scss" scoped>
-#feed {
-  header {
-    position: relative;
-    width: 100%;
-  }
-
-  .profile-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    padding: 1rem;
-  }
-
-  .cover-pic {
-    width: 100%;
-    padding-top: calc(100% / 3 * 1);
-    background-color: gray;
-  }
-
-  .profile-pic {
-    width: 5rem;
-    height: 5rem;
-    border: 4px solid var(--surface);
-    // margin-top: calc(-7.5rem / 2 - 1rem);
-  }
-}
-</style>

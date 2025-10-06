@@ -10,17 +10,17 @@ function popupSubmitSearch(e) {
 }
 </script>
 <template>
-  <Modal id="search-modal">
+  <LimbModal id="search-modal">
     <div class="dialog self-scroll">
-      <div class="header flexbox guttered">
-        <div class="bold truncate">Make your business search here ...</div>
+      <header class="header flexbox guttered">
+        <div class="bold truncate">COMMAND A SEARCH</div>
         <button
           class="circular flat button as-text exit-modal"
           style="margin-left: auto"
         >
           <Icon name="material-symbols:close-rounded" />
         </button>
-      </div>
+      </header>
       <div class="content">
         <form @submit.prevent="popupSubmitSearch">
           <label class="input fluid" style="font-size: 1.125rem">
@@ -35,26 +35,18 @@ function popupSubmitSearch(e) {
             />
             <button
               type="button"
-              title="Scan QR"
+              aria-label="Scan QR"
               class="icon open-modal exit-modal"
               data-target="scanqr-modal"
             >
               <Icon name="material-symbols:qr-code-scanner-rounded" />
-            </button>
-            <button
-              type="button"
-              title="Search location is set to Nigeria. Click to change it."
-              class="icon open-modal"
-              data-target=""
-            >
-              <Icon name="material-symbols:location-on-outline-rounded" />
             </button>
           </label>
           <div
             class="flexbox flexible-items lg-guttered"
             style="gap: 1rem; margin: 1rem auto 0px; max-width: 300px"
           >
-            <button type="submit" class="fluid button">
+            <button type="submit" class="fluid button exit-modal">
               <Icon name="material-symbols:search-rounded" class="lead" />
               SEARCH
             </button>
@@ -67,10 +59,53 @@ function popupSubmitSearch(e) {
             </button>
           </div>
         </form>
+        <table class="clear table">
+          <thead>
+            <tr>
+              <th colspan="2" class="text-center transparent-bg">
+                SEARCH CONFIGURATION
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Search in:</td>
+              <td>
+                <LimbDropdown
+                  v-model="searchStore.searchIn"
+                  class="select fluid"
+                >
+                  <div class="drop menu">
+                    <div
+                      v-for="category in searchStore.categories"
+                      :data-value="category"
+                      class="item"
+                    >
+                      {{ category.charAt(0).toUpperCase() + category.slice(1) }}
+                    </div>
+                  </div>
+                </LimbDropdown>
+              </td>
+            </tr>
+            <tr>
+              <td>Location:</td>
+              <td>
+                <LimbDropdown
+                  v-model="searchStore.location"
+                  class="select fluid"
+                >
+                  <div class="drop menu">
+                    <div data-value="nigeria" class="item">Nigeria</div>
+                  </div>
+                </LimbDropdown>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-  </Modal>
-  <Modal id="scanqr-modal">
+  </LimbModal>
+  <LimbModal id="scanqr-modal">
     <div class="dialog self-scroll">
       <div class="header flexbox guttered">
         <div class="bold truncate">Scan Business QR</div>
@@ -142,11 +177,11 @@ function popupSubmitSearch(e) {
         </div>
       </div>
     </div>
-  </Modal>
-  <Modal id="explore-modal">
+  </LimbModal>
+  <LimbModal id="explore-modal">
     <Explore />
-  </Modal>
-  <Modal id="create-post">
+  </LimbModal>
+  <LimbModal id="create-post">
     <div class="dialog">
       <div class="header flexbox guttered">
         <div class="bold truncate">Create post</div>
@@ -160,7 +195,7 @@ function popupSubmitSearch(e) {
       <div class="content">
         <div class="field">
           <label>Post as:</label>
-          <Dropdown
+          <LimbDropdown
             class="selection"
             style="display: flex; align-items: center"
           >
@@ -206,7 +241,7 @@ function popupSubmitSearch(e) {
                 </div>
               </div>
             </div>
-          </Dropdown>
+          </LimbDropdown>
         </div>
         <form @submit.prevent="">
           <div class="field">
@@ -239,8 +274,8 @@ function popupSubmitSearch(e) {
         </form>
       </div>
     </div>
-  </Modal>
-  <Modal id="register-modal">
+  </LimbModal>
+  <LimbModal id="register-modal">
     <div class="dialog">
       <div class="header flexbox guttered">
         <div class="bold truncate">Join BizWorld</div>
@@ -293,7 +328,7 @@ function popupSubmitSearch(e) {
           <p>
             Already have an account?
             <a
-              href="#login"
+              role="button"
               class="exit-modal open-modal"
               data-target="login-modal"
               >Login</a
@@ -302,8 +337,8 @@ function popupSubmitSearch(e) {
         </form>
       </div>
     </div>
-  </Modal>
-  <Modal id="login-modal">
+  </LimbModal>
+  <LimbModal id="login-modal">
     <div class="dialog">
       <div class="header flexbox guttered">
         <div class="bold truncate">Login to BizWorld</div>
@@ -337,7 +372,7 @@ function popupSubmitSearch(e) {
           <p>
             New to BizWorld?
             <a
-              href="#register"
+              role="button"
               class="exit-modal open-modal"
               data-target="register-modal"
               >Sign up</a
@@ -346,7 +381,7 @@ function popupSubmitSearch(e) {
         </form>
       </div>
     </div>
-  </Modal>
-  <Lightbox id="lightbox1" class="dark-mode" />
+  </LimbModal>
+  <LimbLightbox id="lightbox1" class="dark-mode" />
   <CreateBusiness />
 </template>

@@ -44,8 +44,8 @@ const isReady = computed(() => data.details && avail.value);
         <Icon name="material-symbols:today-outline-rounded" class="flex-none" />
         <div class="flexible" style="min-width: 65%">
           <span
-            v-tooltip.unblocking
-            :data-tooltip="
+            v-tooltip:aria.unblocking
+            :aria-label="
               !avail.openTime
                 ? 'Did not open today at all.'
                 : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
@@ -84,20 +84,25 @@ const isReady = computed(() => data.details && avail.value);
           <Icon
             name="material-symbols:info-outline-rounded"
             class="mini l-spaced faint-text-more"
-            v-tooltip.unblocking
-            data-tooltip="Note that the given detail is generated using your device time relative to the Business location timezone."
+            v-tooltip:aria.unblocking
+            aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
           />
         </div>
         <NuxtLink
-          :to="{ name: 'biz-about', params: { id: $route.params.id }, hash: '#biz-hours' }"
-           class="flex-none auto-l-margined compact button">
+          :to="{
+            name: 'biz-about',
+            params: { id: $route.params.id },
+            hash: '#biz-hours',
+          }"
+          class="flex-none auto-l-margined compact button"
+        >
           Schedule Visit
         </NuxtLink>
       </div>
     </div>
     <section>
       <div class="heading" style="padding: 1rem">New and Trending products</div>
-      <IScroller class="flexbox justify-center">
+      <LimbIScroller class="flexbox justify-center">
         <div class="scroll-items guttered">
           <PageProduct
             v-for="i in Math.min(6, data.products.length)"
@@ -125,11 +130,11 @@ const isReady = computed(() => data.details && avail.value);
             <Icon name="material-symbols:arrow-forward-ios-rounded" />
           </div>
         </div>
-      </IScroller>
+      </LimbIScroller>
     </section>
     <section>
       <div class="heading" style="padding: 1rem">Our projects listing</div>
-      <IScroller class="flexbox justify-center">
+      <LimbIScroller class="flexbox justify-center">
         <div class="scroll-items guttered">
           <PageService
             v-for="i in Math.min(6, data.projects.length)"
@@ -157,7 +162,7 @@ const isReady = computed(() => data.details && avail.value);
             <Icon name="material-symbols:arrow-forward-ios-rounded" />
           </div>
         </div>
-      </IScroller>
+      </LimbIScroller>
     </section>
     <section class="posts-sec">
       <div
@@ -169,7 +174,7 @@ const isReady = computed(() => data.details && avail.value);
         class="page-aside biz-pin text-center"
       >
         <div
-          class="dm-logo flex-none"
+          class="flex-none"
           style="position: relative; width: max-content; line-height: 0"
         >
           <NuxtImg
@@ -182,17 +187,17 @@ const isReady = computed(() => data.details && avail.value);
           <SvgIcon
             v-if="data.details.verified"
             name="verified_sp"
-            v-tooltip.unblocking
-            data-tooltip="Verified"
+            v-tooltip:aria.unblocking
+            aria-label="Verified"
             style="position: absolute; bottom: 0.5em; right: 0.5em"
           />
         </div>
-        <h6 class="dm-title text-center">{{ data.details.bizName }}</h6>
+        <h6 class="text-center">{{ data.details.bizName }}</h6>
         <div class="faint-text">{{ data.details.mainCategory }}</div>
         <p>
           <span
-            v-tooltip.unblocking
-            :data-tooltip="
+            v-tooltip:aria.unblocking
+            :aria-label="
               !avail.openTime
                 ? 'Did not open today at all.'
                 : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
@@ -228,11 +233,11 @@ const isReady = computed(() => data.details && avail.value);
             </template>
             <a href="#">Check our business hours</a>
           </span>
-          <SvgIcon
-            name="info"
+          <Icon
+            name="material-symbols:info-outline-rounded"
             class="mini l-spaced faint-text-more"
-            v-tooltip.unblocking
-            data-tooltip="Note that the given detail is generated using your device time relative to the Business location timezone."
+            v-tooltip:aria.unblocking
+            aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
           />
         </p>
         <div class="flexbox guttered">

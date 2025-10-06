@@ -1,13 +1,15 @@
 <script setup>
+import Details from './Details.vue';
+
 const searchStore = useSearchStore();
 </script>
 
 <template>
-  <div class="as-page">
-    <div class="menu sticky z-level-3">
-      <Shareables name="main_menu" />
-    </div>
-    <div style="border-bottom: 1px solid var(--outline); padding: 0.5rem 0rem">
+  <Details>
+    <div
+      v-if="!$route.path.split('/').includes('manage')"
+      style="border-bottom: 1px solid var(--outline); padding: 0.5rem 0rem"
+    >
       <div class="md-and-down-hidden container-lg flexbox" style="gap: 0.5em">
         <button
           class="compact transparent button bold open-modal"
@@ -16,7 +18,11 @@ const searchStore = useSearchStore();
           <Icon name="material-symbols:manage-search-rounded" class="lead" />
           Explore:
         </button>
-        <IScroller class="flexible" style="padding: 0.25rem 0rem">
+        <LimbIScroller
+          :options="{ scrollChildren: '.chip' }"
+          class="flexible"
+          style="padding: 0.25rem 0rem"
+        >
           <div class="scroll-items" style="gap: 0.5rem">
             <button class="chip">
               <Icon name="material-symbols:restaurant-rounded" class="lead" />
@@ -81,16 +87,17 @@ const searchStore = useSearchStore();
           <div class="r-scroll">
             <Icon name="material-symbols:keyboard-double-arrow-right" />
           </div>
-        </IScroller>
+        </LimbIScroller>
       </div>
     </div>
-
     <section class="csection flexbox">
-      <Shareables name="page_nav" />
-      <slot />
+      <PageNav />
+      <div class="flexible">
+        <slot />
+      </div>
       <Shareables name="ad_menu" />
     </section>
-  </div>
+  </Details>
 </template>
 
 <style scoped>
@@ -99,10 +106,5 @@ const searchStore = useSearchStore();
   min-height: 70vh;
   max-width: 1440px;
   margin: 0rem auto;
-}
-.menu {
-  top: 0px;
-  border-bottom: 1px solid var(--outline);
-  background-color: var(--surface);
 }
 </style>

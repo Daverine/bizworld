@@ -1,5 +1,4 @@
-<script setup>
-const searchStore = useSearchStore();
+<script lang="ts" setup>
 const userStore = useUserStore();
 </script>
 
@@ -11,19 +10,19 @@ const userStore = useUserStore();
         class="container-lg items"
         style="border-radius: var(--default-radius)"
       >
-        <div
+        <button
           class="item as-icon open-sidepanel"
-          v-tooltip.unblocking
-          data-tooltip="Menu"
+          v-tooltip:aria.unblocking
+          aria-label="Menu"
           data-target="msidepanel"
         >
           <Icon name="material-symbols:menu-rounded" />
-        </div>
+        </button>
         <div class="items md-and-down-hidden">
-          <div class="item open-modal" data-target="create-biz">
+          <button class="item open-modal" data-target="create-biz">
             Have a shop online
-          </div>
-          <Dropdown class="item">
+          </button>
+          <LimbDropdown class="item">
             Support
             <Icon
               name="material-symbols:expand-more-rounded"
@@ -32,23 +31,25 @@ const userStore = useUserStore();
             <div class="drop menu">
               <Shareables name="supports" />
             </div>
-          </Dropdown>
+          </LimbDropdown>
         </div>
         <div class="items r-aligned">
-          <Shareables name="do_more_item" />
+          <div class="item open-modal" data-target="explore-modal">
+            <Icon name="material-symbols:manage-search-rounded" class="lead" />
+            Explore
+          </div>
           <template v-if="userStore.auth">
             <div
               class="as-icon item"
-              v-tooltip.unblocking
-              data-tooltip="Notifications"
+              v-tooltip:aria.unblocking
+              aria-label="Notifications"
             >
               <Icon name="material-symbols:notifications-outline-rounded" />
             </div>
-            <Dropdown
-              data-browse-dm="dm1_profile"
-              :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
-              v-tooltip.unblocking
-              data-tooltip="Your profile"
+            <LimbDropdown
+              :options="{ directionPriority: { x: 'left' } }"
+              v-tooltip:aria.unblocking
+              aria-label="Your profile"
               class="xhover browse as-icon item"
             >
               <NuxtImg
@@ -57,10 +58,25 @@ const userStore = useUserStore();
                 alt="profile"
                 class="fully-rounded logo"
               />
-            </Dropdown>
-            <Shareables id="dm1_profile" name="profile_menu" />
+              <Shareables name="profile_menu" />
+            </LimbDropdown>
           </template>
           <template v-else>
+            <LimbDropdown class="as-icon item sm-and-up-hidden">
+              <Icon
+                name="material-symbols:person-add-outline-rounded"
+                class="lead"
+              />
+              Account
+              <div class="drop menu">
+                <div class="item open-modal" data-target="login-modal">
+                  Log in
+                </div>
+                <div class="item open-modal" data-target="register-modal">
+                  Sign Up
+                </div>
+              </div>
+            </LimbDropdown>
             <div class="items sm-and-down-hidden">
               <div class="item open-modal" data-target="login-modal">
                 Log in
@@ -74,94 +90,18 @@ const userStore = useUserStore();
                 </button>
               </div>
             </div>
-            <Dropdown class="as-icon item sm-and-up-hidden">
-              <Icon
-                name="material-symbols:person-add-outline-rounded"
-                class="lead"
-              />
-              Account
-              <div class="drop menu">
-                <div class="item open-modal" data-target="login-modal">
-                  Log in
-                </div>
-                <div class="xhover item">
-                  <button
-                    class="primary button open-modal"
-                    data-target="register-modal"
-                  >
-                    Sign Up
-                  </button>
-                </div>
-              </div>
-            </Dropdown>
           </template>
         </div>
       </div>
     </div>
-    <form class="hm-searchbox" @submit.prevent="searchStore.triggerSearch()">
-      <div style="margin-bottom: 16px">
-        <NuxtImg
-          format="webp"
-          sizes="900px"
-          densities="1x"
-          src="/images/logo_full.png"
-          alt="site logo"
-          class="site-logo fluid image"
-          style="max-width: 450px; background-color: rgba(128, 128, 128, 0.025)"
-        />
-        <p class="huge" style="margin-top: 0px">
-          Search for businesses names, products and services.
-        </p>
-      </div>
-      <div>
-        <label class="input big fluid">
-          <Icon name="material-symbols:search-rounded" class="xhover" />
-          <input
-            v-model="searchStore.searchBox"
-            type="search"
-            autocomplete="off"
-            id="searchinput"
-            ref="inputbox"
-            placeholder="Your search here."
-            class="subject"
-            autofocus
-          />
-          <button
-            type="button"
-            v-tooltip.unblocking
-            data-tooltip="Scan QR"
-            class="icon open-modal"
-            data-target="scanqr-modal"
-          >
-            <Icon name="material-symbols:qr-code-scanner-rounded" />
-          </button>
-        </label>
-        <div style="margin-top: 0.5rem">
-          Search in: <span class="bold">Nigeria</span>.
-          <div class="compact small icon button">
-            <Icon name="material-symbols:more-outline-rounded" />
-          </div>
-        </div>
-        <div
-          class="flexbox flexible-items lg-guttered"
-          style="margin: 2rem auto 0px; max-width: 19rem"
-        >
-          <button class="button">SEARCH</button>
-          <button
-            type="button"
-            class="button open-modal"
-            data-target="explore-modal"
-          >
-            EXPLORE
-          </button>
-        </div>
-      </div>
-    </form>
+    <SearchBoxMain />
     <div
       role="button"
       class="mouse_scroll"
       @click="
-        $event.currentTarget.parentElement.nextElementSibling.scrollIntoView({
+        (
+          $event.currentTarget as HTMLElement
+        )?.parentElement?.nextElementSibling?.scrollIntoView({
           behavior: 'smooth',
           block: 'start',
           inline: 'nearest',
@@ -178,7 +118,10 @@ const userStore = useUserStore();
       </div>
     </div>
   </header>
-  <div class="menu sticky z-level-2 mp-menu">
+  <div
+    class="menu sticky z-level-2 surface-bg"
+    style="top: 0px; border-bottom: 1px solid var(--outline)"
+  >
     <Shareables name="main_menu" />
   </div>
   <article id="firstSec">
@@ -304,7 +247,9 @@ const userStore = useUserStore();
           and get connected with new clients and customers.
         </p>
         <div class="text-center">
-          <button class="primary button">GET STARTED</button>
+          <button class="primary button open-modal" data-target="create-biz">
+            GET STARTED
+          </button>
         </div>
       </div>
     </section>
@@ -391,14 +336,9 @@ const userStore = useUserStore();
 </template>
 
 <style scoped>
-.mp-menu {
-  top: 0px;
-  border-bottom: 1px solid var(--outline);
-  background-color: var(--surface);
-}
-
 .hm-header {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

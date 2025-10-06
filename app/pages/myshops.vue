@@ -50,11 +50,11 @@ definePageMeta({ layout: 'common', auth: true });
         </div>
       </div>
       <div class="fluid flexbox flex-wrap" style="gap: 0.5em">
-        <RouterLink to="/manage/overview" class="compact flexible button"
-          >Manage page</RouterLink
+        <NuxtLink to="/manage/id3894/overview" class="compact flexible button"
+          >Manage page</NuxtLink
         >
         <button class="compact flexible button">Create post</button>
-        <Dropdown
+        <LimbDropdown
           :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
           class="as-icon flexible compact button"
         >
@@ -71,7 +71,7 @@ definePageMeta({ layout: 'common', auth: true });
               <Icon name="material-symbols:share-outline" class="lead" /> Share
             </div>
           </div>
-        </Dropdown>
+        </LimbDropdown>
       </div>
     </div>
   </main>

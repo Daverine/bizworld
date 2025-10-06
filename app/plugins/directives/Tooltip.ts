@@ -7,6 +7,7 @@ export default {
       delay: 150,
       offset: 10,
       unblocking: binding.modifiers.hasOwnProperty('unblocking'),
+      useAriaLabel: binding.arg === 'aria',
     };
     const uniqueId = utils.getUniqueId(settings.namespace);
     let tooltip: HTMLElement;
@@ -15,7 +16,6 @@ export default {
     let hider: ReturnType<typeof setTimeout>;
     let coords = { x: 0, y: 0 };
 
-    if (binding.value) el.setAttribute('data-tooltip', binding.value);
     createTooltip();
     el.addEventListener('pointerenter', showTooltip);
     el.addEventListener('removeTooltip', removeTooltip);
@@ -24,14 +24,16 @@ export default {
       tooltip = document.createElement('div');
       tooltip.classList.add('plain', 'tooltip');
       tooltip.setAttribute('data-tooltip-id', uniqueId);
-      tooltip.textContent = el.getAttribute('data-tooltip');
+      if (settings.useAriaLabel) tooltip.textContent = el.ariaLabel;
+      else tooltip.textContent = el.dataset.tooltip || '';
       document.body.append(tooltip);
 
       observer = new MutationObserver(updateTooltip);
       observer.observe(el, { attributes: true });
     }
     function updateTooltip() {
-      tooltip.textContent = el.getAttribute('data-tooltip');
+      if (settings.useAriaLabel) tooltip.textContent = el.ariaLabel;
+      else tooltip.textContent = el.dataset.tooltip || '';
     }
     function showTooltip(e: PointerEvent) {
       if (e.pointerType === 'touch') return;
@@ -65,8 +67,8 @@ export default {
     }
     function getCoords(e: MouseEvent | TouchEvent) {
       return {
-        x: 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX,
-        y: 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY,
+        x: 'touches' in e ? e.touches[0]!.clientX : (e as MouseEvent).clientX,
+        y: 'touches' in e ? e.touches[0]!.clientY : (e as MouseEvent).clientY,
       };
     }
     function mousePosition(e: MouseEvent) {

@@ -51,7 +51,7 @@ defineProps(['details']);
           </div>
         </div>
       </div>
-      <Dropdown
+      <LimbDropdown
         class="flat icon button"
         :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
       >
@@ -69,7 +69,7 @@ defineProps(['details']);
             Report post
           </div>
         </div>
-      </Dropdown>
+      </LimbDropdown>
     </div>
     <div v-if="details.media" class="fcd-media">
       <NuxtImg
@@ -90,19 +90,19 @@ defineProps(['details']);
       class="icon-bar transparent small compact menu fillable"
       style="padding: 0em 0.5em; border-radius: var(--default-radius)"
     >
-      <div class="as-icon item" v-tooltip.unblocking data-tooltip="Thumb up">
+      <div class="as-icon item" v-tooltip:aria.unblocking aria-label="Thumb up">
         <Icon name="material-symbols:thumb-up-outline-rounded" /> ({{
           details.thumbsUp
         }})
       </div>
       <div
         class="as-icon item"
-        v-tooltip.unblocking
-        data-tooltip="Private reply"
+        v-tooltip:aria.unblocking
+        aria-label="Private reply"
       >
         <Icon name="material-symbols:reply-rounded" />
       </div>
-      <div class="as-icon item" v-tooltip.unblocking data-tooltip="Share">
+      <div class="as-icon item" v-tooltip:aria.unblocking aria-label="Share">
         <Icon name="material-symbols:share-outline" />
       </div>
     </div>

@@ -45,13 +45,13 @@ export default {
         <div class="faint-text fcd-bizcategory">{{ details.bizCategory }}</div>
       </div>
       <div>
-        <Dropdown :options="{ directionPriority: { x: 'left', y: 'bottom' } }">
+        <LimbDropdown :options="{ directionPriority: { x: 'left', y: 'bottom' } }">
           <SvgIcon name="more_horiz" />
           <div class="drop menu">
             <div class="item">Edit review</div>
             <div class="item">Delete review</div>
           </div>
-        </Dropdown>
+        </LimbDropdown>
       </div>
     </header>
     <section style="display: flex; gap: 10px">

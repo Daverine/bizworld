@@ -11,13 +11,13 @@ const userStore = useUserStore();
       >
         <div
           class="item as-icon open-sidepanel"
-          v-tooltip.unblocking
-          data-tooltip="Menu"
+          v-tooltip:aria.unblocking
+          aria-label="Menu"
           data-target="msidepanel"
         >
           <SvgIcon name="menu" />
         </div>
-        <router-link
+        <NuxtLink
           :to="userStore.auth ? '/home' : '/'"
           class="xhover item as-icon"
         >
@@ -27,7 +27,7 @@ const userStore = useUserStore();
             alt="site logo"
             class="logo-lg site-logo"
           />
-        </router-link>
+        </NuxtLink>
       </div>
     </div>
   </header>
@@ -68,7 +68,7 @@ const userStore = useUserStore();
           </div>
           <hr />
           <p>
-            New to BizWorld? <router-link to="/register">Sign up</router-link>
+            New to BizWorld? <NuxtLink to="/register">Sign up</NuxtLink>
           </p>
         </form>
       </div>

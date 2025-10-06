@@ -89,7 +89,7 @@ const prevTab = () => {
 </script>
 
 <template>
-  <Modal id="create-biz" :options="{ closeOnWrapperClick: false }">
+  <LimbModal id="create-biz" :options="{ closeOnWrapperClick: false }">
     <div class="dialog self-scroll" style="height: 100%">
       <div class="header flexbox guttered">
         <div class="bold truncate">Create business profile</div>
@@ -167,18 +167,18 @@ const prevTab = () => {
           <fieldset>
             <div class="field">
               <label>Country</label>
-              <Dropdown
+              <LimbDropdown
                 v-model="formData.create2.country"
                 class="select search"
               >
                 <div class="drop menu">
                   <div class="item">Nigeria</div>
                 </div>
-              </Dropdown>
+              </LimbDropdown>
             </div>
             <div class="field">
               <label>State</label>
-              <Dropdown
+              <LimbDropdown
                 v-model="formData.create2.state"
                 :options="{ fluidMinWidth: true }"
                 class="multiple search select"
@@ -187,7 +187,7 @@ const prevTab = () => {
                   <div class="item">Ogun</div>
                   <div class="item">Osun</div>
                 </div>
-              </Dropdown>
+              </LimbDropdown>
             </div>
             <div class="field">
               <label>City</label>
@@ -369,7 +369,7 @@ const prevTab = () => {
         </div>
       </div>
     </div>
-  </Modal>
+  </LimbModal> 
 </template>
 
 <style></style>

@@ -1,0 +1,478 @@
+[
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  },
+  {
+    "id": "biz003884",
+    "type": "business",
+    "bizName": "Emmadave Computer Techonology Services",
+    "mainCategory": "Computer repair services",
+    "services": [
+      "Laptop repair",
+      "Desktop repair",
+      "Computer training",
+      "Web development"
+    ],
+    "logo": "/images/logo-sq.png",
+    "description": "We offer technical services on laptop and desktop. We offer computer tech training We also do web development.",
+    "verified": true,
+    "location": {
+      "address": "3, Nepa road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      "city": "Abeokuta",
+      "state": "Ogun state",
+      "map": "https://goo.gl/mapsy9ExQLSq37FL6EHm6"
+    },
+    "rating": {
+      "rate": 3.5,
+      "raters": 30
+    },
+    "hours": [
+      false,
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
+      false,
+      ["8:30", "18:30"]
+    ]
+  }
+]

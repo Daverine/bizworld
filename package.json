@@ -10,20 +10,24 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/icon": "^1.15.0",
-    "@nuxt/image": "^1.10.0",
+    "@nuxt/fonts": "0.11.4",
+    "@nuxt/icon": "^2.0.0",
+    "@nuxt/image": "^1.11.0",
+    "@nuxt/scripts": "^0.12.1",
     "@pinia/nuxt": "^0.11.2",
-    "@vueuse/core": "^13.5.0",
-    "@vueuse/nuxt": "^13.5.0",
-    "nuxt": "^4.0.0",
+    "@unhead/vue": "^2.0.17",
+    "@vueuse/core": "^13.9.0",
+    "@vueuse/nuxt": "^13.9.0",
+    "nuxt": "^4.1.2",
     "pinia": "^3.0.3",
-    "vue": "^3.5.17",
+    "vue": "^3.5.22",
     "vue-router": "^4.5.1",
-    "zod": "^4.0.5"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@hypernym/nuxt-anime": "^2.1.1",
-    "@iconify-json/material-symbols": "^1.2.30",
-    "sass-embedded": "^1.89.2"
+    "@iconify-json/material-symbols": "^1.2.40",
+    "@types/youtube": "^0.1.2",
+    "sass-embedded": "^1.93.2"
   }
 }

@@ -1,8 +1,13 @@
 // Usage: import { useDialoger } from 'components/composables/useDialoger.ts';
-// Usage: const { showDialog, teleporter } = useDialoger(dialoger, 'dialoger-id', options);
+// Usage: const { showDialog } = useDialoger(dialoger, 'dialoger-id', options);
 import type { ShallowRef, WatchStopHandle } from 'vue';
 
-interface Settings {
+export type DialogEvent = {
+  target: HTMLElement;
+  settings: DialogerSettings;
+  caller?: HTMLElement;
+};
+export type DialogerSettings = {
   namespace?: string;
   toggler?: string;
   toExcuseToggler?: string;
@@ -17,23 +22,22 @@ interface Settings {
   };
   inDuration?: number;
   outDuration?: number;
-  hashDialog?: boolean;
-  controller?: (dialoger: HTMLElement, settings: Settings) => void;
-  ready?: (dialoger: HTMLElement, settings: Settings) => void;
-  complete?: (dialoger: HTMLElement, settings: Settings) => void;
+  hashControl?: boolean;
+  controller?: (event: DialogEvent) => void;
+  ready?: (event: DialogEvent) => void;
+  complete?: (event: DialogEvent) => void;
   caller?: HTMLElement;
-}
+};
 
 export function useDialoger(
   dialoger: ShallowRef<HTMLDivElement | null>,
   id: string,
-  options?: Partial<Settings>
+  options?: DialogerSettings
 ) {
   const router = useRouter();
   const route = useRoute();
   const showDialog = ref(false);
-  const teleporter = ref(false);
-  const settings: Settings = {
+  const settings: DialogerSettings = {
     namespace: 'dialog',
     toggler: '.open-dialog',
     toExcuseToggler: '.ex-open-dialog',
@@ -48,7 +52,7 @@ export function useDialoger(
     },
     inDuration: 500,
     outDuration: 500,
-    hashDialog: false,
+    hashControl: false,
     ...options,
   };
   const bb = {
@@ -100,7 +104,6 @@ export function useDialoger(
 
   onMounted(() => {
     bb.uniqueId = utils.getUniqueId(settings.namespace!);
-    teleporter.value = true;
 
     // click on dialoger toggler to open dialog
     document.addEventListener('click', toOpenDialog);
@@ -110,7 +113,7 @@ export function useDialoger(
       else if (e.detail === settings.commands!.close) showDialog.value = false;
     }) as EventListener);
 
-    if (settings.hashDialog) {
+    if (settings.hashControl) {
       // open dialog from hash
       unwatch.openDialogFromRoute = watch(
         () => route.hash,
@@ -125,57 +128,62 @@ export function useDialoger(
     }
   });
 
-  watch(showDialog, (value) => {
+  watch(showDialog, async (value) => {
     if (value) {
       document.body.append(dialoger.value!);
-      // teleporter.value = true;
-      utils.afterNextRepaint(() => {
-        if (settings.hashDialog) {
-          bb.scrollPosBeforeLock = {
-            top: window.scrollY,
-            left: window.scrollX,
-          };
-          if (!bb.openWithHash) router.replace({ hash: `#${id}` });
-          window.addEventListener('popstate', backToExit);
-          // exit when route hash changes
-          unwatch.closeOnRouteChange = watch(
-            () => route.hash,
-            (newHash) => {
-              if (newHash !== `#${id}`) {
-                showDialog.value = false;
-              }
+      dialoger.value!.style.visibility = 'visible';
+      await utils.afterNextRepaint();
+      if (settings.hashControl) {
+        bb.scrollPosBeforeLock = {
+          top: window.scrollY,
+          left: window.scrollX,
+        };
+        if (!bb.openWithHash) router.replace({ hash: `#${id}` });
+        window.addEventListener('popstate', backToExit);
+        // exit when route hash changes
+        unwatch.closeOnRouteChange = watch(
+          () => route.hash,
+          (newHash) => {
+            if (newHash !== `#${id}`) {
+              showDialog.value = false;
             }
-          );
-        }
+          }
+        );
+      }
 
-        utils.lockWindowScroll(bb.uniqueId!);
+      utils.lockWindowScroll(bb.uniqueId!);
 
-        // If a controller function is provided in the settings, call it with the lightbox element and settings.
-        // The controller function can be used to perform additional setup or customization of the lightbox.
-        if (typeof settings.controller === 'function')
-          settings.controller(dialoger.value!, settings);
+      // If a controller function is provided in the settings, call it with the lightbox element and settings.
+      // The controller function can be used to perform additional setup or customization of the lightbox.
+      if (typeof settings.controller === 'function')
+        settings.controller({
+          target: dialoger.value!,
+          settings,
+          caller: settings.caller,
+        });
 
-        document.addEventListener('keydown', KBDControls);
-        dialoger.value!.addEventListener('click', exitByClick);
-        if (settings.closeOnEsc) {
-          utils.trackEscOn(bb.uniqueId!);
-          document.addEventListener('keyup', exitByEscKeyPress);
-        }
-        dialoger.value!.classList.add('active');
-        setTimeout(() => {
-          if (typeof settings.ready === 'function')
-            settings.ready(dialoger.value!, settings);
-          dialoger.value!.scrollTop = 0;
+      document.addEventListener('keydown', KBDControls);
+      dialoger.value!.addEventListener('click', exitByClick);
+      if (settings.closeOnEsc) {
+        utils.trackEscOn(bb.uniqueId!);
+        document.addEventListener('keyup', exitByEscKeyPress);
+      }
+      dialoger.value!.classList.add('active');
+      setTimeout(() => {
+        if (typeof settings.ready === 'function')
+          settings.ready({
+            target: dialoger.value!,
+            settings,
+            caller: settings.caller,
+          });
+        dialoger.value!.scrollTop = 0;
 
-          let autoFocusEl = [
-            ...dialoger.value!.querySelectorAll(
-              `:scope ${settings.autoFocusEl}`
-            ),
-          ][0] as HTMLElement;
-          if (autoFocusEl) autoFocusEl.focus();
-          else dialoger.value!.focus();
-        }, settings.inDuration);
-      });
+        let autoFocusEl = [
+          ...dialoger.value!.querySelectorAll(`:scope ${settings.autoFocusEl}`),
+        ][0] as HTMLElement;
+        if (autoFocusEl) autoFocusEl.focus();
+        else utils.focusRangeOnTab(dialoger.value!);
+      }, settings.inDuration);
     } else {
       document.removeEventListener('keydown', KBDControls);
       dialoger.value!.removeEventListener('click', exitByClick);
@@ -186,7 +194,7 @@ export function useDialoger(
       }
 
       dialoger.value!.classList.remove('active');
-      if (settings.hashDialog) {
+      if (settings.hashControl) {
         unwatch.closeOnRouteChange!();
         window.removeEventListener('popstate', backToExit);
         router.replace({ hash: '' });
@@ -194,12 +202,16 @@ export function useDialoger(
         utils.afterNextRepaint(() => window.scrollTo(bb.scrollPosBeforeLock));
       }
       setTimeout(() => {
+        dialoger.value!.style.visibility = 'hidden';
         if (typeof settings.complete === 'function')
-          settings.complete(dialoger.value!, settings);
+          settings.complete({
+            target: dialoger.value!,
+            settings,
+            caller: settings.caller,
+          });
         if (settings.caller) settings.caller.focus();
         settings.caller = undefined;
         utils.unlockWindowScroll(bb.uniqueId!);
-        // utils.afterNextRepaint(() => (teleporter.value = false));
       }, settings.outDuration);
     }
   });
@@ -216,5 +228,5 @@ export function useDialoger(
     utils.unlockWindowScroll(bb.uniqueId!);
   });
 
-  return { showDialog, teleporter };
+  return { showDialog };
 }

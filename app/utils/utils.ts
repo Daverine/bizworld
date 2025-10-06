@@ -8,6 +8,7 @@ declare global {
 }
 
 export const utils = {
+  focusableElementsSelector: `a, area, button, [role="button"], input, label, select, summary, textarea, details, object, [tabindex]:not([tabindex="-1"]), [contenteditable]:not([contenteditable="false"])`,
   trackEscOn(trackId: string): void {
     if (!window.lui_EscTracker) window.lui_EscTracker = [];
 
@@ -197,34 +198,43 @@ export const utils = {
 
     return isClose;
   },
-  focusRangeOnTab(range: Element, e: KeyboardEvent): void {
+  focusRangeOnTab(range: Element, e?: KeyboardEvent): void {
     let focusableElements = [
       ...range.querySelectorAll(
-        ':scope [href], :scope button, :scope input, :scope textarea, :scope select, :scope details, :scope object, :scope [tabindex]:not([tabindex="-1"])'
+        ':scope [href], :scope button, :scope input:not([type="hidden"]), :scope textarea, :scope select, :scope details, :scope object, :scope [contenteditable]:not([contenteditable="false"]), :scope [tabindex]:not([tabindex="-1"])'
       ),
     ].filter(
-      (el) => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden')
+      (el) =>
+        !el.hasAttribute('disabled') &&
+        !el.getAttribute('aria-hidden') &&
+        utils.getCssVal(el, 'display') !== 'none' &&
+        utils.getCssVal(el, 'visibility') !== 'hidden' &&
+        !el.closest('[inert]')
     ) as HTMLElement[];
-
+    console.log(focusableElements);
     if (!focusableElements[0]) {
-      e.preventDefault();
+      if (e) e.preventDefault();
       return;
     }
-
-    let first = focusableElements[0],
-      last = focusableElements.slice(-1)[0];
-
-    if (document.activeElement === last && !e.shiftKey && e.key === 'Tab') {
-      e.preventDefault();
-      first.focus();
-    } else if (
-      document.activeElement === first &&
-      e.shiftKey &&
-      e.key === 'Tab'
+    let first = focusableElements[0];
+    let last = focusableElements.slice(-1)[0];
+    if (
+      document.activeElement &&
+      focusableElements.includes(document.activeElement as HTMLElement) &&
+      e
     ) {
-      e.preventDefault();
-      last.focus();
-    }
+      if (document.activeElement === last && !e.shiftKey && e.key === 'Tab') {
+        e.preventDefault();
+        first.focus();
+      } else if (
+        document.activeElement === first &&
+        e.shiftKey &&
+        e.key === 'Tab'
+      ) {
+        e.preventDefault();
+        last?.focus();
+      }
+    } else first.focus();
   },
   setHighlightRange(el: Element): void {
     let range, selection;
@@ -237,8 +247,15 @@ export const utils = {
       selection?.addRange(range);
     }
   },
-  afterNextRepaint(func: () => void): void {
-    requestAnimationFrame(() => requestAnimationFrame(func));
+  afterNextRepaint(func?: () => void) {
+    return new Promise((resolve) =>
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          if (func) func();
+          resolve('void');
+        })
+      )
+    );
   },
   compareArrays: (a: any[], b: any[]): boolean =>
     a.length === b.length && a.every((element, index) => element === b[index]),
