@@ -1,121 +1,209 @@
-<script setup>
-const props = defineProps(['details']);
+<script setup lang="ts">
+const props = defineProps<{
+  details: {
+    id: string;
+    type: string;
+    bizName: string;
+    mainCategory: string;
+    services: string[];
+    logo: string;
+    description: string;
+    verified: boolean;
+    location: { address: string; city: string; state: string; map: string };
+    hours: weeklySchedule;
+    rating: { rate: number; raters: number };
+  };
+}>();
+const avail = useAvailability(props.details.hours);
+const router = useRouter();
+
+function clickAction(e: Event) {
+  utils.safeClick(e, () =>
+    window.open(
+      router.resolve({ name: 'biz-home', params: { id: props.details.id } })
+        .href,
+      '_blank'
+    )
+  );
+}
 </script>
 <template>
-  <article class="project-card">
-    <div class="itm-display">
-      <NuxtImg preset="thumbnail" :src="details.media" alt="" />
-    </div>
-    <div class="itm-content">
+  <article @click="clickAction" class="business-card">
+    <header>
+      <div class="flex gap-3 items-center">
+        <div
+          class="flex-none"
+          style="position: relative; width: 65px; height: 65px; line-height: 0"
+        >
+          <NuxtImg
+            preset="logo"
+            class="logo"
+            :src="details.logo"
+            alt="Business Logo"
+          />
+          <SvgIcon
+            v-if="details.verified"
+            name="verified_sp"
+            v-tooltip:aria.unblocking
+            aria-label="Verified"
+            style="position: absolute; bottom: 0.125em; right: 0.125em"
+          />
+        </div>
+        <div class="flex-1">
+          <NuxtLink
+            :to="{ name: 'biz-home', params: { id: details.id } }"
+            target="_blank"
+            class="h6 font-bold m-0 line-clamp-2"
+          >
+            {{ details.bizName }}
+          </NuxtLink>
+          <span class="faint-text font-semibold">{{
+            details.mainCategory
+          }}</span>
+        </div>
+      </div>
       <div
-        class="truncate semibold"
-        style="--line-clamp: 2"
-        v-tooltip:aria.unblocking
-        :aria-label="details.title"
+        class="flex flex-wrap items-center justify-center of-small font-semibold"
+        style="column-gap: 0.7em"
       >
-        {{ details.title }}
-      </div>
-      <div class="bold">
-        <span class="0-margined">From</span>
-        <span class="itm-price" style="color: var(--primary)">
-          ₦{{ details.price.toLocaleString() }}
-        </span>
-      </div>
-      <div
-        class="truncate semibold of-small"
-        style="color: var(--on-surface-variant)"
-      >
-        <Icon
-          name="material-symbols:timelapse-outline-rounded"
-          class="of-small r-spaced"
-        />
-        Deliver within
-        {{ details.duration > 1 ? details.duration + ' days' : '24 hours' }}
-      </div>
-      <div v-if="details.rating">
-        <i
+        <span
           v-tooltip:aria.unblocking
-          :aria-label="`Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
-          class="icon of-small yellow-text r-spaced"
+          :aria-label="details.location.address"
+          style="color: var(--on-surface-variant)"
         >
           <Icon
-            name="material-symbols:star-rounded"
-            v-for="i in Math.floor(details.rating.rate)"
+            name="material-symbols:location-on-outline-rounded"
+            class="of-small"
           />
-          <Icon
-            name="material-symbols:star-half-rounded"
-            v-if="details.rating.rate - Math.floor(details.rating.rate) >= 0.5"
-          />
-          <Icon
-            name="material-symbols:star-outline-rounded"
-            v-for="i in 5 - Math.round(details.rating.rate)"
-          />
-        </i>
-      </div>
-      <div class="of-small semibold truncate">
-        <Icon
-          v-if="details.bizDetails.verified"
-          name="material-symbols:verified-outline"
+          {{ `${details.location.city}, ${details.location.state}` }}
+        </span>
+        <span
           v-tooltip:aria.unblocking
-          aria-label="Seller is verified"
-          class="r-spaced of-small green-text"
-        />
-        <span v-tooltip:aria.unblocking :aria-label="details.bizDetails.name">{{
-          details.bizDetails.name
-        }}</span>
+          :aria-label="`(Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
+        >
+          <Icon
+            class="of-small text-yellow-500"
+            name="material-symbols:star-rounded"
+          />
+          {{ `${details.rating.rate} (${details.rating.raters})` }}
+        </span>
+        <span>
+          <Icon
+            name="material-symbols:event-outline-rounded"
+            class="of-small mr-2"
+            v-tooltip:aria.unblocking
+            aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
+          />
+          <span
+            v-tooltip:aria.unblocking
+            :aria-label="
+              !avail.openTime
+                ? 'Did not open today at all.'
+                : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${(avail.closeTime as processedTime)[0]}:${(avail.closeTime as processedTime)[1]}.`
+            "
+          >
+            <template v-if="avail.isClosed">
+              <span class="error-text">Closed. </span>
+              Opens
+              {{
+                avail.willOpenToday
+                  ? `${(avail.openTime as processedTime)[0]}:${
+                      (avail.openTime as processedTime)[1]
+                    }. `
+                  : details.hours[
+                      avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
+                    ]
+                  ? `${
+                      (
+                        details.hours[
+                          avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
+                        ] as unprocessedTime
+                      )[0]
+                    } Tomorrow. `
+                  : avail.nextOpenDay
+                  ? `${
+                      (details.hours[avail.nextOpenDay] as unprocessedTime)[0]
+                    } on ${avail.whatDay(avail.nextOpenDay)}. `
+                  : `NILL.`
+              }}
+            </template>
+            <template v-else>
+              <span v-if="avail.closesSoon" class="warning-text">
+                Closes soon.
+              </span>
+              <span v-else class="success-text">Open.</span>
+              Closes
+              {{
+                `${(avail.closeTime as processedTime)[0]}:${
+                  (avail.closeTime as processedTime)[1]
+                }. `
+              }}
+            </template>
+          </span>
+        </span>
       </div>
-      <div
-        v-tooltip:aria.unblocking
-        :aria-label="details.bizDetails.location.address"
-        class="of-small semibold truncate"
-      >
-        <Icon
-          name="material-symbols:location-on-outline-rounded"
-          class="of-small r-spaced"
-        />
-        {{
-          `${details.bizDetails.location.city}, ${details.bizDetails.location.state}`
-        }}
-      </div>
+    </header>
+    <div>
+      <p class="line-clamp-3 text-justify">
+        {{ details.description }}
+      </p>
+      <LimbIScroller :options="{ scrollChildren: '.label' }">
+        <div class="scroll-items items-center" style="column-gap: 0.5em">
+          <span class="label" v-for="service in details.services">
+            {{ service }}
+          </span>
+        </div>
+        <button class="mini l-scroll">
+          <Icon name="material-symbols:arrow-back-ios-new-rounded" />
+        </button>
+        <button class="mini r-scroll">
+          <Icon name="material-symbols:arrow-forward-ios-rounded" />
+        </button>
+      </LimbIScroller>
     </div>
+    <footer class="flex gap-2">
+      <NuxtLink
+        :to="{ name: 'biz-home', params: { id: details.id } }"
+        target="_blank"
+        class="outlined primary button flex-1"
+      >
+        <Icon name="material-symbols:globe" class="lead" />
+        Visit page
+      </NuxtLink>
+      <LimbDropdown class="flat circular button">
+        <Icon name="material-symbols:more-vert" />
+        <div class="drop menu">
+          <button class="item">
+            <Icon
+              name="material-symbols:add-to-queue-outline-rounded"
+              class="lead"
+            />
+            Follow
+          </button>
+        </div>
+      </LimbDropdown>
+    </footer>
   </article>
 </template>
-<style lang="scss" scoped>
-.project-card {
+<style scoped>
+.business-card {
   display: flex;
   flex-direction: column;
-  width: 15rem;
+  gap: 0.75rem;
+  width: 20rem;
   max-width: 100%;
   position: relative;
+  padding: 1rem;
+  cursor: pointer;
   border-radius: var(--sm-radius);
+  box-shadow: inset 0px 0px 0px 1px var(--outline);
 
-  &:hover {
-    box-shadow: inset 0px 0px 0px 1px var(--outline);
+  @media screen and (max-width: 600px) {
+    padding: 0.75rem;
   }
 
-  .itm-display {
-    width: 100%;
-    border-radius: inherit;
-
-    & > img {
-      width: 100%;
-      height: auto;
-      border-radius: inherit;
-    }
-  }
-
-  .itm-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25em;
-    padding: 0em 1em 1em;
-    text-align: center;
-  }
-
-  .itm-price {
-    font-size: 2em;
-    font-weight: bold;
-    color: var(--primary);
+  @media screen and (max-width: 350px) {
+    padding: 0.5rem;
   }
 }
 </style>

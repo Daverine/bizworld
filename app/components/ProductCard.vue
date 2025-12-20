@@ -24,32 +24,36 @@ const props = defineProps<{
     };
   };
 }>();
+const router = useRouter();
+
+function clickAction(e: Event) {
+  utils.safeClick(e, () =>
+    window.open(
+      router.resolve({ name: 'product-page', params: { id: props.details.id } })
+        .href,
+      '_blank'
+    )
+  );
+}
 </script>
 <template>
-  <article class="product-card">
-    <NuxtLink
-      :to="{ name: 'product-page', params: { id: details.id } }"
-      class="itm-display"
-    >
-      <NuxtImg preset="thumbnail" :src="details.media" alt="" />
-    </NuxtLink>
+  <article @click="clickAction" class="product-card">
+    <NuxtImg class="itm-display" preset="thumbnail" :src="details.media" alt="" />
     <div class="itm-content">
       <div class="prod-price">₦{{ details.price.toLocaleString() }}</div>
-      <NuxtLink
-        :to="{ name: 'product-page', params: { id: details.id } }"
-        class="truncate semibold"
-        style="--line-clamp: 2"
+      <div 
+        class="line-clamp-2 font-semibold"
         v-tooltip:aria.unblocking
         :aria-label="details.title"
       >
         {{ details.title }}
-      </NuxtLink>
+    </div>
       <LimbIScroller
         v-if="details.labels"
         :options="{ scrollChildren: '.label' }"
       >
         <div
-          class="scroll-items align-center"
+          class="scroll-items items-center"
           style="gap: 0.5em; margin: 0px auto"
         >
           <span v-for="label in details.labels" class="label">{{ label }}</span>
@@ -65,7 +69,7 @@ const props = defineProps<{
         <i
           v-tooltip:aria.unblocking
           :aria-label="`Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
-          class="icon of-small yellow-text r-spaced"
+          class="icon of-small text-yellow-500 mr-2"
         >
           <Icon
             name="material-symbols:star-rounded"
@@ -82,26 +86,28 @@ const props = defineProps<{
         </i>
       </div>
       <div class="itm-gap">
-        <div class="of-small semibold truncate">
+        <div class="of-small font-semibold truncate">
           <Icon
             v-if="details.bizDetails.verified"
             name="material-symbols:verified-outline"
             v-tooltip:aria.unblocking
             aria-label="Seller is verified"
-            class="r-spaced of-small green-text"
+            class="mr-2 of-small green-text"
           />
-          <span v-tooltip:aria.unblocking :aria-label="details.bizDetails.name">{{
-            details.bizDetails.name
-          }}</span>
+          <span
+            v-tooltip:aria.unblocking
+            :aria-label="details.bizDetails.name"
+            >{{ details.bizDetails.name }}</span
+          >
         </div>
         <div
           v-tooltip:aria.unblocking
           :aria-label="details.bizDetails.location.address"
-          class="of-small semibold truncate"
+          class="of-small font-semibold truncate"
         >
           <Icon
             name="material-symbols:location-on-outline-rounded"
-            class="of-small r-spaced"
+            class="of-small mr-2"
           />
           {{
             `${details.bizDetails.location.city}, ${details.bizDetails.location.state}`
@@ -111,7 +117,7 @@ const props = defineProps<{
     </div>
   </article>
 </template>
-<style lang="scss" scoped>
+<style scoped>
 .product-card {
   display: flex;
   flex-direction: column;
@@ -124,6 +130,8 @@ const props = defineProps<{
   .itm-display {
     width: 100%;
     border-radius: inherit;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 
     & > img {
       width: 100%;

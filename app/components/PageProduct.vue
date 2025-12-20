@@ -7,21 +7,20 @@ const props = defineProps(['details']);
     <div class="prod-content">
       <div class="prod-price">₦{{ details.price.toLocaleString() }}</div>
       <div
-        class="semibold truncate"
-        style="--line-clamp: 3"
+        class="font-semibold line-clamp-3"
         v-tooltip:aria.unblocking
         :aria-label="details.title"
       >
         {{ details.title }}
       </div>
-      <div v-if="details.labels" class="flexbox sm-guttered justify-center">
+      <div v-if="details.labels" class="flex gap-2 justify-center">
         <span v-for="label in details.labels" class="label">{{ label }}</span>
       </div>
     </div>
   </NuxtLink>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .page-prod {
   display: flex;
   flex-direction: column;

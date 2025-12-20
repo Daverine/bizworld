@@ -45,28 +45,28 @@ const allChecked = computed({
                 />
               </td>
               <td>
-                <div class="flexbox guttered">
+                <div class="flex gap-3">
                   <div class="flex-none">
                     <NuxtImg
                       preset="thumbnail"
-                      class="image thumbnail"
+                      class="thumbnail"
                       :src="item.media"
                     />
                   </div>
-                  <div class="flexible">
-                    <div class="heading truncate" style="--line-clamp: 2">
+                  <div class="flex-1">
+                    <div class="heading line-clamp-2">
                       {{ item.title }}
                     </div>
                     <div
-                      class="flexbox flex-separate flex-wrap guttered align-center mini"
+                      class="flex justify-between flex-wrap gap-3 items-center mini"
                     >
                       <a
                         :href="item.bizData.bizUrl"
-                        class="semibold truncate"
+                        class="font-semibold truncate"
                         >{{ item.bizData.bizName }}</a
                       >
                       <div
-                        class="flexbox flex-wrap sm-guttered"
+                        class="flex flex-wrap gap-2"
                         style="margin-top: 0.5em"
                       >
                         <div
@@ -79,9 +79,9 @@ const allChecked = computed({
                     </div>
                   </div>
                 </div>
-                <div class="flexbox flex-column sm-guttered">
+                <div class="flex flex-col gap-2">
                   <div
-                    class="flexbox flex-wrap flex-separate guttered small semibold"
+                    class="flex flex-wrap justify-between gap-3 small font-semibold"
                   >
                     <div>Unit Price: ₦{{ item.price.toLocaleString() }}</div>
                     <div>Dellivery: {{ item.delivery }}</div>
@@ -125,17 +125,17 @@ const allChecked = computed({
                     </div>
                   </div>
                   <div
-                    class="flexbox flex-wrap flex-separate guttered align-center"
+                    class="flex flex-wrap justify-between gap-3 items-center"
                   >
                     <div>
                       Amount:
-                      <span class="bold h6 primary-text"
+                      <span class="font-bold h6 primary-text"
                         >₦{{
                           (item.price * item.quantity).toLocaleString()
                         }}</span
                       >
                     </div>
-                    <div class="flexbox sm-guttered">
+                    <div class="flex gap-2">
                       <button class="flat compact icon button">
                         <Icon
                           name="material-symbols:bookmark-add-outline-rounded"
@@ -165,8 +165,8 @@ const allChecked = computed({
         }"
       >
         <div class="heading">Order Summary</div>
-        <div class="flexbox flex-column guttered">
-          <div class="flexbox flex-separate sm-guttered">
+        <div class="flex flex-col gap-3">
+          <div class="flex justify-between gap-2">
             <div>Subtotal</div>
             <div>
               ₦{{
@@ -177,15 +177,15 @@ const allChecked = computed({
               }}
             </div>
           </div>
-          <div class="flexbox flex-separate sm-guttered">
+          <div class="flex justify-between gap-2">
             <div>Delivery</div>
             <div>₦0</div>
           </div>
-          <div class="flexbox flex-separate sm-guttered">
+          <div class="flex justify-between gap-2">
             <div>Tax</div>
             <div>₦0</div>
           </div>
-          <div class="flexbox flex-separate sm-guttered h6 bold">
+          <div class="flex justify-between gap-2 h6 font-bold">
             <div>Total</div>
             <div>
               ₦{{
@@ -197,21 +197,21 @@ const allChecked = computed({
             </div>
           </div>
           <div>
-            <button class="primary fluid button">Checkout</button>
+            <button class="primary w-full button">Checkout</button>
           </div>
         </div>
       </section>
 
       <!-- checkout details mobile -->
       <div
-        class="mobile-screen-only sticky surface-bg fluid z-level-2 pin-bottom-blend"
+        class="mobile-screen-only sticky surface-bg w-full z-level-2 pin-bottom-blend"
         style="bottom: 0px"
       >
         <div
-          class="container flexbox align-center guttered"
+          class="container flex items-center gap-3"
           style="padding: 0.5rem 0rem"
         >
-          <div class="flexbox flex-column">
+          <div class="flex flex-col">
             <div
               class="flat as-text mute-interaction button open-modal"
               data-target="checkout-details"
@@ -220,9 +220,9 @@ const allChecked = computed({
               Checkout details
             </div>
             <LimbModal id="checkout-details">
-              <div class="dialog bottom-sheet padded">
-                <div class="flexbox flex-column guttered">
-                  <div class="flexbox flex-separate sm-guttered">
+              <div class="dialog bottom-sheet p-4">
+                <div class="flex flex-col gap-3">
+                  <div class="flex justify-between gap-2">
                     <div>Subtotal</div>
                     <div>
                       ₦{{
@@ -236,15 +236,15 @@ const allChecked = computed({
                       }}
                     </div>
                   </div>
-                  <div class="flexbox flex-separate sm-guttered">
+                  <div class="flex justify-between gap-2">
                     <div>Delivery</div>
                     <div>₦0</div>
                   </div>
-                  <div class="flexbox flex-separate sm-guttered">
+                  <div class="flex justify-between gap-2">
                     <div>Tax</div>
                     <div>₦0</div>
                   </div>
-                  <div class="flexbox flex-separate sm-guttered h6 bold">
+                  <div class="flex justify-between gap-2 h6 font-bold">
                     <div>Total</div>
                     <div>
                       ₦{{
@@ -259,12 +259,12 @@ const allChecked = computed({
                     </div>
                   </div>
                   <div>
-                    <button class="primary fluid button">Checkout</button>
+                    <button class="primary w-full button">Checkout</button>
                   </div>
                 </div>
               </div>
             </LimbModal> 
-            <div class="flexbox flex-separate sm-guttered h6 bold">
+            <div class="flex justify-between gap-2 h6 font-bold">
               <div>Total</div>
               <div>
                 ₦{{
@@ -276,14 +276,14 @@ const allChecked = computed({
               </div>
             </div>
           </div>
-          <button class="primary button flexible">Checkout</button>
+          <button class="primary button flex-1">Checkout</button>
         </div>
       </div>
     </div>
   </main>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .page-cont {
   display: grid;
   grid-template-columns: 1fr 20rem;
@@ -298,7 +298,7 @@ const allChecked = computed({
 
   .page-sec2 {
     border: 1px solid var(--outline);
-    border-radius: var(--comp-radius);
+    border-radius: var(--radius-inline);
     padding: 1rem;
   }
 }

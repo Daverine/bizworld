@@ -6,7 +6,7 @@ const userStore = useUserStore();
   <header>
     <div class="menu" style="height: 64px">
       <div
-        class="container items auto-margined"
+        class="container items m-auto"
         style="border-radius: var(--default-radius)"
       >
         <div
@@ -33,7 +33,7 @@ const userStore = useUserStore();
   </header>
 
   <div
-    class="flexbox flexible-items"
+    class="flex *:flex-1"
     style="gap: 1.5rem; max-width: 650px; margin: 2rem auto"
   >
     <div
@@ -42,29 +42,29 @@ const userStore = useUserStore();
     ></div>
     <div class="col">
       <div class="header" style="margin-bottom: 1rem">
-        <div class="bold">Join BizWorld</div>
+        <div class="font-bold">Join BizWorld</div>
       </div>
       <div class="content">
         <div class="field">
-          <button class="fluid button">
+          <button class="w-full button">
             <SvgIcon name="login" />
             Continue with Google
           </button>
         </div>
         <form @submit.prevent="userStore.signup()">
-          <div class="field 0-margined">
+          <div class="field m-0">
             <label>Names</label>
             <div class="2-fields">
               <div class="field">
                 <input
-                  class="form-item fluid"
+                  class="form-item w-full"
                   type="text"
                   placeholder="First name"
                 />
               </div>
               <div class="field">
                 <input
-                  class="form-item fluid"
+                  class="form-item w-full"
                   type="text"
                   placeholder="Last name"
                 />
@@ -74,19 +74,19 @@ const userStore = useUserStore();
           <div class="field">
             <label>Email</label>
             <input
-              class="form-item fluid"
+              class="form-item w-full"
               type="text"
               placeholder="Email address"
             />
           </div>
           <div class="field">
             <label>Password</label>
-            <input class="form-item fluid" type="text" placeholder="Password" />
+            <input class="form-item w-full" type="text" placeholder="Password" />
           </div>
           <div class="field">
             <label>Country</label>
             <input
-              class="form-item fluid"
+              class="form-item w-full"
               type="text"
               placeholder="Select country"
             />
@@ -97,7 +97,7 @@ const userStore = useUserStore();
           </p>
 
           <div class="field">
-            <button class="fluid primary button">Create Account</button>
+            <button class="w-full primary button">Create Account</button>
           </div>
           <hr />
           <p>

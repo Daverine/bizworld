@@ -10,7 +10,7 @@ const data = useBizStore();
       style="min-height: 5.75rem; margin-bottom: 1rem"
     >
       <div
-        class="p-h3 lined heading h3 flexbox guttered flex-separate align-end surface-bg pin-top-blend 0-margined"
+        class="p-h3 lined heading h3 flex gap-3 justify-between items-end surface-bg pin-top-blend m-0"
       >
         Products
         <NuxtLink

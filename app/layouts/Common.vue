@@ -10,9 +10,9 @@ const searchStore = useSearchStore();
       v-if="!$route.path.split('/').includes('manage')"
       style="border-bottom: 1px solid var(--outline); padding: 0.5rem 0rem"
     >
-      <div class="md-and-down-hidden container-lg flexbox" style="gap: 0.5em">
+      <div class="max-md:hidden container-lg flex" style="gap: 0.5em">
         <button
-          class="compact transparent button bold open-modal"
+          class="compact transparent button font-bold open-modal"
           data-target="explore-modal"
         >
           <Icon name="material-symbols:manage-search-rounded" class="lead" />
@@ -20,7 +20,7 @@ const searchStore = useSearchStore();
         </button>
         <LimbIScroller
           :options="{ scrollChildren: '.chip' }"
-          class="flexible"
+          class="flex-1"
           style="padding: 0.25rem 0rem"
         >
           <div class="scroll-items" style="gap: 0.5rem">
@@ -90,9 +90,9 @@ const searchStore = useSearchStore();
         </LimbIScroller>
       </div>
     </div>
-    <section class="csection flexbox">
+    <section class="csection flex">
       <PageNav />
-      <div class="flexible">
+      <div class="flex-1">
         <slot />
       </div>
       <Shareables name="ad_menu" />

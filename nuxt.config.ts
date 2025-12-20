@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import tailwindcss from '@tailwindcss/vite';
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
@@ -11,9 +12,12 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxt/icon',
     '@nuxt/image',
-    '@nuxt/scripts',
     '@nuxt/fonts',
+    '@regle/nuxt',
   ],
+  vite: {
+    plugins: [tailwindcss()],
+  },
   image: {
     screens: {
       sm: 448,
@@ -27,32 +31,26 @@ export default defineNuxtConfig({
         modifiers: {
           format: 'webp',
           height: 128,
-          densities: '1x',
         },
       },
       thumbnail: {
         modifiers: {
           format: 'webp',
           width: 250,
-          densities: '1x',
         },
       },
     },
   },
+  css: ['~/assets/lui.css', '~/assets/main.css'],
   app: {
     head: {
       link: [
-        {
-          rel: 'stylesheet',
-          href: '/css/lui.css',
-        },
-        { rel: 'icon', href: '/favicon.png' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.png' },
       ],
     },
   },
-  css: ['~/assets/style.scss'],
   devServer: {
     port: 3000,
-    host: '0.0.0.0', // Or your desired host
+    host: '127.0.0.1', // Or your desired host
   },
 });

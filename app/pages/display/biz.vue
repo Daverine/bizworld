@@ -62,17 +62,17 @@ onUpdated(() => {
     :data-type="details.type"
   >
     <div
-      class="header dm-header a-block flexbox"
+      class="header dm-header a-block flex"
       :class="{ active: activeFixedMenu }"
     >
-      <div class="content h6 semibold 0-margined truncate">
+      <div class="content h6 font-semiboldm-0 truncate">
         {{ details.bizName }}
       </div>
       <button class="flat circular button trailing icon exit-modal">
         <SvgIcon name="close" />
       </button>
     </div>
-    <div ref="dgContent" class="content 0-padding" @scroll="handleScroll">
+    <div ref="dgContent" class="content p-0" @scroll="handleScroll">
       <div class="dm-display">
         <div
           class="dm-media"
@@ -101,11 +101,11 @@ onUpdated(() => {
         </div>
         <div class="dm-gap">
           <div
-            class="semibold"
+            class="font-semibold"
             v-tooltip:aria.unblocking
             aria-label="Average Rate (Number of raters)"
           >
-            <SvgIcon name="star_filled" class="yellow-text small r-spaced" />
+            <SvgIcon name="star_filled" class="text-yellow-500 small mr-2" />
             <span>{{
               `${(
                 details.reviews.reduce((n, i) => n + i.rating, 0) /
@@ -127,8 +127,8 @@ onUpdated(() => {
                     )}.`
               "
             >
-              <SvgIcon name="today" class="small r-spaced" />
-              <span class="semibold">
+              <SvgIcon name="today" class="small mr-2" />
+              <span class="font-semibold">
                 <template
                   v-if="
                     details.hours[new Date().getDay()][0] === -1 ||
@@ -200,7 +200,7 @@ onUpdated(() => {
             </span>
             <SvgIcon
               name="info"
-              class="mini l-spaced"
+              class="mini ml-2"
               style="color: var(--on-surface-variant)"
               v-tooltip:aria.unblocking
               aria-label="Note that the given detail is generated using your system time relative to the Business location timezone."
@@ -253,7 +253,7 @@ onUpdated(() => {
                   <SvgIcon name="today" />
                 </td>
                 <td>
-                  <table class="table compact clear 0-margined">
+                  <table class="table compact clear m-0">
                     <tbody>
                       <tr
                         v-for="(hour, i) in details.hours"
@@ -279,8 +279,8 @@ onUpdated(() => {
         <hr />
         <div>
           <div class="sub heading">Review Summary</div>
-          <div class="flexbox" style="flex-direction: row-reverse">
-            <div class="col 6-width md-2-width">
+          <div class="flex" style="flex-direction: row-reverse">
+            <div class="col md:w-1/3">
               <div
                 class="text-center"
                 :set="
@@ -290,7 +290,7 @@ onUpdated(() => {
                   ).toFixed(1))
                 "
               >
-                <div class="semibold" style="font-size: 3em">
+                <div class="font-semibold" style="font-size: 3em">
                   {{
                     (
                       details.reviews.reduce((n, i) => n + i.rating, 0) /
@@ -298,7 +298,7 @@ onUpdated(() => {
                     ).toFixed(1)
                   }}
                 </div>
-                <div class="rating small yellow-text">
+                <div class="rating small text-yellow-500">
                   <SvgIcon v-for="i in Math.floor(rating)" name="star_filled" />
                   <SvgIcon
                     v-if="rating - Math.floor(rating) >= 0.5"
@@ -309,8 +309,8 @@ onUpdated(() => {
                 <div>{{ `${details.reviews.length} reviews` }}</div>
               </div>
             </div>
-            <div class="col 6-width md-4-width">
-              <table class="table compact borderless 0-margined">
+            <div class="col md:w-2/3">
+              <table class="table compact borderless m-0">
                 <tbody>
                   <tr v-for="i in 5" :set="(n = 6 - i)">
                     <td style="width: 15px">{{ n }}</td>
@@ -340,7 +340,7 @@ onUpdated(() => {
               </table>
             </div>
           </div>
-          <div class="text-center small semibold italic">
+          <div class="text-center small font-semibolditalic">
             Patronize {{ details.bizName }} to write a review.
             <!-- <button class="button">
                                 <SvgIcon name="rate_review" class="lead" />
@@ -369,16 +369,16 @@ onUpdated(() => {
               :set="(review = details.reviews[a - 1])"
             >
               <header>
-                <div class="avatar image">
-                  <span class="huge uppercased">{{
+                <div class="avatar">
+                  <span class="huge uppercase">{{
                     review.username.split('')[0]
                   }}</span>
                 </div>
                 <div class="content">
-                  <div class="bold">{{ review.username }}</div>
+                  <div class="font-bold">{{ review.username }}</div>
                   <div class="dm-gap" style="gap: 0.5em">
                     <div
-                      class="rating mini yellow-text"
+                      class="rating mini text-yellow-500"
                       :set="(rating = review.rating)"
                     >
                       <SvgIcon
@@ -417,11 +417,11 @@ onUpdated(() => {
         </div>
       </div>
     </div>
-    <div class="footer auto-t-bordered flexbox" style="gap: 0.5em">
+    <div class="footer border-t flex" style="gap: 0.5em">
       <button class="primary button">
         <SvgIcon name="public" class="lead" /> Visit Business Page
       </button>
-      <button class="flat button md-and-down-hidden">
+      <button class="flat button max-md:hidden">
         <SvgIcon name="follow" class="lead" /> Follow
       </button>
       <div style="display: flex; gap: 1em; margin-left: auto">

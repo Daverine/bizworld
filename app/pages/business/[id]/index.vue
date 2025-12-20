@@ -14,7 +14,7 @@ const isReady = computed(() => data.details && avail.value);
       <NuxtImg
         format="webp"
         sizes="1280px"
-        class="image open-lightbox"
+        class="open-lightbox"
         data-target="lightbox1"
         :data-lightbox="data.details.coverPic"
         style="
@@ -29,20 +29,20 @@ const isReady = computed(() => data.details && avail.value);
         alt="Business page cover picture"
       />
     </div>
-    <div class="flexbox guttered flex-wrap align-center" style="padding: 1rem">
+    <div class="flex gap-3 flex-wrap items-center" style="padding: 1rem">
       <Icon name="material-symbols:domain-rounded" class="flex-none" />
-      <div class="flexible" style="min-width: 65%">
+      <div class="flex-1" style="min-width: 65%">
         {{ data.details.description }}
         <a :href="`${data.details.bizUrl}/about_us`">Learn more.</a>
       </div>
-      <button class="flex-none auto-l-margined primary compact button">
+      <button class="flex-none ml-auto primary compact button">
         Contact Us
       </button>
     </div>
-    <div class="fluid grid-layout surface-v2-bg" style="padding: 1rem">
-      <div class="flexbox guttered flex-wrap align-center">
+    <div class="w-full grid-layout surface-v2-bg" style="padding: 1rem">
+      <div class="flex gap-3 flex-wrap items-center">
         <Icon name="material-symbols:today-outline-rounded" class="flex-none" />
-        <div class="flexible" style="min-width: 65%">
+        <div class="flex-1" style="min-width: 65%">
           <span
             v-tooltip:aria.unblocking
             :aria-label="
@@ -83,7 +83,7 @@ const isReady = computed(() => data.details && avail.value);
           </span>
           <Icon
             name="material-symbols:info-outline-rounded"
-            class="mini l-spaced faint-text-more"
+            class="mini ml-2 faint-text-more"
             v-tooltip:aria.unblocking
             aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
           />
@@ -94,7 +94,7 @@ const isReady = computed(() => data.details && avail.value);
             params: { id: $route.params.id },
             hash: '#biz-hours',
           }"
-          class="flex-none auto-l-margined compact button"
+          class="flex-none ml-auto compact button"
         >
           Schedule Visit
         </NuxtLink>
@@ -102,8 +102,8 @@ const isReady = computed(() => data.details && avail.value);
     </div>
     <section>
       <div class="heading" style="padding: 1rem">New and Trending products</div>
-      <LimbIScroller class="flexbox justify-center">
-        <div class="scroll-items guttered">
+      <LimbIScroller class="flex justify-center">
+        <div class="scroll-items gap-3">
           <PageProduct
             v-for="i in Math.min(6, data.products.length)"
             :set="(product = data.products[i - 1])"
@@ -134,8 +134,8 @@ const isReady = computed(() => data.details && avail.value);
     </section>
     <section>
       <div class="heading" style="padding: 1rem">Our projects listing</div>
-      <LimbIScroller class="flexbox justify-center">
-        <div class="scroll-items guttered">
+      <LimbIScroller class="flex justify-center">
+        <div class="scroll-items gap-3">
           <PageService
             v-for="i in Math.min(6, data.projects.length)"
             :set="(project = data.projects[i - 1])"
@@ -179,7 +179,7 @@ const isReady = computed(() => data.details && avail.value);
         >
           <NuxtImg
             preset="logo"
-            class="logo image"
+            class="logo"
             style="width: 5rem; height: 5rem; object-fit: contain"
             :src="data.details.logo"
             alt="Business Logo"
@@ -235,12 +235,12 @@ const isReady = computed(() => data.details && avail.value);
           </span>
           <Icon
             name="material-symbols:info-outline-rounded"
-            class="mini l-spaced faint-text-more"
+            class="mini ml-2 faint-text-more"
             v-tooltip:aria.unblocking
             aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
           />
         </p>
-        <div class="flexbox guttered">
+        <div class="flex gap-3">
           <button class="primary button">Contact Us</button>
           <button class="button">View Location</button>
         </div>
@@ -254,7 +254,7 @@ const isReady = computed(() => data.details && avail.value);
         />
         <NuxtLink
           :to="{ name: 'biz-feeds', params: { id: $route.params.id } }"
-          class="fluid button"
+          class="w-full button"
           style="max-width: 500px"
         >
           View more posts
@@ -263,7 +263,7 @@ const isReady = computed(() => data.details && avail.value);
     </section>
     <section class="text-center" style="padding: 6.25rem">
       <h3>Thanks for visiting our website.</h3>
-      <p class="container-text huge semibold">
+      <p class="container-text huge font-semibold">
         We hope you got what you’re looking for. You can make inquiries if not.
         We hope to see you soon.
       </p>
@@ -274,7 +274,7 @@ const isReady = computed(() => data.details && avail.value);
   </main>
 </template>
 
-<style lang="scss">
+<style>
 .show-onpinned {
   opacity: 0;
   transition: all 100ms ease;

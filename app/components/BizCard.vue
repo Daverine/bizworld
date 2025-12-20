@@ -39,7 +39,6 @@ export default {
         height="128"
         format="webp"
         densities="1x"
-        class="image"
         :src="details.bizLogo"
       />
       <SvgIcon
@@ -51,14 +50,14 @@ export default {
       />
     </div>
     <div class="biz-title">{{ details.bizName }}</div>
-    <div class="small semibold">{{ details.mainCategory }}</div>
+    <div class="small font-semibold">{{ details.mainCategory }}</div>
     <div class="sc-gap">
       <span
         v-if="details.rating"
-        class="semibold"
+        class="font-semibold"
         title="Average Rate (Number of raters)"
       >
-        <SvgIcon name="star_filled" class="yellow-text mini r-spaced" />
+        <SvgIcon name="star_filled" class="text-yellow-500 mini mr-2" />
         <span class="small">{{
           `${details.rating.rate} (${details.rating.raters})`
         }}</span>

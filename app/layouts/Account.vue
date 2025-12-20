@@ -7,23 +7,23 @@ defineOptions({ title: 'Your account page | BizWorld' });
 <template>
   <Common>
     <div class="container-md">
-      <header class="container guttered flexbox" style="margin-top: 0.5rem">
+      <header class="container gap-3 flex" style="margin-top: 0.5rem">
         <div class="flex-none">
           <NuxtImg
             preset="logo"
             :src="userStore.userData.profileImg"
-            class="profile-pic circular image"
+            class="profile-pic rounded-full image"
             style="width: 5rem; height: 5rem"
             alt="Your profile Picture"
           />
         </div>
-        <div class="flexible">
+        <div class="flex-1">
           <h5>
             {{
               `${userStore.userData.firstName} ${userStore.userData.lastName}`
             }}
           </h5>
-          <div class="semibold">
+          <div class="font-semibold">
             <span>{{ userStore.userData.following.length }} Following </span>
             |
             <span>{{ userStore.userData.bookmarks.length }} Bookmarks </span>

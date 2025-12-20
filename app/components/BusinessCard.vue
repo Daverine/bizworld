@@ -29,11 +29,8 @@ function clickAction(e: Event) {
 <template>
   <article @click="clickAction" class="business-card">
     <header>
-      <div class="flexbox guttered align-center">
-        <div
-          class="flex-none"
-          style="position: relative; width: max-content; line-height: 0"
-        >
+      <div class="flex gap-3 items-center">
+        <div class="flex-none relative leading-0 w-max">
           <NuxtImg
             preset="logo"
             class="logo image"
@@ -45,24 +42,24 @@ function clickAction(e: Event) {
             name="verified_sp"
             v-tooltip:aria.unblocking
             aria-label="Verified"
-            style="position: absolute; bottom: 0.125em; right: 0.125em"
+            class="absolute bottom-0.5 right-0.5"
           />
         </div>
-        <div class="flexible">
+        <div class="flex-auto">
           <NuxtLink
             :to="{ name: 'biz-home', params: { id: details.id } }"
             target="_blank"
-            class="h6 bold 0-margined truncate"
-            style="--line-clamp: 2"
+            class="h6 font-bold 0-margined line-clamp-2"
           >
             {{ details.bizName }}
           </NuxtLink>
-          <span class="faint-text semibold">{{ details.mainCategory }}</span>
+          <span class="faint-text font-semibold">{{
+            details.mainCategory
+          }}</span>
         </div>
       </div>
       <div
-        class="flexbox flex-wrap align-center justify-center of-small semibold"
-        style="column-gap: 0.7em"
+        class="flex flex-wrap items-center justify-center gap-y-1 of-small font-semibold"
       >
         <span
           v-tooltip:aria.unblocking
@@ -88,7 +85,7 @@ function clickAction(e: Event) {
         <span>
           <Icon
             name="material-symbols:event-outline-rounded"
-            class="of-small r-spaced"
+            class="of-small mr-2"
             v-tooltip:aria.unblocking
             aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
           />
@@ -142,11 +139,11 @@ function clickAction(e: Event) {
       </div>
     </header>
     <div>
-      <p class="truncate text-justify" style="--line-clamp: 3">
+      <p class="line-clamp-3 text-justify">
         {{ details.description }}
       </p>
       <LimbIScroller :options="{ scrollChildren: '.label' }">
-        <div class="scroll-items align-center" style="column-gap: 0.5em">
+        <div class="scroll-items items-center gap-y-2">
           <span class="label" v-for="service in details.services">
             {{ service }}
           </span>
@@ -159,11 +156,11 @@ function clickAction(e: Event) {
         </button>
       </LimbIScroller>
     </div>
-    <footer class="flexbox sm-guttered">
+    <footer class="flex gap-2">
       <NuxtLink
         :to="{ name: 'biz-home', params: { id: details.id } }"
         target="_blank"
-        class="primary button flexible"
+        class="primary button flex-auto"
       >
         <Icon name="material-symbols:globe" class="lead" />
         Visit page
@@ -183,7 +180,7 @@ function clickAction(e: Event) {
     </footer>
   </article>
 </template>
-<style lang="scss" scoped>
+<style scoped>
 .business-card {
   display: flex;
   flex-direction: column;

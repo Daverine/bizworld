@@ -12,8 +12,8 @@ function popupSubmitSearch(e) {
 <template>
   <LimbModal id="search-modal">
     <div class="dialog self-scroll">
-      <header class="header flexbox guttered">
-        <div class="bold truncate">COMMAND A SEARCH</div>
+      <header class="header flex gap-3">
+        <div class="font-bold truncate">COMMAND A SEARCH</div>
         <button
           class="circular flat button as-text exit-modal"
           style="margin-left: auto"
@@ -23,7 +23,7 @@ function popupSubmitSearch(e) {
       </header>
       <div class="content">
         <form @submit.prevent="popupSubmitSearch">
-          <label class="input fluid" style="font-size: 1.125rem">
+          <label class="input w-full" style="font-size: 1.125rem">
             <Icon name="material-symbols:search-rounded" class="xhover" />
             <input
               v-model="searchStore.searchBox"
@@ -43,16 +43,16 @@ function popupSubmitSearch(e) {
             </button>
           </label>
           <div
-            class="flexbox flexible-items lg-guttered"
+            class="flex *:flex-1 gap-4"
             style="gap: 1rem; margin: 1rem auto 0px; max-width: 300px"
           >
-            <button type="submit" class="fluid button exit-modal">
+            <button type="submit" class="w-full button exit-modal">
               <Icon name="material-symbols:search-rounded" class="lead" />
               SEARCH
             </button>
             <button
               type="button"
-              class="fluid button open-modal exit-modal"
+              class="w-full button open-modal exit-modal"
               data-target="explore-modal"
             >
               EXPLORE
@@ -73,7 +73,7 @@ function popupSubmitSearch(e) {
               <td>
                 <LimbDropdown
                   v-model="searchStore.searchIn"
-                  class="select fluid"
+                  class="select w-full"
                 >
                   <div class="drop menu">
                     <div
@@ -92,7 +92,7 @@ function popupSubmitSearch(e) {
               <td>
                 <LimbDropdown
                   v-model="searchStore.location"
-                  class="select fluid"
+                  class="select w-full"
                 >
                   <div class="drop menu">
                     <div data-value="nigeria" class="item">Nigeria</div>
@@ -107,8 +107,8 @@ function popupSubmitSearch(e) {
   </LimbModal>
   <LimbModal id="scanqr-modal">
     <div class="dialog self-scroll">
-      <div class="header flexbox guttered">
-        <div class="bold truncate">Scan Business QR</div>
+      <div class="header flex gap-3">
+        <div class="font-bold truncate">Scan Business QR</div>
         <button
           class="circular flat button as-text exit-modal"
           style="margin-left: auto"
@@ -118,7 +118,7 @@ function popupSubmitSearch(e) {
       </div>
       <div class="content">
         <div
-          class="text-center flexbox justify-center align-center"
+          class="text-center flex justify-center items-center"
           style="flex-flow: row wrap; min-height: 150px"
         >
           <svg
@@ -167,7 +167,7 @@ function popupSubmitSearch(e) {
               fill="#E8F0FE"
             ></path>
           </svg>
-          <div class="fluid text-center faint-text semibold">
+          <div class="w-full text-center faint-text font-semibold">
             Drag a business QR image here.
           </div>
         </div>
@@ -183,8 +183,8 @@ function popupSubmitSearch(e) {
   </LimbModal>
   <LimbModal id="create-post">
     <div class="dialog">
-      <div class="header flexbox guttered">
-        <div class="bold truncate">Create post</div>
+      <div class="header flex gap-3">
+        <div class="font-bold truncate">Create post</div>
         <button
           class="circular flat button as-text exit-modal"
           style="margin-left: auto"
@@ -208,13 +208,13 @@ function popupSubmitSearch(e) {
             <div class="drop menu">
               <div class="active item">
                 <div
-                  class="lead avatar circular image mini"
+                  class="lead avatar rounded-full mini"
                   style="flex: 0 0 auto; background-color: #999"
                 ></div>
                 <div style="flex: 1 1 auto">
                   <div class="text text-left">
                     <div
-                      class="semibold"
+                      class="font-semibold"
                       style="font-size: 1.125em; line-height: 1.25"
                     >
                       Ayoola Folorunso
@@ -225,13 +225,13 @@ function popupSubmitSearch(e) {
               </div>
               <div class="item">
                 <div
-                  class="lead avatar circular image mini"
+                  class="lead avatar rounded-full mini"
                   style="flex: 0 0 auto; background-color: #999"
                 ></div>
                 <div style="flex: 1 1 auto">
                   <div class="text text-left">
                     <div
-                      class="semibold"
+                      class="font-semibold"
                       style="font-size: 1.125em; line-height: 1.25"
                     >
                       Emmadave Computers
@@ -277,8 +277,8 @@ function popupSubmitSearch(e) {
   </LimbModal>
   <LimbModal id="register-modal">
     <div class="dialog">
-      <div class="header flexbox guttered">
-        <div class="bold truncate">Join BizWorld</div>
+      <div class="header flex gap-3">
+        <div class="font-bold truncate">Join BizWorld</div>
         <button
           class="circular flat button as-text exit-modal"
           style="margin-left: auto"
@@ -294,7 +294,7 @@ function popupSubmitSearch(e) {
           </button>
         </div>
         <form @submit.prevent="userStore.signup()">
-          <div class="field 0-margined">
+          <div class="field m-0">
             <label>Names</label>
             <div class="2-fields">
               <div class="field">
@@ -340,8 +340,8 @@ function popupSubmitSearch(e) {
   </LimbModal>
   <LimbModal id="login-modal">
     <div class="dialog">
-      <div class="header flexbox guttered">
-        <div class="bold truncate">Login to BizWorld</div>
+      <div class="header flex gap-3">
+        <div class="font-bold truncate">Login to BizWorld</div>
         <button
           class="circular flat button as-text exit-modal"
           style="margin-left: auto"
@@ -383,5 +383,4 @@ function popupSubmitSearch(e) {
     </div>
   </LimbModal>
   <LimbLightbox id="lightbox1" class="dark-mode" />
-  <CreateBusiness />
 </template>

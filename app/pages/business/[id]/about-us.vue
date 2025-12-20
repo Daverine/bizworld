@@ -18,7 +18,7 @@ const isReady = computed(() => data.details && avail.value);
         Bizworld, you can easily send us message here and we would reply as soon
         as possible.
       </p>
-      <div class="text-center padded">
+      <div class="text-center p-4">
         <button class="compact button">Chat Us Now</button>
       </div>
       <table class="table clear">
@@ -36,7 +36,7 @@ const isReady = computed(() => data.details && avail.value);
     </section>
     <section id="biz-hours" class="container-text">
       <div class="heading text-center">Business Hours</div>
-      <table class="auto-h-margined clear table selectable text-center">
+      <table class="mx-auto clear table selectable text-center">
         <thead>
           <tr>
             <th>Day</th>
@@ -65,7 +65,7 @@ const isReady = computed(() => data.details && avail.value);
         {{ data.details.location.address }}, {{ data.details.location.city }},
         {{ data.details.location.state }}.
       </p>
-      <div class="text-center padded">
+      <div class="text-center p-4">
         <NuxtLink
           :to="data.details.location.map"
           external

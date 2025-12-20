@@ -1,8 +1,14 @@
 <script lang="ts" setup>
-definePageMeta({ name: 'search', layout: 'common' });
+definePageMeta({
+  name: 'search',
+  layout: 'common',
+});
 const searchStore = useSearchStore();
 const route = useRoute();
 
+onBeforeRouteLeave(() => {
+  searchStore.searchBox = '';
+});
 onMounted(() => {
   if (!searchStore.searchBox) {
     searchStore.searchBox = route.query.q as string;
@@ -13,7 +19,7 @@ onMounted(() => {
 function updateResult() {
   searchStore.searchIn = searchStore.resultIn;
   searchStore.triggerSearch();
-};
+}
 </script>
 
 <template>
@@ -30,17 +36,17 @@ function updateResult() {
           <LimbDropdown
             v-model="searchStore.resultIn"
             @change="updateResult"
-            class="selection iflexbox"
+            class="selection inline-flex"
           >
             <Icon
               name="material-symbols:category-search-outline-rounded"
-              class="primary-text r-spaced"
+              class="primary-text mr-2"
             />
             <div class="drop menu">
               <div
                 v-for="category in searchStore.categories"
                 :data-value="category"
-                class="capitalized item"
+                class="capitalize item"
               >
                 {{ category.charAt(0).toUpperCase() + category.slice(1) }}
               </div>
@@ -70,10 +76,6 @@ function updateResult() {
     >
       <ProductCard v-for="item in searchStore.searchResult" :details="item" />
     </div>
-    <template v-else>
-      <ItemCard v-for="result in searchStore.searchResult" :details="result" />
-    </template>
-
     <div class="divider">
       <button class="button">
         More results

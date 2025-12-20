@@ -8,12 +8,12 @@ function toTop() {
 
 <template>
   <LimbSidePanel class="left" id="msidepanel">
-    <div class="panel padded">
+    <div class="panel p-4">
       <div class="vertical transparent menu">
         <div class="items" style="border-radius: var(--default-radius)">
-          <div class="centered item exit-sidepanel">
+          <button class="centered item exit-sidepanel">
             <Icon name="material-symbols:arrow-back-rounded" />
-          </div>
+          </button>
           <NuxtLink to="/" class="xhover centered item exit-sidepanel">
             <NuxtImg
               preset="logo"
@@ -34,7 +34,11 @@ function toTop() {
     </div>
   </LimbSidePanel>
   <div v-if="!$route.meta.noFab" class="fab-group respect-lock">
-    <NuxtLink v-if="!$route.meta.noCart" to="/cart" class="fab radius-lg secondary button">
+    <NuxtLink
+      v-if="!$route.meta.noCart"
+      to="/cart"
+      class="fab radius-lg secondary button"
+    >
       <Icon name="material-symbols:shopping-cart-outline" />
       <div v-if="cartItems.length" class="floating badge">
         {{ cartItems.length }}
@@ -51,15 +55,13 @@ function toTop() {
   </div>
 </template>
 
-<style lang="scss">
+<style>
 #qaction {
-  pointer-events: none;
-  opacity: 0;
   box-shadow: var(--z-depth-3);
 
-  &.now-visible {
-    pointer-events: all;
-    opacity: 1;
+  &:not(.now-visible) {
+    pointer-events: none;
+    opacity: 0;
   }
 }
 #msidepanel > .panel {

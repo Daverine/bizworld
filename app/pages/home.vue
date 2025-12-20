@@ -31,10 +31,10 @@ onMounted(() => feedStore.getUpdate());
           />
         </div>
         <div class="items r-aligned">
-          <div class="items md-and-down-hidden">
-            <div class="item exit-modal open-modal" data-target="create-biz">
+          <div class="items max-md:hidden">
+            <NuxtLink :to="{ name: 'new-shop' }" class="item exit-modal">
               Have a shop online
-            </div>
+            </NuxtLink>
             <LimbDropdown class="item">
               Support
               <Icon
@@ -65,7 +65,7 @@ onMounted(() => feedStore.getUpdate());
               preset="logo"
               :src="userStore.userData.profileImg"
               alt="profile"
-              class="fully-rounded logo"
+              class="rounded-full logo"
             />
           </LimbDropdown>
           <Shareables id="dm1_profile" name="profile_menu" />
@@ -95,7 +95,7 @@ onMounted(() => feedStore.getUpdate());
     </div>
   </header>
   <Common>
-    <main class="flexible container-md" style="padding: 1rem 1rem">
+    <main class="flex-1 container-md" style="padding: 1rem 1rem">
       <LimbIScroller
         v-scrollPin="{ top: 63 }"
         class="pin-top-blend z-level-1"
@@ -117,9 +117,6 @@ onMounted(() => feedStore.getUpdate());
       <section
         style="display: flex; flex-direction: column; align-items: center"
       >
-        <h6 class="text-center" style="margin-bottom: 2rem">
-          Update from page you're following (Feeds)
-        </h6>
         <FeedCard v-for="feed in feedStore.feeds" :details="feed" />
         <div class="divider">
           <button class="button">

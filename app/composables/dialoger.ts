@@ -5,8 +5,12 @@ import type { ShallowRef, WatchStopHandle } from 'vue';
 export type DialogEvent = {
   target: HTMLElement;
   settings: DialogerSettings;
-  caller?: HTMLElement;
 };
+export type Dialoger = {
+  target: HTMLElement;
+  settings: DialogerSettings;
+  exit: () => void;
+}
 export type DialogerSettings = {
   namespace?: string;
   toggler?: string;
@@ -33,7 +37,7 @@ export function useDialoger(
   dialoger: ShallowRef<HTMLDivElement | null>,
   id: string,
   options?: DialogerSettings
-) {
+): Dialoger {
   const router = useRouter();
   const route = useRoute();
   const showDialog = ref(false);
@@ -159,7 +163,6 @@ export function useDialoger(
         settings.controller({
           target: dialoger.value!,
           settings,
-          caller: settings.caller,
         });
 
       document.addEventListener('keydown', KBDControls);
@@ -174,7 +177,6 @@ export function useDialoger(
           settings.ready({
             target: dialoger.value!,
             settings,
-            caller: settings.caller,
           });
         dialoger.value!.scrollTop = 0;
 
@@ -207,7 +209,6 @@ export function useDialoger(
           settings.complete({
             target: dialoger.value!,
             settings,
-            caller: settings.caller,
           });
         if (settings.caller) settings.caller.focus();
         settings.caller = undefined;
@@ -228,5 +229,9 @@ export function useDialoger(
     utils.unlockWindowScroll(bb.uniqueId!);
   });
 
-  return { showDialog };
+  return {
+    target: dialoger.value!,
+    settings,
+    exit: () => (showDialog.value = false),
+  };
 }

@@ -1,5 +1,5 @@
 <script setup>
-definePageMeta({ layout: 'details' });
+definePageMeta({ layout: 'details', name: 'project-page' });
 
 const details = ref({
   type: 'service',
@@ -241,8 +241,8 @@ onMounted(() => {
   <main class="grid-layout" style="padding-top: 1rem">
     <div class="page-cont">
       <section class="page-sec1">
-        <div class="flexbox guttered align-start">
-          <h4 class="semibold 0-margined page-title">{{ details.title }}</h4>
+        <div class="flex gap-3 items-start">
+          <h4 class="font-semiboldm-0 page-title">{{ details.title }}</h4>
           <button
             class="outlined icon button"
             v-tooltip:aria.unblocking
@@ -258,7 +258,7 @@ onMounted(() => {
               <NuxtImg
                 preset="logo"
                 :src="details.bizData.logo"
-                class="loose avatar image"
+                class="loose avatar"
               />
               <SvgIcon
                 name="verified_sp"
@@ -271,12 +271,12 @@ onMounted(() => {
             <div class="content">
               <NuxtLink
                 :to="`/business/${details.bizData.bizId}`"
-                class="bold truncate 0-margined"
+                class="font-bold truncate m-0"
               >
                 {{ details.bizData.bizName }}
               </NuxtLink>
               <div
-                class="flexbox flex-wrap small semibold"
+                class="flex flex-wrap small font-semibold"
                 style="gap: 0.25em 0.75em"
               >
                 <span
@@ -324,7 +324,7 @@ onMounted(() => {
                 </span>
               </div>
               <div
-                class="flexbox flex-wrap small semibold"
+                class="flex flex-wrap small font-semibold"
                 style="gap: 0.25em 0.75em"
               >
                 <span
@@ -333,7 +333,7 @@ onMounted(() => {
                 >
                   <Icon
                     name="material-symbols:star-rounded"
-                    class="yellow-text"
+                    class="text-yellow-500"
                   />
                   {{
                     `${(
@@ -362,7 +362,6 @@ onMounted(() => {
               format="webp"
               sizes="960px"
               densities="1x"
-              class="image"
               :src="slide.url"
               :data-lightbox="slide.url"
               data-target="lightbox1"
@@ -379,15 +378,17 @@ onMounted(() => {
           class="specs mobile-screen-only"
           style="
             border: 1px solid var(--outline);
-            border-radius: var(--comp-radius);
+            border-radius: var(--radius-inline);
             padding: 1rem;
           "
         >
-          <div class="bold" style="margin-bottom: 1rem">Service option</div>
+          <div class="font-bold" style="margin-bottom: 1rem">
+            Service option
+          </div>
           <div class="fillable-eq menu">
             <label
               v-for="(option, index) in details.serviceOptions"
-              class="flex-column item"
+              class="flex-col item"
               :class="{ active: option.type === choice.spec }"
             >
               <input
@@ -397,9 +398,11 @@ onMounted(() => {
                 v-model="choice.spec"
               />
               <div>
-                <span class="capitalized">{{ option.type }}</span>
+                <span class="capitalize">{{ option.type }}</span>
                 <br />
-                <span class="bold">₦{{ option.price.toLocaleString() }}</span>
+                <span class="font-bold"
+                  >₦{{ option.price.toLocaleString() }}</span
+                >
               </div>
             </label>
           </div>
@@ -455,10 +458,10 @@ onMounted(() => {
               <thead>
                 <tr>
                   <th>Packages</th>
-                  <th v-for="option in details.serviceOptions" class="centered">
-                    <span class="capitalized">{{ option.type }}</span>
+                  <th v-for="option in details.serviceOptions" class="text-center">
+                    <span class="capitalize">{{ option.type }}</span>
                     <br />
-                    <span class="bold"
+                    <span class="font-bold"
                       >₦{{ option.price.toLocaleString() }}</span
                     >
                   </th>
@@ -467,7 +470,7 @@ onMounted(() => {
               <tbody>
                 <tr v-for="offer in servicesOffer">
                   <td>{{ offer }}</td>
-                  <td v-for="option in details.serviceOptions" class="centered">
+                  <td v-for="option in details.serviceOptions" class="text-center">
                     <Icon
                       v-if="option.specifications[offer] === true"
                       name="material-symbols:check-rounded"
@@ -504,9 +507,9 @@ onMounted(() => {
             </i>
           </div>
           <div class="collapsible">
-            <div class="flexbox flexible-items align-center">
+            <div class="flex *:flex-1 items-center">
               <div
-                class="centered"
+                class="text-center"
                 :set="
                   (rating = (
                     details.reviews.reduce((n, i) => n + i.rating, 0) /
@@ -514,7 +517,7 @@ onMounted(() => {
                   ).toFixed(1))
                 "
               >
-                <div class="semibold" style="font-size: 3em">
+                <div class="font-semibold" style="font-size: 3em">
                   {{
                     (
                       details.reviews.reduce((n, i) => n + i.rating, 0) /
@@ -522,7 +525,7 @@ onMounted(() => {
                     ).toFixed(1)
                   }}
                 </div>
-                <div class="rating small yellow-text">
+                <div class="rating small text-yellow-500">
                   <Icon
                     v-for="i in Math.floor(rating)"
                     name="material-symbols:star-rounded"
@@ -539,8 +542,8 @@ onMounted(() => {
                 <div>{{ `${details.reviews.length} reviews` }}</div>
                 <div>All reviews are from verified purchases.</div>
               </div>
-              <div class="centered">
-                <p class="small semibold">
+              <div class="text-center">
+                <p class="small font-semibold">
                   Patronize {{ details.bizData.bizName }} to write a review
                   <a href="#">Learn more.</a>
                 </p>
@@ -549,10 +552,10 @@ onMounted(() => {
             <hr />
             <div>
               <div
-                class="flexbox flex-separate guttered align-center"
+                class="flex justify-between gap-3 items-center"
                 style="margin-bottom: 1rem"
               >
-                <div class="semibold">Reviews</div>
+                <div class="font-semibold">Reviews</div>
                 <LimbDropdown
                   :options="{ directionPriority: { x: 'left' } }"
                   class="outlined small button selection"
@@ -573,19 +576,19 @@ onMounted(() => {
                   style="padding: 0.5em"
                   :set="(review = details.reviews[a - 1])"
                 >
-                  <header class="flexbox flex-separate align-center guttered">
-                    <div class="circular small avatar image">
+                  <header class="flex justify-between items-center gap-3">
+                    <div class="small rounded-full avatar">
                       <NuxtImg
                         preset="logo"
                         src="/Images/profilepic.jpg"
                         alt="profile picture"
                       />
                     </div>
-                    <div class="content flexible">
-                      <div class="bold">{{ review.username }}</div>
+                    <div class="content flex-1">
+                      <div class="font-bold">{{ review.username }}</div>
                       <div class="dm-gap" style="gap: 0.5em">
                         <div
-                          class="rating mini yellow-text"
+                          class="rating mini text-yellow-500"
                           :set="(rating = review.rating)"
                         >
                           <Icon
@@ -618,10 +621,12 @@ onMounted(() => {
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
-                    <span class="faint-text small semibold">12-01-2034</span>
+                    <span class="faint-text small font-semibold"
+                      >12-01-2034</span
+                    >
                   </footer>
                 </div>
-                <div v-if="details.reviews.length > 5" class="centered">
+                <div v-if="details.reviews.length > 5" class="text-center">
                   <a href="#" class="flat primary button"
                     >More reviews ({{ details.reviews.length - 5 }})</a
                   >
@@ -641,11 +646,11 @@ onMounted(() => {
         }"
       >
         <template v-if="details.serviceOptions.length > 1">
-          <div class="heading 0-t-margined">Service Options</div>
+          <div class="heading mt-0">Service Options</div>
           <div class="fillable-eq menu">
             <label
               v-for="(option, index) in details.serviceOptions"
-              class="flex-column item"
+              class="flex-col item"
               :class="{ active: option.type === choice.spec }"
             >
               <input
@@ -655,14 +660,16 @@ onMounted(() => {
                 v-model="choice.spec"
               />
               <div>
-                <span class="capitalized">{{ option.type }}</span>
+                <span class="capitalize">{{ option.type }}</span>
                 <br />
-                <span class="bold">₦{{ option.price.toLocaleString() }}</span>
+                <span class="font-bold"
+                  >₦{{ option.price.toLocaleString() }}</span
+                >
               </div>
             </label>
           </div>
         </template>
-        <div v-else class="heading 0-t-margined">Service Specification</div>
+        <div v-else class="heading mt-0">Service Specification</div>
         <div
           v-for="option in details.serviceOptions"
           class="tab-page"
@@ -689,8 +696,8 @@ onMounted(() => {
           </table>
         </div>
         <!-- Call to Action Section -->
-        <div class="flexbox flex-column guttered">
-          <button class="fluid primary button">
+        <div class="flex flex-col gap-3">
+          <button class="w-full primary button">
             Continue (₦{{
               details.serviceOptions
                 .filter((el) => el.type === choice.spec)[0]
@@ -701,8 +708,8 @@ onMounted(() => {
               class="trailing"
             />
           </button>
-          <div class="flexbox guttered">
-            <button class="fluid outlined button">
+          <div class="flex gap-3">
+            <button class="w-full outlined button">
               <Icon name="material-symbols:chat-outline-rounded" class="lead" />
               Chat Contractor
             </button>
@@ -769,11 +776,11 @@ onMounted(() => {
     </div>
     <!-- Call to Action Section -->
     <div
-      class="mobile-screen-only sticky surface-bg fluid z-level-2 pin-bottom-blend"
-      style="bottom: 0px;"
+      class="mobile-screen-only sticky surface-bg w-full z-level-2 pin-bottom-blend"
+      style="bottom: 0px"
     >
-      <div class="container flexbox guttered" style="padding: 0.5rem 0rem">
-        <button class="flexible primary button">
+      <div class="container flex gap-3" style="padding: 0.5rem 0rem">
+        <button class="flex-1 primary button">
           Continue (₦{{
             details.serviceOptions
               .filter((el) => el.type === choice.spec)[0]
@@ -784,7 +791,7 @@ onMounted(() => {
             class="trailing"
           />
         </button>
-        <button class="flexible outlined button md-and-down-hidden">
+        <button class="flex-1 outlined button max-md:hidden">
           <Icon name="material-symbols:chat-outline-rounded" class="lead" />
           Chat Contractor
         </button>
@@ -832,7 +839,7 @@ onMounted(() => {
   </main>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .page-cont {
   display: grid;
   gap: 2rem;
@@ -852,7 +859,7 @@ onMounted(() => {
 
 .specs {
   border: 1px solid var(--outline);
-  border-radius: var(--comp-radius);
+  border-radius: var(--radius-inline);
   padding: 1rem;
 }
 

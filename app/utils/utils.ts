@@ -168,11 +168,22 @@ export const utils = {
     let nextElement = el;
 
     while (nextElement.nextElementSibling) {
-      nextElements.push(nextElement.nextElementSibling);
       nextElement = nextElement.nextElementSibling;
+      nextElements.push(nextElement);
     }
 
     return nextElements;
+  },
+  prevAll(el: Element): Element[] {
+    const prevElements = [];
+    let prevElement = el;
+
+    while (prevElement.previousElementSibling) {
+      prevElement = prevElement.previousElementSibling;
+      prevElements.push(prevElement);
+    }
+
+    return prevElements;
   },
   triggerEvent(
     el: Element | Window,
@@ -207,11 +218,10 @@ export const utils = {
       (el) =>
         !el.hasAttribute('disabled') &&
         !el.getAttribute('aria-hidden') &&
-        utils.getCssVal(el, 'display') !== 'none' &&
-        utils.getCssVal(el, 'visibility') !== 'hidden' &&
+        this.getCssVal(el, 'display') !== 'none' &&
+        this.getCssVal(el, 'visibility') !== 'hidden' &&
         !el.closest('[inert]')
     ) as HTMLElement[];
-    console.log(focusableElements);
     if (!focusableElements[0]) {
       if (e) e.preventDefault();
       return;
@@ -257,8 +267,14 @@ export const utils = {
       )
     );
   },
+  safeClick(e: Event, func: () => void) {
+    const target = e.target as HTMLElement;
+    if (target.closest(this.focusableElementsSelector)) return;
+    func();
+  },
   compareArrays: (a: any[], b: any[]): boolean =>
     a.length === b.length && a.every((element, index) => element === b[index]),
   durationInMilliseconds: (duration: string): number =>
     parseFloat(duration) * (duration.includes('ms') ? 1 : 1000),
+  fileToURL: (file: File) => URL.createObjectURL(file),
 };

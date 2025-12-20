@@ -42,12 +42,12 @@
         <div class="link itm-title">{{ details.postText }}</div>
         <div class="itm-gap">
             <div class="truncate">
-                <SvgIcon name="verified" v-if="details.bizDetails.verify" title="Verified" class="mini green-text r-spaced" />
-                <a :href="details.bizDetails.url" target="_blank" :title="details.bizDetails.name" class="small faint-text semibold">{{ details.bizDetails.name }}</a>
+                <SvgIcon name="verified" v-if="details.bizDetails.verify" title="Verified" class="mini green-text mr-2" />
+                <a :href="details.bizDetails.url" target="_blank" :title="details.bizDetails.name" class="small faint-text font-semibold">{{ details.bizDetails.name }}</a>
             </div>
         </div>
         <!-- <div class="itm-gap">
-            <span class="small semibold" style="color: var(--on-surface-variant);">Post</span>
+            <span class="small font-semibold" style="color: var(--on-surface-variant);">Post</span>
         </div> -->
     </div>
 </template>

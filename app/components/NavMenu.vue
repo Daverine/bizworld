@@ -73,13 +73,10 @@ const userStore = useUserStore();
         <Icon name="material-symbols:logout-rounded" class="lead" /> Log out
       </div>
       <div class="transparent compact divider"></div>
-      <div class="xhover item 0-padding">
-        <button
-          class="fluid button exit-modal open-modal"
-          data-target="create-biz"
-        >
+      <div class="xhover item p-0">
+        <NuxtLink :to="{ name: 'new-shop' }" class="w-full button">
           Have a shop online
-        </button>
+        </NuxtLink>
       </div>
     </template>
     <template v-else>
@@ -97,21 +94,21 @@ const userStore = useUserStore();
       <div class="collapsible sub items">
         <Shareables name="supports" />
       </div>
-      <button class="item open-modal" data-target="create-biz">
+      <NuxtLink :to="{ name: 'new-shop' }" class="item exit-sidepanel">
         <Icon
           name="material-symbols:add-business-outline-rounded"
           class="lead"
         />
         Have a shop online
-      </button>
+      </NuxtLink>
       <button class="item open-modal exit-sidepanel" data-target="login-modal">
         <Icon name="material-symbols:login-rounded" class="lead" />
         Log in
       </button>
       <div class="transparent compact divider"></div>
-      <div class="xhover item 0-padding">
+      <div class="xhover item p-0">
         <button
-          class="fluid primary button open-modal exit-sidepanel"
+          class="w-full primary button open-modal exit-sidepanel"
           data-target="register-modal"
         >
           Sign Up

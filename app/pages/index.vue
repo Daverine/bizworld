@@ -18,10 +18,10 @@ const userStore = useUserStore();
         >
           <Icon name="material-symbols:menu-rounded" />
         </button>
-        <div class="items md-and-down-hidden">
-          <button class="item open-modal" data-target="create-biz">
+        <div class="items max-md:hidden">
+          <NuxtLink :to="{ name: 'new-shop' }" class="item">
             Have a shop online
-          </button>
+          </NuxtLink>
           <LimbDropdown class="item">
             Support
             <Icon
@@ -56,13 +56,13 @@ const userStore = useUserStore();
                 preset="logo"
                 :src="userStore.userData.profileImg"
                 alt="profile"
-                class="fully-rounded logo"
+                class="rounded-full logo"
               />
               <Shareables name="profile_menu" />
             </LimbDropdown>
           </template>
           <template v-else>
-            <LimbDropdown class="as-icon item sm-and-up-hidden">
+            <LimbDropdown class="as-icon item sm:hidden">
               <Icon
                 name="material-symbols:person-add-outline-rounded"
                 class="lead"
@@ -77,11 +77,11 @@ const userStore = useUserStore();
                 </div>
               </div>
             </LimbDropdown>
-            <div class="items sm-and-down-hidden">
+            <div class="items max-sm:hidden">
               <div class="item open-modal" data-target="login-modal">
                 Log in
               </div>
-              <div class="xhover item 0-h-padding">
+              <div class="xhover item px-0">
                 <button
                   class="primary button open-modal"
                   data-target="register-modal"
@@ -150,7 +150,7 @@ const userStore = useUserStore();
       </div>
     </section>
     <section class="sec-block">
-      <div class="container grid 1-cols md-2-cols">
+      <div class="container grid grid-cols-1 md:grid-cols-2">
         <div class="col">
           <NuxtImg
             format="webp"
@@ -158,7 +158,7 @@ const userStore = useUserStore();
             densities="1x"
             src="/images/explore.jpg"
             alt="picture depicting explore"
-            class="image sm-rounded"
+            class="rounded-sm"
           />
         </div>
         <div class="col container-text big">
@@ -199,7 +199,10 @@ const userStore = useUserStore();
       </div>
     </section>
     <section class="sec-block">
-      <div class="container grid 1-cols md-2-cols" style="direction: rtl">
+      <div
+        class="container grid grid-cols-1 md:grid-cols-2"
+        style="direction: rtl"
+      >
         <div class="col">
           <NuxtImg
             format="webp"
@@ -207,7 +210,7 @@ const userStore = useUserStore();
             densities="1x"
             src="/images/qr.jpg"
             alt="picture depicting qr"
-            class="image sm-rounded"
+            class="rounded-sm"
           />
         </div>
         <div class="col container-text big" style="direction: ltr">
@@ -217,7 +220,7 @@ const userStore = useUserStore();
               <span class="primary-text">without asking</span>
             </h2>
             <p>
-              <strong>BizWorld QR codes</strong> are a convenient way to access
+              <em>BizWorld QR codes</em> are a convenient way to access
               information about businesses. These QR codes are often placed in
               public areas to make it easy for people to access a business’s
               page. You can use the QR code scanner on this page for such codes.
@@ -256,7 +259,7 @@ const userStore = useUserStore();
   </article>
   <footer style="background-color: rgba(128, 128, 128, 0.1)">
     <div
-      class="container flexbox xl-guttered flex-wrap flex-separate"
+      class="container flex gap-6 flex-wrap justify-between"
       style="padding: 2.75rem 1.25rem 1.25rem"
     >
       <div class="col">

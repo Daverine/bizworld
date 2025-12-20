@@ -35,17 +35,17 @@ defineProps(['details']);
         <NuxtLink
           :to="details.bizDetails.url"
           external
-          class="bold text-color"
+          class="font-bold text-color"
           >{{ details.bizDetails.name }}</NuxtLink
         >
         <div
-          class="faint-text small semibold"
+          class="faint-text small font-semibold"
           style="display: flex; gap: 10px; flex: 1 1 auto"
         >
           <div>
             <Icon
               name="material-symbols:schedule-outline-rounded"
-              class="mini r-spaced"
+              class="mini mr-2"
             />
             <NuxtTime :datetime="details.date" relative />
           </div>
@@ -77,7 +77,7 @@ defineProps(['details']);
         format="webp"
         sizes="600px"
         densities="1x"
-        class="image open-lightbox"
+        class="open-lightbox"
         :src="details.media[0].url"
         alt=""
       />
@@ -85,7 +85,7 @@ defineProps(['details']);
     <div class="fcd-content" style="padding: 0em 0.5em">
       {{ details.text }}
     </div>
-    <hr class="0-margined" />
+    <hr class="m-0" />
     <div
       class="icon-bar transparent small compact menu fillable"
       style="padding: 0em 0.5em; border-radius: var(--default-radius)"

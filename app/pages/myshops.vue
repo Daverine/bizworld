@@ -2,7 +2,7 @@
 definePageMeta({ layout: 'common', auth: true });
 </script>
 <template>
-  <main class="flexible col" id="feed">
+  <main class="flex-1 col" id="feed">
     <div
       class="mybiz-card card"
       style="
@@ -26,12 +26,12 @@ definePageMeta({ layout: 'common', auth: true });
             width: calc(100% - 90px - 0.5em);
           "
         >
-          <div class="bold h6">Emmadave Computer Technology Services</div>
+          <div class="font-bold h6">Emmadave Computer Technology Services</div>
           <div class="faint-text">
             <span>@emmadavetechservices</span> |
             <span>Computer repair services</span>
           </div>
-          <div class="flexbox flex-wrap semibold" style="gap: 1em">
+          <div class="flex flex-wrap font-semibold" style="gap: 1em">
             <span
               ><Icon
                 name="material-symbols:comment-outline-rounded"
@@ -49,14 +49,14 @@ definePageMeta({ layout: 'common', auth: true });
           </div>
         </div>
       </div>
-      <div class="fluid flexbox flex-wrap" style="gap: 0.5em">
-        <NuxtLink to="/manage/id3894/overview" class="compact flexible button"
+      <div class="w-full flex flex-wrap" style="gap: 0.5em">
+        <NuxtLink to="/manage/id3894/overview" class="compact flex-1 button"
           >Manage page</NuxtLink
         >
-        <button class="compact flexible button">Create post</button>
+        <button class="compact flex-1 button">Create post</button>
         <LimbDropdown
           :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
-          class="as-icon flexible compact button"
+          class="as-icon flex-1 compact button"
         >
           <Icon name="material-symbols:more-horiz" />
           <div class="drop menu">

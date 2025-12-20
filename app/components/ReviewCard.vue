@@ -30,7 +30,7 @@ export default {
       <div style="position: relative; height: max-content; line-height: 1">
         <NuxtImg
           preset="logo"
-          class="avatar image"
+          class="avatar"
           :src="details.bizLogo"
         />
         <SvgIcon
@@ -55,7 +55,7 @@ export default {
       </div>
     </header>
     <section style="display: flex; gap: 10px">
-      <div class="rating small yellow-text">
+      <div class="rating small text-yellow-500">
         <SvgIcon v-for="i in Math.floor(details.rating)" name="star_filled" />
         <SvgIcon
           v-if="details.rating - Math.floor(details.rating) >= 0.5"

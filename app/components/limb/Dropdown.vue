@@ -12,7 +12,7 @@ type Settings = {
   teleportMenu: boolean;
   openOnMouseover: boolean;
   constrainWidth: boolean;
-  fluidMinWidth: boolean;
+  stretchWidth: boolean;
   findToggler?: boolean;
   page?: boolean;
   view: 'unset' | 'vertical' | 'horizontal';
@@ -55,6 +55,8 @@ const props = defineProps<{
   name?: string;
   placeholder?: string;
   options?: Partial<Settings>;
+  searchData?: string[] | any[];
+  filterFunction?: (query: string, item: any[]) => any[];
 }>();
 const emit = defineEmits<{
   change: [value?: string[] | string];
@@ -70,7 +72,7 @@ const settings: Settings = {
     teleportMenu: false,
     openOnMouseover: false,
     constrainWidth: false,
-    fluidMinWidth: false,
+    stretchWidth: false,
     view: 'unset',
     directionPriority: {
       x: 'right',
@@ -95,6 +97,8 @@ const bb = reactive<reactiveBrainBox>({
   menuId: '',
   delay: 0,
 });
+const searchQuery = ref('');
+const filteredData = ref<any[]>([]);
 let sizeStream: ResizeObserver;
 let selectors: {
   items: string;
@@ -149,9 +153,8 @@ onMounted(async () => {
   settings.directionPriority.x = settings.directionPriority.x ?? 'right';
   settings.directionPriority.y = settings.directionPriority.y ?? 'bottom';
   // contrain drop menu width to the width of dropdown if settings.constrainWidth is true or dropdown has class select
-  settings.fluidMinWidth =
-    props.options?.fluidMinWidth ??
-    dropElem.value!.classList.contains('select');
+  settings.stretchWidth =
+    props.options?.stretchWidth ?? dropElem.value!.classList.contains('select');
   settings.teleportMenu =
     props.options?.teleportMenu ??
     (!dropElem.value!.classList.contains('sub') &&
@@ -252,12 +255,6 @@ onMounted(async () => {
           else allFilteredMsgBox.classList.remove('active');
         }
       );
-
-      searchBox.setAttribute(
-        'tabindex',
-        dropElem.value!.getAttribute('tabindex') ?? '0'
-      );
-      dropElem.value!.removeAttribute('tabindex');
 
       // open dropdown if user typed in the searchBox. And resize searchBox according to it content.
       searchBox.addEventListener('input', () => {
@@ -436,11 +433,11 @@ onMounted(async () => {
     }
   });
 
-  if (settings.constrainWidth || settings.fluidMinWidth) {
+  if (settings.constrainWidth || settings.stretchWidth) {
     sizeStream = new ResizeObserver(() => {
       let dd_width = dropElem.value!.getBoundingClientRect().width;
       if (settings.constrainWidth) dropMenu.style.maxWidth = `${dd_width}px`;
-      if (settings.fluidMinWidth) dropMenu.style.minWidth = `${dd_width}px`;
+      if (settings.stretchWidth) dropMenu.style.minWidth = `${dd_width}px`;
     });
 
     sizeStream.observe(dropElem.value!);
@@ -782,18 +779,29 @@ function dd_closeWithAncestor() {
   }
 }
 
-function dd_searchEvt() {
+async function dd_searchEvt() {
+  searchQuery.value = searchBox.value.toLowerCase();
   let items = [
     ...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown),
   ];
-  let filter = searchBox.value.toUpperCase().trim();
 
-  items.forEach((el) => {
-    if (el.textContent?.toUpperCase().trim().indexOf(filter) !== 0)
-      el.classList.add('filtered');
-    else el.classList.remove('filtered');
-  });
-
+  if (props.searchData) {
+    filteredData.value = props.filterFunction
+      ? props.filterFunction(searchQuery.value, props.searchData)
+      : props.searchData.filter((item) =>
+          item.toLowerCase().includes(searchQuery.value)
+        );
+  } else {
+    items.forEach((el) => {
+      if (
+        searchQuery.value &&
+        !el.textContent?.toLowerCase().includes(searchQuery.value)
+      )
+        el.classList.add('filtered');
+      else el.classList.remove('filtered');
+    });
+  }
+  await nextTick();
   items = [...dropMenu.querySelectorAll(selectors.items_filtered)];
 
   if (!items[0]) {
@@ -801,18 +809,23 @@ function dd_searchEvt() {
       el.classList.remove('hovered')
     );
 
-    if (filter && !bb.allItemFiltered) bb.allItemFiltered = true;
-    else if (!filter && bb.allItemFiltered) bb.allItemFiltered = false;
-  } else if (filter && !dropElem.value!.matches('.indicating')) {
-    [...dropMenu.querySelectorAll(selectors.items)].forEach((el) =>
-      el.classList.remove('hovered')
-    );
+    if (searchQuery.value && !bb.allItemFiltered) bb.allItemFiltered = true;
+    else if (!searchQuery.value && bb.allItemFiltered)
+      bb.allItemFiltered = false;
+  } else {
+    if (searchQuery.value && !dropElem.value!.matches('.indicating')) {
+      [...dropMenu.querySelectorAll(selectors.items)].forEach((el) =>
+        el.classList.remove('hovered')
+      );
+    } else items.forEach((el) => el.classList.remove('hovered'));
+
     items[0].classList.add('hovered');
     bb.allItemFiltered = false;
-  } else bb.allItemFiltered = false;
+    items[0].scrollIntoView({ block: 'nearest' });
+  }
 
   if (bb.multipleSelect) {
-    if (filter) {
+    if (searchQuery.value) {
       selectableContentBox.classList.remove('no-content');
       let sItems = [
         ...dropElem.value!.querySelectorAll(':scope > .content > .chip'),
@@ -822,7 +835,7 @@ function dd_searchEvt() {
       selectableContentBox.classList.add('no-content');
   }
 
-  dd_CalcPosition();
+  utils.afterNextRepaint(() => dd_CalcPosition());
 }
 
 function dd_clickOnDomEvt(e: MouseEvent) {
@@ -926,7 +939,7 @@ function dd_KBControlEvt(e: KeyboardEvent) {
 
       /* scroll overflow parent to make hovered-item visible in screen */
       if (ci) {
-        ci.scrollIntoView({ block: 'nearest' });
+        ci.scrollIntoView({ behavior: 'instant', block: 'nearest' });
         items.forEach((el) => {
           el.classList.remove('hovered');
           el.blur();
@@ -1207,32 +1220,43 @@ function dd_mouseMover(e: MouseEvent) {
 
 // this function set an item as selected in a selectable dropdown
 // xClose means don't close dropdown after selection.
-function dd_setSelect(item: Element, xClose?: boolean) {
+async function dd_setSelect(item: Element, xClose?: boolean) {
   if (!item || !bb.selectable) return;
 
   let items = [...dropMenu.querySelectorAll(selectors.items)];
 
   if (bb.multipleSelect) {
-    let itemIndex = items.indexOf(item);
     let ddid = utils.getUniqueId('ddid');
     let itemValue = item.getAttribute('data-value') || item.textContent || '';
 
+    if (!Object.values(bb.selectionValue).includes(itemValue)) {
+      bb.selectionValue[ddid] = itemValue;
+      model.value = Object.values(bb.selectionValue);
+      emit('change', model.value);
+      bb.selectionContent.push({
+        html: item.innerHTML,
+        index: ddid,
+      });
+      selectableContentBox.classList.remove('no-content');
+    } else {
+      ddid = Object.keys(bb.selectionValue).find(
+        (key) => bb.selectionValue[key] === itemValue
+      ) as string;
+      console.warn(
+        'The selected item has a value that already exist in the dropdown selection.'
+      );
+    }
     item.classList.add('selected');
-    bb.selectionValue[ddid] = itemValue;
-    model.value = Object.values(bb.selectionValue);
-    emit('change', model.value);
     item.setAttribute('data-ddid', ddid);
-    bb.selectionContent.push({
-      html: item.innerHTML,
-      index: ddid,
-    });
-    selectableContentBox.classList.remove('no-content');
 
     if (bb.searchable && showDropdown.value) {
       searchBox.value = '';
       utils.triggerEvent(searchBox, 'input');
       searchBox.focus();
     }
+
+    await nextTick();
+    items = [...dropMenu.querySelectorAll(selectors.items)];
 
     if (!items.some((el) => !el.matches('.selected')))
       bb.allItemSelected = true;
@@ -1243,14 +1267,18 @@ function dd_setSelect(item: Element, xClose?: boolean) {
 
     if (!bb.searchable) {
       let nextHv =
-        items.find((el, i) => i > itemIndex && !el.matches('.selected')) ??
-        items
-          .filter((el, i) => i < itemIndex && !el.matches('.selected'))
+        utils.nextAll(item).find((el) => !el.matches('.selected')) ??
+        utils
+          .prevAll(item)
+          .filter((el) => !el.matches('.selected'))
           .pop();
-      if (nextHv) nextHv.classList.add('hovered');
+      if (nextHv) {
+        nextHv.classList.add('hovered');
+        nextHv.scrollIntoView({ block: 'nearest' });
+      }
     }
 
-    dd_CalcPosition();
+    utils.afterNextRepaint(() => dd_CalcPosition());
   } else {
     item.classList.add('active');
     if (
@@ -1285,14 +1313,16 @@ function dd_setDeselect(sItem: Element) {
 
   let ddid = sItem.getAttribute('data-ddid');
   if (!ddid || !bb.selectionValue[ddid]) return;
-  let item = dropMenu.querySelector(`:scope [data-ddid="${ddid}"]`);
+  let item = [...dropMenu.querySelectorAll(`:scope [data-ddid="${ddid}"]`)];
 
   delete bb.selectionValue[ddid];
   model.value = Object.values(bb.selectionValue);
   emit('change', model.value);
   if (!item) return;
-  item.classList.remove('selected');
-  item.setAttribute('data-ddid', '');
+  item.forEach((el) => {
+    el.classList.remove('selected');
+    el.setAttribute('data-ddid', '');
+  });
   bb.selectionContent = bb.selectionContent.filter(
     (el) => (el as { index: string }).index !== ddid
   );
@@ -1306,7 +1336,7 @@ function dd_setDeselect(sItem: Element) {
       utils.triggerEvent(searchBox, 'input');
     }
 
-    dd_CalcPosition();
+    utils.afterNextRepaint(() => dd_CalcPosition());
   }
 
   if (bb.searchable) searchBox.focus();
@@ -1325,7 +1355,7 @@ function dd_setDeselect(sItem: Element) {
     :aria-controls="bb.menuId"
     tabindex="0"
   >
-    <slot></slot>
+    <slot :query="searchQuery" :filteredData></slot>
     <template v-if="bb.selectable">
       <div v-if="bb.multipleSelect" class="content no-content">
         <div
@@ -1338,14 +1368,14 @@ function dd_setDeselect(sItem: Element) {
           <Icon name="material-symbols:close-rounded" class="close trailing" />
         </div>
         <template v-if="bb.searchable">
-          <input class="ssbox" autocomplete="off" tabindex="0" />
+          <input class="ssbox" autocomplete="off" tabindex="-1" />
           <span class="ddss"></span>
         </template>
         <div ref="sPlaceholder" class="placeholder">{{ placeholder }}</div>
       </div>
       <template v-else>
         <template v-if="bb.searchable">
-          <input class="ssbox" autocomplete="off" tabindex="0" />
+          <input class="ssbox" autocomplete="off" tabindex="-1" />
           <span class="ddss"></span>
         </template>
         <div
@@ -1355,7 +1385,7 @@ function dd_setDeselect(sItem: Element) {
         ></div>
         <div class="placeholder">{{ placeholder }}</div>
       </template>
-      <button v-if="bb.isSelect" ref="ddIcon" class="ddico icon">
+      <button v-if="bb.isSelect" ref="ddIcon" tabindex="-1" class="ddico icon">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           height="48"

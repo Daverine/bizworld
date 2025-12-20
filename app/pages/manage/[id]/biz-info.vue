@@ -2,13 +2,13 @@
 definePageMeta({ name: 'manage-biz-info', layout: 'common', auth: true });
 </script>
 <template>
-  <main class="flexible col" id="feed">
-    <header class="sp-wrapper fluid z-level-1 p-h" style="margin-bottom: 1rem">
+  <main class="flex-1 col" id="feed">
+    <header class="sp-wrapper w-full z-level-1 p-h" style="margin-bottom: 1rem">
       <div
         v-scrollPin="{ top: 63, independent: true }"
         class="surface-bg"
       >
-        <div class="fluid l-aligned">
+        <div class="w-full l-aligned">
           <div
             style="
               display: flex;
@@ -17,9 +17,9 @@ definePageMeta({ name: 'manage-biz-info', layout: 'common', auth: true });
             "
           >
             <div class="p-h3 h3">Business Information</div>
-            <button class="compact button r-floated">Edit</button>
+            <button class="compact button">Edit</button>
           </div>
-          <hr class="0-b-margined" />
+          <hr class="mb-0" />
         </div>
       </div>
     </header>

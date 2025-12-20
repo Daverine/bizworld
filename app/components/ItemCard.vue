@@ -4,12 +4,11 @@ defineProps(['details', 'isSaved']);
 <template>
   <BusinessCard v-if="details.type === 'business'" :details="details" />
   <ProductCard v-else-if="details.type === 'product'" :details="details" />
-  <ServiceCard v-else-if="details.type === 'project'" :details="details" />
 
   <NuxtLink
     v-else
     :to="`/${details.type}/${details.id}`"
-    class="fluid item-card card"
+    class="w-full item-card card"
     :data-type="details.type"
   >
     <LimbDropdown
@@ -34,7 +33,7 @@ defineProps(['details', 'isSaved']);
   </NuxtLink>
 </template>
 
-<style lang="scss">
+<style>
 .item-card {
   --display-width: 11rem;
   --itm-gap: 0.5rem;

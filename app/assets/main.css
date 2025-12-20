@@ -1,3 +1,101 @@
+@import 'tailwindcss' important;
+
+@layer base {
+  /* Remove all minimum width and height constraints. */
+
+  * {
+    min-width: 0;
+    border-color: var(--outline);
+  }
+
+  /* Balance text wrapping in headings when supported. */
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+
+  /* Balance text wrapping in paragraphs, list items, and figure captions when supported. */
+
+  p,
+  li,
+  figcaption {
+    text-wrap: pretty;
+  }
+
+  /* Prevent img, svg, and canvas elements from being flexible in a flex container. */
+
+  img,
+  svg,
+  canvas {
+    flex: 0 0 auto;
+  }
+
+  /* Remove search cancel button in search inputs on WebKit. */
+
+  ::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+
+  /* Indicate that the element is not interactive. */
+
+  button[disabled],
+  input[disabled] {
+    cursor: not-allowed;
+  }
+
+  /* Inherit vertical alignment for table sections. */
+  
+  thead, tbody, tfoot {
+    vertical-align: inherit;
+  }
+
+  /* Clearfix for body by default. */
+
+  body {
+    min-height: 100vh;
+
+    &::before {
+      content: '';
+      display: table-cell;
+    }
+
+    &::after {
+      content: '';
+      display: table;
+      clear: both;
+    }
+  }
+
+  html {
+    background-color: var(--surface-v2);
+  }
+
+  body {
+    color: var(--on-surface);
+    background: var(--surface);
+  }
+}
+
+:root {
+  --spacing: 0.25rem;
+
+  --radius-inline: 0.5rem;
+  --radius-block: 0.5rem;
+}
+
+@theme {
+  --breakpoint-sm: 28rem; /* 448px */
+  --breakpoint-md: 48rem; /* 768px */
+  --breakpoint-lg: 64rem; /* 1024px */
+  --breakpoint-xl: 80rem; /*  1280px */
+  --breakpoint-2xl: 96rem; /* 1536px */
+}
+
 svg.icon {
   width: 1.5em;
   height: 1.5em;
@@ -7,36 +105,32 @@ svg.icon {
   --default-radius: 0.5em;
   --site-logo-filter: invert(0);
   --blend-bg: var(--surface);
-  // --container-text: 700px;
-  // --container: 90rem;
 }
-h1,h2,h3,h4,h5,h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: Spectral;
-}
-
-@mixin light-mode() {
-  --fmenu-bg: rgba(255, 255, 255, 0.9);
-}
-@mixin dark-mode() {
-  --fmenu-bg: rgba(26, 26, 26, 0.8);
 }
 
 @media screen and (prefers-color-scheme: light) {
   :root {
-    @include light-mode();
+    --fmenu-bg: rgba(255, 255, 255, 0.9);
   }
 }
 @media screen and (prefers-color-scheme: dark) {
   :root {
-    @include dark-mode();
+    --fmenu-bg: rgba(26, 26, 26, 0.8);
   }
 }
 
 .light-mode {
-  @include light-mode();
+  --fmenu-bg: rgba(26, 26, 26, 0.8);
 }
 .dark-mode {
-  @include dark-mode();
+  --fmenu-bg: rgba(26, 26, 26, 0.8);
 }
 
 .site-logo {
@@ -45,27 +139,16 @@ h1,h2,h3,h4,h5,h6 {
 
 #fmenu {
   position: sticky;
-  // position: fixed;
   top: 0px;
-  // left: 0px;
   height: 64px;
-  // transform: translateY(-100%);
-  // transform-origin: 0%;
-  // opacity: 0;
-  // border-bottom: 1px solid var(--outline);
   box-shadow: 0px 1px 15px rgba(128, 128, 128, 0.05);
   z-index: 9000;
   background: var(--fmenu-bg);
   backdrop-filter: saturate(50%) blur(8px);
   transition: transform ease 0.1s, opacity ease 0.1s !important;
-
-  // &.pinned {
-  //   opacity: 1;
-  //   transform: translateY(0%);
-  // }
 }
 
-// landing page style
+/** landing page style **/
 
 .csection {
   position: relative;

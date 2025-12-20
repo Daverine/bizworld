@@ -22,7 +22,7 @@ defineOptions({ title: 'Profile | BizWorld' });
           <NuxtImg
             preset="thumbnail"
             :src="userStore.userData.profileImg"
-            class="circular image"
+            class="rounded-full image"
             style="max-width: 7rem"
             alt="profile picture"
           />

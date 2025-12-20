@@ -6,7 +6,7 @@ const userStore = useUserStore();
   <header>
     <div class="menu" style="height: 64px">
       <div
-        class="container items auto-margined"
+        class="container items m-auto"
         style="border-radius: var(--default-radius)"
       >
         <div
@@ -32,7 +32,7 @@ const userStore = useUserStore();
     </div>
   </header>
   <div
-    class="flexbox flexible-items equal-cols"
+    class="flex *:flex-1"
     style="gap: 1.5rem; max-width: 650px; margin: 2rem auto"
   >
     <div
@@ -41,11 +41,11 @@ const userStore = useUserStore();
     ></div>
     <div class="col">
       <div class="header" style="margin-bottom: 1rem">
-        <div class="bold">Login to BizWorld</div>
+        <div class="font-bold">Login to BizWorld</div>
       </div>
       <div class="content">
         <div class="field">
-          <button class="fluid button">
+          <button class="w-full button">
             <SvgIcon name="login" />
             Continue with Google
           </button>
@@ -54,17 +54,17 @@ const userStore = useUserStore();
           <div class="field">
             <label>Email</label>
             <input
-              class="form-item fluid"
+              class="form-item w-full"
               type="text"
               placeholder="Email address"
             />
           </div>
           <div class="field">
             <label>Password</label>
-            <input class="form-item fluid" type="text" placeholder="Password" />
+            <input class="form-item w-full" type="text" placeholder="Password" />
           </div>
           <div class="field">
-            <button class="fluid primary button">Continue</button>
+            <button class="w-full primary button">Continue</button>
           </div>
           <hr />
           <p>

@@ -16,10 +16,10 @@ const options: DialogerSettings = {
   outDuration: 500,
   ...props.options,
 };
-useDialoger(sidepanel, props.id, options);
+const control = useDialoger(sidepanel, props.id, options);
 </script>
 <template>
   <div ref="panel" :id="id" role="dialog" aria-modal="true" class="sidepanel">
-    <slot></slot>
+    <slot :control></slot>
   </div>
 </template>

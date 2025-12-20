@@ -1,4 +1,3 @@
-import saved from '@/assets/jsons/sresults.json';
 import followed from '@/assets/jsons/followed.json';
 import reviews from '@/assets/jsons/reviews.json';
 
@@ -48,7 +47,7 @@ export const useUserStore = defineStore('user', {
         async getSavedCards() {
             return new Promise(() => {
                 setTimeout(() => {
-                    this.savedCards = saved;
+                    this.savedCards = [];
                 }, 200);
             });
         },

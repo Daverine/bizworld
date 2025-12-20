@@ -1,7 +1,7 @@
 <template>
   <div class="dialog self-scroll">
-    <div class="header flexbox guttered">
-      <div class="bold truncate flexible">
+    <div class="header flex gap-3">
+      <div class="font-bold truncate flex-1">
         Explore your caterory of interest here.
       </div>
       <button
@@ -18,7 +18,7 @@
         </button>
       </div>
       <div class="heading">Business categories</div>
-      <div class="flexbox flex-wrap sm-guttered">
+      <div class="flex flex-wrap gap-2">
         <button class="chip">
           <SvgIcon name="restaurant" class="small lead" /> Restaurants
         </button>
@@ -50,7 +50,7 @@
         </button>
       </div>
       <div class="heading">Product categories</div>
-      <div class="flexbox flex-wrap sm-guttered">
+      <div class="flex flex-wrap gap-2">
         <button class="chip">
           <SvgIcon name="restaurant" class="small lead" /> Vehicles
         </button>

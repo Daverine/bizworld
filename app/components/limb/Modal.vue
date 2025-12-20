@@ -17,11 +17,11 @@ const options: DialogerSettings = {
   outDuration: 500,
   ...props.options,
 };
-useDialoger(modal, props.id, options);
+const control = useDialoger(modal, props.id, options);
 </script>
 
 <template>
   <div ref="modal" :id="id" role="dialog" aria-modal="true" class="modal">
-    <slot></slot>
+    <slot :control></slot>
   </div>
 </template>

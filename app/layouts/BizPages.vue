@@ -43,7 +43,7 @@ const isReady = computed(() => data.details && avail.value);
   <Details>
     <div v-if="isReady" class="grid-layout">
       <header
-        class="flexbox"
+        class="flex"
         style="padding-top: 0.5rem; align-items: center; gap: 1rem"
       >
         <div
@@ -52,7 +52,7 @@ const isReady = computed(() => data.details && avail.value);
         >
           <NuxtImg
             preset="logo"
-            class="logo image"
+            class="logo"
             style="width: 5rem; height: 5rem; object-fit: contain"
             :src="data.details.logo"
             alt="Business Logo"
@@ -65,12 +65,12 @@ const isReady = computed(() => data.details && avail.value);
             style="position: absolute; bottom: 0.5em; right: 0.5em"
           />
         </div>
-        <div class="flexible">
-          <h5 class="0-margined">{{ data.details.bizName }}</h5>
+        <div class="flex-1">
+          <h5 class="m-0">{{ data.details.bizName }}</h5>
           <div class="faint-text">{{ data.details.mainCategory }}</div>
         </div>
         <button
-          class="flex-none flat button auto-l-margined md-and-down-hidden"
+          class="flex-none flat button ml-auto max-md:hidden"
         >
           <Icon
             name="material-symbols:add-to-queue-outline-rounded"
@@ -97,17 +97,17 @@ const isReady = computed(() => data.details && avail.value);
             />
           </NuxtLink>
           <div class="r-aligned items">
-            <div class="items md-and-down-hidden">
+            <div class="items max-md:hidden">
               <PageNav />
             </div>
             <div
-              class="item open-sidepanel md-and-up-hidden"
+              class="item open-sidepanel md:hidden"
               data-target="bizsidepanel"
             >
               <SvgIcon name="menu" class="lead" />
               Menu
               <LimbSidePanel class="right" id="bizsidepanel">
-                <div class="padded panel">
+                <div class="panel p-4">
                   <div class="vertical menu">
                     <div class="centered item exit-sidepanel">
                       <SvgIcon name="arrow_back" />
@@ -136,7 +136,7 @@ const isReady = computed(() => data.details && avail.value);
                 </div>
               </LimbSidePanel>
             </div>
-            <div class="xhover 0-l-padding item">
+            <div class="xhover pl-0 item">
               <LimbDropdown
                 :options="{ directionPriority: { x: 'left' } }"
                 v-tooltip:aria.unblocking
@@ -169,14 +169,14 @@ const isReady = computed(() => data.details && avail.value);
         style="padding: 4rem 0rem 0rem"
       >
         <div class="footer-main">
-          <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
+          <div class="flex flex-col" style="flex-basis: 20%; gap: 1.5rem">
             <div
               class="flex-none"
               style="position: relative; width: max-content; line-height: 0"
             >
               <NuxtImg
                 preset="logo"
-                class="logo image"
+                class="logo"
                 style="width: 4rem; height: 4rem; object-fit: contain"
                 :src="data.details.logo"
                 alt="Business Logo"
@@ -192,50 +192,50 @@ const isReady = computed(() => data.details && avail.value);
             </div>
             <h6 class="dm-title">{{ data.details.bizName }}</h6>
             <!-- <div class="faint-text">{{ data.details.mainCategory }}</div> -->
-            <div class="flexible">
+            <div class="flex-1">
               {{ data.details.description }}
               <a :href="`${data.details.bizUrl}/about_us`" target="_blank"
                 >Learn more.</a
               >
             </div>
             <div>
-              <div class="bold" style="margin-bottom: 0.75rem">
+              <div class="font-bold" style="margin-bottom: 0.75rem">
                 Earned barges on Bizword
               </div>
-              <div class="flexbox guttered flex-wrap">
+              <div class="flex gap-3 flex-wrap">
                 <div class="flex-none ft-badge">
                   <Badges name="verified" style="font-size: 3rem" />
-                  <div class="mini semibold">Verified</div>
+                  <div class="mini font-semibold">Verified</div>
                 </div>
                 <div class="flex-none ft-badge">
                   <Badges name="escrow" style="font-size: 3rem" />
-                  <div class="mini semibold">Trade Assurance</div>
+                  <div class="mini font-semibold">Trade Assurance</div>
                 </div>
                 <div class="flex-none ft-badge">
                   <Badges name="5years" style="font-size: 3rem" />
-                  <div class="mini semibold">Sustainable</div>
+                  <div class="mini font-semibold">Sustainable</div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
-            <div class="bold">Menus</div>
+          <div class="flex flex-col" style="flex-basis: 20%; gap: 1.5rem">
+            <div class="font-bold">Menus</div>
             <div class="text vertical menu">
               <PageNav />
             </div>
           </div>
-          <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
-            <div class="bold">Contact Us</div>
+          <div class="flex flex-col" style="flex-basis: 20%; gap: 1.5rem">
+            <div class="font-bold">Contact Us</div>
             <div>
               <p>Start chat with us directly from here.</p>
               <button class="secondary button">Start Chat</button>
             </div>
             <div>
-              <div class="bold">Telephone</div>
+              <div class="font-bold">Telephone</div>
               <p>{{ data.details.contacts.tel }}</p>
             </div>
             <div>
-              <div class="bold">Our physical location</div>
+              <div class="font-bold">Our physical location</div>
               <p>
                 {{
                   `${data.details.location.address}, ${data.details.location.city}, ${data.details.location.state}.`
@@ -243,8 +243,8 @@ const isReady = computed(() => data.details && avail.value);
               </p>
             </div>
           </div>
-          <div class="flexbox flex-column" style="flex-basis: 20%; gap: 1.5rem">
-            <div class="bold nowrap-text">Social media</div>
+          <div class="flex flex-col" style="flex-basis: 20%; gap: 1.5rem">
+            <div class="font-bold whitespace-nowrap">Social media</div>
             <div class="vertical text menu">
               <a class="item" href="#">Facebook</a>
               <a class="item" href="#">Instagram</a>

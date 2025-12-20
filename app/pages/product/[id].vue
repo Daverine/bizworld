@@ -415,7 +415,7 @@ function getItemForCart() {
         Quantity:
         <div class="trailing">{{ tmp.quantity }}</div>
       </div>
-      <div class="fluid small input-box">
+      <div class="w-full small input-box">
         <button
           class="addon icon mini button"
           @click="
@@ -451,7 +451,7 @@ function getItemForCart() {
     <div>
       <div class="sub lined heading a-block">
         Delivery service:
-        <div class="trailing capitalized">
+        <div class="trailing capitalize">
           {{ tmp.delivery }}
         </div>
       </div>
@@ -461,7 +461,7 @@ function getItemForCart() {
           class="item as-icon disabled"
           :class="{ active: tmp.delivery === 'bizworld' }"
         >
-          <div class="flexbox flex-column sm-guttered align-center">
+          <div class="flex flex-col gap-2 items-center">
             <input
               type="radio"
               value="bizworld"
@@ -474,15 +474,15 @@ function getItemForCart() {
             />
           </div>
           <div class="content" style="font-weight: normal">
-            <div class="flexbox guttered flex-separate">
-              <div class="small bold">BizWorld Delivery Management</div>
+            <div class="flex gap-3 justify-between">
+              <div class="small font-bold">BizWorld Delivery Management</div>
               <a href="#">Details</a>
             </div>
-            <div class="flexbox guttered flex-separate">
+            <div class="flex gap-3 justify-between">
               <div>Delivery fee:</div>
               <div>NA</div>
             </div>
-            <div class="flexbox guttered flex-separate">
+            <div class="flex gap-3 justify-between">
               <div>Delivery time:</div>
               <div>NA</div>
             </div>
@@ -493,7 +493,7 @@ function getItemForCart() {
           class="item as-icon"
           :class="{ active: tmp.delivery === 'self-pickup' }"
         >
-          <div class="flexbox flex-column sm-guttered align-center">
+          <div class="flex flex-col gap-2 items-center">
             <input
               type="radio"
               value="self-pickup"
@@ -506,8 +506,8 @@ function getItemForCart() {
             />
           </div>
           <div class="content" style="font-weight: normal">
-            <div class="flexbox guttered flex-separate">
-              <div class="small bold">Self Pickup</div>
+            <div class="flex gap-3 justify-between">
+              <div class="small font-bold">Self Pickup</div>
               <a
                 href="javascript:void(0)"
                 class="open-modal"
@@ -537,23 +537,11 @@ function getItemForCart() {
         }"
       >
         <LimbCarousel :options="{ continuous: false }">
-          <div class="cs-slide">
-            <NuxtImg
-              format="webp"
-              sizes="960px"
-              densities="1x"
-              class="image"
-              src="/images/product.jpeg"
-              data-lightbox="https://youtu.be/yGl3f0xTl_0?si=Tz7fFZj3NBCIuwRR"
-              data-target="lightbox1"
-            />
-          </div>
           <div v-for="slide in tmp.media" class="cs-slide">
             <NuxtImg
               format="webp"
               sizes="960px"
               densities="1x"
-              class="image"
               :src="slide.url"
               :data-lightbox="slide.url"
               data-target="lightbox1"
@@ -570,13 +558,13 @@ function getItemForCart() {
             </div>
           </template>
         </LimbCarousel>
-        <h5 class="semibold 0-margined page-title">{{ details.title }}</h5>
-        <div class="flexbox flex-separate guttered small semibold">
+        <h5 class="font-semiboldm-0 page-title">{{ details.title }}</h5>
+        <div class="flex justify-between gap-3 small font-semibold">
           <span
             v-tooltip:aria.unblocking
             aria-label="Average Rate (Number of raters)"
           >
-            <Icon name="material-symbols:star-rounded" class="yellow-text" />
+            <Icon name="material-symbols:star-rounded" class="text-yellow-500" />
             {{
               (
                 details.reviews.reduce((n, i) => n + i.rating, 0) /
@@ -596,8 +584,8 @@ function getItemForCart() {
         </div>
         <!-- Product Options -->
         <section class="mobile-screen-only config">
-          <div class="small semibold">Unit price</div>
-          <div class="h3 0-margined primary-text bold">
+          <div class="small font-semibold">Unit price</div>
+          <div class="h3 m-0 primary-text font-bold">
             ₦{{ tmp.price.toLocaleString() }}
           </div>
           <div class="alt-ribbon red label">Configure purchase</div>
@@ -664,7 +652,7 @@ function getItemForCart() {
                 <NuxtImg
                   preset="logo"
                   :src="details.bizData.logo"
-                  class="loose avatar image"
+                  class="loose avatar"
                 />
                 <SvgIcon
                   name="verified_sp"
@@ -677,13 +665,12 @@ function getItemForCart() {
               <div class="content">
                 <NuxtLink
                   :to="`/business/${details.bizData.bizId}`"
-                  class="bold h6 truncate uppercased"
-                  style="--line-clamp: 2"
+                  class="font-bold h6 line-clamp-2 uppercase"
                 >
                   {{ details.bizData.bizName }}
                 </NuxtLink>
                 <div
-                  class="flexbox flex-separate flex-wrap semibold"
+                  class="flex justify-between flex-wrap font-semibold"
                   style="gap: 0.25em 0.75em"
                 >
                   <span>
@@ -691,13 +678,13 @@ function getItemForCart() {
                   </span>
                   <span
                     v-if="details.bizData.rating"
-                    class="semibold"
+                    class="font-semibold"
                     v-tooltip:aria.unblocking
                     aria-label="Average Rate (Number of raters)"
                   >
                     <Icon
                       name="material-symbols:star-rounded"
-                      class="yellow-text"
+                      class="text-yellow-500"
                     />
                     {{ details.bizData.rating.rate }} ({{
                       details.bizData.rating.raters
@@ -706,10 +693,7 @@ function getItemForCart() {
                 </div>
               </div>
             </div>
-            <div
-              class="flexbox flexible-items guttered"
-              style="margin-top: 0.5em"
-            >
+            <div class="flex *:flex-1 gap-3" style="margin-top: 0.5em">
               <button class="secondary compact button">
                 <Icon
                   name="material-symbols:add-to-queue-outline-rounded"
@@ -735,7 +719,7 @@ function getItemForCart() {
             </i>
           </div>
           <div class="collapsible">
-            <div class="flexbox flexible-items align-center">
+            <div class="flex *:flex-1 items-center">
               <div
                 class="text-center"
                 :set="
@@ -745,7 +729,7 @@ function getItemForCart() {
                   ).toFixed(1))
                 "
               >
-                <div class="semibold" style="font-size: 3em">
+                <div class="font-semibold" style="font-size: 3em">
                   {{
                     (
                       details.reviews.reduce((n, i) => n + i.rating, 0) /
@@ -753,7 +737,7 @@ function getItemForCart() {
                     ).toFixed(1)
                   }}
                 </div>
-                <div class="rating small yellow-text">
+                <div class="rating small text-yellow-500">
                   <Icon
                     v-for="i in Math.floor(rating)"
                     name="material-symbols:star-rounded"
@@ -771,7 +755,7 @@ function getItemForCart() {
                 <div>All reviews are from verified purchases.</div>
               </div>
               <div class="text-center">
-                <p class="small semibold">
+                <p class="small font-semibold">
                   Patronize {{ details.bizData.bizName }} to write a review.
                   <a href="#">Learn more.</a>
                 </p>
@@ -780,10 +764,10 @@ function getItemForCart() {
             <hr />
             <div>
               <div
-                class="flexbox flex-separate guttered align-center"
+                class="flex justify-between gap-3 items-center"
                 style="margin-bottom: 1rem"
               >
-                <div class="semibold">Reviews</div>
+                <div class="font-semibold">Reviews</div>
                 <LimbDropdown
                   :options="{ directionPriority: { x: 'left' } }"
                   class="outlined small button selection"
@@ -804,19 +788,19 @@ function getItemForCart() {
                   style="padding: 0.5em"
                   :set="(review = details.reviews[a - 1])"
                 >
-                  <header class="flexbox flex-separate align-center guttered">
-                    <div class="circular small avatar image">
+                  <header class="flex justify-between items-center gap-3">
+                    <div class="small rounded-full avatar">
                       <NuxtImg
                         preset="logo"
                         src="/Images/profilepic.jpg"
                         alt="profile picture"
                       />
                     </div>
-                    <div class="content flexible">
-                      <div class="bold">{{ review.username }}</div>
+                    <div class="content flex-1">
+                      <div class="font-bold">{{ review.username }}</div>
                       <div class="dm-gap" style="gap: 0.5em">
                         <div
-                          class="rating mini yellow-text"
+                          class="rating mini text-yellow-500"
                           :set="(rating = review.rating)"
                         >
                           <Icon
@@ -849,7 +833,9 @@ function getItemForCart() {
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
-                    <span class="faint-text small semibold">12-01-2034</span>
+                    <span class="faint-text small font-semibold"
+                      >12-01-2034</span
+                    >
                   </footer>
                 </div>
                 <div v-if="details.reviews.length > 5" class="text-center">
@@ -872,19 +858,19 @@ function getItemForCart() {
           breakpoints: [{ maxWidth: 863, pinnable: false }],
         }"
       >
-        <div class="small semibold">Unit price</div>
-        <div class="h3 0-margined primary-text bold">
+        <div class="small font-semibold">Unit price</div>
+        <div class="h3 m-0 primary-text font-bold">
           ₦{{ tmp.price.toLocaleString() }}
         </div>
         <div class="alt-ribbon red label">Configure purchase</div>
 
         <useTemplate />
         <div
-          class="flexbox guttered sticky surface-bg pin-bottom-blend z-level-1"
+          class="flex gap-3 sticky surface-bg pin-bottom-blend z-level-1"
           style="bottom: 0px; padding: 0.5rem 0rem; margin-top: 0.5rem"
         >
           <button
-            class="primary fluid button open-modal"
+            class="primary w-full button open-modal"
             data-target="pre-cart"
           >
             <Icon name="material-symbols:add-shopping-cart" class="lead" />
@@ -951,14 +937,11 @@ function getItemForCart() {
     </div>
     <!-- Call to Action Section -->
     <div
-      class="mobile-screen-only sticky surface-bg fluid z-level-2 pin-bottom-blend"
+      class="mobile-screen-only sticky surface-bg w-full z-level-2 pin-bottom-blend"
       style="bottom: 0px"
     >
-      <div class="container flexbox guttered" style="padding: 0.5rem 0rem">
-        <button
-          class="flexible primary button open-modal"
-          data-target="pre-cart"
-        >
+      <div class="container flex gap-3" style="padding: 0.5rem 0rem">
+        <button class="flex-1 primary button open-modal" data-target="pre-cart">
           <Icon name="material-symbols:add-shopping-cart" class="lead" />
           Add to cart
         </button>
@@ -1005,8 +988,8 @@ function getItemForCart() {
     </div>
     <LimbModal id="sp-details">
       <div class="dialog">
-        <div class="header pin-top-blend flexbox guttered">
-          <div class="bold truncate">Self Pickup Details</div>
+        <div class="header pin-top-blend flex gap-3">
+          <div class="font-bold truncate">Self Pickup Details</div>
           <button
             class="circular flat button as-text exit-modal"
             style="margin-left: auto"
@@ -1015,7 +998,7 @@ function getItemForCart() {
           </button>
         </div>
         <div class="content">
-          <p class="0-t-margined">
+          <p class="mt-0">
             Self-pickup is a delivery option that lets you control how your item
             is collected. A token is generated to verify your pickup from the
             specified location.
@@ -1055,8 +1038,8 @@ function getItemForCart() {
     </LimbModal>
     <LimbModal id="pre-cart">
       <div class="self-scroll dialog">
-        <div class="header pin-top-blend flexbox guttered">
-          <div class="bold truncate">Confirm options</div>
+        <div class="header pin-top-blend flex gap-3">
+          <div class="font-bold truncate">Confirm options</div>
           <button
             class="circular flat button as-text exit-modal"
             style="margin-left: auto"
@@ -1067,27 +1050,27 @@ function getItemForCart() {
         <div class="content" style="padding-bottom: 0em">
           <useTemplate />
           <div
-            class="footer flex-column flexbox guttered surface-bg sticky pin-bottom-blend"
+            class="footer flex-col flex gap-3 surface-bg sticky pin-bottom-blend"
             style="bottom: 0px; padding: 1rem 0rem; margin-top: 0.5rem"
           >
-            <div class="flexbox flex-column" style="gap: 0.25rem">
-              <div class="flexbox guttered flex-separate">
+            <div class="flex flex-col" style="gap: 0.25rem">
+              <div class="flex gap-3 justify-between">
                 <div>Unit price</div>
                 <div>₦{{ tmp.price.toLocaleString() }}</div>
               </div>
-              <hr class="0-margined" />
-              <div class="flexbox guttered flex-separate">
-                <div class="bold">Total:</div>
-                <div class="h5 bold">
+              <hr class="m-0" />
+              <div class="flex gap-3 justify-between">
+                <div class="font-bold">Total:</div>
+                <div class="h5 font-bold">
                   ₦{{ (tmp.price * tmp.quantity).toLocaleString() }}
                 </div>
               </div>
             </div>
-            <div class="flexbox flex-wrap guttered flex-separate align-start">
+            <div class="flex flex-wrap gap-3 justify-between items-start">
               <NuxtLink
                 @click="cartStore.addToCart(getItemForCart())"
                 to="/cart"
-                class="flexible primary exit-modal button"
+                class="flex-1 primary exit-modal button"
               >
                 Add and Go to cart
               </NuxtLink>
@@ -1097,7 +1080,7 @@ function getItemForCart() {
                   params: { id: details.bizData.bizId },
                 }"
                 @click="cartStore.addToCart(getItemForCart())"
-                class="flexible primary flat button exit-modal"
+                class="flex-1 primary flat button exit-modal"
               >
                 Add and Continue Shopping
               </NuxtLink>
@@ -1109,7 +1092,7 @@ function getItemForCart() {
   </main>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .page-cont {
   display: grid;
   gap: 2rem;
@@ -1129,7 +1112,7 @@ function getItemForCart() {
 
 .config {
   border: 1px solid var(--outline);
-  border-radius: var(--comp-radius);
+  border-radius: var(--radius-inline);
   padding: 1rem;
 
   & > .label {

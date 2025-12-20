@@ -26,13 +26,13 @@ definePageMeta({ layout: 'details', auth: true, noFab: true });
           <div class="drop menu">
             <div class="active item">
               <div
-                class="lead avatar circular image mini"
+                class="lead avatar rounded-full mini"
                 style="flex: 0 0 auto; background-color: #999"
               ></div>
               <div style="flex: 1 1 auto">
                 <div class="text text-left">
                   <div
-                    class="semibold"
+                    class="font-semibold"
                     style="font-size: 1.125em; line-height: 1.25"
                   >
                     Ayoola Folorunso
@@ -43,13 +43,13 @@ definePageMeta({ layout: 'details', auth: true, noFab: true });
             </div>
             <div class="item">
               <div
-                class="lead avatar circular image mini"
+                class="lead avatar rounded-full mini"
                 style="flex: 0 0 auto; background-color: #999"
               ></div>
               <div style="flex: 1 1 auto">
                 <div class="text text-left">
                   <div
-                    class="semibold"
+                    class="font-semibold"
                     style="font-size: 1.125em; line-height: 1.25"
                   >
                     Emmadave Computers
@@ -67,7 +67,7 @@ definePageMeta({ layout: 'details', auth: true, noFab: true });
       </header>
       <div style="flex: 1 1 auto"></div>
       <footer class="pin-bottom-blend" style="padding: 0.5em;">
-        <button class="button primary fluid">
+        <button class="button primary w-full">
           <Icon
             name="material-symbols:chat-add-on-outline-rounded"
             class="lead"
@@ -86,13 +86,13 @@ definePageMeta({ layout: 'details', auth: true, noFab: true });
         >
           <div class="adaptable xhover item">
             <div
-              class="lead avatar circular image mini"
+              class="lead avatar rounded-full mini"
               style="flex: 0 0 auto; background-color: #999"
             ></div>
             <div style="flex: 1 1 auto">
               <div class="text text-left">
                 <div
-                  class="semibold"
+                  class="font-semibold"
                   style="font-size: 1.125em; line-height: 1.25"
                 >
                   Ayoola Folorunso
@@ -115,7 +115,7 @@ definePageMeta({ layout: 'details', auth: true, noFab: true });
         </div>
       </header>
       <div class="chats-box"></div>
-      <footer class="messaging-box field 0-margined">
+      <footer class="messaging-box field m-0">
         <div class="input">
           <button class="icon">
             <Icon name="material-symbols:mood-outline-rounded" />
@@ -133,13 +133,12 @@ definePageMeta({ layout: 'details', auth: true, noFab: true });
   </div>
 </template>
 
-<style lang="scss">
+<style>
 .messaging-view {
   display: flex;
   position: relative;
   width: 100%;
   height: calc(100vh - 68px);
-  // box-shadow: var(--z-depth-1);
   overflow: hidden;
 
   .history-view {

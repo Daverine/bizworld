@@ -22,7 +22,7 @@ const colorMode = useColorMode({
   >
     <Icon name="material-symbols:apps" />
     <div class="drop menu">
-      <div class="compact grid menu 2-cols app-items">
+      <div class="compact grid menu grid-cols-2 app-items">
         <div
           class="bar-item item open-modal exit-dd"
           data-target="explore-modal"
@@ -53,7 +53,7 @@ const colorMode = useColorMode({
       <NuxtImg
         preset="logo"
         :src="userStore.userData.profileImg"
-        class="free-img circular image"
+        class="free-img rounded-full image"
       />{{ `${userStore.userData.firstName} ${userStore.userData.lastName}` }}
     </div>
     <AccountNavItems />
@@ -73,7 +73,7 @@ const colorMode = useColorMode({
   </template>
   <div
     v-else-if="name === 'main_menu'"
-    class="container-lg items auto-margined"
+    class="container-lg items m-auto"
     style="border-radius: var(--default-radius)"
   >
     <button
@@ -93,7 +93,7 @@ const colorMode = useColorMode({
       />
     </NuxtLink>
     <form
-      class="xhover adaptable item md-and-down-hidden"
+      class="xhover adaptable item max-md:hidden"
       @submit.prevent="searchStore.triggerSearch()"
     >
       <label
@@ -132,7 +132,7 @@ const colorMode = useColorMode({
       <div
         v-tooltip:aria.unblocking
         aria-label="Search"
-        class="open-modal as-icon item md-and-up-hidden sm-and-down-hidden"
+        class="open-modal as-icon item md:hidden max-sm:hidden"
         data-target="search-modal"
       >
         <Icon name="material-symbols:search-rounded" />
@@ -157,9 +157,9 @@ const colorMode = useColorMode({
             class="pointing drop menu"
             style="width: 300px; height: calc(100vh - 84px); max-height: 600px"
           >
-            <div class="flexbox flex-column padded" style="height: 100%">
+            <div class="flex flex-col p-4" style="height: 100%">
               <div
-                class="flexible flexbox flex-column align-center justify-center guttered"
+                class="flex-1 flex flex-col items-center justify-center gap-3"
               >
                 <Icon
                   name="material-symbols-light:notifications-off-outline-rounded"
@@ -169,7 +169,7 @@ const colorMode = useColorMode({
               </div>
               <div class="transparent compact divider"></div>
               <div class="item">
-                <button class="fluid button">View all</button>
+                <button class="w-full button">View all</button>
               </div>
             </div>
           </div>
@@ -184,15 +184,15 @@ const colorMode = useColorMode({
             preset="logo"
             :src="userStore.userData.profileImg"
             alt="profile"
-            class="fully-rounded logo"
+            class="rounded-full logo"
           />
           <rc-shareables name="profile_menu" />
         </LimbDropdown>
       </template>
       <template v-else>
-        <div class="items lg-and-down-hidden">
+        <div class="items max-lg:hidden">
           <div class="item open-modal" data-target="login-modal">Log in</div>
-          <div class="xhover item as-icon 0-l-padding">
+          <div class="xhover item as-icon pl-0">
             <button
               class="primary button open-modal"
               data-target="register-modal"
@@ -205,10 +205,10 @@ const colorMode = useColorMode({
           :options="{ directionPriority: { x: 'left' } }"
           v-tooltip:aria.unblocking
           aria-label="Account"
-          class="item as-icon lg-and-up-hidden"
+          class="item as-icon lg:hidden"
         >
           <Icon name="material-symbols:person-add-outline-rounded" />
-          <span class="sm-and-down-hidden">Account</span>
+          <span class="max-lg:hidden">Account</span>
           <div class="drop menu">
             <div class="item open-modal" data-target="login-modal">Log in</div>
             <div class="item open-modal" data-target="register-modal">
@@ -235,7 +235,7 @@ const colorMode = useColorMode({
     <div class="item">Emmadave Inc.</div>
   </div>
   <template v-else-if="name === 'ad_menu'">
-    <aside class="flex-none col sidemenu lg-and-down-hidden">
+    <aside class="flex-none col sidemenu max-lg:hidden">
       <div id="admenu" v-scrollPin="{ top: 84, bottom: 16 }">
         <div style="width: 100%">
           <h6 class="text-center" style="margin-bottom: 16px">
@@ -247,7 +247,6 @@ const colorMode = useColorMode({
                 format="webp"
                 src="/images/ads.jpg"
                 alt="ad"
-                class="image"
               />
               <div>
                 Fix your laptops and desktops (Hardware and Software).
@@ -266,7 +265,7 @@ const colorMode = useColorMode({
     style="align-self: flex-end"
   >
     <label>Color scheme settings</label>
-    <div class="fillable compact pills menu fluid">
+    <div class="fillable compact pills menu w-full">
       <ClientOnly>
         <label class="as-icon item" :class="{ active: colorMode === 'light' }">
           <input

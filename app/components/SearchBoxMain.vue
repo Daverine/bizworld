@@ -2,25 +2,25 @@
 const searchStore = useSearchStore();
 </script>
 <template>
-  <form class="hm-searchbox" @submit.prevent="searchStore.triggerSearch()">
-    <div style="margin-bottom: 1rem">
+  <form class="w-full max-w-[600px] px-4" @submit.prevent="searchStore.triggerSearch()">
+    <div class="mb-4">
       <NuxtImg
         format="webp"
         sizes="900px"
         densities="1x"
         src="/images/logo_full.png"
         alt="site logo"
-        class="site-logo fluid image"
+        class="site-logo w-full image mx-auto"
         style="max-width: 450px; background-color: rgba(128, 128, 128, 0.025)"
       />
     </div>
-    <div class="flexbox flex-column sm-guttered">
-      <div class="flexbox align-center guttered">
-        <div class="flex-none bold">Search in:</div>
-        <div class="fillable pills menu compact flexible">
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-3">
+        <div class="flex-none font-bold">Search in:</div>
+        <div class="fillable pills menu compact flex-1">
           <label
             v-for="category in searchStore.categories"
-            class="capitalized item"
+            class="capitalize item"
             :class="{ active: searchStore.searchIn === category }"
           >
             {{ category }}
@@ -32,7 +32,7 @@ const searchStore = useSearchStore();
           /></label>
         </div>
       </div>
-      <label class="input big fluid">
+      <label class="input big w-full">
         <Icon name="material-symbols:search-rounded" class="xhover" />
         <input
           v-model="searchStore.searchBox"
@@ -63,8 +63,8 @@ const searchStore = useSearchStore();
         </button>
       </label>
       <div
-        class="flexbox flexible-items lg-guttered"
-        style="margin: 1.5rem auto 0px; max-width: 19rem"
+        class="flex *:flex-1 gap-4 w-full max-w-[16rem]"
+        style="margin: 1.5rem auto 0px;"
       >
         <button class="button">SEARCH</button>
         <button

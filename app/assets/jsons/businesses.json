@@ -4,7 +4,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -38,7 +38,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -72,7 +72,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -106,7 +106,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -140,7 +140,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -174,7 +174,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -208,7 +208,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -242,7 +242,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -276,7 +276,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -310,7 +310,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -344,7 +344,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -378,7 +378,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -412,7 +412,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
@@ -446,7 +446,7 @@
     "type": "business",
     "bizName": "Emmadave Computer Techonology Services",
     "mainCategory": "Computer repair services",
-    "services": [
+    "labels": [
       "Laptop repair",
       "Desktop repair",
       "Computer training",
