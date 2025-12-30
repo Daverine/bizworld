@@ -536,7 +536,7 @@ async function nextTab() {
     document
       .querySelector('.tab-page.active .error, .tab-page.active .error-text')
       ?.closest('.field')
-      ?.scrollIntoView({ behavior: 'instant', block: 'center' });
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
   const currentIndex = Object.keys(formData).indexOf(currentTab.value);

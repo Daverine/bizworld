@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { url, required, requiredIf } from '@regle/rules';
+import { useSortable } from '@vueuse/integrations/useSortable';
 
 definePageMeta({
   name: 'add-product',
@@ -24,7 +25,12 @@ const newProduct = reactive<{
         label: string;
         price?: number;
         photo?: File;
-        subOptions?: [boolean, number | undefined][];
+        subOptions?: {
+          isActive: boolean;
+          label: string;
+          price?: number;
+          priceChanged?: boolean;
+        }[];
       }[];
     };
     subOptionGroup?: {
@@ -52,7 +58,12 @@ const optionPlaceholder = ref<{
   label: string;
   price?: number;
   photo?: File;
-  subOptions?: [boolean, number | undefined][];
+  subOptions?: {
+    isActive: boolean;
+    label: string;
+    price?: number;
+    priceChanged?: boolean;
+  }[];
 }>({
   label: '',
 });
@@ -261,34 +272,44 @@ const productCategories = {
   ],
 };
 
-watch(
-  () => newProduct.tab2.subOptionGroup?.options,
-  (newVal) => {
-    if (newVal === undefined && newProduct.tab2.optionGroup) {
-      newProduct.tab2.optionGroup.options.forEach((option) => {
-        option.subOptions = undefined;
-      });
-    } else if (newProduct.tab2.optionGroup) {
-      newProduct.tab2.optionGroup.options.forEach((option) => {
-        option.subOptions = newProduct.tab2.subOptionGroup?.options.map(() => [
-          true,
-          undefined,
-        ]);
-      });
-    }
-  },
-  { deep: true }
-);
+watchEffect(() => {
+  if (
+    newProduct.tab2.subOptionGroup?.options === undefined &&
+    newProduct.tab2.optionGroup
+  ) {
+    newProduct.tab2.optionGroup.options.forEach((option) => {
+      option.subOptions = undefined;
+    });
+  } else if (newProduct.tab2.optionGroup) {
+    newProduct.tab2.optionGroup.options.forEach((option) => {
+      option.subOptions = option.subOptions || [];
+      let newMap = newProduct.tab2.subOptionGroup?.options.map((el, index) => ({
+        isActive:
+          option.subOptions![index]?.label === el.label
+            ? option.subOptions![index].isActive
+            : true,
+        label: el.label,
+        price:
+          option.subOptions![index]?.label === el.label &&
+          option.subOptions![index]?.priceChanged
+            ? option.subOptions![index]!.price
+            : el.price,
+        priceChanged: option.subOptions![index]?.priceChanged,
+      }));
+
+      option.subOptions = newMap;
+    });
+  }
+});
 
 function focusNewCategory() {
   nextTick(() => document.getElementById('prod-category-new')?.focus());
 }
 function handleNewPhoto(event: Event) {
   const input = event.target as HTMLInputElement;
-  if (input.files && input.files[0]) {
-    newProduct.tab1.photos.push(input.files[0]);
-    input.value = '';
-  }
+  newProduct.tab1.photos.push(input.files?.[0] as File);
+  input.value = '';
+  nextTick(() => input.scrollIntoView({ behavior: 'smooth', block: 'center' }));
 }
 async function createNewProductOption() {
   if (newProduct.tab2.optionGroup) {
@@ -299,6 +320,9 @@ async function createNewProductOption() {
     await nextTick();
     validation.tab2.r$.subOptionGroup.$reset();
     document.getElementById('sub-option-group-title')?.focus();
+    document
+      .getElementById('sub-option-group-title')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } else {
     newProduct.tab2.optionGroup = {
       title: '',
@@ -307,6 +331,9 @@ async function createNewProductOption() {
     await nextTick();
     validation.tab2.r$.optionGroup.$reset();
     document.getElementById('option-group-title')?.focus();
+    document
+      .getElementById('option-group-title')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
 async function configProductOption({ settings }: DialogEvent) {
@@ -376,6 +403,8 @@ function addSpecification() {
   newProduct.tab3.specifications.push({ name: '', value: '' });
 }
 
+useSortable('#prodPhotos > .scroll-items', newProduct.tab1.photos);
+
 const currentTab = ref('tab1');
 async function nextTab() {
   const key = currentTab.value as keyof typeof validation;
@@ -390,7 +419,7 @@ async function nextTab() {
     document
       .querySelector('.tab-page.active .error, .tab-page.active .error-text')
       ?.closest('.field')
-      ?.scrollIntoView({ behavior: 'instant', block: 'center' });
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
@@ -535,7 +564,11 @@ function prevTab() {
             Photos help customers to see the product. Use clear, well-lit images
             that showcase the product from different angles.
           </div>
-          <LimbIScroller :options="{ autoSetup: true }">
+          <LimbIScroller
+            id="prodPhotos"
+            :options="{ autoSetup: true }"
+            class="[&_.sortable-ghost]:opacity-0"
+          >
             <div
               v-for="(photo, index) in newProduct.tab1.photos"
               class="flex flex-col items-center relative"
@@ -756,7 +789,10 @@ function prevTab() {
           >
             Add a sub option group
           </button>
-          <fieldset v-if="newProduct.tab2.subOptionGroup">
+          <fieldset
+            v-if="newProduct.tab2.subOptionGroup"
+            class="flex flex-col gap-2"
+          >
             <button
               @click="newProduct.tab2.subOptionGroup = undefined"
               v-tooltip:aria.unblocking
@@ -856,7 +892,7 @@ function prevTab() {
                 <Icon name="material-symbols:close-rounded" />
               </button>
             </div>
-            <div class="content">
+            <form class="content">
               <div class="field">
                 <label>Label</label>
                 <input
@@ -926,7 +962,7 @@ function prevTab() {
               <div class="field items-end">
                 <button
                   class="primary button"
-                  @click="processProductOption(control)"
+                  @click.prevent="processProductOption(control)"
                 >
                   {{ optionPlaceholderModifying ? 'Modify' : 'Add' }} option
                 </button>
@@ -934,7 +970,8 @@ function prevTab() {
               <div v-if="optionPlaceholder.subOptions" class="field">
                 <label>Sub-options group</label>
                 <div class="supp-text faint-text">
-                  Toggle the sub-options you want to add to this option.
+                  Toggle the sub-options you want to add to this option. You can
+                  also click on the price to modify it.
                 </div>
                 <div
                   v-if="newProduct.tab2.subOptionGroup"
@@ -944,18 +981,18 @@ function prevTab() {
                     v-for="(option, index) in newProduct.tab2.subOptionGroup
                       .options"
                     class="item"
-                    @click="
-                      optionPlaceholder.subOptions[index]![0] =
-                        !optionPlaceholder.subOptions[index]![0]
-                    "
                   >
                     <div
                       class="icon"
                       :class="{
                         active: Boolean(
-                          optionPlaceholder.subOptions[index]?.[0]
+                          optionPlaceholder.subOptions[index]!.isActive
                         ),
                       }"
+                      @click="
+                        optionPlaceholder.subOptions[index]!.isActive =
+                          !optionPlaceholder.subOptions[index]!.isActive
+                      "
                     >
                       <Icon
                         name="material-symbols:check-box-outline-blank"
@@ -970,14 +1007,24 @@ function prevTab() {
                     />
                     <div class="content">
                       <div class="font-bold">{{ option.label }}</div>
-                      <div v-if="option.price" class="primary-text font-bold">
-                        ₦{{ option.price.toLocaleString() }}
-                      </div>
+                      <label class="primary-text"
+                        >₦
+                        <LimbCurrencyInput
+                          v-model="optionPlaceholder.subOptions[index]!.price"
+                          @input="
+                            optionPlaceholder.subOptions![
+                              index
+                            ]!.priceChanged! =
+                              $event.target.value !== option.price
+                          "
+                          class="form-item text-fit primary-text"
+                          placeholder="Add option price"
+                      /></label>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </LimbModal>
       </div>
