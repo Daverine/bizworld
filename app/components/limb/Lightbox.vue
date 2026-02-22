@@ -28,17 +28,17 @@ type LightboxSettings = {
   hashControl: boolean;
   controller?: (event: {
     target: HTMLElement;
-    settings: DialogerSettings;
+    settings: LightboxSettings;
     caller?: HTMLElement;
   }) => void;
   ready?: (event: {
     target: HTMLElement;
-    settings: DialogerSettings;
+    settings: LightboxSettings;
     caller?: HTMLElement;
   }) => void;
   complete?: (event: {
     target: HTMLElement;
-    settings: DialogerSettings;
+    settings: LightboxSettings;
     caller?: HTMLElement;
   }) => void;
   slidePlayer?: ReturnType<typeof setInterval>;
@@ -68,11 +68,11 @@ type BrainBox = {
   };
   sliderRect?: DOMRect;
   doubleTap: number;
-  doubleTapTimeout?: ReturnType<typeof setTimeout> | undefined;
+  doubleTapTimeout?: ReturnType<typeof setTimeout>;
   moveDir: number;
   maybeCaption: boolean;
   captionTogglePrevented: boolean;
-  readjustTimeout?: ReturnType<typeof setTimeout> | undefined;
+  readjustTimeout?: ReturnType<typeof setTimeout>;
   gestureTime: number;
   touchGT?: number;
   mouseGT?: number;
@@ -1298,52 +1298,52 @@ function stopSlideshow() {
           :options="{ teleportMenu: false, closeOnItemClick: false }"
         >
           <Icon mode="svg" name="material-symbols:more-vert" class="icon" />
-          <div class="drop menu">
-            <div role="menuitem" class="item active gallery-switch dd-close">
-              <Icon mode="svg" name="material-symbols:apps" class="icon" />
-              Show All
-            </div>
-            <div
-              role="menuitem"
-              v-if="settings.slideshow"
-              class="item slideshow dd-close"
-              :class="{ disabled: vbb.slidesNo < 2 }"
-            >
-              <Icon
-                mode="svg"
-                name="material-symbols:play-circle-outline"
-                class="nview icon"
-              />
-              <Icon
-                mode="svg"
-                name="material-symbols:pause-circle-outline"
-                class="aview icon"
-              />
-              Slideshow
-            </div>
-            <div role="menuitem" class="item fullscreen-switch dd-close">
-              <Icon
-                mode="svg"
-                name="material-symbols:fullscreen"
-                class="nview icon"
-              />
-              <Icon
-                mode="svg"
-                name="material-symbols:fullscreen-exit"
-                class="aview icon"
-              />
-              Toggle Fullscreen
-            </div>
-            <div role="menuitem" class="item zoom-in" title="Zoom in">
-              <Icon mode="svg" name="material-symbols:zoom-in" class="icon" />
-              Zoom-In
-            </div>
-            <div role="menuitem" class="disabled item zoom-out" title="Zoom out">
-              <Icon mode="svg" name="material-symbols:zoom-out" class="icon" />
-              Zoom-Out
-            </div>
-          </div>
         </LimbDropdown>
+        <div class="drop menu">
+          <div role="menuitem" class="item active gallery-switch dd-close">
+            <Icon mode="svg" name="material-symbols:apps" class="icon" />
+            Show All
+          </div>
+          <div
+            role="menuitem"
+            v-if="settings.slideshow"
+            class="item slideshow dd-close"
+            :class="{ disabled: vbb.slidesNo < 2 }"
+          >
+            <Icon
+              mode="svg"
+              name="material-symbols:play-circle-outline"
+              class="nview icon"
+            />
+            <Icon
+              mode="svg"
+              name="material-symbols:pause-circle-outline"
+              class="aview icon"
+            />
+            Slideshow
+          </div>
+          <div role="menuitem" class="item fullscreen-switch dd-close">
+            <Icon
+              mode="svg"
+              name="material-symbols:fullscreen"
+              class="nview icon"
+            />
+            <Icon
+              mode="svg"
+              name="material-symbols:fullscreen-exit"
+              class="aview icon"
+            />
+            Toggle Fullscreen
+          </div>
+          <div role="menuitem" class="item zoom-in" title="Zoom in">
+            <Icon mode="svg" name="material-symbols:zoom-in" class="icon" />
+            Zoom-In
+          </div>
+          <div role="menuitem" class="disabled item zoom-out" title="Zoom out">
+            <Icon mode="svg" name="material-symbols:zoom-out" class="icon" />
+            Zoom-Out
+          </div>
+        </div>
         <button
           class="item as-icon pic-only"
           v-tooltip:aria.unblocking

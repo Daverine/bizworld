@@ -1,4 +1,6 @@
 <script setup>
+import AuthModals from './components/AuthModals.vue';
+
 const mainStore = useMainStore();
 
 function handleScroll() {
@@ -15,6 +17,7 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll));
 <template>
   <Title>BizWorld | The Web World of Business</Title>
   <Menus />
+  <AuthModals />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>

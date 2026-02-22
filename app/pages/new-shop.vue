@@ -567,7 +567,7 @@ function prevTab() {
 </script>
 <template>
   <div class="container-md pt-8">
-    <div class="container-sm no-edge min-h-[80vh]">
+    <div class="container-sm no-edge">
       <div
         class="tab-page"
         v-for="id in ['tab1']"
@@ -609,18 +609,14 @@ function prevTab() {
               </div>
             </div>
           </LimbDropdown>
-          <ul
+          <div
             class="supp-text error-text"
-            v-if="validation.tab1.r$.category.$error"
+            v-for="error of validation.tab1.r$.category.$errors"
+            :key="error"
           >
-            <li
-              v-for="error of validation.tab1.r$.category.$errors"
-              :key="error"
-            >
-              <Icon name="material-symbols:close-rounded" />
-              {{ error }}
-            </li>
-          </ul>
+            <Icon name="material-symbols:close-rounded" />
+            {{ error }}
+          </div>
         </div>
         <div v-if="formData.tab1.category === 'others'" class="field">
           <label for="biz-category-new">New category name</label>
@@ -637,18 +633,14 @@ function prevTab() {
             placeholder="Category name"
             required
           />
-          <ul
+          <div
             class="supp-text error-text"
-            v-if="validation.tab1.r$.newCategory.$error"
+            v-for="error of validation.tab1.r$.newCategory.$errors"
+            :key="error"
           >
-            <li
-              v-for="error of validation.tab1.r$.newCategory.$errors"
-              :key="error"
-            >
-              <Icon name="material-symbols:close-rounded" />
-              {{ error }}
-            </li>
-          </ul>
+            <Icon name="material-symbols:close-rounded" />
+            {{ error }}
+          </div>
         </div>
         <div class="field">
           <label for="biz-name">Business name</label>
@@ -660,18 +652,14 @@ function prevTab() {
             :class="{ error: validation.tab1.r$.bizName.$error }"
             class="form-item"
           />
-          <ul
+          <div
             class="supp-text error-text"
-            v-if="validation.tab1.r$.bizName.$error"
+            v-for="error of validation.tab1.r$.bizName.$errors"
+            :key="error"
           >
-            <li
-              v-for="error of validation.tab1.r$.bizName.$errors"
-              :key="error"
-            >
-              <Icon name="material-symbols:close-rounded" />
-              {{ error }}
-            </li>
-          </ul>
+            <Icon name="material-symbols:close-rounded" />
+            {{ error }}
+          </div>
         </div>
       </div>
       <div
@@ -710,18 +698,14 @@ function prevTab() {
               />
               No
             </label>
-            <ul
+            <div
               class="supp-text error-text"
-              v-if="validation.tab2.r$.physicalLocation.$error"
+              v-for="error of validation.tab2.r$.physicalLocation.$errors"
+              :key="error"
             >
-              <li
-                v-for="error of validation.tab2.r$.physicalLocation.$errors"
-                :key="error"
-              >
-                <Icon name="material-symbols:close-rounded" />
-                {{ error }}
-              </li>
-            </ul>
+              <Icon name="material-symbols:close-rounded" />
+              {{ error }}
+            </div>
           </fieldset>
         </div>
         <fieldset v-if="formData.tab2.physicalLocation === 'yes'">
@@ -737,18 +721,14 @@ function prevTab() {
                 <div class="item">Nigeria</div>
               </div>
             </LimbDropdown>
-            <ul
+            <div
               class="supp-text error-text"
-              v-if="validation.tab2.r$.country.$error"
+              v-for="error of validation.tab2.r$.country.$errors"
+              :key="error"
             >
-              <li
-                v-for="error of validation.tab2.r$.country.$errors"
-                :key="error"
-              >
-                <Icon name="material-symbols:close-rounded" />
-                {{ error }}
-              </li>
-            </ul>
+              <Icon name="material-symbols:close-rounded" />
+              {{ error }}
+            </div>
           </div>
           <div class="field">
             <label>State</label>
@@ -764,18 +744,14 @@ function prevTab() {
                 <div class="item">Osun</div>
               </div>
             </LimbDropdown>
-            <ul
+            <div
               class="supp-text error-text"
-              v-if="validation.tab2.r$.state.$error"
+              v-for="error of validation.tab2.r$.state.$errors"
+              :key="error"
             >
-              <li
-                v-for="error of validation.tab2.r$.state.$errors"
-                :key="error"
-              >
-                <Icon name="material-symbols:close-rounded" />
-                {{ error }}
-              </li>
-            </ul>
+              <Icon name="material-symbols:close-rounded" />
+              {{ error }}
+            </div>
           </div>
           <div class="field">
             <label>Local Government Area</label>
@@ -786,15 +762,14 @@ function prevTab() {
               class="form-item"
               :class="{ error: validation.tab2.r$.lga.$error }"
             />
-            <ul
+            <div
               class="supp-text error-text"
-              v-if="validation.tab2.r$.lga.$error"
+              v-for="error of validation.tab2.r$.lga.$errors"
+              :key="error"
             >
-              <li v-for="error of validation.tab2.r$.lga.$errors" :key="error">
-                <Icon name="material-symbols:close-rounded" />
-                {{ error }}
-              </li>
-            </ul>
+              <Icon name="material-symbols:close-rounded" />
+              {{ error }}
+            </div>
           </div>
           <div class="field">
             <label>Town/City</label>
@@ -805,15 +780,14 @@ function prevTab() {
               class="form-item"
               :class="{ error: validation.tab2.r$.town.$error }"
             />
-            <ul
+            <div
               class="supp-text error-text"
-              v-if="validation.tab2.r$.town.$error"
+              v-for="error of validation.tab2.r$.town.$errors"
+              :key="error"
             >
-              <li v-for="error of validation.tab2.r$.town.$errors" :key="error">
-                <Icon name="material-symbols:close-rounded" />
-                {{ error }}
-              </li>
-            </ul>
+              <Icon name="material-symbols:close-rounded" />
+              {{ error }}
+            </div>
           </div>
           <div class="field">
             <label>Street address</label>
@@ -824,17 +798,13 @@ function prevTab() {
               class="form-item"
               :class="{ error: validation.tab2.r$.street.$error }"
             />
-            <ul
+            <div
               class="supp-text error-text"
-              v-if="validation.tab2.r$.street.$error"
+              v-for="error of validation.tab2.r$.street.$errors"
+              :key="error"
             >
-              <li
-                v-for="error of validation.tab2.r$.street.$errors"
-                :key="error"
-              >
-                {{ error }}
-              </li>
-            </ul>
+              {{ error }}
+            </div>
           </div>
         </fieldset>
       </div>
@@ -871,12 +841,14 @@ function prevTab() {
             class="form-item"
             :class="{ error: validation.tab3.r$.map.$error }"
           />
-          <ul class="supp-text error-text" v-if="validation.tab3.r$.map.$error">
-            <li v-for="error of validation.tab3.r$.map.$errors" :key="error">
-              <Icon name="material-symbols:close-rounded" />
-              {{ error }}
-            </li>
-          </ul>
+          <div
+            class="supp-text error-text"
+            v-for="error of validation.tab3.r$.map.$errors"
+            :key="error"
+          >
+            <Icon name="material-symbols:close-rounded" />
+            {{ error }}
+          </div>
         </div>
       </div>
       <div
@@ -901,12 +873,14 @@ function prevTab() {
             class="form-item"
             :class="{ error: validation.tab4.r$.tel.$error }"
           />
-          <ul class="supp-text error-text" v-if="validation.tab4.r$.tel.$error">
-            <li v-for="error of validation.tab4.r$.tel.$errors" :key="error">
-              <Icon name="material-symbols:close-rounded" />
-              {{ error }}
-            </li>
-          </ul>
+          <div
+            class="supp-text error-text"
+            v-for="error of validation.tab4.r$.tel.$errors"
+            :key="error"
+          >
+            <Icon name="material-symbols:close-rounded" />
+            {{ error }}
+          </div>
         </div>
         <div class="field">
           <label>Email</label>
@@ -917,15 +891,14 @@ function prevTab() {
             class="form-item"
             :class="{ error: validation.tab4.r$.email.$error }"
           />
-          <ul
+          <div
             class="supp-text error-text"
-            v-if="validation.tab4.r$.email.$error"
+            v-for="error of validation.tab4.r$.email.$errors"
+            :key="error"
           >
-            <li v-for="error of validation.tab4.r$.email.$errors" :key="error">
-              <Icon name="material-symbols:close-rounded" />
-              {{ error }}
-            </li>
-          </ul>
+            <Icon name="material-symbols:close-rounded" />
+            {{ error }}
+          </div>
         </div>
       </div>
       <div
@@ -962,12 +935,14 @@ function prevTab() {
                 type="time"
                 class="compact form-item"
               />
-              <ul class="supp-text error-text" v-if="item.hours.opening.$error">
-                <li v-for="error of item.hours.opening.$errors" :key="error">
-                  <Icon name="material-symbols:close-rounded" />
-                  {{ error }}
-                </li>
-              </ul>
+              <div
+                class="supp-text error-text"
+                v-for="error of item.hours.opening.$errors"
+                :key="error"
+              >
+                <Icon name="material-symbols:close-rounded" />
+                {{ error }}
+              </div>
             </div>
             <Icon name="material-symbols:arrow-range-rounded" />
             <div>
@@ -976,12 +951,14 @@ function prevTab() {
                 type="time"
                 class="compact form-item"
               />
-              <ul class="supp-text error-text" v-if="item.hours.closing.$error">
-                <li v-for="error of item.hours.closing.$errors" :key="error">
-                  <Icon name="material-symbols:close-rounded" />
-                  {{ error }}
-                </li>
-              </ul>
+              <div
+                class="supp-text error-text"
+                v-for="error of item.hours.closing.$errors"
+                :key="error"
+              >
+                <Icon name="material-symbols:close-rounded" />
+                {{ error }}
+              </div>
             </div>
           </div>
         </div>
@@ -1003,14 +980,13 @@ function prevTab() {
             class="form-item"
             placeholder="What does your business do?"
           ></textarea>
-          <ul
+          <div
             class="supp-text error-text"
-            v-if="validation.tab6.r$.desc.$error"
+            v-for="error of validation.tab6.r$.desc.$errors"
+            :key="error"
           >
-            <li v-for="error of validation.tab6.r$.desc.$errors" :key="error">
-              {{ error }}
-            </li>
-          </ul>
+            {{ error }}
+          </div>
         </div>
         <div class="field">
           <label>Business logo</label>
@@ -1046,7 +1022,7 @@ function prevTab() {
       </div>
     </div>
     <footer
-      class="sticky surface-bg p-4 pin-bottom-blend z-level-1"
+      class="sticky surface-bg p-4 pin-bottom-blend z-level-1 mt-12 bottom-0"
       style="bottom: 0px; margin-top: 0.5rem"
     >
       <div v-if="currentTab === 'tab1'" class="flex flex-col">

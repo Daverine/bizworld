@@ -23,50 +23,53 @@ definePageMeta({ layout: 'details', auth: true, noFab: true });
               class="trailing"
             />
           </template>
-          <div class="drop menu">
-            <div class="active item">
-              <div
-                class="lead avatar rounded-full mini"
-                style="flex: 0 0 auto; background-color: #999"
-              ></div>
-              <div style="flex: 1 1 auto">
-                <div class="text text-left">
-                  <div
-                    class="font-semibold"
-                    style="font-size: 1.125em; line-height: 1.25"
-                  >
-                    Ayoola Folorunso
-                  </div>
-                  <div class="small faint-text">Personal Account</div>
+        </LimbDropdown>
+        <div class="drop menu">
+          <div class="active item">
+            <div
+              class="lead avatar rounded-full mini"
+              style="flex: 0 0 auto; background-color: #999"
+            ></div>
+            <div style="flex: 1 1 auto">
+              <div class="text text-left">
+                <div
+                  class="font-semibold"
+                  style="font-size: 1.125em; line-height: 1.25"
+                >
+                  Ayoola Folorunso
                 </div>
-              </div>
-            </div>
-            <div class="item">
-              <div
-                class="lead avatar rounded-full mini"
-                style="flex: 0 0 auto; background-color: #999"
-              ></div>
-              <div style="flex: 1 1 auto">
-                <div class="text text-left">
-                  <div
-                    class="font-semibold"
-                    style="font-size: 1.125em; line-height: 1.25"
-                  >
-                    Emmadave Computers
-                  </div>
-                  <div class="small faint-text">Business Account</div>
-                </div>
+                <div class="small faint-text">Personal Account</div>
               </div>
             </div>
           </div>
-        </LimbDropdown>
-        <label class="transparent input" style="background-color: var(--surface-v4);">
+          <div class="item">
+            <div
+              class="lead avatar rounded-full mini"
+              style="flex: 0 0 auto; background-color: #999"
+            ></div>
+            <div style="flex: 1 1 auto">
+              <div class="text text-left">
+                <div
+                  class="font-semibold"
+                  style="font-size: 1.125em; line-height: 1.25"
+                >
+                  Emmadave Computers
+                </div>
+                <div class="small faint-text">Business Account</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <label
+          class="transparent input"
+          style="background-color: var(--surface-v4)"
+        >
           <Icon name="material-symbols:search-rounded" />
           <input type="text" class="subject" placeholder="Search" />
         </label>
       </header>
       <div style="flex: 1 1 auto"></div>
-      <footer class="pin-bottom-blend" style="padding: 0.5em;">
+      <footer class="pin-bottom-blend" style="padding: 0.5em">
         <button class="button primary w-full">
           <Icon
             name="material-symbols:chat-add-on-outline-rounded"

@@ -1,6 +1,5 @@
 <script setup>
 const searchStore = useSearchStore();
-const userStore = useUserStore();
 
 function popupSubmitSearch(e) {
   e.currentTarget
@@ -28,6 +27,7 @@ function popupSubmitSearch(e) {
             <input
               v-model="searchStore.searchBox"
               type="search"
+              name="searchbox"
               autocomplete="off"
               placeholder="Your search here."
               class="subject"
@@ -75,16 +75,16 @@ function popupSubmitSearch(e) {
                   v-model="searchStore.searchIn"
                   class="select w-full"
                 >
-                  <div class="drop menu">
-                    <div
-                      v-for="category in searchStore.categories"
-                      :data-value="category"
-                      class="item"
-                    >
-                      {{ category.charAt(0).toUpperCase() + category.slice(1) }}
-                    </div>
-                  </div>
                 </LimbDropdown>
+                <div class="drop menu">
+                  <div
+                    v-for="category in searchStore.categories"
+                    :data-value="category"
+                    class="item"
+                  >
+                    {{ category.charAt(0).toUpperCase() + category.slice(1) }}
+                  </div>
+                </div>
               </td>
             </tr>
             <tr>
@@ -94,10 +94,10 @@ function popupSubmitSearch(e) {
                   v-model="searchStore.location"
                   class="select w-full"
                 >
-                  <div class="drop menu">
-                    <div data-value="nigeria" class="item">Nigeria</div>
-                  </div>
                 </LimbDropdown>
+                <div class="drop menu">
+                  <div data-value="nigeria" class="item">Nigeria</div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -205,43 +205,43 @@ function popupSubmitSearch(e) {
                 class="trailing"
               />
             </template>
-            <div class="drop menu">
-              <div class="active item">
-                <div
-                  class="lead avatar rounded-full mini"
-                  style="flex: 0 0 auto; background-color: #999"
-                ></div>
-                <div style="flex: 1 1 auto">
-                  <div class="text text-left">
-                    <div
-                      class="font-semibold"
-                      style="font-size: 1.125em; line-height: 1.25"
-                    >
-                      Ayoola Folorunso
-                    </div>
-                    <div class="small faint-text">Personal Account</div>
+          </LimbDropdown>
+          <div class="drop menu">
+            <div class="active item">
+              <div
+                class="lead avatar rounded-full mini"
+                style="flex: 0 0 auto; background-color: #999"
+              ></div>
+              <div style="flex: 1 1 auto">
+                <div class="text text-left">
+                  <div
+                    class="font-semibold"
+                    style="font-size: 1.125em; line-height: 1.25"
+                  >
+                    Ayoola Folorunso
                   </div>
-                </div>
-              </div>
-              <div class="item">
-                <div
-                  class="lead avatar rounded-full mini"
-                  style="flex: 0 0 auto; background-color: #999"
-                ></div>
-                <div style="flex: 1 1 auto">
-                  <div class="text text-left">
-                    <div
-                      class="font-semibold"
-                      style="font-size: 1.125em; line-height: 1.25"
-                    >
-                      Emmadave Computers
-                    </div>
-                    <div class="small faint-text">Business Account</div>
-                  </div>
+                  <div class="small faint-text">Personal Account</div>
                 </div>
               </div>
             </div>
-          </LimbDropdown>
+            <div class="item">
+              <div
+                class="lead avatar rounded-full mini"
+                style="flex: 0 0 auto; background-color: #999"
+              ></div>
+              <div style="flex: 1 1 auto">
+                <div class="text text-left">
+                  <div
+                    class="font-semibold"
+                    style="font-size: 1.125em; line-height: 1.25"
+                  >
+                    Emmadave Computers
+                  </div>
+                  <div class="small faint-text">Business Account</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <form @submit.prevent="">
           <div class="field">
@@ -271,113 +271,6 @@ function popupSubmitSearch(e) {
           <div class="field">
             <button class="primary button">Post</button>
           </div>
-        </form>
-      </div>
-    </div>
-  </LimbModal>
-  <LimbModal id="register-modal">
-    <div class="dialog">
-      <div class="header flex gap-3">
-        <div class="font-bold truncate">Join BizWorld</div>
-        <button
-          class="circular flat button as-text exit-modal"
-          style="margin-left: auto"
-        >
-          <Icon name="material-symbols:close-rounded" />
-        </button>
-      </div>
-      <div class="content">
-        <div class="field">
-          <button class="button">
-            <Icon name="material-symbols:login" />
-            Continue with Google
-          </button>
-        </div>
-        <form @submit.prevent="userStore.signup()">
-          <div class="field m-0">
-            <label>Names</label>
-            <div class="2-fields">
-              <div class="field">
-                <input class="form-item" type="text" placeholder="First name" />
-              </div>
-              <div class="field">
-                <input class="form-item" type="text" placeholder="Last name" />
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Email</label>
-            <input class="form-item" type="text" placeholder="Email address" />
-          </div>
-          <div class="field">
-            <label>Password</label>
-            <input class="form-item" type="text" placeholder="Password" />
-          </div>
-          <div class="field">
-            <label>Country</label>
-            <input class="form-item" type="text" placeholder="Select country" />
-          </div>
-          <p>
-            By signing up, you agree to our <a href="#">terms of use</a> &
-            <a href="#">privacy policy</a>
-          </p>
-          <div class="field">
-            <button class="primary button exit-modal">Create Account</button>
-          </div>
-          <hr />
-          <p>
-            Already have an account?
-            <a
-              role="button"
-              class="exit-modal open-modal"
-              data-target="login-modal"
-              >Login</a
-            >
-          </p>
-        </form>
-      </div>
-    </div>
-  </LimbModal>
-  <LimbModal id="login-modal">
-    <div class="dialog">
-      <div class="header flex gap-3">
-        <div class="font-bold truncate">Login to BizWorld</div>
-        <button
-          class="circular flat button as-text exit-modal"
-          style="margin-left: auto"
-        >
-          <Icon name="material-symbols:close-rounded" />
-        </button>
-      </div>
-      <div class="content">
-        <div class="field">
-          <button class="button">
-            <Icon name="material-symbols:login" />
-            Continue with Google
-          </button>
-        </div>
-        <form @submit.prevent="userStore.login()">
-          <div class="field">
-            <label>Email</label>
-            <input class="form-item" type="text" placeholder="Email address" />
-          </div>
-          <div class="field">
-            <label>Password</label>
-            <input class="form-item" type="text" placeholder="Password" />
-          </div>
-          <div class="field">
-            <button class="primary button exit-modal">Continue</button>
-          </div>
-          <hr />
-          <p>
-            New to BizWorld?
-            <a
-              role="button"
-              class="exit-modal open-modal"
-              data-target="register-modal"
-              >Sign up</a
-            >
-          </p>
         </form>
       </div>
     </div>

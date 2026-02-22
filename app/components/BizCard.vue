@@ -76,16 +76,16 @@ export default {
         class="compact button ex-open-modal"
       >
         <SvgIcon name="more_horiz" class="lead" /> More
-        <div class="drop menu">
-          <div class="item">
-            <SvgIcon name="unfollow" class="lead" /> Unfollow
-          </div>
-          <div class="item"><SvgIcon name="share" class="lead" /> Share</div>
-          <div class="item">
-            <SvgIcon name="report" class="lead" /> Report page
-          </div>
-        </div>
       </LimbDropdown>
+      <div class="drop menu">
+        <div class="item">
+          <SvgIcon name="unfollow" class="lead" /> Unfollow
+        </div>
+        <div class="item"><SvgIcon name="share" class="lead" /> Share</div>
+        <div class="item">
+          <SvgIcon name="report" class="lead" /> Report page
+        </div>
+      </div>
     </div>
   </div>
 </template>

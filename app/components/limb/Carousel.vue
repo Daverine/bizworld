@@ -32,15 +32,15 @@ interface Tmp {
   currSlideNo: number;
   continuous: boolean | string;
   uniqueId: string;
-  resizeTimeout?: number;
+  resizeTimeout?: ReturnType<typeof setTimeout>;
   breakpoint?: any;
   slideSize: number;
   minExt: number;
   maxExt: number;
   gestureTarget?: EventTarget | null;
   gT: number;
-  updateSet?: number;
-  autoslider?: number;
+  updateSet?: ReturnType<typeof setTimeout>;
+  autoslider?: ReturnType<typeof setInterval>;
   spaceBetween: string;
   slidesPerView: number;
 }
@@ -148,7 +148,7 @@ onBeforeUnmount(() => {
 
 function sizeResponse() {
   clearTimeout(tmp.resizeTimeout);
-  tmp.resizeTimeout = window.setTimeout(() => {
+  tmp.resizeTimeout = setTimeout(() => {
     changeInSlides.disconnect();
     stopAutoslider();
     let mediaWidth = window.innerWidth;
@@ -275,7 +275,7 @@ function update(newSlideNo: number = tmp.currSlideNo || 1) {
     Math.max(tmp.minExt - (newSlideNo - 1) * tmp.slideSize, tmp.maxExt)
   );
   if (slider) slider.style.transform = `translateX(${tmp.newCoord}px)`;
-  tmp.updateSet = window.setTimeout(() => {
+  tmp.updateSet = setTimeout(() => {
     [...(slider?.querySelectorAll(`:scope > .cs-slide`) || [])].forEach((el) =>
       el.classList.remove('active')
     );
@@ -496,7 +496,7 @@ function trackControl(e: MouseEvent) {
 function startAutoslider() {
   if (slider?.classList.contains('swiping')) return;
   stopAutoslider();
-  tmp.autoslider = window.setInterval(() => {
+  tmp.autoslider = setInterval(() => {
     let newSlideNo =
       tmp.currSlideNo +
       (settings.sliderMove === 'page' ? tmp.slidesPerView : 1);

@@ -77,7 +77,7 @@ export const useAvailability = (weeklySchedule: weeklySchedule) => {
     ][index];
   }
 
-  return ref({
+  return {
     now,
     openTime,
     closeTime,
@@ -86,5 +86,5 @@ export const useAvailability = (weeklySchedule: weeklySchedule) => {
     closesSoon,
     nextOpenDay,
     whatDay,
-  });
+  };
 };

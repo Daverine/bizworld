@@ -69,9 +69,7 @@ const isReady = computed(() => data.details && avail.value);
           <h5 class="m-0">{{ data.details.bizName }}</h5>
           <div class="faint-text">{{ data.details.mainCategory }}</div>
         </div>
-        <button
-          class="flex-none flat button ml-auto max-md:hidden"
-        >
+        <button class="flex-none flat button ml-auto max-md:hidden">
           <Icon
             name="material-symbols:add-to-queue-outline-rounded"
             class="lead"
@@ -144,21 +142,21 @@ const isReady = computed(() => data.details && avail.value);
                 class="transparent button"
               >
                 <SvgIcon name="more_horiz" />
-                <div class="drop menu">
-                  <div class="item">
-                    <SvgIcon name="follow" class="lead" /> Follow page
-                  </div>
-                  <div class="item">
-                    <SvgIcon name="bookmark_add" class="lead" /> Save card
-                  </div>
-                  <div class="item">
-                    <SvgIcon name="share" class="lead" /> Share
-                  </div>
-                  <div class="item">
-                    <SvgIcon name="report" class="lead" /> Report page
-                  </div>
-                </div>
               </LimbDropdown>
+              <div class="drop menu">
+                <div class="item">
+                  <SvgIcon name="follow" class="lead" /> Follow page
+                </div>
+                <div class="item">
+                  <SvgIcon name="bookmark_add" class="lead" /> Save card
+                </div>
+                <div class="item">
+                  <SvgIcon name="share" class="lead" /> Share
+                </div>
+                <div class="item">
+                  <SvgIcon name="report" class="lead" /> Report page
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -1,8 +1,9 @@
 <script setup>
 import Common from '~/layouts/Common.vue';
-definePageMeta({ auth: true });
+definePageMeta({ name: 'home', auth: true });
 const userStore = useUserStore();
 const feedStore = useFeedStore();
+const { data: session } = await useAuth().useSession(useFetch);
 
 onMounted(() => feedStore.getUpdate());
 </script>
@@ -41,21 +42,25 @@ onMounted(() => feedStore.getUpdate());
                 name="material-symbols:expand-more-rounded"
                 class="trailing"
               />
-              <div class="drop menu">
-                <Shareables name="supports" />
-              </div>
             </LimbDropdown>
+            <div class="drop menu">
+              <Shareables name="supports" />
+            </div>
           </div>
           <Shareables name="do_more_item" />
-          <div
-            class="as-icon item"
+          <LimbDropdown
+            :options="{ directionPriority: { x: 'center' } }"
+            class="as-icon item ac-viewbox-ref"
             v-tooltip:aria.unblocking
             aria-label="Notifications"
           >
-            <Icon name="material-symbols:notifications-outline-rounded" />
-          </div>
+            <i class="icon ac-viewbox">
+              <Icon name="material-symbols:notifications-outline-rounded" />
+              <Icon name="material-symbols:notifications-rounded" />
+            </i>
+          </LimbDropdown>
+          <Shareables name="notifications_menu" />
           <LimbDropdown
-            data-browse-dm="dm1_profile"
             :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
             v-tooltip:aria.unblocking
             aria-label="Your profile"
@@ -68,7 +73,7 @@ onMounted(() => feedStore.getUpdate());
               class="rounded-full logo"
             />
           </LimbDropdown>
-          <Shareables id="dm1_profile" name="profile_menu" />
+          <Shareables name="profile_menu" />
         </div>
       </div>
     </div>

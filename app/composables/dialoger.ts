@@ -3,14 +3,14 @@
 import type { ShallowRef, WatchStopHandle } from 'vue';
 
 export type DialogEvent = {
-  target: HTMLElement;
+  target: HTMLElement | null;
   settings: DialogerSettings;
 };
 export type Dialoger = {
   target: HTMLElement;
   settings: DialogerSettings;
   exit: () => void;
-}
+};
 export type DialogerSettings = {
   namespace?: string;
   toggler?: string;
@@ -27,7 +27,7 @@ export type DialogerSettings = {
   inDuration?: number;
   outDuration?: number;
   hashControl?: boolean;
-  controller?: (event: DialogEvent) => void;
+  controller?: (event: DialogEvent) => unknown;
   ready?: (event: DialogEvent) => void;
   complete?: (event: DialogEvent) => void;
   caller?: HTMLElement;
@@ -36,7 +36,7 @@ export type DialogerSettings = {
 export function useDialoger(
   dialoger: ShallowRef<HTMLDivElement | null>,
   id: string,
-  options?: DialogerSettings
+  options?: DialogerSettings,
 ): Dialoger {
   const router = useRouter();
   const route = useRoute();
@@ -100,7 +100,9 @@ export function useDialoger(
 
   function toOpenDialog(e: MouseEvent) {
     let target = e.target as HTMLElement;
-    let toggler = target.closest(`${settings.toggler}[data-target="${id}"]`);
+    let toggler =
+      target.closest(`${settings.toggler}[href="#${id}"]`) ||
+      target.closest(`${settings.toggler}[data-target="${id}"]`);
     if (!toggler || target.closest(settings.toExcuseToggler!)) return;
     settings.caller = toggler as HTMLElement;
     showDialog.value = !showDialog.value;
@@ -127,7 +129,7 @@ export function useDialoger(
             showDialog.value = true;
           }
         },
-        { immediate: true }
+        { immediate: true },
       );
     }
   });
@@ -151,7 +153,7 @@ export function useDialoger(
             if (newHash !== `#${id}`) {
               showDialog.value = false;
             }
-          }
+          },
         );
       }
 
@@ -160,7 +162,7 @@ export function useDialoger(
       // If a controller function is provided in the settings, call it with the lightbox element and settings.
       // The controller function can be used to perform additional setup or customization of the lightbox.
       if (typeof settings.controller === 'function')
-        settings.controller({
+        await settings.controller({
           target: dialoger.value!,
           settings,
         });
@@ -175,16 +177,20 @@ export function useDialoger(
       setTimeout(() => {
         if (typeof settings.ready === 'function')
           settings.ready({
-            target: dialoger.value!,
+            target: dialoger.value,
             settings,
           });
-        dialoger.value!.scrollTop = 0;
+        if (dialoger.value) {
+          dialoger.value.scrollTop = 0;
 
-        let autoFocusEl = [
-          ...dialoger.value!.querySelectorAll(`:scope ${settings.autoFocusEl}`),
-        ][0] as HTMLElement;
-        if (autoFocusEl) autoFocusEl.focus();
-        else utils.focusRangeOnTab(dialoger.value!);
+          let autoFocusEl = [
+            ...dialoger.value.querySelectorAll(
+              `:scope ${settings.autoFocusEl}`,
+            ),
+          ][0] as HTMLElement;
+          if (autoFocusEl) autoFocusEl.focus();
+          else utils.focusRangeOnTab(dialoger.value!);
+        }
       }, settings.inDuration);
     } else {
       document.removeEventListener('keydown', KBDControls);
@@ -195,7 +201,7 @@ export function useDialoger(
         document.removeEventListener('keyup', exitByEscKeyPress);
       }
 
-      dialoger.value!.classList.remove('active');
+      dialoger.value?.classList.remove('active');
       if (settings.hashControl) {
         unwatch.closeOnRouteChange!();
         window.removeEventListener('popstate', backToExit);
@@ -204,13 +210,13 @@ export function useDialoger(
         utils.afterNextRepaint(() => window.scrollTo(bb.scrollPosBeforeLock));
       }
       setTimeout(() => {
-        dialoger.value!.style.visibility = 'hidden';
+        dialoger.value?.style.setProperty('visibility', 'hidden');
         if (typeof settings.complete === 'function')
           settings.complete({
-            target: dialoger.value!,
+            target: dialoger.value,
             settings,
           });
-        if (settings.caller) settings.caller.focus();
+        settings.caller?.focus();
         settings.caller = undefined;
         utils.unlockWindowScroll(bb.uniqueId!);
       }, settings.outDuration);

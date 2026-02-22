@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const userStore = useUserStore();
+const { data: session } = await useAuth().useSession(useFetch);
 </script>
 
 <template>
@@ -28,17 +29,17 @@ const userStore = useUserStore();
               name="material-symbols:expand-more-rounded"
               class="trailing"
             />
-            <div class="drop menu">
-              <Shareables name="supports" />
-            </div>
           </LimbDropdown>
+          <div class="drop menu">
+            <Shareables name="supports" />
+          </div>
         </div>
         <div class="items r-aligned">
           <div class="item open-modal" data-target="explore-modal">
             <Icon name="material-symbols:manage-search-rounded" class="lead" />
             Explore
           </div>
-          <template v-if="userStore.auth">
+          <template v-if="session">
             <div
               class="as-icon item"
               v-tooltip:aria.unblocking
@@ -58,8 +59,8 @@ const userStore = useUserStore();
                 alt="profile"
                 class="rounded-full logo"
               />
-              <Shareables name="profile_menu" />
             </LimbDropdown>
+            <Shareables name="profile_menu" />
           </template>
           <template v-else>
             <LimbDropdown class="as-icon item sm:hidden">
@@ -68,15 +69,15 @@ const userStore = useUserStore();
                 class="lead"
               />
               Account
-              <div class="drop menu">
-                <div class="item open-modal" data-target="login-modal">
-                  Log in
-                </div>
-                <div class="item open-modal" data-target="register-modal">
-                  Sign Up
-                </div>
-              </div>
             </LimbDropdown>
+            <div class="drop menu">
+              <div class="item open-modal" data-target="login-modal">
+                Log in
+              </div>
+              <div class="item open-modal" data-target="register-modal">
+                Sign Up
+              </div>
+            </div>
             <div class="items max-sm:hidden">
               <div class="item open-modal" data-target="login-modal">
                 Log in
@@ -139,7 +140,7 @@ const userStore = useUserStore();
           You can get updates from stores, offices, and businesses in general.
           You can rate and write reviews on their offered products and services.
         </p>
-        <div v-if="!userStore.auth" class="text-center">
+        <div v-if="!session" class="text-center">
           <button
             class="primary button open-modal"
             data-target="register-modal"

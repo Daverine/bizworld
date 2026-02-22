@@ -99,14 +99,9 @@ export const utils = {
       }
     }
   },
-  getUniqueId(nameSpace: string): string {
+  getUniqueId(nameSpace: string = 'unique-id'): string {
     if (typeof window.lui_uuid !== 'number') window.lui_uuid = 0;
     window.lui_uuid++;
-    nameSpace =
-      nameSpace != undefined && typeof nameSpace === 'string'
-        ? nameSpace
-        : 'unique-id';
-
     return nameSpace + window.lui_uuid;
   },
   getCssVal(el: Element, prop: string): string {
@@ -276,5 +271,8 @@ export const utils = {
     a.length === b.length && a.every((element, index) => element === b[index]),
   durationInMilliseconds: (duration: string): number =>
     parseFloat(duration) * (duration.includes('ms') ? 1 : 1000),
+  delay: (ms: number) => new Promise((resolve) => setTimeout(resolve, ms)),
   fileToURL: (file: File) => URL.createObjectURL(file),
+  window: () => window,
+  document: () => document,
 };

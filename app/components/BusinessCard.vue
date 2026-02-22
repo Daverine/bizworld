@@ -165,18 +165,18 @@ function clickAction(e: Event) {
         <Icon name="material-symbols:globe" class="lead" />
         Visit page
       </NuxtLink>
-      <LimbDropdown class="flat circular button">
+      <LimbDropdown class="flat icon button">
         <Icon name="material-symbols:more-vert" />
-        <div class="drop menu">
-          <button class="item">
-            <Icon
-              name="material-symbols:add-to-queue-outline-rounded"
-              class="lead"
-            />
-            Follow
-          </button>
-        </div>
       </LimbDropdown>
+      <div class="drop menu">
+        <button class="item">
+          <Icon
+            name="material-symbols:add-to-queue-outline-rounded"
+            class="lead"
+          />
+          Follow
+        </button>
+      </div>
     </footer>
   </article>
 </template>

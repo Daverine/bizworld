@@ -458,7 +458,10 @@ onMounted(() => {
               <thead>
                 <tr>
                   <th>Packages</th>
-                  <th v-for="option in details.serviceOptions" class="text-center">
+                  <th
+                    v-for="option in details.serviceOptions"
+                    class="text-center"
+                  >
                     <span class="capitalize">{{ option.type }}</span>
                     <br />
                     <span class="font-bold"
@@ -470,7 +473,10 @@ onMounted(() => {
               <tbody>
                 <tr v-for="offer in servicesOffer">
                   <td>{{ offer }}</td>
-                  <td v-for="option in details.serviceOptions" class="text-center">
+                  <td
+                    v-for="option in details.serviceOptions"
+                    class="text-center"
+                  >
                     <Icon
                       v-if="option.specifications[offer] === true"
                       name="material-symbols:check-rounded"
@@ -562,12 +568,12 @@ onMounted(() => {
                 >
                   <Icon name="material-symbols:sort-rounded" class="lead" />
                   Sort:
-                  <div class="drop menu">
-                    <div class="item active">Newest</div>
-                    <div class="item">Highest</div>
-                    <div class="item">Lowest</div>
-                  </div>
                 </LimbDropdown>
+                <div class="drop menu">
+                  <div class="item active">Newest</div>
+                  <div class="item">Highest</div>
+                  <div class="item">Lowest</div>
+                </div>
               </div>
               <div class="dm-reviews">
                 <div
@@ -608,16 +614,16 @@ onMounted(() => {
                     </div>
                     <LimbDropdown>
                       <Icon name="material-symbols:more-vert" />
-                      <div class="drop menu small">
-                        <div class="item">
-                          <Icon
-                            name="material-symbols:flag-outline-rounded"
-                            class="lead"
-                          />
-                          Report
-                        </div>
-                      </div>
                     </LimbDropdown>
+                    <div class="drop menu small">
+                      <div class="item">
+                        <Icon
+                          name="material-symbols:flag-outline-rounded"
+                          class="lead"
+                        />
+                        Report
+                      </div>
+                    </div>
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
@@ -720,41 +726,41 @@ onMounted(() => {
               class="flat circular button"
             >
               <Icon name="material-symbols:more-vert" />
-              <div class="drop menu">
-                <div class="item">
-                  <Icon
-                    name="material-symbols:chat-outline-rounded"
-                    class="lead"
-                  />
-                  Chat contractor
-                </div>
-                <div class="item">
-                  <Icon
-                    name="material-symbols:bookmark-add-outline-rounded"
-                    class="lead"
-                  />
-                  Add to favourite
-                </div>
-                <div class="item">
-                  <Icon name="material-symbols:share-outline" class="lead" />
-                  Share
-                </div>
-                <div class="item">
-                  <Icon
-                    name="material-symbols:category-search-outline-rounded"
-                    class="lead"
-                  />
-                  View related
-                </div>
-                <div class="item">
-                  <Icon
-                    name="material-symbols:report-outline-rounded"
-                    class="lead"
-                  />
-                  Report
-                </div>
-              </div>
             </LimbDropdown>
+            <div class="drop menu">
+              <div class="item">
+                <Icon
+                  name="material-symbols:chat-outline-rounded"
+                  class="lead"
+                />
+                Chat contractor
+              </div>
+              <div class="item">
+                <Icon
+                  name="material-symbols:bookmark-add-outline-rounded"
+                  class="lead"
+                />
+                Add to favourite
+              </div>
+              <div class="item">
+                <Icon name="material-symbols:share-outline" class="lead" />
+                Share
+              </div>
+              <div class="item">
+                <Icon
+                  name="material-symbols:category-search-outline-rounded"
+                  class="lead"
+                />
+                View related
+              </div>
+              <div class="item">
+                <Icon
+                  name="material-symbols:report-outline-rounded"
+                  class="lead"
+                />
+                Report
+              </div>
+            </div>
           </div>
         </div>
         <!-- Buyer's Protection Section -->
@@ -802,38 +808,35 @@ onMounted(() => {
           class="flat circular button"
         >
           <Icon name="material-symbols:more-vert" />
-          <div class="drop menu">
-            <div class="item">
-              <Icon name="material-symbols:chat-outline-rounded" class="lead" />
-              Chat contractor
-            </div>
-            <div class="item">
-              <Icon
-                name="material-symbols:bookmark-add-outline-rounded"
-                class="lead"
-              />
-              Add to favourite
-            </div>
-            <div class="item">
-              <Icon name="material-symbols:share-outline" class="lead" />
-              Share
-            </div>
-            <div class="item">
-              <Icon
-                name="material-symbols:category-search-outline-rounded"
-                class="lead"
-              />
-              View related
-            </div>
-            <div class="item">
-              <Icon
-                name="material-symbols:report-outline-rounded"
-                class="lead"
-              />
-              Report
-            </div>
-          </div>
         </LimbDropdown>
+        <div class="drop menu">
+          <div class="item">
+            <Icon name="material-symbols:chat-outline-rounded" class="lead" />
+            Chat contractor
+          </div>
+          <div class="item">
+            <Icon
+              name="material-symbols:bookmark-add-outline-rounded"
+              class="lead"
+            />
+            Add to favourite
+          </div>
+          <div class="item">
+            <Icon name="material-symbols:share-outline" class="lead" />
+            Share
+          </div>
+          <div class="item">
+            <Icon
+              name="material-symbols:category-search-outline-rounded"
+              class="lead"
+            />
+            View related
+          </div>
+          <div class="item">
+            <Icon name="material-symbols:report-outline-rounded" class="lead" />
+            Report
+          </div>
+        </div>
       </div>
     </div>
   </main>

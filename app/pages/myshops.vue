@@ -59,19 +59,19 @@ definePageMeta({ layout: 'common', auth: true });
           class="as-icon flex-1 compact button"
         >
           <Icon name="material-symbols:more-horiz" />
-          <div class="drop menu">
-            <div class="item">
-              <Icon
-                name="material-symbols:campaign-outline-rounded"
-                class="lead"
-              />
-              Promote
-            </div>
-            <div class="item">
-              <Icon name="material-symbols:share-outline" class="lead" /> Share
-            </div>
-          </div>
         </LimbDropdown>
+        <div class="drop menu">
+          <div class="item">
+            <Icon
+              name="material-symbols:campaign-outline-rounded"
+              class="lead"
+            />
+            Promote
+          </div>
+          <div class="item">
+            <Icon name="material-symbols:share-outline" class="lead" /> Share
+          </div>
+        </div>
       </div>
     </div>
   </main>

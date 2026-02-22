@@ -56,20 +56,20 @@ defineProps(['details']);
         :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
       >
         <Icon name="material-symbols:more-horiz" />
-        <div class="drop menu">
-          <div class="item">
-            <Icon
-              name="material-symbols:remove-from-queue-outline-rounded"
-              class="lead"
-            />
-            Unfollow business
-          </div>
-          <div class="item">
-            <Icon name="material-symbols:report-outline-rounded" class="lead" />
-            Report post
-          </div>
-        </div>
       </LimbDropdown>
+      <div class="drop menu">
+        <div class="item">
+          <Icon
+            name="material-symbols:remove-from-queue-outline-rounded"
+            class="lead"
+          />
+          Unfollow business
+        </div>
+        <div class="item">
+          <Icon name="material-symbols:report-outline-rounded" class="lead" />
+          Report post
+        </div>
+      </div>
     </div>
     <div v-if="details.media" class="fcd-media">
       <NuxtImg

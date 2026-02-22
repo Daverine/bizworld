@@ -1,9 +1,10 @@
 <script setup lang="ts">
 const userStore = useUserStore();
+const { data: session } = await useAuth().useSession(useFetch);
 </script>
 <template>
   <div class="items" style="border-radius: var(--default-radius)">
-    <template v-if="userStore.auth">
+    <template v-if="session">
       <NuxtLink
         to="/home"
         exact-active-class="active"
@@ -74,7 +75,7 @@ const userStore = useUserStore();
       </div>
       <div class="transparent compact divider"></div>
       <div class="xhover item p-0">
-        <NuxtLink :to="{ name: 'new-shop' }" class="w-full button">
+        <NuxtLink :to="{ name: 'new-shop' }" class="w-full exit-sidepanel button">
           Have a shop online
         </NuxtLink>
       </div>

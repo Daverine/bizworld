@@ -5,9 +5,9 @@
 */
 :root {
   color-scheme: dark light;
-  --root-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Helvetica", Arial, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol";
+  --root-font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Helvetica', Arial, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol';
   --base-size: 16px;
   --xs-size: 0.75;
   --sm-size: 0.875;
@@ -344,6 +344,17 @@ p {
 hr,
 .divider {
   --divider-margin: 1rem;
+}
+hr.compact,
+.divider.compact {
+  --divider-margin: 0.5rem;
+}
+hr.loose,
+.divider.loose {
+  --divider-margin: 1.5rem;
+}
+hr,
+.divider {
   font-size: 1rem;
   margin: var(--divider-margin) 0;
   border: 0px none;
@@ -355,14 +366,6 @@ hr,
      -moz-user-select: none;
           user-select: none;
   -webkit-tap-highlight-color: transparent;
-}
-hr.compact,
-.divider.compact {
-  --divider-margin: 0.5rem;
-}
-hr.loose,
-.divider.loose {
-  --divider-margin: 1.5rem;
 }
 hr.transparent,
 .divider.transparent {
@@ -1207,7 +1210,6 @@ hr.vertical:empty,
   border-radius: var(--radius-block);
   text-decoration: none;
   transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, border-color 0.1s ease;
-  /* Close Icon */
 }
 .note:hover, .note:focus {
   text-decoration: none;
@@ -1273,6 +1275,9 @@ hr.vertical:empty,
 .note p {
   margin: 0;
 }
+.note {
+  /* Close Icon */
+}
 .note > .exit-note {
   cursor: pointer;
   position: absolute;
@@ -1333,10 +1338,6 @@ table.table {
   border-collapse: collapse;
   border-spacing: 0;
   margin: 1rem 0;
-  /* the w-fix will fix table cells so that their width can be increased.
-  If the table has a width of 100%, the table will determine the maximum
-  width a cell can have. Otherwise if the table width is auto, you will be
-  able fully determine the width a cell. Note that width of each you give a width = given width + cell padding-left + cell padding-right. */
 }
 table.table thead, table.table tfoot, table.table tbody {
   box-shadow: none;
@@ -1442,6 +1443,12 @@ table.table td.link > a {
 }
 table.table th.link > a {
   padding: var(--thf-padding);
+}
+table.table {
+  /* the w-fix will fix table cells so that their width can be increased.
+  If the table has a width of 100%, the table will determine the maximum
+  width a cell can have. Otherwise if the table width is auto, you will be
+  able fully determine the width a cell. Note that width of each you give a width = given width + cell padding-left + cell padding-right. */
 }
 table.table.w-fix {
   width: auto;
@@ -1619,6 +1626,7 @@ table.table tbody tr.i-selectable td:hover:before {
 .input,
 .input-box,
 .select.dropdown,
+.select.dropdown + .drop.menu,
 .option-group {
   --form-bg-color: var(--surface);
   --form-text-color: var(--on-surface);
@@ -1633,22 +1641,24 @@ table.table tbody tr.i-selectable td:hover:before {
     (var(--form-line-height) * 1em) + (var(--form-tb-padding) * 2)
   );
 }
-.form-item.success,
-.form-switch.success,
-.input.success,
-.input-box.success,
-.select.dropdown.success,
-.option-group.success {
-  --form-bd-color: var(--success);
-  --form-focus-bd-color: var(--success);
-}
 .form-item.error,
 .form-switch.error,
 .input.error,
 .input-box.error,
 .select.dropdown.error,
+.select.dropdown + .drop.menu.error,
 .option-group.error {
   --form-bd-color: var(--error);
+  --form-hover-bd-color: var(--error);
+  --form-focus-bd-color: var(--error);
+}
+.form-item .select.dropdown.error + .drop.menu,
+.form-switch .select.dropdown.error + .drop.menu,
+.input .select.dropdown.error + .drop.menu,
+.input-box .select.dropdown.error + .drop.menu,
+.select.dropdown .select.dropdown.error + .drop.menu,
+.select.dropdown + .drop.menu .select.dropdown.error + .drop.menu,
+.option-group .select.dropdown.error + .drop.menu {
   --form-focus-bd-color: var(--error);
 }
 .form-item.compact,
@@ -1656,6 +1666,7 @@ table.table tbody tr.i-selectable td:hover:before {
 .input.compact,
 .input-box.compact,
 .select.dropdown.compact,
+.select.dropdown + .drop.menu.compact,
 .option-group.compact {
   --form-tb-padding: 0.375em;
   --form-lr-padding: 0.75em;
@@ -1665,9 +1676,14 @@ table.table tbody tr.i-selectable td:hover:before {
 .input.loose,
 .input-box.loose,
 .select.dropdown.loose,
+.select.dropdown + .drop.menu.loose,
 .option-group.loose {
   --form-tb-padding: 0.8125em;
   --form-lr-padding: 0.75em;
+}
+
+.select.dropdown + .drop.menu {
+  --form-focus-bd-color: var(--primary);
 }
 
 .form-item,
@@ -2040,15 +2056,8 @@ table.table tbody tr.i-selectable td:hover:before {
 .select.dropdown:not(.lined, .text-fit) > .lead {
   margin-left: calc(0em - var(--form-lr-padding));
 }
-.select.dropdown > .drop.menu {
-  min-width: calc(100% + 2px);
-  max-height: 40vh;
-  overflow-y: auto;
-  font-size: inherit;
-  border: inherit;
-}
-.select.dropdown > .drop.menu > .item {
-  border-top: 1px solid rgba(0, 0, 0, 0.02);
+.select.dropdown > .drop.menu, .select.dropdown + .drop.menu {
+  border: 2px solid var(--form-focus-bd-color);
 }
 .select.dropdown.multiple {
   padding-top: calc(var(--form-tb-padding) / 2);
@@ -3373,8 +3382,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
   line-height: 1.5;
   padding: 0.25em 0.5em;
   background-color: var(--overlay);
-  -webkit-backdrop-filter: saturate(180%) blur(15px);
-          backdrop-filter: saturate(180%) blur(15px);
+  backdrop-filter: saturate(180%) blur(15px);
   color: var(--on-surface);
   border: 1px groove var(--outline);
   text-align: center;
@@ -3481,7 +3489,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
   top: 0px;
   font-size: inherit;
 }
-.dropdown.select > .drop.menu, .dropdown.selection > .drop.menu {
+.dropdown.select > .drop.menu, .dropdown.select + .drop.menu, .dropdown.selection > .drop.menu, .dropdown.selection + .drop.menu {
   max-height: min(40vh, 100vh - 1.5rem);
 }
 .dropdown.select.indicating:not(.multiple) > .content, .dropdown.select.indicating.multiple > .content > .chip, .dropdown.select.indicating > .placeholder, .dropdown.selection.indicating:not(.multiple) > .content, .dropdown.selection.indicating.multiple > .content > .chip, .dropdown.selection.indicating > .placeholder {
@@ -3522,6 +3530,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
   width: max-content;
   max-width: calc(100vw - 1rem);
   max-height: calc(100vh - 1.5rem);
+  overflow-y: auto;
   padding: 0.25em;
   gap: 0.25em;
   text-align: left;
@@ -3541,6 +3550,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
   --spacing: 0.25em;
 }
 .drop.menu.pointing {
+  overflow: visible;
   --spacing: 0.875em;
 }
 .drop.menu.pointing:before {
@@ -3920,11 +3930,11 @@ html.scroll-locked .fab-group.respect-lock .fab {
   top: 0;
   left: 0;
   bottom: 0;
-  background-color: var(--primary);
+  background-color: var(--primary-color);
   transition: width 0.3s linear;
 }
 .progress-bar .indeterminate {
-  background-color: var(--primary);
+  background-color: var(--primary-color);
 }
 .progress-bar .indeterminate:before {
   content: "";
@@ -3974,6 +3984,65 @@ html.scroll-locked .fab-group.respect-lock .fab {
   100% {
     left: 107%;
     right: -8%;
+  }
+}
+/* Custom properties allow CSS to animate numerical gradient values */
+@property --start {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --end {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.m3-progress {
+  --size: 48px;
+  --thickness: 4px;
+  --primary-color: var(--primary);
+  --track-color: var(--surface-v3);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  aspect-ratio: 1;
+  position: relative;
+  /* Create the progress ring using a mask and conic-gradient */
+  background: conic-gradient(var(--primary-color) calc(var(--progress) * 1%), var(--track-color) 0);
+  /* Mask out the center to create a ring */
+  mask: radial-gradient(farthest-side, transparent calc(100% - var(--thickness)), black calc(100% - var(--thickness) + 0.5px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--thickness)), black calc(100% - var(--thickness) + 0.5px));
+}
+.m3-progress.indeterminate {
+  /* Layer 1: The 'chasing' primary arc */
+  /* Layer 2: The static track color */
+  background: conic-gradient(from var(--start), var(--primary-color) var(--end), rgba(0, 0, 0, 0) 0deg), var(--track-color);
+  /* Masks the center to create the 4dp ring */
+  mask: radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - var(--thickness)), #000 0);
+  -webkit-mask: radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - var(--thickness)), #000 0);
+  /* Dual Animation: Continuous spin + the 'chase' expansion logic */
+  animation: m3-spin 2s linear infinite, m3-chase 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* 1. Constant 360-degree rotation of the entire element */
+@keyframes m3-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* 2. The 'Chase': Head surges forward, then tail catches up */
+@keyframes m3-chase {
+  0% {
+    --start: -90deg;
+    --end: 30deg;
+  }
+  50% {
+    --start: -45deg;
+    --end: 270deg; /* The arc expands significantly */
+  }
+  100% {
+    --start: 270deg; /* The tail moves to the head's position */
+    --end: 30deg;
   }
 }
 [data-lui-anim].visible {
@@ -4637,6 +4706,14 @@ html.scroll-locked .fab-group.respect-lock .fab {
   background-color: var(--surface-invert) !important;
 }
 
+.overlay-bg {
+  background-color: var(--overlay) !important;
+}
+
+.overlay-invert-bg {
+  background-color: var(--overlay) !important;
+}
+
 .primary-bg {
   background-color: var(--primary) !important;
 }
@@ -5006,13 +5083,6 @@ html.scroll-locked {
   --content-max-width: var(--container);
   --breakout-max-width: var(--container-lg);
   --edge: 1.5rem;
-  --breakout-pad: calc(
-    (var(--breakout-max-width) - var(--content-max-width)) / 2
-  );
-  --fluid-pad: calc(var(--edge) + var(--breakout-pad));
-  max-width: 100%;
-  display: grid;
-  grid-template-columns: [fluid-start] minmax(var(--edge), 1fr) [breakout-start] minmax(0, var(--breakout-pad)) [content-start] min(100% - var(--edge) * 2, var(--content-max-width)) [content-end] minmax(0, var(--breakout-pad)) [breakout-end] minmax(var(--edge), 1fr) [fluid-end];
 }
 @media screen and (max-width: 600px) {
   .grid-layout {
@@ -5026,6 +5096,15 @@ html.scroll-locked {
 }
 .grid-layout .no-edge {
   --edge: 0rem;
+}
+.grid-layout {
+  --breakout-pad: calc(
+    (var(--breakout-max-width) - var(--content-max-width)) / 2
+  );
+  --fluid-pad: calc(var(--edge) + var(--breakout-pad));
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: [fluid-start] minmax(var(--edge), 1fr) [breakout-start] minmax(0, var(--breakout-pad)) [content-start] min(100% - var(--edge) * 2, var(--content-max-width)) [content-end] minmax(0, var(--breakout-pad)) [breakout-end] minmax(var(--edge), 1fr) [fluid-end];
 }
 .grid-layout > :not(.breakout, .fluid) {
   grid-column: content;

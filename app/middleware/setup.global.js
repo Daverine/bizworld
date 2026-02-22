@@ -1,14 +1,12 @@
-export default defineNuxtRouteMiddleware((to, from) => {
-    const
-        userStore = useUserStore(),
-        searchStore = useSearchStore()
-    ;
-    if (to.meta.auth && !userStore.auth) {
-        userStore.routeProceed = to;
-        return navigateTo('/login');
-    }
+export default defineNuxtRouteMiddleware(async (to, from) => {
+  const searchStore = useSearchStore();
+  const { data } = await useAuth().useSession(useFetch);
 
-    if (from.path === '/search') {
-        searchStore.searchBox = '';
-    }
+  if (to.meta.auth && !data.value) {
+    return navigateTo('/login?redirect=' + to.path);
+  }
+
+  if (from.path === '/search') {
+    searchStore.searchBox = '';
+  }
 });

@@ -564,7 +564,10 @@ function getItemForCart() {
             v-tooltip:aria.unblocking
             aria-label="Average Rate (Number of raters)"
           >
-            <Icon name="material-symbols:star-rounded" class="text-yellow-500" />
+            <Icon
+              name="material-symbols:star-rounded"
+              class="text-yellow-500"
+            />
             {{
               (
                 details.reviews.reduce((n, i) => n + i.rating, 0) /
@@ -774,12 +777,12 @@ function getItemForCart() {
                 >
                   <Icon name="material-symbols:sort-rounded" class="lead" />
                   Sort:
-                  <div class="drop menu">
-                    <div class="item active">Newest</div>
-                    <div class="item">Highest</div>
-                    <div class="item">Lowest</div>
-                  </div>
                 </LimbDropdown>
+                <div class="drop menu">
+                  <div class="item active">Newest</div>
+                  <div class="item">Highest</div>
+                  <div class="item">Lowest</div>
+                </div>
               </div>
               <div class="dm-reviews">
                 <div
@@ -820,16 +823,16 @@ function getItemForCart() {
                     </div>
                     <LimbDropdown>
                       <Icon name="material-symbols:more-vert" />
-                      <div class="drop menu small">
-                        <div class="item">
-                          <Icon
-                            name="material-symbols:flag-outline-rounded"
-                            class="lead"
-                          />
-                          Report
-                        </div>
-                      </div>
                     </LimbDropdown>
+                    <div class="drop menu small">
+                      <div class="item">
+                        <Icon
+                          name="material-symbols:flag-outline-rounded"
+                          class="lead"
+                        />
+                        Report
+                      </div>
+                    </div>
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
@@ -883,41 +886,38 @@ function getItemForCart() {
             class="flat circular button"
           >
             <Icon name="material-symbols:more-vert" />
-            <div class="drop menu">
-              <div class="item">
-                <Icon
-                  name="material-symbols:chat-outline-rounded"
-                  class="lead"
-                />
-                Chat seller
-              </div>
-              <div class="item">
-                <Icon
-                  name="material-symbols:bookmark-add-outline-rounded"
-                  class="lead"
-                />
-                Save card
-              </div>
-              <div class="item">
-                <Icon name="material-symbols:share-outline" class="lead" />
-                Share
-              </div>
-              <div class="item">
-                <Icon
-                  name="material-symbols:category-search-outline-rounded"
-                  class="lead"
-                />
-                View related
-              </div>
-              <div class="item">
-                <Icon
-                  name="material-symbols:report-outline-rounded"
-                  class="lead"
-                />
-                Report
-              </div>
-            </div>
           </LimbDropdown>
+          <div class="drop menu">
+            <div class="item">
+              <Icon name="material-symbols:chat-outline-rounded" class="lead" />
+              Chat seller
+            </div>
+            <div class="item">
+              <Icon
+                name="material-symbols:bookmark-add-outline-rounded"
+                class="lead"
+              />
+              Save card
+            </div>
+            <div class="item">
+              <Icon name="material-symbols:share-outline" class="lead" />
+              Share
+            </div>
+            <div class="item">
+              <Icon
+                name="material-symbols:category-search-outline-rounded"
+                class="lead"
+              />
+              View related
+            </div>
+            <div class="item">
+              <Icon
+                name="material-symbols:report-outline-rounded"
+                class="lead"
+              />
+              Report
+            </div>
+          </div>
         </div>
         <div class="compact success note" style="margin-top: 0.5rem">
           <Icon
@@ -952,38 +952,35 @@ function getItemForCart() {
           class="flat circular button"
         >
           <Icon name="material-symbols:more-vert" />
-          <div class="drop menu">
-            <div class="item">
-              <Icon name="material-symbols:chat-outline-rounded" class="lead" />
-              Chat seller
-            </div>
-            <div class="item">
-              <Icon
-                name="material-symbols:bookmark-add-outline-rounded"
-                class="lead"
-              />
-              Save card
-            </div>
-            <div class="item">
-              <Icon name="material-symbols:share-outline" class="lead" />
-              Share
-            </div>
-            <div class="item">
-              <Icon
-                name="material-symbols:category-search-outline-rounded"
-                class="lead"
-              />
-              View related
-            </div>
-            <div class="item">
-              <Icon
-                name="material-symbols:report-outline-rounded"
-                class="lead"
-              />
-              Report
-            </div>
-          </div>
         </LimbDropdown>
+        <div class="drop menu">
+          <div class="item">
+            <Icon name="material-symbols:chat-outline-rounded" class="lead" />
+            Chat seller
+          </div>
+          <div class="item">
+            <Icon
+              name="material-symbols:bookmark-add-outline-rounded"
+              class="lead"
+            />
+            Save card
+          </div>
+          <div class="item">
+            <Icon name="material-symbols:share-outline" class="lead" />
+            Share
+          </div>
+          <div class="item">
+            <Icon
+              name="material-symbols:category-search-outline-rounded"
+              class="lead"
+            />
+            View related
+          </div>
+          <div class="item">
+            <Icon name="material-symbols:report-outline-rounded" class="lead" />
+            Report
+          </div>
+        </div>
       </div>
     </div>
     <LimbModal id="sp-details">

@@ -17,19 +17,19 @@ defineProps(['details', 'isSaved']);
       class="icon circular transparent compact button"
     >
       <Icon name="material-symbols:more-vert" />
-      <div class="drop menu">
-        <div class="item">
-          <Icon name="material-symbols:share-outline" class="lead" /> Share
-        </div>
-        <div class="item">
-          <Icon
-            name="material-symbols:bookmark-remove-outline-rounded"
-            class="lead"
-          />
-          Unsave
-        </div>
-      </div>
     </LimbDropdown>
+    <div class="drop menu">
+      <div class="item">
+        <Icon name="material-symbols:share-outline" class="lead" /> Share
+      </div>
+      <div class="item">
+        <Icon
+          name="material-symbols:bookmark-remove-outline-rounded"
+          class="lead"
+        />
+        Unsave
+      </div>
+    </div>
   </NuxtLink>
 </template>
 

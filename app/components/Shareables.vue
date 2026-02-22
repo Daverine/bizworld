@@ -4,23 +4,25 @@ defineProps(['name']);
 
 const userStore = useUserStore();
 const searchStore = useSearchStore();
-const colorMode = useColorMode({
+const { store: colorMode } = useColorMode({
   modes: {
     light: 'light-mode',
     dark: 'dark-mode',
   },
 });
+const session = await useAuth().useSession(useFetch);
 </script>
 
 <template>
-  <LimbDropdown
-    v-if="name === 'do_more_item'"
-    :options="{ directionPriority: { x: 'center', y: 'bottom' } }"
-    v-tooltip:aria.unblocking
-    aria-label="Do more"
-    class="as-icon item"
-  >
-    <Icon name="material-symbols:apps" />
+  <template v-if="name === 'do_more_item'">
+    <LimbDropdown
+      :options="{ directionPriority: { x: 'center', y: 'bottom' } }"
+      v-tooltip:aria.unblocking
+      aria-label="Do more"
+      class="as-icon item"
+    >
+      <Icon name="material-symbols:apps" />
+    </LimbDropdown>
     <div class="drop menu">
       <div class="compact grid menu grid-cols-2 app-items">
         <div
@@ -38,7 +40,7 @@ const colorMode = useColorMode({
           <span class="text label">Scan QR</span>
         </div>
         <div
-          v-if="userStore.auth && userStore.userData.manageBisiness"
+          v-if="session.data && userStore.userData.manageBisiness"
           class="bar-item item open-modal exit-dd"
           data-target="create-post"
         >
@@ -47,7 +49,7 @@ const colorMode = useColorMode({
         </div>
       </div>
     </div>
-  </LimbDropdown>
+  </template>
   <div class="drop menu" v-else-if="name === 'profile_menu'">
     <div class="header centered xhover item">
       <NuxtImg
@@ -84,7 +86,7 @@ const colorMode = useColorMode({
     >
       <Icon name="material-symbols:menu-rounded" />
     </button>
-    <NuxtLink :to="userStore.auth ? '/home' : '/'" class="xhover item as-icon">
+    <NuxtLink :to="session.data ? '/home' : '/'" class="xhover item as-icon">
       <NuxtImg
         preset="logo"
         src="/images/logo_sqr.png"
@@ -142,7 +144,7 @@ const colorMode = useColorMode({
         Explore
       </div>
       <!-- <rc-shareables name="do_more_item" /> -->
-      <template v-if="userStore.auth">
+      <template v-if="session.data">
         <LimbDropdown
           :options="{ directionPriority: { x: 'center' } }"
           class="as-icon item ac-viewbox-ref"
@@ -153,27 +155,8 @@ const colorMode = useColorMode({
             <Icon name="material-symbols:notifications-outline-rounded" />
             <Icon name="material-symbols:notifications-rounded" />
           </i>
-          <div
-            class="pointing drop menu"
-            style="width: 300px; height: calc(100vh - 84px); max-height: 600px"
-          >
-            <div class="flex flex-col p-4" style="height: 100%">
-              <div
-                class="flex-1 flex flex-col items-center justify-center gap-3"
-              >
-                <Icon
-                  name="material-symbols-light:notifications-off-outline-rounded"
-                  style="font-size: 6rem; color: var(--on-surface-v2)"
-                />
-                <span class="text">You have no new notifications.</span>
-              </div>
-              <div class="transparent compact divider"></div>
-              <div class="item">
-                <button class="w-full button">View all</button>
-              </div>
-            </div>
-          </div>
         </LimbDropdown>
+        <rc-shareables name="notifications_menu" />
         <LimbDropdown
           :options="{ directionPriority: { x: 'left' } }"
           v-tooltip:aria.unblocking
@@ -186,8 +169,8 @@ const colorMode = useColorMode({
             alt="profile"
             class="rounded-full logo"
           />
-          <rc-shareables name="profile_menu" />
         </LimbDropdown>
+        <rc-shareables name="profile_menu" />
       </template>
       <template v-else>
         <div class="items max-lg:hidden">
@@ -209,13 +192,13 @@ const colorMode = useColorMode({
         >
           <Icon name="material-symbols:person-add-outline-rounded" />
           <span class="max-lg:hidden">Account</span>
-          <div class="drop menu">
-            <div class="item open-modal" data-target="login-modal">Log in</div>
-            <div class="item open-modal" data-target="register-modal">
-              Sign Up
-            </div>
-          </div>
         </LimbDropdown>
+        <div class="drop menu">
+          <div class="item open-modal" data-target="login-modal">Log in</div>
+          <div class="item open-modal" data-target="register-modal">
+            Sign Up
+          </div>
+        </div>
       </template>
     </div>
   </div>
@@ -243,11 +226,7 @@ const colorMode = useColorMode({
           </h6>
           <div class="ads">
             <div class="text-center ad">
-              <NuxtImg
-                format="webp"
-                src="/images/ads.jpg"
-                alt="ad"
-              />
+              <NuxtImg format="webp" src="/images/ads.jpg" alt="ad" />
               <div>
                 Fix your laptops and desktops (Hardware and Software).
                 <button class="primary button">contact us</button>
@@ -276,11 +255,39 @@ const colorMode = useColorMode({
           />
           <Icon name="material-symbols:light-mode-outline-rounded" />
         </label>
+        <label class="as-icon item" :class="{ active: colorMode === 'auto' }">
+          <input
+            v-model="colorMode"
+            class="hidden"
+            type="radio"
+            value="auto"
+          />
+          <Icon name="material-symbols:desktop-mac-outline-rounded" />
+        </label>
         <label class="as-icon item" :class="{ active: colorMode === 'dark' }">
           <input v-model="colorMode" class="hidden" type="radio" value="dark" />
           <Icon name="material-symbols:dark-mode-outline-rounded" />
         </label>
       </ClientOnly>
+    </div>
+  </div>
+  <div
+    v-else-if="name === 'notifications_menu'"
+    class="pointing drop menu"
+    style="width: 300px; height: calc(100vh - 84px); max-height: 600px"
+  >
+    <div class="flex flex-col p-4" style="height: 100%">
+      <div class="flex-1 flex flex-col items-center justify-center gap-3">
+        <Icon
+          name="material-symbols-light:notifications-off-outline-rounded"
+          style="font-size: 6rem; color: var(--on-surface-v2)"
+        />
+        <span class="text">You have no new notifications.</span>
+      </div>
+      <div class="transparent compact divider"></div>
+      <div class="item">
+        <button class="w-full button">View all</button>
+      </div>
     </div>
   </div>
 </template>

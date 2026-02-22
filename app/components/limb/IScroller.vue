@@ -173,7 +173,7 @@ onMounted(async () => {
   onScrollMtd();
 });
 
-onBeforeUnmount(() => contentSizeObserver.disconnect());
+onBeforeUnmount(() => contentSizeObserver?.disconnect());
 
 function getRect(): Rect {
   return {
