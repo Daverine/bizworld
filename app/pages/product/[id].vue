@@ -1,327 +1,208 @@
-<script setup>
+<script lang="ts" setup>
 definePageMeta({ layout: 'details', name: 'product-page' });
 const cartStore = useCartStore();
-const [newTemplate, useTemplate] = createReusableTemplate();
-const details = ref({
-  type: 'product',
-  id: 'prod123343',
-  title:
-    'Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery',
-  price: 100000,
-  media: [
-    {
-      type: 'pic',
-      url: '/images/product.jpeg',
-      thumbnail: '/images/product.jpeg',
-    },
-  ],
-  overview:
-    'This product is suitable for office use and it also presentable. It has a long lasting battery and its capable of handling comming computer daily tasks.',
-  specifications: {
-    Type: 'Laptop',
-    Condition: 'Used',
-    Brand: 'Dell',
-    Model: 'Inspiron 5050',
-    Processor: 'Intel Corel i5 5th Generation',
-    RAM: '8gb DDR3',
-    Storage: '256gb SSD M.2',
-    'Display Size': '15.6"',
-    Graphics: 'Intel Graphics 3000 (64mb)',
-  },
-  productOptions: {
-    optionType: 'RAM/ROM',
-    options: [
-      {
-        label: '4GB / 64GB',
-        media: undefined,
-        price: 100000,
-        subOptions: {
-          optionType: 'Color',
-          options: [
-            {
-              label: 'Yellow',
-              price: 100000,
-              media: {
-                type: 'pic',
-                url: '/images/product.jpeg',
-                thumbnail: '/images/product.jpeg',
-              },
-            },
-            {
-              label: 'Reflective Blue',
-              price: 100000,
-              media: {
-                type: 'pic',
-                url: '/images/product.jpeg',
-                thumbnail: '/images/product.jpeg',
-              },
-            },
-            {
-              label: 'Silver',
-              price: 100000,
-              media: {
-                type: 'pic',
-                url: '/images/product.jpeg',
-                thumbnail: '/images/product.jpeg',
-              },
-            },
-          ],
-        },
-      },
-      {
-        label: '4GB / 128GB',
-        media: undefined,
-        price: 120000,
-        subOptions: {
-          optionType: 'Color',
-          options: [
-            {
-              label: 'Black',
-              price: 120000,
-              media: {
-                type: 'pic',
-                url: '/images/product.jpeg',
-                thumbnail: '/images/product.jpeg',
-              },
-            },
-            {
-              label: 'Reflective Blue',
-              price: 120000,
-              media: {
-                type: 'pic',
-                url: '/images/product.jpeg',
-                thumbnail: '/images/product.jpeg',
-              },
-            },
-            {
-              label: 'Moon Gray',
-              price: 120000,
-              media: {
-                type: 'pic',
-                url: '/images/product.jpeg',
-                thumbnail: '/images/product.jpeg',
-              },
-            },
-          ],
-        },
-      },
-      {
-        label: '6GB / 128GB',
-        media: undefined,
-        price: 150000,
-        subOptions: {
-          optionType: 'Color',
-          options: [
-            {
-              label: 'Black',
-              price: 150000,
-              media: {
-                type: 'pic',
-                url: '/images/product.jpeg',
-                thumbnail: '/images/product.jpeg',
-              },
-            },
-            {
-              label: 'Reflective Blue',
-              price: 150000,
-              media: {
-                type: 'pic',
-                url: '/images/product.jpeg',
-                thumbnail: '/images/product.jpeg',
-              },
-            },
-            {
-              label: 'Moon Gray',
-              price: 150000,
-              media: {
-                type: 'pic',
-                url: '/images/product.jpeg',
-                thumbnail: '/images/product.jpeg',
-              },
-            },
-          ],
-        },
-      },
-    ],
-  },
-  reviews: [
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 3,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 3,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 2,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 2,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 2,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-    {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
-      anonymous: false,
-      timestamp: 1694061107318,
-      rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
-    },
-  ],
-  bizData: {
-    logo: '/images/logo-sq.png',
-    bizName: 'Emmadave Computer Technology Services',
-    bizId: 'biz3884',
-    mainCategory: 'Computer repair services',
-    contacts: {
-      tel: '08157483233',
-      email: 'contact_us@edtech.com',
-    },
-    verified: true,
-    rating: {
-      rate: 3.5,
-      raters: 30,
-    },
-    location: {
-      address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
-      city: 'Abeokuta',
-      state: 'Ogun State',
-      url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
-    },
+const route = useRoute();
+const { data: product } = await useFetch('/api/product/query', {
+  query: {
+    slug: route.params.id,
   },
 });
-const tmp = ref({
+const { data: bizDatas } = await useFetch('/api/business/query', {
+  query: {
+    id: product.value?.business_id,
+  },
+});
+const [newTemplate, useTemplate] = createReusableTemplate();
+
+const reviews = ref([
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 4,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 3,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 3,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 2,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 2,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 2,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 4,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 4,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 4,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 4,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+  {
+    userid: 'e8e34',
+    username: 'daverine',
+    userpic: '/images/profile_pic.jpg',
+    anonymous: false,
+    timestamp: 1694061107318,
+    rating: 4,
+    review: 'I enjoy my experience doing business with you guys. keep it up.',
+  },
+]);
+const bizData = ref({
+  logo: '/images/logo-sq.png',
+  bizName: 'Emmadave Computer Technology Services',
+  bizId: 'biz3884',
+  mainCategory: 'Computer repair services',
+  contacts: {
+    tel: '08157483233',
+    email: 'contact_us@edtech.com',
+  },
+  verified: true,
+  rating: {
+    rate: 3.5,
+    raters: 30,
+  },
+  location: {
+    address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
+    city: 'Abeokuta',
+    state: 'Ogun State',
+    url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
+  },
+});
+const toCart = reactive<{
+  spec: (string | undefined)[];
+  price: ComputedRef<number>;
+  photos: ComputedRef<string[]>;
+  quantity: number;
+  delivery: string;
+}>({
   spec: [],
   price: computed(() => {
-    let price = 0;
-    if (tmp.value.spec[0]) {
-      if (tmp.value.spec[1]) {
-        price = details.value.productOptions.options
-          .find((option) => option.label === tmp.value.spec[0])
-          .subOptions.options.find(
-            (subOption) => subOption.label === tmp.value.spec[1]
-          ).price;
-      } else {
-        price = details.value.productOptions.options.find(
-          (option) => option.label === tmp.value.spec[0]
-        ).price;
-      }
-    } else price = details.value.price;
-    return price;
+    let option_price = product.value!.option_group?.options.find(
+      (option) => option.label === toCart.spec[0],
+    )?.price as string;
+    let sub_option_price = product
+      .value!.option_group?.options.find(
+        (option) => option.label === toCart.spec[0],
+      )
+      ?.sub_options?.find((sub_option) => sub_option.label === toCart.spec[1])
+      ?.price as string;
+
+    return parseFloat(
+      sub_option_price || option_price || product.value!.base_price,
+    );
   }),
-  media: computed(() => {
-    let media = [];
-    details.value.media.forEach((item) => media.push(item));
-    if (details.value.productOptions) {
-      details.value.productOptions.options.forEach((item) => {
-        if (item.media) media.push(item.media);
-        if (item.subOptions) {
-          item.subOptions.options.forEach((item) => {
-            if (item.media) media.push(item.media);
-          });
-        }
+  photos: computed(() => {
+    let photos = [...product.value!.photos];
+    if (product.value!.option_group) {
+      product.value!.option_group.options.forEach((item) => {
+        if (item.photo) photos.push(item.photo);
       });
+      if (product.value!.sub_option_group) {
+        product.value!.sub_option_group.options.forEach((item) => {
+          if (item.photo) photos.push(item.photo);
+        });
+      }
     }
-    return media;
+    return photos;
   }),
   quantity: 1,
   delivery: 'self-pickup',
 });
+
 const isSmallScreen = ref(true);
 onMounted(() => {
   // Configure product default option
-  if (details.value.productOptions) {
-    tmp.value.spec.push(details.value.productOptions.options[0].label);
-    if (details.value.productOptions.options[0].subOptions) {
-      tmp.value.spec.push(
-        details.value.productOptions.options[0].subOptions.options[0].label
-      );
+  if (product.value?.option_group) {
+    toCart.spec[0] = product.value.option_group.options?.[0]?.label;
+    if (
+      product.value.option_group.options[0]?.sub_options?.some(
+        (sub_option) => sub_option.is_active,
+      )
+    ) {
+      toCart.spec[1] = product.value.option_group.options[0]?.sub_options?.find(
+        (sub_option) => sub_option.is_active,
+      )?.label;
+
       // Configure sub-option based on option
       watchEffect(() => {
-        let option = details.value.productOptions.options.find(
-          (option) => option.label === tmp.value.spec[0]
+        let option = product.value?.option_group?.options.find(
+          (option) => option.label === toCart.spec[0],
         );
-        tmp.value.spec[1] =
-          option.subOptions.options.find(
-            (subOption) => subOption.label === tmp.value.spec[1]
-          )?.label || option.subOptions.options[0].label;
+        toCart.spec[1] =
+          option?.sub_options?.find(
+            (sub_option) =>
+              sub_option.label === toCart.spec[1] && sub_option.is_active,
+          )?.label ||
+          option?.sub_options?.find((sub_option) => sub_option.is_active)
+            ?.label;
       });
     }
   }
@@ -333,79 +214,86 @@ onMounted(() => {
 
 function getItemForCart() {
   return {
-    type: details.value.type,
-    id: details.value.id,
-    title: details.value.title,
-    price: tmp.value.price,
-    media: tmp.value.media[0].url,
-    productOptions: tmp.value.spec,
-    quantity: tmp.value.quantity,
-    delivery: tmp.value.delivery,
-    bizData: details.value.bizData,
+    type: 'product',
+    id: product.value!.id,
+    title: product.value!.title,
+    price: toCart.price,
+    media: toCart.photos[0],
+    productOptions: toCart.spec,
+    quantity: toCart.quantity,
+    delivery: toCart.delivery,
+    bizData: bizData,
     checked: true,
   };
 }
 </script>
 <template>
   <newTemplate>
-    <template v-if="details.productOptions">
+    <template v-if="product?.option_group">
       <div>
         <div class="sub lined heading a-block">
-          {{ details.productOptions.optionType }}:
-          <div class="trailing">{{ tmp.spec[0] }}</div>
+          {{ product.option_group.title }}:
+          <div class="trailing">{{ toCart.spec[0] }}</div>
         </div>
         <div class="wrappable menu">
           <label
-            v-for="(option, a) in details.productOptions.options"
+            v-for="option in product.option_group.options"
             class="item as-icon"
-            :class="{ active: option.label === tmp.spec[0] }"
+            :class="{ active: option.label === toCart.spec[0] }"
           >
             <input
               type="radio"
               class="form-item"
               :value="option.label"
-              v-model="tmp.spec[0]"
+              v-model="toCart.spec[0]"
             />
             <NuxtImg
-              v-if="option.media"
+              v-if="option.photo"
               preset="logo"
-              :src="option.media.thumbnail"
+              :src="option.photo"
               class="thumbnail"
             />
             {{ option.label }}
           </label>
         </div>
       </div>
-      <template v-for="(option, a) in details.productOptions.options">
+      <template v-for="option in product.option_group.options">
         <div
-          v-if="option.subOptions"
+          v-if="
+            product.sub_option_group &&
+            option.sub_options?.some((sub_option) => sub_option.is_active)
+          "
           class="tab-page"
-          :class="{ active: option.label === tmp.spec[0] }"
+          :class="{ active: option.label === toCart.spec[0] }"
         >
           <div class="sub lined heading a-block">
-            {{ option.subOptions.optionType }}:
-            <div class="trailing">{{ tmp.spec[1] }}</div>
+            {{ product.sub_option_group.title }}:
+            <div class="trailing">{{ toCart.spec[1] }}</div>
           </div>
           <div class="wrappable menu">
-            <label
-              v-for="(subOption, b) in option.subOptions.options"
-              class="item as-icon"
-              :class="{ active: subOption.label === tmp.spec[1] }"
+            <template
+              v-for="(sub_option, index) in product.sub_option_group.options"
             >
-              <input
-                type="radio"
-                class="form-item"
-                :value="subOption.label"
-                v-model="tmp.spec[1]"
-              />
-              <NuxtImg
-                v-if="subOption.media"
-                preset="logo"
-                :src="subOption.media.thumbnail"
-                class="thumbnail"
-              />
-              {{ subOption.label }}
-            </label>
+              <label
+                v-if="option.sub_options[index]?.is_active"
+                class="item as-icon"
+                :class="{ active: sub_option.label === toCart.spec[1] }"
+              >
+                <input
+                  type="radio"
+                  class="form-item"
+                  :value="sub_option.label"
+                  v-model="toCart.spec[1]"
+                />
+                <NuxtImg
+                  v-if="sub_option.photo"
+                  preset="logo"
+                  :src="sub_option.photo"
+                  class="thumbnail"
+                />
+                {{ sub_option.label }}
+              </label>
+            </template>
           </div>
         </div>
       </template>
@@ -413,14 +301,14 @@ function getItemForCart() {
     <div>
       <div class="sub lined heading a-block">
         Quantity:
-        <div class="trailing">{{ tmp.quantity }}</div>
+        <div class="trailing">{{ toCart.quantity }}</div>
       </div>
       <div class="w-full small input-box">
         <button
           class="addon icon mini button"
           @click="
             () => {
-              if (tmp.quantity > 1) tmp.quantity--;
+              if (toCart.quantity > 1) toCart.quantity--;
             }
           "
         >
@@ -431,10 +319,11 @@ function getItemForCart() {
           placeholder="Enter product Quantity"
           class="subject form-item compact text-center"
           min="1"
-          v-model="tmp.quantity"
+          v-model="toCart.quantity"
           @input="
             (evt) => {
-              if (evt.target.value < 1) tmp.quantity = 1;
+              const input = evt.currentTarget as HTMLInputElement;
+              if (parseInt(input.value) < 1) toCart.quantity = 1;
             }
           "
           @keypress="
@@ -443,7 +332,7 @@ function getItemForCart() {
             }
           "
         />
-        <button class="addon icon mini button" @click="tmp.quantity++">
+        <button class="addon icon mini button" @click="toCart.quantity++">
           <Icon name="material-symbols:add-rounded" />
         </button>
       </div>
@@ -452,20 +341,20 @@ function getItemForCart() {
       <div class="sub lined heading a-block">
         Delivery service:
         <div class="trailing capitalize">
-          {{ tmp.delivery }}
+          {{ toCart.delivery }}
         </div>
       </div>
       <div class="vertical menu">
         <!-- Bizworld delivery option -->
         <label
           class="item as-icon disabled"
-          :class="{ active: tmp.delivery === 'bizworld' }"
+          :class="{ active: toCart.delivery === 'bizworld' }"
         >
           <div class="flex flex-col gap-2 items-center">
             <input
               type="radio"
               value="bizworld"
-              v-model="tmp.delivery"
+              v-model="toCart.delivery"
               class="form-item"
             />
             <Icon
@@ -491,13 +380,13 @@ function getItemForCart() {
         <!-- Self pickup option -->
         <label
           class="item as-icon"
-          :class="{ active: tmp.delivery === 'self-pickup' }"
+          :class="{ active: toCart.delivery === 'self-pickup' }"
         >
           <div class="flex flex-col gap-2 items-center">
             <input
               type="radio"
               value="self-pickup"
-              v-model="tmp.delivery"
+              v-model="toCart.delivery"
               class="form-item"
             />
             <Icon
@@ -525,7 +414,7 @@ function getItemForCart() {
     </div>
   </newTemplate>
 
-  <Title>{{ `${details.title} | Bizworld` }}</Title>
+  <Title>{{ `${product?.title} | Bizworld` }}</Title>
   <main class="grid-layout" style="padding-top: 1rem">
     <div class="page-cont">
       <section
@@ -537,28 +426,28 @@ function getItemForCart() {
         }"
       >
         <LimbCarousel :options="{ continuous: false }">
-          <div v-for="slide in tmp.media" class="cs-slide">
+          <div v-for="slide in toCart.photos" class="cs-slide">
             <NuxtImg
               format="webp"
               sizes="960px"
               densities="1x"
-              :src="slide.url"
-              :data-lightbox="slide.url"
+              :src="slide"
+              :data-lightbox="slide"
               data-target="lightbox1"
             />
           </div>
           <template v-if="!isSmallScreen" #trackers>
-            <div v-for="slide in tmp.media" class="thumbnail cs-tracker">
+            <div v-for="slide in toCart.photos" class="thumbnail cs-tracker">
               <NuxtImg
                 sizes="150px"
                 format="webp"
                 densities="1x"
-                :src="slide.thumbnail"
+                :src="slide"
               />
             </div>
           </template>
         </LimbCarousel>
-        <h5 class="font-semiboldm-0 page-title">{{ details.title }}</h5>
+        <h5 class="font-semiboldm-0 page-title">{{ product?.title }}</h5>
         <div class="flex justify-between gap-3 small font-semibold">
           <span
             v-tooltip:aria.unblocking
@@ -570,26 +459,25 @@ function getItemForCart() {
             />
             {{
               (
-                details.reviews.reduce((n, i) => n + i.rating, 0) /
-                details.reviews.length
+                reviews.reduce((n, i) => n + i.rating, 0) / reviews.length
               ).toFixed(1)
             }}
-            ({{ details.reviews.length }} reviews)
+            ({{ reviews.length }} reviews)
           </span>
           <span
             v-tooltip:aria.unblocking
-            :aria-label="details.bizData.location.address"
+            :aria-label="bizData.location.address"
           >
             <Icon name="material-symbols:location-on-outline-rounded" />
-            {{ details.bizData.location.city }},
-            {{ details.bizData.location.state }}
+            {{ bizData.location.city }},
+            {{ bizData.location.state }}
           </span>
         </div>
         <!-- Product Options -->
         <section class="mobile-screen-only config">
           <div class="small font-semibold">Unit price</div>
           <div class="h3 m-0 primary-text font-bold">
-            ₦{{ tmp.price.toLocaleString() }}
+            ₦{{ toCart.price.toLocaleString() }}
           </div>
           <div class="alt-ribbon red label">Configure purchase</div>
 
@@ -613,7 +501,7 @@ function getItemForCart() {
         <!-- Overview Section -->
         <section>
           <div class="heading">Seller's review</div>
-          <p>{{ details.overview }}</p>
+          <p>{{ product?.overview }}</p>
         </section>
         <!-- Specifications Section -->
         <section class="spec">
@@ -631,9 +519,9 @@ function getItemForCart() {
           <div class="collapsible">
             <table class="basic definition table">
               <tbody>
-                <tr v-for="(value, key) in details.specifications">
-                  <td>{{ key }}</td>
-                  <td>{{ value }}</td>
+                <tr v-for="spec in product?.specifications">
+                  <td>{{ spec.name }}</td>
+                  <td>{{ spec.value }}</td>
                 </tr>
               </tbody>
             </table>
@@ -654,7 +542,7 @@ function getItemForCart() {
               <div class="lead" style="position: relative; align-self: center">
                 <NuxtImg
                   preset="logo"
-                  :src="details.bizData.logo"
+                  :src="bizData.logo"
                   class="loose avatar"
                 />
                 <SvgIcon
@@ -667,20 +555,20 @@ function getItemForCart() {
               </div>
               <div class="content">
                 <NuxtLink
-                  :to="`/business/${details.bizData.bizId}`"
+                  :to="`/business/${bizData.bizId}`"
                   class="font-bold h6 line-clamp-2 uppercase"
                 >
-                  {{ details.bizData.bizName }}
+                  {{ bizData.bizName }}
                 </NuxtLink>
                 <div
                   class="flex justify-between flex-wrap font-semibold"
                   style="gap: 0.25em 0.75em"
                 >
                   <span>
-                    {{ details.bizData.mainCategory }}
+                    {{ bizData.mainCategory }}
                   </span>
                   <span
-                    v-if="details.bizData.rating"
+                    v-if="bizData.rating"
                     class="font-semibold"
                     v-tooltip:aria.unblocking
                     aria-label="Average Rate (Number of raters)"
@@ -689,9 +577,7 @@ function getItemForCart() {
                       name="material-symbols:star-rounded"
                       class="text-yellow-500"
                     />
-                    {{ details.bizData.rating.rate }} ({{
-                      details.bizData.rating.raters
-                    }})
+                    {{ bizData.rating.rate }} ({{ bizData.rating.raters }})
                   </span>
                 </div>
               </div>
@@ -725,18 +611,18 @@ function getItemForCart() {
             <div class="flex *:flex-1 items-center">
               <div
                 class="text-center"
-                :set="
-                  (rating = (
-                    details.reviews.reduce((n, i) => n + i.rating, 0) /
-                    details.reviews.length
-                  ).toFixed(1))
-                "
+                v-for="rating in [
+                  parseFloat(
+                    (
+                      reviews.reduce((n, i) => n + i.rating, 0) / reviews.length
+                    ).toFixed(1),
+                  ),
+                ]"
               >
                 <div class="font-semibold" style="font-size: 3em">
                   {{
                     (
-                      details.reviews.reduce((n, i) => n + i.rating, 0) /
-                      details.reviews.length
+                      reviews.reduce((n, i) => n + i.rating, 0) / reviews.length
                     ).toFixed(1)
                   }}
                 </div>
@@ -754,12 +640,12 @@ function getItemForCart() {
                     name="material-symbols:star-outline-rounded"
                   />
                 </div>
-                <div>{{ details.reviews.length }} review(s)</div>
+                <div>{{ reviews.length }} review(s)</div>
                 <div>All reviews are from verified purchases.</div>
               </div>
               <div class="text-center">
                 <p class="small font-semibold">
-                  Patronize {{ details.bizData.bizName }} to write a review.
+                  Patronize {{ bizData.bizName }} to write a review.
                   <a href="#">Learn more.</a>
                 </p>
               </div>
@@ -772,8 +658,9 @@ function getItemForCart() {
               >
                 <div class="font-semibold">Reviews</div>
                 <LimbDropdown
+                  type="selection"
                   :options="{ directionPriority: { x: 'left' } }"
-                  class="outlined small button selection"
+                  class="outlined small button"
                 >
                   <Icon name="material-symbols:sort-rounded" class="lead" />
                   Sort:
@@ -786,64 +673,65 @@ function getItemForCart() {
               </div>
               <div class="dm-reviews">
                 <div
-                  v-for="a in Math.min(5, details.reviews.length)"
+                  v-for="index in Math.min(5, reviews.length)"
                   class="dm-review"
                   style="padding: 0.5em"
-                  :set="(review = details.reviews[a - 1])"
                 >
-                  <header class="flex justify-between items-center gap-3">
-                    <div class="small rounded-full avatar">
-                      <NuxtImg
-                        preset="logo"
-                        src="/Images/profilepic.jpg"
-                        alt="profile picture"
-                      />
-                    </div>
-                    <div class="content flex-1">
-                      <div class="font-bold">{{ review.username }}</div>
-                      <div class="dm-gap" style="gap: 0.5em">
-                        <div
-                          class="rating mini text-yellow-500"
-                          :set="(rating = review.rating)"
-                        >
-                          <Icon
-                            v-for="i in Math.floor(rating)"
-                            name="material-symbols:star-rounded"
-                          />
-                          <Icon
-                            v-if="rating - Math.floor(rating) >= 0.5"
-                            name="material-symbols:star-half-rounded"
-                          />
-                          <Icon
-                            v-for="i in 5 - Math.round(rating)"
-                            name="material-symbols:star-outline-rounded"
-                          />
+                  <template v-for="review in [reviews[index - 1]]">
+                    <header class="flex justify-between items-center gap-3">
+                      <div class="small rounded-full avatar">
+                        <NuxtImg
+                          preset="logo"
+                          src="/Images/profilepic.jpg"
+                          alt="profile picture"
+                        />
+                      </div>
+                      <div class="content flex-1">
+                        <div class="font-bold">{{ review?.username }}</div>
+                        <div class="dm-gap" style="gap: 0.5em">
+                          <div
+                            class="rating mini text-yellow-500"
+                            v-for="rating in [review!.rating]"
+                          >
+                            <Icon
+                              v-for="i in Math.floor(rating)"
+                              name="material-symbols:star-rounded"
+                            />
+                            <Icon
+                              v-if="rating - Math.floor(rating) >= 0.5"
+                              name="material-symbols:star-half-rounded"
+                            />
+                            <Icon
+                              v-for="i in 5 - Math.round(rating)"
+                              name="material-symbols:star-outline-rounded"
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <LimbDropdown>
-                      <Icon name="material-symbols:more-vert" />
-                    </LimbDropdown>
-                    <div class="drop menu small">
-                      <div class="item">
-                        <Icon
-                          name="material-symbols:flag-outline-rounded"
-                          class="lead"
-                        />
-                        Report
+                      <LimbDropdown>
+                        <Icon name="material-symbols:more-vert" />
+                      </LimbDropdown>
+                      <div class="drop menu small">
+                        <div class="item">
+                          <Icon
+                            name="material-symbols:flag-outline-rounded"
+                            class="lead"
+                          />
+                          Report
+                        </div>
                       </div>
-                    </div>
-                  </header>
-                  <article>{{ review.review }}</article>
-                  <footer>
-                    <span class="faint-text small font-semibold"
-                      >12-01-2034</span
-                    >
-                  </footer>
+                    </header>
+                    <article>{{ review?.review }}</article>
+                    <footer>
+                      <span class="faint-text small font-semibold"
+                        >12-01-2034</span
+                      >
+                    </footer>
+                  </template>
                 </div>
-                <div v-if="details.reviews.length > 5" class="text-center">
+                <div v-if="reviews.length > 5" class="text-center">
                   <a href="#" class="flat primary button"
-                    >More reviews ({{ details.reviews.length - 5 }})</a
+                    >More reviews ({{ reviews.length - 5 }})</a
                   >
                 </div>
               </div>
@@ -863,7 +751,7 @@ function getItemForCart() {
       >
         <div class="small font-semibold">Unit price</div>
         <div class="h3 m-0 primary-text font-bold">
-          ₦{{ tmp.price.toLocaleString() }}
+          ₦{{ toCart.price.toLocaleString() }}
         </div>
         <div class="alt-ribbon red label">Configure purchase</div>
 
@@ -1006,7 +894,7 @@ function getItemForCart() {
                 <td>Location</td>
                 <td>
                   {{
-                    `${details.bizData.location.address}, ${details.bizData.location.city}, ${details.bizData.location.state}.`
+                    `${bizData.location.address}, ${bizData.location.city}, ${bizData.location.state}.`
                   }}
                 </td>
               </tr>
@@ -1018,12 +906,12 @@ function getItemForCart() {
                 <td>Contact</td>
                 <td>
                   Call
-                  <a :href="`tel:${details.bizData.contacts.tel}`">{{
-                    details.bizData.contacts.tel
+                  <a :href="`tel:${bizData.contacts.tel}`">{{
+                    bizData.contacts.tel
                   }}</a>
                   or email
-                  <a :href="`mailto:${details.bizData.contacts.email}`">{{
-                    details.bizData.contacts.email
+                  <a :href="`mailto:${bizData.contacts.email}`">{{
+                    bizData.contacts.email
                   }}</a>
                   for more information.
                 </td>
@@ -1053,13 +941,13 @@ function getItemForCart() {
             <div class="flex flex-col" style="gap: 0.25rem">
               <div class="flex gap-3 justify-between">
                 <div>Unit price</div>
-                <div>₦{{ tmp.price.toLocaleString() }}</div>
+                <div>₦{{ toCart.price.toLocaleString() }}</div>
               </div>
               <hr class="m-0" />
               <div class="flex gap-3 justify-between">
                 <div class="font-bold">Total:</div>
                 <div class="h5 font-bold">
-                  ₦{{ (tmp.price * tmp.quantity).toLocaleString() }}
+                  ₦{{ (toCart.price * toCart.quantity).toLocaleString() }}
                 </div>
               </div>
             </div>
@@ -1074,7 +962,7 @@ function getItemForCart() {
               <NuxtLink
                 :to="{
                   name: 'biz-products',
-                  params: { id: details.bizData.bizId },
+                  params: { id: bizData.bizId },
                 }"
                 @click="cartStore.addToCart(getItemForCart())"
                 class="flex-1 primary flat button exit-modal"

@@ -1,4 +1,4 @@
-interface item {
+interface cartItem {
   type: string;
   id: string;
   title: string;
@@ -196,7 +196,7 @@ export const useCartStore = defineStore('cart', {
       console.log('removing item with id: ', id);
       this.items = this.items.filter((el) => el.id !== id);
     },
-    addToCart(item: item) {
+    addToCart(item: any) {
       this.items.push(item);
     },
   },

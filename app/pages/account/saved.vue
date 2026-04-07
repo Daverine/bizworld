@@ -1,5 +1,5 @@
 <script setup>
-definePageMeta({ layout: 'account', auth: true, });
+definePageMeta({ layout: 'account', auth: { only: 'user' }, });
 defineOptions({ title: 'Saved cards | BizWorld' });
 const userStore = useUserStore();
 onMounted(() => userStore.getSavedCards());

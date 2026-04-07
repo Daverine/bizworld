@@ -389,7 +389,7 @@ export default {
       }
     }
 
-    function streamCallback() {
+    async function streamCallback() {
       if (!el) return;
       let elHeight = el.getBoundingClientRect().height;
       // let parent take scrollPin element height + the parent padding top and bottom as min-height
@@ -409,9 +409,8 @@ export default {
         onScrollMtd();
         sizeStreamId = requestAnimationFrame(streamCallback);
       } else {
-        setTimeout(() => {
-          sizeStreamId = requestAnimationFrame(streamCallback);
-        }, 30);
+        await utils.delay(30);
+        sizeStreamId = requestAnimationFrame(streamCallback);
       }
     }
 

@@ -11,11 +11,10 @@ export const useSearchStore = defineStore('search', {
     searchResult: [],
   }),
   actions: {
-    triggerSearch() {
-      const router = useRouter();
-
+    async triggerSearch() {
       if (!this.searchBox) return;
-      router.push({
+
+      await navigateTo({
         name: 'search',
         params: { searchIn: this.searchIn },
         query: { q: this.searchBox },

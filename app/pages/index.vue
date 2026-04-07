@@ -1,114 +1,19 @@
 <script lang="ts" setup>
-const userStore = useUserStore();
-const { data: session } = await useAuth().useSession(useFetch);
+const { loggedIn } = useAuth();
 </script>
 
 <template>
   <header class="hm-header">
-    <!-- Index unique menu -->
-    <div class="menu">
-      <div
-        class="container-lg items"
-        style="border-radius: var(--default-radius)"
-      >
-        <button
-          class="item as-icon open-sidepanel"
-          v-tooltip:aria.unblocking
-          aria-label="Menu"
-          data-target="msidepanel"
-        >
-          <Icon name="material-symbols:menu-rounded" />
-        </button>
-        <div class="items max-md:hidden">
-          <NuxtLink :to="{ name: 'new-shop' }" class="item">
-            Have a shop online
-          </NuxtLink>
-          <LimbDropdown class="item">
-            Support
-            <Icon
-              name="material-symbols:expand-more-rounded"
-              class="trailing"
-            />
-          </LimbDropdown>
-          <div class="drop menu">
-            <Shareables name="supports" />
-          </div>
-        </div>
-        <div class="items r-aligned">
-          <div class="item open-modal" data-target="explore-modal">
-            <Icon name="material-symbols:manage-search-rounded" class="lead" />
-            Explore
-          </div>
-          <template v-if="session">
-            <div
-              class="as-icon item"
-              v-tooltip:aria.unblocking
-              aria-label="Notifications"
-            >
-              <Icon name="material-symbols:notifications-outline-rounded" />
-            </div>
-            <LimbDropdown
-              :options="{ directionPriority: { x: 'left' } }"
-              v-tooltip:aria.unblocking
-              aria-label="Your profile"
-              class="xhover browse as-icon item"
-            >
-              <NuxtImg
-                preset="logo"
-                :src="userStore.userData.profileImg"
-                alt="profile"
-                class="rounded-full logo"
-              />
-            </LimbDropdown>
-            <Shareables name="profile_menu" />
-          </template>
-          <template v-else>
-            <LimbDropdown class="as-icon item sm:hidden">
-              <Icon
-                name="material-symbols:person-add-outline-rounded"
-                class="lead"
-              />
-              Account
-            </LimbDropdown>
-            <div class="drop menu">
-              <div class="item open-modal" data-target="login-modal">
-                Log in
-              </div>
-              <div class="item open-modal" data-target="register-modal">
-                Sign Up
-              </div>
-            </div>
-            <div class="items max-sm:hidden">
-              <div class="item open-modal" data-target="login-modal">
-                Log in
-              </div>
-              <div class="xhover item px-0">
-                <button
-                  class="primary button open-modal"
-                  data-target="register-modal"
-                >
-                  Sign Up
-                </button>
-              </div>
-            </div>
-          </template>
-        </div>
-      </div>
-    </div>
-    <SearchBoxMain />
-    <div
-      role="button"
-      class="mouse_scroll"
-      @click="
-        (
-          $event.currentTarget as HTMLElement
-        )?.parentElement?.nextElementSibling?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-          inline: 'nearest',
-        })
-      "
-    >
+    <HomeHeader />
+    <div role="button" class="mouse_scroll" @click="
+      (
+        $event.currentTarget as HTMLElement
+      )?.parentElement?.nextElementSibling?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest',
+      })
+      ">
       <div class="mouse">
         <div class="wheel"></div>
       </div>
@@ -119,10 +24,7 @@ const { data: session } = await useAuth().useSession(useFetch);
       </div>
     </div>
   </header>
-  <div
-    class="menu sticky z-level-2 surface-bg"
-    style="top: 0px; border-bottom: 1px solid var(--outline)"
-  >
+  <div class="menu sticky z-level-2 surface-bg" style="top: 0px; border-bottom: 1px solid var(--outline)">
     <Shareables name="main_menu" />
   </div>
   <article id="firstSec">
@@ -140,11 +42,8 @@ const { data: session } = await useAuth().useSession(useFetch);
           You can get updates from stores, offices, and businesses in general.
           You can rate and write reviews on their offered products and services.
         </p>
-        <div v-if="!session" class="text-center">
-          <button
-            class="primary button open-modal"
-            data-target="register-modal"
-          >
+        <div v-if="!loggedIn" class="text-center">
+          <button class="primary button open-modal" data-target="register-modal">
             SIGN UP
           </button>
         </div>
@@ -153,14 +52,8 @@ const { data: session } = await useAuth().useSession(useFetch);
     <section class="sec-block">
       <div class="container grid grid-cols-1 md:grid-cols-2">
         <div class="col">
-          <NuxtImg
-            format="webp"
-            sizes="800px"
-            densities="1x"
-            src="/images/explore.jpg"
-            alt="picture depicting explore"
-            class="rounded-sm"
-          />
+          <NuxtImg format="webp" sizes="800px" densities="1x" src="/images/explore.jpg" alt="picture depicting explore"
+            class="rounded-sm" />
         </div>
         <div class="col container-text big">
           <div>
@@ -188,10 +81,7 @@ const { data: session } = await useAuth().useSession(useFetch);
               use the search feature instead.
             </p>
             <div class="text-center">
-              <button
-                class="primary button open-modal"
-                data-target="explore-modal"
-              >
+              <button class="primary button open-modal" data-target="explore-modal">
                 EXPLORE
               </button>
             </div>
@@ -200,19 +90,10 @@ const { data: session } = await useAuth().useSession(useFetch);
       </div>
     </section>
     <section class="sec-block">
-      <div
-        class="container grid grid-cols-1 md:grid-cols-2"
-        style="direction: rtl"
-      >
+      <div class="container grid grid-cols-1 md:grid-cols-2" style="direction: rtl">
         <div class="col">
-          <NuxtImg
-            format="webp"
-            sizes="800px"
-            densities="1x"
-            src="/images/qr.jpg"
-            alt="picture depicting qr"
-            class="rounded-sm"
-          />
+          <NuxtImg format="webp" sizes="800px" densities="1x" src="/images/qr.jpg" alt="picture depicting qr"
+            class="rounded-sm" />
         </div>
         <div class="col container-text big" style="direction: ltr">
           <div>
@@ -228,10 +109,7 @@ const { data: session } = await useAuth().useSession(useFetch);
             </p>
             <!-- <p>Scan a business bizWorld QR Code and get to know what products or services a business offer. Businesses that have page(s) on bizWorld usually have their BizWorld QR Code pasted in public places to help people easyly access their page. You can utilize the QR scanner on this page on such Code and directly access a business page and explore their business world.</p> -->
             <div class="text-center">
-              <button
-                class="primary button open-modal"
-                data-target="scanqr-modal"
-              >
+              <button class="primary button open-modal" data-target="scanqr-modal">
                 SCAN QR
               </button>
             </div>
@@ -259,17 +137,10 @@ const { data: session } = await useAuth().useSession(useFetch);
     </section>
   </article>
   <footer style="background-color: rgba(128, 128, 128, 0.1)">
-    <div
-      class="container flex gap-6 flex-wrap justify-between"
-      style="padding: 2.75rem 1.25rem 1.25rem"
-    >
+    <div class="container flex gap-6 flex-wrap justify-between" style="padding: 2.75rem 1.25rem 1.25rem">
       <div class="col">
         <div class="heading">
-          <NuxtImg
-            preset="logo"
-            src="/images/logo.png"
-            style="max-height: 1.25em"
-          />
+          <NuxtImg preset="logo" src="/images/logo.png" style="max-height: 1.25em" />
         </div>
         <div class="vertical text menu">
           <div class="item open-modal" data-target="search-modal">
@@ -321,10 +192,7 @@ const { data: session } = await useAuth().useSession(useFetch);
         </div>
       </div>
     </div>
-    <div
-      class="wrappable text menu"
-      style="padding: 10px 0px; background-color: rgba(128, 128, 128, 0.1)"
-    >
+    <div class="wrappable text menu" style="padding: 10px 0px; background-color: rgba(128, 128, 128, 0.1)">
       <div class="container items">
         <div class="item">Terms of use</div>
         <div class="item">About us</div>

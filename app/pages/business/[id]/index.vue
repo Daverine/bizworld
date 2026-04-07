@@ -6,7 +6,7 @@ const isReady = computed(() => data.details && avail.value);
 </script>
 
 <template>
-  <main v-if="isReady">
+  <main>
     <div
       class="dm-display"
       style="position: relative; padding-top: calc(100% / 6 * 2)"

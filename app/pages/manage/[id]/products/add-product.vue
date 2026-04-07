@@ -16,30 +16,30 @@ const route = useRoute();
 const newProduct = reactive<{
   tab1: {
     category?: string;
-    newCategory?: string;
+    new_category?: string;
     title?: string;
-    photos: File[];
-    videoLink?: string;
+    photos: (File | string)[];
+    video_link?: string;
   };
   tab2: {
-    price: number;
-    optionGroup?: {
+    base_price: number;
+    option_group?: {
       title: string;
       options: {
         label: string;
         price?: number;
-        photo?: File;
-        subOptions?: {
-          isActive: boolean;
+        photo?: File | string;
+        sub_options?: {
+          is_active: boolean;
           label: string;
           price?: number;
-          priceChanged?: boolean;
+          price_changed?: boolean;
         }[];
       }[];
     };
-    subOptionGroup?: {
+    sub_option_group?: {
       title: string;
-      options: { label: string; price?: number; photo?: File }[];
+      options: { label: string; price?: number; photo?: File | string }[];
     };
   };
   tab3: {
@@ -54,7 +54,7 @@ const newProduct = reactive<{
     photos: [],
   },
   tab2: {
-    price: 0,
+    base_price: 0,
   },
   tab3: {
     specifications: [],
@@ -63,12 +63,12 @@ const newProduct = reactive<{
 const optionPlaceholder = ref<{
   label: string;
   price?: number;
-  photo?: File;
-  subOptions?: {
-    isActive: boolean;
+  photo?: File | string;
+  sub_options?: {
+    is_active: boolean;
     label: string;
     price?: number;
-    priceChanged?: boolean;
+    price_changed?: boolean;
   }[];
 }>({
   label: '',
@@ -78,7 +78,7 @@ const validation = {
     category: {
       required: withMessage(required, 'Product category is required'),
     },
-    newCategory: {
+    new_category: {
       required: withMessage(
         requiredIf(() => newProduct.tab1.category === 'others'),
         'New category name is required',
@@ -93,23 +93,23 @@ const validation = {
       ),
       size: withMessage(
         (value) =>
-          !Boolean((value as File[]).find((el) => el.size >= 5 * 1024 * 1024)),
+          !Boolean(value && (value as (File | string)[]).some((el) => typeof el !== 'string' && el.size >= 5 * 1024 * 1024)),
         'Each photo must be less than 5MB in size.',
       ),
     },
-    videoLink: { url },
+    video_link: { url },
   }),
   tab2: useRegle(newProduct.tab2, {
-    price: {
+    base_price: {
       required: withMessage(
         (value: Maybe<number>) => typeof value === 'number' && value > 0,
         'A base price must be specified for the product.',
       ),
     },
-    optionGroup: {
+    option_group: {
       title: {
         required: withMessage(
-          requiredIf(() => utils.isObject(newProduct.tab2.optionGroup)),
+          requiredIf(() => utils.isObject(newProduct.tab2.option_group)),
           'A title must be specified for this options group.',
         ),
       },
@@ -117,16 +117,16 @@ const validation = {
         $rewardEarly: true,
         minLength: withMessage(
           (value) =>
-            !utils.isObject(newProduct.tab2.optionGroup) ||
+            !utils.isObject(newProduct.tab2.option_group) ||
             (value as []).length > 1,
           'At least two option must be added here.',
         ),
       },
     },
-    subOptionGroup: {
+    sub_option_group: {
       title: {
         required: withMessage(
-          requiredIf(() => utils.isObject(newProduct.tab2.subOptionGroup)),
+          requiredIf(() => utils.isObject(newProduct.tab2.sub_option_group)),
           'A title must be specified for this options group.',
         ),
       },
@@ -134,7 +134,7 @@ const validation = {
         $rewardEarly: true,
         minLength: withMessage(
           (value) =>
-            !utils.isObject(newProduct.tab2.subOptionGroup) ||
+            !utils.isObject(newProduct.tab2.sub_option_group) ||
             (value as []).length > 1,
           'At least two option must be added here.',
         ),
@@ -165,11 +165,11 @@ const validation = {
       ),
       unique: withMessage((value) => {
         let existsInMain =
-          newProduct.tab2.optionGroup?.options.some(
+          newProduct.tab2.option_group?.options.some(
             (option) => option.label === value,
           ) ?? false;
         let existsInSub =
-          newProduct.tab2.subOptionGroup?.options.some(
+          newProduct.tab2.sub_option_group?.options.some(
             (option) => option.label === value,
           ) ?? false;
         return (
@@ -178,7 +178,7 @@ const validation = {
       }, 'An option with this label already exists.'),
     },
     photo: {
-      maxFileSize: withMessage(
+      maxSize: withMessage(
         maxFileSize(5 * 1024 * 1024),
         'Selected photo must be less than 5MB in size.',
       ),
@@ -275,7 +275,6 @@ const productCategories = {
     'Usage Instructions',
   ],
 };
-const processingProgress = ref<string | number>('indeterminate');
 const progress = ref<{
   message: string;
   loaded: null | number;
@@ -288,37 +287,34 @@ const progress = ref<{
 
 watchEffect(() => {
   if (
-    newProduct.tab2.subOptionGroup?.options === undefined &&
-    newProduct.tab2.optionGroup
+    newProduct.tab2.sub_option_group?.options === undefined &&
+    newProduct.tab2.option_group
   ) {
-    newProduct.tab2.optionGroup.options.forEach((option) => {
-      option.subOptions = undefined;
+    newProduct.tab2.option_group.options.forEach((option) => {
+      option.sub_options = undefined;
     });
-  } else if (newProduct.tab2.optionGroup) {
-    newProduct.tab2.optionGroup.options.forEach((option) => {
-      option.subOptions = option.subOptions || [];
-      let newMap = newProduct.tab2.subOptionGroup?.options.map((el, index) => ({
-        isActive:
-          option.subOptions![index]?.label === el.label
-            ? option.subOptions![index].isActive
+  } else if (newProduct.tab2.option_group) {
+    newProduct.tab2.option_group.options.forEach((option) => {
+      option.sub_options = option.sub_options || [];
+      let newMap = newProduct.tab2.sub_option_group?.options.map((el, index) => ({
+        is_active:
+          option.sub_options![index]?.label === el.label
+            ? option.sub_options![index].is_active
             : true,
         label: el.label,
         price:
-          option.subOptions![index]?.label === el.label &&
-          option.subOptions![index]?.priceChanged
-            ? option.subOptions![index]!.price
+          option.sub_options![index]?.label === el.label &&
+          option.sub_options![index]?.price_changed
+            ? option.sub_options![index]!.price
             : el.price,
-        priceChanged: option.subOptions![index]?.priceChanged,
+        price_changed: option.sub_options![index]?.price_changed,
       }));
 
-      option.subOptions = newMap;
+      option.sub_options = newMap;
     });
   }
 });
 
-function focusNewCategory() {
-  nextTick(() => document.getElementById('prod-category-new')?.focus());
-}
 function handleNewPhoto(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files) {
@@ -330,24 +326,24 @@ function handleNewPhoto(event: Event) {
   }
 }
 async function createNewProductOption() {
-  if (newProduct.tab2.optionGroup) {
-    newProduct.tab2.subOptionGroup = {
+  if (newProduct.tab2.option_group) {
+    newProduct.tab2.sub_option_group = {
       title: '',
       options: [],
     };
     await nextTick();
-    validation.tab2.r$.subOptionGroup.$reset();
+    validation.tab2.r$.sub_option_group.$reset();
     document.getElementById('sub-option-group-title')?.focus();
     document
       .getElementById('sub-option-group-title')
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } else {
-    newProduct.tab2.optionGroup = {
+    newProduct.tab2.option_group = {
       title: '',
       options: [],
     };
     await nextTick();
-    validation.tab2.r$.optionGroup.$reset();
+    validation.tab2.r$.option_group.$reset();
     document.getElementById('option-group-title')?.focus();
     document
       .getElementById('option-group-title')
@@ -362,8 +358,8 @@ async function configProductOption({ settings }: DialogEvent) {
     let optionId = parseInt(caller.dataset.optionId);
     const option =
       callergroup === 'sub'
-        ? newProduct.tab2.subOptionGroup?.options[optionId]
-        : newProduct.tab2.optionGroup?.options[optionId];
+        ? newProduct.tab2.sub_option_group?.options[optionId]
+        : newProduct.tab2.option_group?.options[optionId];
     if (option) {
       optionPlaceholderModifying.value = true;
       optionPlaceholder.value = { ...option };
@@ -387,29 +383,29 @@ function processProductOption({ settings, exit }: Dialoger) {
   if (caller.dataset.optionId !== undefined) {
     const optionId = parseInt(caller.dataset.optionId);
     if (callergroup === 'sub') {
-      if (newProduct.tab2.subOptionGroup?.options[optionId]) {
+      if (newProduct.tab2.sub_option_group?.options[optionId]) {
         if (optionPlaceholder.value.label.trim())
-          newProduct.tab2.subOptionGroup.options[optionId] = {
+          newProduct.tab2.sub_option_group.options[optionId] = {
             ...optionPlaceholder.value,
           };
-        else newProduct.tab2.subOptionGroup.options.splice(optionId, 1);
+        else newProduct.tab2.sub_option_group.options.splice(optionId, 1);
       }
     } else if (callergroup === 'main') {
-      if (newProduct.tab2.optionGroup?.options[optionId]) {
+      if (newProduct.tab2.option_group?.options[optionId]) {
         if (optionPlaceholder.value.label.trim())
-          newProduct.tab2.optionGroup.options[optionId] = {
+          newProduct.tab2.option_group.options[optionId] = {
             ...optionPlaceholder.value,
           };
-        else newProduct.tab2.optionGroup.options.splice(optionId, 1);
+        else newProduct.tab2.option_group.options.splice(optionId, 1);
       }
     }
   } else if (optionPlaceholder.value.label.trim()) {
     if (callergroup === 'sub')
-      newProduct.tab2.subOptionGroup?.options.push({
+      newProduct.tab2.sub_option_group?.options.push({
         ...optionPlaceholder.value,
       });
     else if (callergroup === 'main')
-      newProduct.tab2.optionGroup?.options.push({ ...optionPlaceholder.value });
+      newProduct.tab2.option_group?.options.push({ ...optionPlaceholder.value });
   }
 
   exit();
@@ -462,28 +458,38 @@ async function nextTab() {
   const currentIndex = Object.keys(newProduct).indexOf(currentTab.value);
   if (currentIndex < Object.keys(newProduct).length - 1) {
     currentTab.value = Object.keys(newProduct)[currentIndex + 1] || '';
-    nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    await nextTick();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    (
+      document
+        .querySelector('.tab-page.active')
+        ?.querySelector(utils.focusableElementsSelector) as HTMLElement
+    )?.focus();
     return;
   }
 
   let uploader = document.querySelector('#upload-status');
 
   utils.triggerEvent(uploader!, 'dgconsole', 'open dialog');
+
+  if (progress.value.completed) return;
+
   progress.value.loaded = null;
   progress.value.message = 'Preparing your product for upload...';
-  await utils.delay(650);
+  await utils.notifyOnEvent(uploader!, 'isReady');
 
   const picData = new FormData();
   newProduct.tab1.photos.forEach((photo, index) => {
+    if (typeof photo === 'string') return;
     picData.append('photos', photo, index.toString());
   });
-  newProduct.tab2.optionGroup?.options.forEach((option, index) => {
-    if (option.photo)
+  newProduct.tab2.option_group?.options.forEach((option, index) => {
+    if (option.photo && typeof option.photo !== 'string')
       picData.append('optionsPhotos', option.photo, index.toString());
   });
-  newProduct.tab2.subOptionGroup?.options.forEach((option, index) => {
-    if (option.photo)
-      picData.append('subOptionsPhotos', option.photo, index.toString());
+  newProduct.tab2.sub_option_group?.options.forEach((option, index) => {
+    if (option.photo && typeof option.photo !== 'string')
+      picData.append('sub_optionsPhotos', option.photo, index.toString());
   });
 
   const picToURL = await axios.post(
@@ -512,10 +518,8 @@ async function nextTab() {
   progress.value.loaded = null;
   progress.value.message = 'Finalizing...';
 
-  const product: {
-    [key: string]: any;
-  } = {
-    businessId: route.params.id,
+  const product = {
+    business_id: route.params.id as string,
     ...structuredClone(toRaw(newProduct.tab1)),
     ...structuredClone(toRaw(newProduct.tab2)),
     ...structuredClone(toRaw(newProduct.tab3)),
@@ -528,17 +532,17 @@ async function nextTab() {
       });
     } else if (key === 'optionsPhotos') {
       picToURL.data[key].forEach((elem: { filename: string; data: string }) => {
-        product.optionGroup.options[parseInt(elem.filename)].photo = elem.data;
+        product.option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
       });
-    } else if (key === 'subOptionsPhotos') {
+    } else if (key === 'sub_optionsPhotos') {
       picToURL.data[key].forEach((elem: { filename: string; data: string }) => {
-        product.subOptionGroup.options[parseInt(elem.filename)].photo =
+        product.sub_option_group!.options[parseInt(elem.filename)]!.photo =
           elem.data;
       });
     }
   });
-  const api = '/api/products/create' as const;
-  type userResponse = InternalApi['/api/products/create']['post'];
+  const api = '/api/product/create' as const;
+  type userResponse = InternalApi[typeof api]['post'];
   const resp = await axios.post<userResponse>(api, product);
   if (resp?.data) {
     progress.value.loaded = null;
@@ -588,15 +592,21 @@ function prevTab() {
       >
         <div class="field">
           <label for="prod-category">Product category</label>
-          <p class="supp-text faint-text">
+          <p class="text-sm faint-text">
             Choose a category from the dropdown below that best fits the product
             you're adding. You can also select “Others” from the dropdown to
             make a new one.
           </p>
           <LimbDropdown
             v-model="newProduct.tab1.category"
-            class="search select"
+            type="search select"
             :class="{ error: validation.tab1.r$.category.$error }"
+            @change="
+              $event !== 'others' ||
+              nextTick(() =>
+                (utils.document().getElementById('prod-category-new')?.focus()),
+              )
+            "
             id="prod-category"
             placeholder="Select category"
           >
@@ -607,24 +617,11 @@ function prevTab() {
               >
                 {{ category }}
               </div>
-              <div
-                data-value="others"
-                class="item"
-                @click="
-                  nextTick(() =>
-                    utils
-                      .document()
-                      .getElementById('prod-category-new')
-                      ?.focus(),
-                  )
-                "
-              >
-                Others
-              </div>
+              <div data-value="others" class="item">Others</div>
             </div>
           </LimbDropdown>
           <div
-            class="supp-text error-text"
+            class="text-sm error-text"
             v-for="error of validation.tab1.r$.category.$errors"
             :key="error"
           >
@@ -634,22 +631,21 @@ function prevTab() {
         </div>
         <div v-if="newProduct.tab1.category === 'others'" class="field">
           <label for="prod-category-new">New category name</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             Note: Your product will stay in the “Others” category of our explore
             section until the new category is reviewed and standardized.
           </div>
           <input
-            v-model="newProduct.tab1.newCategory"
+            v-model="newProduct.tab1.new_category"
             id="prod-category-new"
             class="form-item"
-            :class="{ error: validation.tab1.r$.newCategory.$error }"
+            :class="{ error: validation.tab1.r$.new_category.$error }"
             type="text"
             placeholder="Category name"
-            required
           />
           <div
-            class="supp-text error-text"
-            v-for="error of validation.tab1.r$.newCategory.$errors"
+            class="text-sm error-text"
+            v-for="error of validation.tab1.r$.new_category.$errors"
             :key="error"
           >
             <Icon name="material-symbols:close-rounded" />
@@ -658,7 +654,7 @@ function prevTab() {
         </div>
         <div class="field">
           <label for="prod-title">Title</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             It should be descriptive and unique as possible. Include brand name,
             model, and key features.
           </div>
@@ -671,7 +667,7 @@ function prevTab() {
             placeholder="Product title"
           />
           <div
-            class="supp-text error-text"
+            class="text-sm error-text"
             v-for="error of validation.tab1.r$.title.$errors"
             :key="error"
           >
@@ -681,7 +677,7 @@ function prevTab() {
         </div>
         <div class="field">
           <label>Add photo</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             Photos help customers to see the product. Use clear, well-lit images
             that showcase the product from different angles. A photo can be
             dragged to re-order it.
@@ -707,13 +703,13 @@ function prevTab() {
               >
                 <Icon name="material-symbols:close-rounded" />
               </button>
-              <div class="small">
+              <div v-if="typeof photo !== 'string'" class="small">
                 {{ (photo.size / 1024 / 1024).toFixed(1) }}MB
               </div>
             </div>
           </LimbIScroller>
           <div
-            class="supp-text error-text"
+            class="text-sm error-text"
             v-for="error in validation.tab1.r$.photos.$self.$errors"
             :key="error"
           >
@@ -735,16 +731,16 @@ function prevTab() {
         <div class="field">
           <label>Link to youtube or Facebook video</label>
           <input
-            v-model="newProduct.tab1.videoLink"
+            v-model="newProduct.tab1.video_link"
             id="prod-video"
             class="form-item"
-            :class="{ error: validation.tab1.r$.videoLink.$error }"
+            :class="{ error: validation.tab1.r$.video_link.$error }"
             type="text"
             placeholder="e.g. https://youtube.com/..."
           />
           <div
-            class="supp-text error-text"
-            v-for="error of validation.tab1.r$.videoLink.$errors"
+            class="text-sm error-text"
+            v-for="error of validation.tab1.r$.video_link.$errors"
             :key="error"
           >
             <Icon name="material-symbols:close-rounded" />
@@ -759,20 +755,20 @@ function prevTab() {
       >
         <div class="field">
           <label for="prod-price">Price</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             If there is a product options, price here should be the lower price
             option. Price can also be added with product options.
           </div>
           <LimbCurrencyInput
-            v-model="newProduct.tab2.price"
+            v-model="newProduct.tab2.base_price"
             id="prod-price"
             class="form-item"
-            :class="{ error: validation.tab2.r$.price.$error }"
+            :class="{ error: validation.tab2.r$.base_price.$error }"
             placeholder="Product price"
           />
           <div
-            class="supp-text error-text"
-            v-for="error of validation.tab2.r$.price.$errors"
+            class="text-sm error-text"
+            v-for="error of validation.tab2.r$.base_price.$errors"
             :key="error"
           >
             <Icon name="material-symbols:close-rounded" />
@@ -781,25 +777,25 @@ function prevTab() {
         </div>
         <div class="field">
           <label>Product options</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             Product options are variations of the product, such as color, size,
             or config option. You can add a maximum of two options groups.
           </div>
           <button
-            v-if="!newProduct.tab2.optionGroup"
+            v-if="!newProduct.tab2.option_group"
             @click="createNewProductOption"
             class="compact button"
           >
             Add an options group
           </button>
           <fieldset
-            v-if="newProduct.tab2.optionGroup"
+            v-if="newProduct.tab2.option_group"
             class="flex flex-col gap-2"
           >
             <button
               @click="
-                ((newProduct.tab2.optionGroup = undefined),
-                (newProduct.tab2.subOptionGroup = undefined))
+                ((newProduct.tab2.option_group = undefined),
+                (newProduct.tab2.sub_option_group = undefined))
               "
               v-tooltip:aria.unblocking
               aria-label="Remove options group"
@@ -810,18 +806,18 @@ function prevTab() {
             <div class="field">
               <label>Options group title</label>
               <input
-                v-model="newProduct.tab2.optionGroup.title"
+                v-model="newProduct.tab2.option_group.title"
                 class="form-item"
                 :class="{
-                  error: validation.tab2.r$.optionGroup.title.$error,
+                  error: validation.tab2.r$.option_group.title.$error,
                 }"
                 id="option-group-title"
                 type="text"
                 placeholder="e.g. Color, Size, etc."
               />
               <div
-                class="supp-text error-text"
-                v-for="error of validation.tab2.r$.optionGroup.title.$errors"
+                class="text-sm error-text"
+                v-for="error of validation.tab2.r$.option_group.title.$errors"
                 :key="error"
               >
                 <Icon name="material-symbols:close-rounded" />
@@ -830,12 +826,12 @@ function prevTab() {
               <div class="lined sub heading a-block px-3">
                 Add options below for:
                 <div class="trailing">
-                  {{ newProduct.tab2.optionGroup.title }}
+                  {{ newProduct.tab2.option_group.title }}
                 </div>
               </div>
               <div class="wrappable menu">
                 <div
-                  v-for="(option, index) in newProduct.tab2.optionGroup.options"
+                  v-for="(option, index) in newProduct.tab2.option_group.options"
                   class="item open-modal"
                   data-target="app-option"
                   :data-option-id="index"
@@ -855,7 +851,7 @@ function prevTab() {
                   </div>
                   <button
                     @click="
-                      newProduct.tab2.optionGroup.options.splice(index, 1)
+                      newProduct.tab2.option_group.options.splice(index, 1)
                     "
                     class="small circular trailing icon button ex-open-modal"
                   >
@@ -871,8 +867,8 @@ function prevTab() {
                 </button>
               </div>
               <div
-                class="supp-text error-text"
-                v-for="error of validation.tab2.r$.optionGroup.options.$self
+                class="text-sm error-text"
+                v-for="error of validation.tab2.r$.option_group.options.$self
                   ?.$errors"
                 :key="error"
               >
@@ -882,9 +878,9 @@ function prevTab() {
             </div>
           </fieldset>
         </div>
-        <div v-if="newProduct.tab2.optionGroup" class="field">
+        <div v-if="newProduct.tab2.option_group" class="field">
           <label>Product sub-options</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             <p>
               A sub-options group can also be added if necessary. For example,
               if your main options group is "Size," your sub-options group could
@@ -898,18 +894,18 @@ function prevTab() {
             </p>
           </div>
           <button
-            v-if="!newProduct.tab2.subOptionGroup"
+            v-if="!newProduct.tab2.sub_option_group"
             @click="createNewProductOption"
             class="compact button"
           >
             Add a sub options group
           </button>
           <fieldset
-            v-if="newProduct.tab2.subOptionGroup"
+            v-if="newProduct.tab2.sub_option_group"
             class="flex flex-col gap-2"
           >
             <button
-              @click="newProduct.tab2.subOptionGroup = undefined"
+              @click="newProduct.tab2.sub_option_group = undefined"
               v-tooltip:aria.unblocking
               aria-label="Remove sub-options group"
               class="ml-auto small circular bg-transparent icon button"
@@ -919,18 +915,18 @@ function prevTab() {
             <div class="field">
               <label>Sub-options group title</label>
               <input
-                v-model="newProduct.tab2.subOptionGroup.title"
+                v-model="newProduct.tab2.sub_option_group.title"
                 class="form-item"
                 :class="{
-                  error: validation.tab2.r$.subOptionGroup.title.$error,
+                  error: validation.tab2.r$.sub_option_group.title.$error,
                 }"
                 id="sub-option-group-title"
                 type="text"
                 placeholder="e.g. Color, Size, etc."
               />
               <div
-                class="supp-text error-text"
-                v-for="error of validation.tab2.r$.subOptionGroup.title.$errors"
+                class="text-sm error-text"
+                v-for="error of validation.tab2.r$.sub_option_group.title.$errors"
                 :key="error"
               >
                 <Icon name="material-symbols:close-rounded" />
@@ -939,12 +935,12 @@ function prevTab() {
               <div class="lined sub heading a-block px-3">
                 Add options below for:
                 <div class="trailing">
-                  {{ newProduct.tab2.subOptionGroup.title }}
+                  {{ newProduct.tab2.sub_option_group.title }}
                 </div>
               </div>
               <div class="wrappable menu">
                 <div
-                  v-for="(option, index) in newProduct.tab2.subOptionGroup
+                  v-for="(option, index) in newProduct.tab2.sub_option_group
                     .options"
                   class="item open-modal"
                   data-target="app-option"
@@ -964,7 +960,7 @@ function prevTab() {
                   </div>
                   <button
                     @click="
-                      newProduct.tab2.subOptionGroup.options.splice(index, 1)
+                      newProduct.tab2.sub_option_group.options.splice(index, 1)
                     "
                     class="small circular trailing icon button ex-open-modal"
                   >
@@ -981,8 +977,8 @@ function prevTab() {
                 </button>
               </div>
               <div
-                class="supp-text error-text"
-                v-for="error of validation.tab2.r$.subOptionGroup.options.$self
+                class="text-sm error-text"
+                v-for="error of validation.tab2.r$.sub_option_group.options.$self
                   ?.$errors"
                 :key="error"
               >
@@ -1026,7 +1022,7 @@ function prevTab() {
                   placeholder="Option label"
                 />
                 <div
-                  class="supp-text error-text"
+                  class="text-sm error-text"
                   v-for="error of validation.optionPlaceholder.r$.label.$errors"
                   :key="error"
                 >
@@ -1062,14 +1058,14 @@ function prevTab() {
                   >
                     <Icon name="material-symbols:close-rounded" />
                   </button>
-                  <div class="small">
+                  <div v-if="typeof optionPlaceholder.photo !== 'string'" class="small">
                     {{
                       (optionPlaceholder.photo.size / 1024 / 1024).toFixed(1)
                     }}MB
                   </div>
                 </div>
                 <div
-                  class="supp-text error-text"
+                  class="text-sm error-text"
                   v-for="error of validation.optionPlaceholder.r$.photo.$errors"
                   :key="error"
                 >
@@ -1099,18 +1095,18 @@ function prevTab() {
                   {{ optionPlaceholderModifying ? 'Modify' : 'Add' }} option
                 </button>
               </div>
-              <div v-if="optionPlaceholder.subOptions" class="field">
+              <div v-if="optionPlaceholder.sub_options" class="field">
                 <label>Sub-options group</label>
-                <div class="supp-text faint-text">
+                <div class="text-sm faint-text">
                   Toggle the sub-options you want to add to this option. You can
                   also click on the price to modify it.
                 </div>
                 <div
-                  v-if="newProduct.tab2.subOptionGroup"
+                  v-if="newProduct.tab2.sub_option_group"
                   class="wrappable menu"
                 >
                   <div
-                    v-for="(option, index) in newProduct.tab2.subOptionGroup
+                    v-for="(option, index) in newProduct.tab2.sub_option_group
                       .options"
                     class="item"
                   >
@@ -1118,12 +1114,12 @@ function prevTab() {
                       class="icon"
                       :class="{
                         active: Boolean(
-                          optionPlaceholder.subOptions[index]!.isActive,
+                          optionPlaceholder.sub_options[index]!.is_active,
                         ),
                       }"
                       @click="
-                        optionPlaceholder.subOptions[index]!.isActive =
-                          !optionPlaceholder.subOptions[index]!.isActive
+                        optionPlaceholder.sub_options[index]!.is_active =
+                          !optionPlaceholder.sub_options[index]!.is_active
                       "
                     >
                       <Icon
@@ -1142,12 +1138,12 @@ function prevTab() {
                       <label class="primary-text"
                         >₦
                         <LimbCurrencyInput
-                          v-model="optionPlaceholder.subOptions[index]!.price"
+                          v-model="optionPlaceholder.sub_options[index]!.price"
                           :id="`sub-option${index}-price`"
                           @input="
-                            optionPlaceholder.subOptions![
+                            optionPlaceholder.sub_options![
                               index
-                            ]!.priceChanged! =
+                            ]!.price_changed! =
                               $event.target.value !== option.price
                           "
                           class="form-item text-fit primary-text"
@@ -1168,7 +1164,7 @@ function prevTab() {
       >
         <div class="field">
           <label>Product Specifications</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             <p>
               Product specifications provide detailed information about the
               product's features, dimensions, materials, and other relevant
@@ -1220,7 +1216,7 @@ function prevTab() {
                       placeholder="Specification name"
                     />
                     <div
-                      class="supp-text error-text"
+                      class="text-sm error-text"
                       v-for="error of spec.name.$errors"
                       :key="error"
                     >
@@ -1240,7 +1236,7 @@ function prevTab() {
                       placeholder="Specification value"
                     />
                     <div
-                      class="supp-text error-text"
+                      class="text-sm error-text"
                       v-for="error of spec.value.$errors"
                       :key="error"
                     >
@@ -1256,7 +1252,7 @@ function prevTab() {
                     aria-label="Remove specification"
                     class="small circular outlined icon button"
                   >
-                    <Icon name="material-symbols:delete-outline-rounded" />
+                    <Icon name="material-symbols:close-rounded" />
                   </button>
                 </td>
               </tr>
@@ -1264,6 +1260,15 @@ function prevTab() {
             <tfoot>
               <tr>
                 <td colspan="3">
+                  <div
+                    class="text-sm text-center font-normal mb-3 error-text"
+                    v-for="error of validation.tab3.r$.specifications.$self
+                      .$errors"
+                    :key="error"
+                  >
+                    <Icon name="material-symbols:close-rounded" />
+                    {{ error }}
+                  </div>
                   <button
                     @click="addSpecification()"
                     class="compact w-full button"
@@ -1274,18 +1279,10 @@ function prevTab() {
               </tr>
             </tfoot>
           </table>
-          <div
-            class="supp-text error-text"
-            v-for="error of validation.tab3.r$.specifications.$self.$errors"
-            :key="error"
-          >
-            <Icon name="material-symbols:close-rounded" />
-            {{ error }}
-          </div>
         </div>
         <div class="field">
           <label>Your review</label>
-          <p class="supp-text faint-text">
+          <p class="text-sm faint-text">
             Share your personal review of the product. Highlight its key
             features, benefits, and what makes it a great choice for customers.
             A compelling description can help buyers make an informed decision.
@@ -1298,7 +1295,7 @@ function prevTab() {
             placeholder="Write your review here..."
           ></textarea>
           <div
-            class="supp-text error-text"
+            class="text-sm error-text"
             v-for="error of validation.tab3.r$.overview.$errors"
             :key="error"
           >
@@ -1348,7 +1345,7 @@ function prevTab() {
               name="material-symbols:check-circle-outline-rounded"
               class="success-text text-5xl"
             />
-            <p class="text-center m-0">Product uploaded successfully!</p>
+            <p class="text-center m-0">Product added successfully!</p>
             <div class="flex gap-4 w-full *:flex-1">
               <NuxtLink
                 :to="{

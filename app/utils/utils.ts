@@ -1,3 +1,5 @@
+type styleValue = string | [string, 'important' | ''];
+
 declare global {
   interface Window {
     lui_EscTracker?: string[];
@@ -8,7 +10,7 @@ declare global {
 }
 
 export const utils = {
-  focusableElementsSelector: `a, area, button, [role="button"], input, label, select, summary, textarea, details, object, [tabindex]:not([tabindex="-1"]), [contenteditable]:not([contenteditable="false"])`,
+  focusableElementsSelector: `a, area, button, [role="button"], input, select, summary, textarea, details, object, [tabindex]:not([tabindex="-1"]), [contenteditable]:not([contenteditable="false"])`,
   trackEscOn(trackId: string): void {
     if (!window.lui_EscTracker) window.lui_EscTracker = [];
 
@@ -32,7 +34,7 @@ export const utils = {
 
     if (window.lui_EscTracker.slice(-1)[0] === trackId || byForce) {
       window.lui_EscTracker = window.lui_EscTracker.filter(
-        (el: string) => el !== trackId
+        (el: string) => el !== trackId,
       );
       return true;
     }
@@ -67,7 +69,7 @@ export const utils = {
       ).forEach((el) => {
         el.setAttribute(
           'data-lui-styleBeforeLock',
-          el.getAttribute('style') || ''
+          el.getAttribute('style') || '',
         );
         el.style.maxWidth = `calc(100% - ${scrollBarWidth})`;
         el.style.marginRight = scrollBarWidth;
@@ -82,7 +84,7 @@ export const utils = {
       window.lui_ScrollLockers.includes(lockerId)
     ) {
       window.lui_ScrollLockers = window.lui_ScrollLockers.filter(
-        (el: string) => el !== lockerId
+        (el: string) => el !== lockerId,
       );
 
       if (!window.lui_ScrollLockers.length) {
@@ -92,7 +94,7 @@ export const utils = {
         [...document.querySelectorAll('.respect-lock')].forEach((el) => {
           el.setAttribute(
             'style',
-            el.getAttribute('data-lui-styleBeforeLock') || ''
+            el.getAttribute('data-lui-styleBeforeLock') || '',
           );
           el.removeAttribute('data-lui-styleBeforeLock');
         });
@@ -106,6 +108,17 @@ export const utils = {
   },
   getCssVal(el: Element, prop: string): string {
     return window.getComputedStyle(el).getPropertyValue(prop);
+  },
+  setCSS(
+    el: HTMLElement,
+    props: Partial<Record<keyof CSSStyleDeclaration, styleValue>>,
+  ) {
+    Object.entries(props).forEach((prop) => {
+      if (Array.isArray(prop[1]))
+        el.style.setProperty(prop[0], prop[1][0], prop[1][1]);
+      else if (typeof prop[1] === 'string')
+        el.style.setProperty(prop[0], prop[1]);
+    });
   },
   contentSize(el: Element): { height: number; width: number } {
     let styleList = window.getComputedStyle(el),
@@ -136,13 +149,13 @@ export const utils = {
   getParents(
     el: Element,
     selector?: string,
-    until?: Element | string
+    until?: Element | string,
   ): Element[] {
     if (until) {
       if (typeof until === 'string') {
         until =
           [...document.querySelectorAll(until)].find((elem) =>
-            elem.contains(el)
+            elem.contains(el),
           ) || document.documentElement;
       } else if (!until.contains(el)) until = document.documentElement;
     } else until = document.documentElement;
@@ -183,7 +196,7 @@ export const utils = {
   triggerEvent(
     el: Element | Window,
     eventType: string | Event,
-    customData?: any
+    customData?: unknown,
   ): void {
     if (typeof eventType === 'string') {
       if (customData !== undefined)
@@ -192,6 +205,11 @@ export const utils = {
         (el as any)[eventType]();
       else el.dispatchEvent(new Event(eventType, { bubbles: true }));
     } else el.dispatchEvent(eventType);
+  },
+  notifyOnEvent(target: Element | Window, event: string) {
+    return new Promise((resolve) =>
+      target.addEventListener(event, (e) => resolve(e), { once: true }),
+    );
   },
   isObject(value: any): boolean {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -207,7 +225,7 @@ export const utils = {
   focusRangeOnTab(range: Element, e?: KeyboardEvent): void {
     let focusableElements = [
       ...range.querySelectorAll(
-        ':scope [href], :scope button, :scope input:not([type="hidden"]), :scope textarea, :scope select, :scope details, :scope object, :scope [contenteditable]:not([contenteditable="false"]), :scope [tabindex]:not([tabindex="-1"])'
+        ':scope [href], :scope button, :scope input:not([type="hidden"]), :scope textarea, :scope select, :scope details, :scope object, :scope [contenteditable]:not([contenteditable="false"]), :scope [tabindex]:not([tabindex="-1"])',
       ),
     ].filter(
       (el) =>
@@ -215,7 +233,7 @@ export const utils = {
         !el.getAttribute('aria-hidden') &&
         this.getCssVal(el, 'display') !== 'none' &&
         this.getCssVal(el, 'visibility') !== 'hidden' &&
-        !el.closest('[inert]')
+        !el.closest('[inert]'),
     ) as HTMLElement[];
     if (!focusableElements[0]) {
       if (e) e.preventDefault();
@@ -258,21 +276,23 @@ export const utils = {
         requestAnimationFrame(() => {
           if (func) func();
           resolve('void');
-        })
-      )
+        }),
+      ),
     );
   },
-  safeClick(e: Event, func: () => void) {
+  safeClick(e: Event, func?: () => unknown) {
     const target = e.target as HTMLElement;
     if (target.closest(this.focusableElementsSelector)) return;
-    func();
+    if (func) return func();
+    else return true;
   },
   compareArrays: (a: any[], b: any[]): boolean =>
     a.length === b.length && a.every((element, index) => element === b[index]),
   durationInMilliseconds: (duration: string): number =>
     parseFloat(duration) * (duration.includes('ms') ? 1 : 1000),
   delay: (ms: number) => new Promise((resolve) => setTimeout(resolve, ms)),
-  fileToURL: (file: File) => URL.createObjectURL(file),
+  fileToURL: (file: File | string) =>
+    typeof file === 'string' ? file : URL.createObjectURL(file),
   window: () => window,
   document: () => document,
 };

@@ -73,7 +73,8 @@ function popupSubmitSearch(e) {
               <td>
                 <LimbDropdown
                   v-model="searchStore.searchIn"
-                  class="select w-full"
+                  type="select"
+                  class="w-full"
                 >
                 </LimbDropdown>
                 <div class="drop menu">
@@ -92,7 +93,8 @@ function popupSubmitSearch(e) {
               <td>
                 <LimbDropdown
                   v-model="searchStore.location"
-                  class="select w-full"
+                  type="select"
+                  class="w-full"
                 >
                 </LimbDropdown>
                 <div class="drop menu">
@@ -196,7 +198,7 @@ function popupSubmitSearch(e) {
         <div class="field">
           <label>Post as:</label>
           <LimbDropdown
-            class="selection"
+            type="selection"
             style="display: flex; align-items: center"
           >
             <template #trailing>

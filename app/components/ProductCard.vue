@@ -26,13 +26,9 @@ const props = defineProps<{
 }>();
 const router = useRouter();
 
-function clickAction(e: Event) {
-  utils.safeClick(e, () =>
-    window.open(
-      router.resolve({ name: 'product-page', params: { id: props.details.id } })
-        .href,
-      '_blank'
-    )
+async function clickAction(e: Event) {
+  await utils.safeClick(e, () =>
+    navigateTo({ name: 'product-page', params: { id: props.details.id } }, { open: { target: '_blank' } })
   );
 }
 </script>
@@ -41,21 +37,11 @@ function clickAction(e: Event) {
     <NuxtImg class="itm-display" preset="thumbnail" :src="details.media" alt="" />
     <div class="itm-content">
       <div class="prod-price">₦{{ details.price.toLocaleString() }}</div>
-      <div 
-        class="line-clamp-2 font-semibold"
-        v-tooltip:aria.unblocking
-        :aria-label="details.title"
-      >
+      <div class="line-clamp-2 font-semibold" v-tooltip:aria.unblocking :aria-label="details.title">
         {{ details.title }}
-    </div>
-      <LimbIScroller
-        v-if="details.labels"
-        :options="{ scrollChildren: '.label' }"
-      >
-        <div
-          class="scroll-items items-center"
-          style="gap: 0.5em; margin: 0px auto"
-        >
+      </div>
+      <LimbIScroller v-if="details.labels" :options="{ scrollChildren: '.label' }">
+        <div class="scroll-items items-center" style="gap: 0.5em; margin: 0px auto">
           <span v-for="label in details.labels" class="label">{{ label }}</span>
         </div>
         <button class="mini l-scroll">
@@ -66,49 +52,23 @@ function clickAction(e: Event) {
         </button>
       </LimbIScroller>
       <div v-if="details.rating">
-        <i
-          v-tooltip:aria.unblocking
-          :aria-label="`Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
-          class="icon of-small text-yellow-500 mr-2"
-        >
-          <Icon
-            name="material-symbols:star-rounded"
-            v-for="i in Math.floor(details.rating.rate)"
-          />
-          <Icon
-            name="material-symbols:star-half-rounded"
-            v-if="details.rating.rate - Math.floor(details.rating.rate) >= 0.5"
-          />
-          <Icon
-            name="material-symbols:star-outline-rounded"
-            v-for="i in 5 - Math.round(details.rating.rate)"
-          />
+        <i v-tooltip:aria.unblocking :aria-label="`Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
+          class="icon of-small text-yellow-500 mr-2">
+          <Icon name="material-symbols:star-rounded" v-for="i in Math.floor(details.rating.rate)" />
+          <Icon name="material-symbols:star-half-rounded"
+            v-if="details.rating.rate - Math.floor(details.rating.rate) >= 0.5" />
+          <Icon name="material-symbols:star-outline-rounded" v-for="i in 5 - Math.round(details.rating.rate)" />
         </i>
       </div>
       <div class="itm-gap">
         <div class="of-small font-semibold truncate">
-          <Icon
-            v-if="details.bizDetails.verified"
-            name="material-symbols:verified-outline"
-            v-tooltip:aria.unblocking
-            aria-label="Seller is verified"
-            class="mr-2 of-small green-text"
-          />
-          <span
-            v-tooltip:aria.unblocking
-            :aria-label="details.bizDetails.name"
-            >{{ details.bizDetails.name }}</span
-          >
+          <Icon v-if="details.bizDetails.verified" name="material-symbols:verified-outline" v-tooltip:aria.unblocking
+            aria-label="Seller is verified" class="mr-2 of-small green-text" />
+          <span v-tooltip:aria.unblocking :aria-label="details.bizDetails.name">{{ details.bizDetails.name }}</span>
         </div>
-        <div
-          v-tooltip:aria.unblocking
-          :aria-label="details.bizDetails.location.address"
-          class="of-small font-semibold truncate"
-        >
-          <Icon
-            name="material-symbols:location-on-outline-rounded"
-            class="of-small mr-2"
-          />
+        <div v-tooltip:aria.unblocking :aria-label="details.bizDetails.location.address"
+          class="of-small font-semibold truncate">
+          <Icon name="material-symbols:location-on-outline-rounded" class="of-small mr-2" />
           {{
             `${details.bizDetails.location.city}, ${details.bizDetails.location.state}`
           }}
@@ -133,7 +93,7 @@ function clickAction(e: Event) {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 
-    & > img {
+    &>img {
       width: 100%;
       height: auto;
       border-radius: inherit;

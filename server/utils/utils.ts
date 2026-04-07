@@ -1,5 +1,3 @@
-import { an } from "vue-router/dist/index-Cu9B0wDz.mjs";
-
 export const utils = {
   getUniqueId(nameSpace: string = 'unique-id'): string {
     return `${nameSpace}${Date.now()}${Math.floor(Math.random() * 10000)}`;
@@ -12,7 +10,7 @@ export const utils = {
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-') // Replace multiple hyphens with single
       .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-    let slug = baseSlug;
+    let slug = `${baseSlug}@${body.businessId}`;
     let counter = 1;
 
     while (true) {
@@ -21,7 +19,7 @@ export const utils = {
         [slug, body.businessId],
       );
       if (result.rows.length === 0) break;
-      slug = `${baseSlug}-${counter++}`;
+      slug = `${baseSlug}-${counter++}@${body.businessId}`;
     }
 
     return slug;

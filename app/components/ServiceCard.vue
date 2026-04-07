@@ -17,13 +17,9 @@ const props = defineProps<{
 const avail = useAvailability(props.details.hours);
 const router = useRouter();
 
-function clickAction(e: Event) {
-  utils.safeClick(e, () =>
-    window.open(
-      router.resolve({ name: 'biz-home', params: { id: props.details.id } })
-        .href,
-      '_blank'
-    )
+async function clickAction(e: Event) {
+  await utils.safeClick(e, () =>
+    navigateTo({ name: 'biz-home', params: { id: props.details.id } }, { open: { target: '_blank' } })
   );
 }
 </script>
@@ -31,30 +27,14 @@ function clickAction(e: Event) {
   <article @click="clickAction" class="business-card">
     <header>
       <div class="flex gap-3 items-center">
-        <div
-          class="flex-none"
-          style="position: relative; width: 65px; height: 65px; line-height: 0"
-        >
-          <NuxtImg
-            preset="logo"
-            class="logo"
-            :src="details.logo"
-            alt="Business Logo"
-          />
-          <SvgIcon
-            v-if="details.verified"
-            name="verified_sp"
-            v-tooltip:aria.unblocking
-            aria-label="Verified"
-            style="position: absolute; bottom: 0.125em; right: 0.125em"
-          />
+        <div class="flex-none" style="position: relative; width: 65px; height: 65px; line-height: 0">
+          <NuxtImg preset="logo" class="logo" :src="details.logo" alt="Business Logo" />
+          <SvgIcon v-if="details.verified" name="verified_sp" v-tooltip:aria.unblocking aria-label="Verified"
+            style="position: absolute; bottom: 0.125em; right: 0.125em" />
         </div>
         <div class="flex-1">
-          <NuxtLink
-            :to="{ name: 'biz-home', params: { id: details.id } }"
-            target="_blank"
-            class="h6 font-bold m-0 line-clamp-2"
-          >
+          <NuxtLink :to="{ name: 'biz-home', params: { id: details.id } }" target="_blank"
+            class="h6 font-bold m-0 line-clamp-2">
             {{ details.bizName }}
           </NuxtLink>
           <span class="faint-text font-semibold">{{
@@ -62,69 +42,43 @@ function clickAction(e: Event) {
           }}</span>
         </div>
       </div>
-      <div
-        class="flex flex-wrap items-center justify-center of-small font-semibold"
-        style="column-gap: 0.7em"
-      >
-        <span
-          v-tooltip:aria.unblocking
-          :aria-label="details.location.address"
-          style="color: var(--on-surface-variant)"
-        >
-          <Icon
-            name="material-symbols:location-on-outline-rounded"
-            class="of-small"
-          />
+      <div class="flex flex-wrap items-center justify-center of-small font-semibold" style="column-gap: 0.7em">
+        <span v-tooltip:aria.unblocking :aria-label="details.location.address" style="color: var(--on-surface-variant)">
+          <Icon name="material-symbols:location-on-outline-rounded" class="of-small" />
           {{ `${details.location.city}, ${details.location.state}` }}
         </span>
-        <span
-          v-tooltip:aria.unblocking
-          :aria-label="`(Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
-        >
-          <Icon
-            class="of-small text-yellow-500"
-            name="material-symbols:star-rounded"
-          />
+        <span v-tooltip:aria.unblocking
+          :aria-label="`(Rated ${details.rating.rate} in ${details.rating.raters} reviews`">
+          <Icon class="of-small text-yellow-500" name="material-symbols:star-rounded" />
           {{ `${details.rating.rate} (${details.rating.raters})` }}
         </span>
         <span>
-          <Icon
-            name="material-symbols:event-outline-rounded"
-            class="of-small mr-2"
-            v-tooltip:aria.unblocking
-            aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
-          />
-          <span
-            v-tooltip:aria.unblocking
-            :aria-label="
-              !avail.openTime
-                ? 'Did not open today at all.'
-                : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${(avail.closeTime as processedTime)[0]}:${(avail.closeTime as processedTime)[1]}.`
-            "
-          >
+          <Icon name="material-symbols:event-outline-rounded" class="of-small mr-2" v-tooltip:aria.unblocking
+            aria-label="Note that the given detail is generated using your device time relative to the Business location timezone." />
+          <span v-tooltip:aria.unblocking :aria-label="!avail.openTime
+            ? 'Did not open today at all.'
+            : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${(avail.closeTime as processedTime)[0]}:${(avail.closeTime as processedTime)[1]}.`
+            ">
             <template v-if="avail.isClosed">
               <span class="error-text">Closed. </span>
               Opens
               {{
                 avail.willOpenToday
-                  ? `${(avail.openTime as processedTime)[0]}:${
-                      (avail.openTime as processedTime)[1]
-                    }. `
+                  ? `${(avail.openTime as processedTime)[0]}:${(avail.openTime as processedTime)[1]
+                  }. `
                   : details.hours[
+                    avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
+                  ]
+                    ? `${(
+                      details.hours[
                       avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
-                    ]
-                  ? `${
-                      (
-                        details.hours[
-                          avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
-                        ] as unprocessedTime
-                      )[0]
+                      ] as unprocessedTime
+                    )[0]
                     } Tomorrow. `
-                  : avail.nextOpenDay
-                  ? `${
-                      (details.hours[avail.nextOpenDay] as unprocessedTime)[0]
-                    } on ${avail.whatDay(avail.nextOpenDay)}. `
-                  : `NILL.`
+                    : avail.nextOpenDay
+                      ? `${(details.hours[avail.nextOpenDay] as unprocessedTime)[0]
+                      } on ${avail.whatDay(avail.nextOpenDay)}. `
+                      : `NILL.`
               }}
             </template>
             <template v-else>
@@ -134,8 +88,7 @@ function clickAction(e: Event) {
               <span v-else class="success-text">Open.</span>
               Closes
               {{
-                `${(avail.closeTime as processedTime)[0]}:${
-                  (avail.closeTime as processedTime)[1]
+                `${(avail.closeTime as processedTime)[0]}:${(avail.closeTime as processedTime)[1]
                 }. `
               }}
             </template>
@@ -162,11 +115,8 @@ function clickAction(e: Event) {
       </LimbIScroller>
     </div>
     <footer class="flex gap-2">
-      <NuxtLink
-        :to="{ name: 'biz-home', params: { id: details.id } }"
-        target="_blank"
-        class="outlined primary button flex-1"
-      >
+      <NuxtLink :to="{ name: 'biz-home', params: { id: details.id } }" target="_blank"
+        class="outlined primary button flex-1">
         <Icon name="material-symbols:globe" class="lead" />
         Visit page
       </NuxtLink>
@@ -175,10 +125,7 @@ function clickAction(e: Event) {
       </LimbDropdown>
       <div class="drop menu">
         <button class="item">
-          <Icon
-            name="material-symbols:add-to-queue-outline-rounded"
-            class="lead"
-          />
+          <Icon name="material-symbols:add-to-queue-outline-rounded" class="lead" />
           Follow
         </button>
       </div>

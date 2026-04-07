@@ -1,5 +1,5 @@
 <script setup>
-definePageMeta({ name: 'manage-biz-info', layout: 'common', auth: true });
+definePageMeta({ name: 'manage-biz-info', layout: 'common', auth: { only: 'user' } });
 </script>
 <template>
   <main class="flex-1 col" id="feed">

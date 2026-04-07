@@ -1,5 +1,5 @@
 <script setup>
-definePageMeta({ layout: 'details', auth: true, noFab: true });
+definePageMeta({ layout: 'details', auth: { only: 'user' }, noFab: true });
 </script>
 <template>
   <div class="messaging-view">
@@ -14,7 +14,7 @@ definePageMeta({ layout: 'details', auth: true, noFab: true });
         "
       >
         <LimbDropdown
-          class="selection"
+          type="selection"
           style="display: flex; align-items: center"
         >
           <template #trailing>

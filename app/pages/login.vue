@@ -80,7 +80,7 @@ const { data, validation, submit, status } = useSignIn(callbackURL);
                 placeholder="Email address"
               />
               <div
-                class="supp-text error-text"
+                class="text-sm error-text"
                 v-for="error of validation.r$.email.$errors"
                 :key="error"
               >
@@ -98,7 +98,7 @@ const { data, validation, submit, status } = useSignIn(callbackURL);
                 placeholder="Password"
               />
               <div
-                class="supp-text error-text"
+                class="text-sm error-text"
                 v-for="error of validation.r$.password.$errors"
                 :key="error"
               >

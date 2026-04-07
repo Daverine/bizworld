@@ -1774,18 +1774,38 @@ table.table tbody tr.i-selectable td:hover:before {
   box-shadow: inset 0px 0px 0px 1px var(--form-focus-bd-color);
   outline: none;
 }
-.input-box[disabled] > .subject, .input[disabled] > .subject, .form-switch[type=checkbox]:disabled, .form-item[type=checkbox]:disabled,
+.input-box[disabled] > .subject, .input[disabled] > .subject, .input[disabled] > .subject:hover, .input[disabled] > .subject:focus-within, .form-switch[type=checkbox]:disabled, .form-item[type=checkbox]:disabled,
 .form-item[type=radio]:disabled, .form-item:not([type=range],
 [type=checkbox],
 [type=radio],
 [type=submit],
 [type=reset],
 [type=button],
-[type=image])[disabled],
+[type=image])[disabled], .form-item:not([type=range],
+[type=checkbox],
+[type=radio],
+[type=submit],
+[type=reset],
+[type=button],
+[type=image])[disabled]:hover, .form-item:not([type=range],
+[type=checkbox],
+[type=radio],
+[type=submit],
+[type=reset],
+[type=button],
+[type=image])[disabled]:focus-within,
 .input[disabled],
+.input[disabled]:hover,
+.input[disabled]:focus-within,
 .input > .subject[disabled],
+.input > .subject[disabled]:hover,
+.input > .subject[disabled]:focus-within,
 .input-box > .subject[disabled],
-.select.dropdown[disabled] {
+.input-box > .subject[disabled]:hover,
+.input-box > .subject[disabled]:focus-within,
+.select.dropdown[disabled],
+.select.dropdown[disabled]:hover,
+.select.dropdown[disabled]:focus-within {
   opacity: 0.5;
   filter: grayscale(1);
   cursor: not-allowed;
@@ -3566,10 +3586,16 @@ html.scroll-locked .fab-group.respect-lock .fab {
 .drop.menu.pointing[data-view=vertical]:before {
   left: calc(var(--arrow-center) - 0.5625em);
 }
+.drop.menu.pointing[data-view=vertical].upward {
+  transform-origin: bottom center;
+}
 .drop.menu.pointing[data-view=vertical].upward:before {
   clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
   transform: translateY(-53%) rotate(45deg);
   top: 100%;
+}
+.drop.menu.pointing[data-view=vertical].downward {
+  transform-origin: top center;
 }
 .drop.menu.pointing[data-view=vertical].downward:before {
   clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
@@ -3579,10 +3605,16 @@ html.scroll-locked .fab-group.respect-lock .fab {
 .drop.menu.pointing[data-view=horizontal]:before {
   top: calc(var(--arrow-center) - 0.5625em);
 }
+.drop.menu.pointing[data-view=horizontal].rhs {
+  transform-origin: center left;
+}
 .drop.menu.pointing[data-view=horizontal].rhs:before {
   clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
   transform: translateX(53%) rotate(-45deg);
   right: 100%;
+}
+.drop.menu.pointing[data-view=horizontal].lhs {
+  transform-origin: center right;
 }
 .drop.menu.pointing[data-view=horizontal].lhs:before {
   clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
@@ -3638,9 +3670,11 @@ html.scroll-locked .fab-group.respect-lock .fab {
 }
 .drop.menu.visible {
   opacity: 1;
-  transform: scaleY(1);
   pointer-events: initial;
   transition: transform 300ms ease-in 0s, opacity 300ms linear 0s;
+}
+.drop.menu[data-view=vertical] {
+  transform: scaleY(0.25);
 }
 .drop.menu[data-view=vertical].upward {
   margin-top: calc(0em - var(--spacing));
@@ -3648,11 +3682,20 @@ html.scroll-locked .fab-group.respect-lock .fab {
 .drop.menu[data-view=vertical].downward {
   margin-top: var(--spacing);
 }
+.drop.menu[data-view=vertical].visible {
+  transform: scaleY(1);
+}
+.drop.menu[data-view=horizontal] {
+  transform: scaleX(0.25);
+}
 .drop.menu[data-view=horizontal].rhs {
   margin-left: var(--spacing);
 }
 .drop.menu[data-view=horizontal].lhs {
   margin-left: calc(0em - var(--spacing));
+}
+.drop.menu[data-view=horizontal].visible {
+  transform: scaleX(1);
 }
 
 :root {

@@ -1,48 +1,31 @@
-<script setup lang="ts">
-const userStore = useUserStore();
-const { data: session } = await useAuth().useSession(useFetch);
+<script lang="ts" setup>
+const { loggedIn, signOut } = useAuth();
 </script>
 <template>
   <div class="items" style="border-radius: var(--default-radius)">
-    <template v-if="session">
-      <NuxtLink
-        to="/home"
-        exact-active-class="active"
-        class="item exit-sidepanel ac-viewbox-ref"
-      >
+    <template v-if="loggedIn">
+      <NuxtLink to="/home" exact-active-class="active" class="item exit-sidepanel ac-viewbox-ref">
         <i class="lead icon ac-viewbox">
           <Icon name="material-symbols:home-outline-rounded" />
           <Icon name="material-symbols:home-rounded" />
         </i>
         Home
       </NuxtLink>
-      <NuxtLink
-        to="/messaging"
-        exact-active-class="active"
-        class="item exit-sidepanel ac-viewbox-ref"
-      >
+      <NuxtLink to="/messaging" exact-active-class="active" class="item exit-sidepanel ac-viewbox-ref">
         <i class="lead icon ac-viewbox">
           <Icon name="material-symbols:chat-outline-rounded" />
           <Icon name="material-symbols:chat-rounded" />
         </i>
         Messaging
       </NuxtLink>
-      <NuxtLink
-        to="/myshops"
-        exact-active-class="active"
-        class="item exit-sidepanel ac-viewbox-ref"
-      >
+      <NuxtLink to="/myshops" exact-active-class="active" class="item exit-sidepanel ac-viewbox-ref">
         <i class="lead icon ac-viewbox">
           <Icon name="material-symbols:store-outline-rounded" />
           <Icon name="material-symbols:store-rounded" />
         </i>
         My Shops
       </NuxtLink>
-      <div
-        v-collapser
-        class="item xactive ac-viewbox-ref"
-        :class="{ active: $route.path.includes('/account') }"
-      >
+      <div v-collapser class="item xactive ac-viewbox-ref" :class="{ active: $route.path.includes('/account') }">
         <i class="lead icon ac-viewbox">
           <Icon name="material-symbols:person-outline-rounded" />
           <Icon name="material-symbols:person-rounded" />
@@ -70,13 +53,13 @@ const { data: session } = await useAuth().useSession(useFetch);
       <div class="collapsible sub items">
         <Shareables name="supports" />
       </div>
-      <div class="item" @click="userStore.logout()">
+      <div class="item" @click="signOut()">
         <Icon name="material-symbols:logout-rounded" class="lead" /> Log out
       </div>
       <div class="transparent compact divider"></div>
       <div class="xhover item p-0">
         <NuxtLink :to="{ name: 'new-shop' }" class="w-full exit-sidepanel button">
-          Have a shop online
+          Open a shop online
         </NuxtLink>
       </div>
     </template>
@@ -96,11 +79,8 @@ const { data: session } = await useAuth().useSession(useFetch);
         <Shareables name="supports" />
       </div>
       <NuxtLink :to="{ name: 'new-shop' }" class="item exit-sidepanel">
-        <Icon
-          name="material-symbols:add-business-outline-rounded"
-          class="lead"
-        />
-        Have a shop online
+        <Icon name="material-symbols:add-business-outline-rounded" class="lead" />
+        Open a shop online
       </NuxtLink>
       <button class="item open-modal exit-sidepanel" data-target="login-modal">
         <Icon name="material-symbols:login-rounded" class="lead" />
@@ -108,10 +88,7 @@ const { data: session } = await useAuth().useSession(useFetch);
       </button>
       <div class="transparent compact divider"></div>
       <div class="xhover item p-0">
-        <button
-          class="w-full primary button open-modal exit-sidepanel"
-          data-target="register-modal"
-        >
+        <button class="w-full primary button open-modal exit-sidepanel" data-target="register-modal">
           Sign Up
         </button>
       </div>

@@ -36,7 +36,8 @@ function updateResult() {
           <LimbDropdown
             v-model="searchStore.resultIn"
             @change="updateResult"
-            class="selection inline-flex"
+            type="selection"
+            class="inline-flex"
           >
             <Icon
               name="material-symbols:category-search-outline-rounded"

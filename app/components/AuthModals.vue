@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const callbackURL = useRoute().fullPath;
+const callbackURL = useRoute().fullPath === '/' ? '/home' : useRoute().fullPath;
 const login = useSignIn(callbackURL);
 const signup = useSignUp(callbackURL);
 </script>
@@ -58,7 +58,7 @@ const signup = useSignUp(callbackURL);
                 <div
                   v-for="error of signup.validation.r$.firstname.$errors"
                   :key="error"
-                  class="supp-text error-text"
+                  class="text-sm error-text"
                 >
                   <Icon name="material-symbols:warning-outline-rounded" />
                   {{ error }}
@@ -75,7 +75,7 @@ const signup = useSignUp(callbackURL);
                 <div
                   v-for="error of signup.validation.r$.lastname.$errors"
                   :key="error"
-                  class="supp-text error-text"
+                  class="text-sm error-text"
                 >
                   <Icon name="material-symbols:warning-outline-rounded" />
                   {{ error }}
@@ -95,7 +95,7 @@ const signup = useSignUp(callbackURL);
             <div
               v-for="error of signup.validation.r$.email.$errors"
               :key="error"
-              class="supp-text error-text"
+              class="text-sm error-text"
             >
               <Icon name="material-symbols:warning-outline-rounded" />
               {{ error }}
@@ -113,7 +113,7 @@ const signup = useSignUp(callbackURL);
             <div
               v-for="error of signup.validation.r$.password.$errors"
               :key="error"
-              class="supp-text error-text"
+              class="text-sm error-text"
             >
               <Icon name="material-symbols:warning-outline-rounded" />
               {{ error }}
@@ -186,7 +186,7 @@ const signup = useSignUp(callbackURL);
               placeholder="Email address"
             />
             <div
-              class="supp-text error-text"
+              class="text-sm error-text"
               v-for="error of login.validation.r$.email.$errors"
               :key="error"
             >
@@ -204,7 +204,7 @@ const signup = useSignUp(callbackURL);
               placeholder="Password"
             />
             <div
-              class="supp-text error-text"
+              class="text-sm error-text"
               v-for="error of login.validation.r$.password.$errors"
               :key="error"
             >

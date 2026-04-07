@@ -1,9 +1,27 @@
-<script setup>
-definePageMeta({ layout: 'common', auth: true });
+<script lang="ts" setup>
+definePageMeta({ layout: 'common', auth: { only: 'user' } });
+const businesses = ref<{
+  id: string;
+  slug: string;
+  business_name: string;
+  category: string;
+  followers: number;
+  unread_messages: number;
+}[]>([
+  {
+    id: '3900dkke',
+    slug: '@emmadavetechservices',
+    business_name: 'Emmadave Computer Technology Services',
+    category: 'Computer repair services',
+    followers: 3,
+    unread_messages: 3,
+  }
+]);
 </script>
 <template>
   <main class="flex-1 col" id="feed">
     <div
+      v-for="business in businesses"
       class="mybiz-card card"
       style="
         display: flex;
@@ -26,10 +44,10 @@ definePageMeta({ layout: 'common', auth: true });
             width: calc(100% - 90px - 0.5em);
           "
         >
-          <div class="font-bold h6">Emmadave Computer Technology Services</div>
+          <div class="font-bold h6">{{ business.business_name }}</div>
           <div class="faint-text">
-            <span>@emmadavetechservices</span> |
-            <span>Computer repair services</span>
+            <span>{{ business.slug }}</span> |
+            <span>{{ business.category }}</span>
           </div>
           <div class="flex flex-wrap font-semibold" style="gap: 1em">
             <span
@@ -37,20 +55,20 @@ definePageMeta({ layout: 'common', auth: true });
                 name="material-symbols:comment-outline-rounded"
                 class="small"
               />
-              3 Messages</span
+              {{ business.unread_messages }} Messages</span
             >
             <span
               ><Icon
                 name="material-symbols:groups-outline-rounded"
                 class="small"
               />
-              3 Followers</span
+              {{ business.followers }} Followers</span
             >
           </div>
         </div>
       </div>
       <div class="w-full flex flex-wrap" style="gap: 0.5em">
-        <NuxtLink to="/manage/id3894/overview" class="compact flex-1 button"
+        <NuxtLink :to="`/manage/${business.id}/overview`" class="compact flex-1 button"
           >Manage page</NuxtLink
         >
         <button class="compact flex-1 button">Create post</button>

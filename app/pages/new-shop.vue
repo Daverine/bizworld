@@ -1,13 +1,16 @@
 <script lang="ts" setup>
 import { url, email, required, requiredIf } from '@regle/rules';
+import axios from 'axios';
+import type { InternalApi } from 'nitropack';
 
 definePageMeta({
   name: 'new-shop',
   layout: 'details',
-  auth: false,
+  auth: { only: 'user' },
   noCart: true,
 });
 
+const route = useRoute();
 const businessCategories = [
   // Food, Dining & Hospitality
   {
@@ -343,6 +346,7 @@ const businessCategories = [
     ],
   },
 ];
+
 const formData = reactive<{
   tab1: {
     bizName?: string;
@@ -351,14 +355,11 @@ const formData = reactive<{
   };
   tab2: {
     physicalLocation?: string;
-    country?: string;
-    state?: string;
-    town?: string;
-    lga?: string;
-    street?: string;
+    location?: string;
+    map?: string;
   };
   tab3: {
-    map?: string;
+    serviceArea?: string;
   };
   tab4: {
     tel?: number;
@@ -368,44 +369,44 @@ const formData = reactive<{
     hours: [
       {
         day: 'Sunday';
-        avail: boolean;
+        avail: 'nil' | 'always' | 'selected' | 'appointment';
         hours: { opening?: string; closing?: string };
       },
       {
         day: 'Monday';
-        avail: boolean;
+        avail: 'nil' | 'always' | 'selected' | 'appointment';
         hours: { opening?: string; closing?: string };
       },
       {
         day: 'Tuesday';
-        avail: boolean;
+        avail: 'nil' | 'always' | 'selected' | 'appointment';
         hours: { opening?: string; closing?: string };
       },
       {
         day: 'Wednesday';
-        avail: boolean;
+        avail: 'nil' | 'always' | 'selected' | 'appointment';
         hours: { opening?: string; closing?: string };
       },
       {
         day: 'Thursday';
-        avail: boolean;
+        avail: 'nil' | 'always' | 'selected' | 'appointment';
         hours: { opening?: string; closing?: string };
       },
       {
         day: 'Friday';
-        avail: boolean;
+        avail: 'nil' | 'always' | 'selected' | 'appointment';
         hours: { opening?: string; closing?: string };
       },
       {
         day: 'Saturday';
-        avail: boolean;
+        avail: 'nil' | 'always' | 'selected' | 'appointment';
         hours: { opening?: string; closing?: string };
-      }
+      },
     ];
   };
   tab6: {
     desc?: string;
-    logo?: File;
+    logo?: File | string;
   };
 }>({
   tab1: {},
@@ -414,13 +415,13 @@ const formData = reactive<{
   tab4: {},
   tab5: {
     hours: [
-      { day: 'Sunday', avail: false, hours: {} },
-      { day: 'Monday', avail: false, hours: {} },
-      { day: 'Tuesday', avail: false, hours: {} },
-      { day: 'Wednesday', avail: false, hours: {} },
-      { day: 'Thursday', avail: false, hours: {} },
-      { day: 'Friday', avail: false, hours: {} },
-      { day: 'Saturday', avail: false, hours: {} },
+      { day: 'Sunday', avail: 'nil', hours: {} },
+      { day: 'Monday', avail: 'nil', hours: {} },
+      { day: 'Tuesday', avail: 'nil', hours: {} },
+      { day: 'Wednesday', avail: 'nil', hours: {} },
+      { day: 'Thursday', avail: 'nil', hours: {} },
+      { day: 'Friday', avail: 'nil', hours: {} },
+      { day: 'Saturday', avail: 'nil', hours: {} },
     ],
   },
   tab6: {},
@@ -433,7 +434,7 @@ const validation = {
     newCategory: {
       required: withMessage(
         requiredIf(() => formData.tab1.category === 'others'),
-        'New category name is required'
+        'New category name is required',
       ),
     },
     bizName: { required: withMessage(required, 'Business name is required') },
@@ -442,46 +443,16 @@ const validation = {
     physicalLocation: {
       required: withMessage(
         required,
-        'You need to specify whether you business have physical location or not.'
+        'You need to specify whether you business have physical location or not.',
       ),
     },
-    country: {
+    location: {
       required: withMessage(
         requiredIf(() => formData.tab2.physicalLocation === 'yes'),
-        'Country is required'
+        'Location is required',
       ),
     },
-    state: {
-      required: withMessage(
-        requiredIf(() => formData.tab2.physicalLocation === 'yes'),
-        'State is required'
-      ),
-    },
-    lga: {
-      required: withMessage(
-        requiredIf(() => formData.tab2.physicalLocation === 'yes'),
-        'LGA is required'
-      ),
-    },
-    town: {
-      required: withMessage(
-        requiredIf(() => formData.tab2.physicalLocation === 'yes'),
-        'town is required'
-      ),
-    },
-    street: {
-      required: withMessage(
-        requiredIf(() => formData.tab2.physicalLocation === 'yes'),
-        'Street address is required'
-      ),
-    },
-  }),
-  tab3: useRegle(formData.tab3, {
     map: {
-      required: withMessage(
-        requiredIf(() => formData.tab2.physicalLocation === 'yes'),
-        'Map URL is required'
-      ),
       url,
     },
   }),
@@ -494,18 +465,35 @@ const validation = {
   }),
   tab5: useRegle(formData.tab5, {
     hours: {
-      $each: (item) => ({
+      $each: (day) => ({
         hours: {
+          $self: {
+            closingTimeMustBeGreater: withMessage(() => {
+              const opening = day.value.hours.opening?.split(':');
+              const closing = day.value.hours.closing?.split(':');
+
+              if (day.value.avail !== 'selected' || !opening || !closing)
+                return true;
+
+              const today = new Date();
+              today.setHours(parseFloat(opening[0]!), parseFloat(opening[1]!));
+              const openTimeStamp = today.getTime();
+              today.setHours(parseFloat(closing[0]!), parseFloat(closing[1]!));
+              const closeTimeStamp = today.getTime();
+
+              return closeTimeStamp > openTimeStamp;
+            }, 'Closing time must be greater than opening time.'),
+          },
           opening: {
             required: withMessage(
-              requiredIf(() => item.value.avail),
-              'Opening time is required'
+              requiredIf(() => day.value.avail === 'selected'),
+              'Opening time is required',
             ),
           },
           closing: {
             required: withMessage(
-              requiredIf(() => item.value.avail),
-              'Closing time is required'
+              requiredIf(() => day.value.avail === 'selected'),
+              'Closing time is required',
             ),
           },
         },
@@ -518,19 +506,32 @@ const validation = {
     },
   }),
 };
+const progress = ref<{
+  message: string;
+  loaded: null | number;
+  completed: boolean;
+}>({
+  message: '',
+  loaded: null,
+  completed: false,
+});
 
-function focusNewCategory() {
-  nextTick(() => document.getElementById('biz-category-new')?.focus());
+function applyHoursPreset(
+  avail: 'nil' | 'always' | 'selected' | 'appointment',
+) {
+  formData.tab5.hours.forEach((day) => (day.avail = avail));
+  validation.tab5.r$.hours.$reset();
 }
+
 const currentTab = ref('tab1');
 async function nextTab() {
   const key = currentTab.value as keyof typeof validation;
-  validation[key].r$.$validate();
-  if (validation[key].r$.$invalid) {
+  validation[key]?.r$.$validate();
+  if (validation[key]?.r$.$invalid) {
     await nextTick();
     (
       document.querySelector(
-        '.tab-page.active .error, .tab-page.active .error-text'
+        '.tab-page.active .error, .tab-page.active .error-text',
       ) as HTMLElement
     )?.focus();
     document
@@ -539,16 +540,82 @@ async function nextTab() {
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
+
   const currentIndex = Object.keys(formData).indexOf(currentTab.value);
   if (currentIndex < Object.keys(formData).length - 1) {
-    if (
-      currentTab.value === 'tab2' &&
-      formData.tab2.physicalLocation !== 'yes'
-    ) {
-      // Skip tab3 if no physical location
-      currentTab.value = Object.keys(formData)[currentIndex + 2] || '';
-    } else currentTab.value = Object.keys(formData)[currentIndex + 1] || '';
-    nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    currentTab.value = Object.keys(formData)[currentIndex + 1] || '';
+    await nextTick();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    (
+      document
+        .querySelector('.tab-page.active')
+        ?.querySelector(utils.focusableElementsSelector) as HTMLElement
+    )?.focus();
+    return;
+  }
+
+  let uploader = document.querySelector('#upload-status');
+
+  utils.triggerEvent(uploader!, 'dgconsole', 'open dialog');
+
+  if (progress.value.completed) return;
+
+  progress.value.loaded = null;
+  progress.value.message = 'Preparing your product for upload...';
+  await utils.notifyOnEvent(uploader!, 'isReady');
+
+  if (formData.tab6.logo) {
+    const picData = new FormData();
+    picData.append('logo', formData.tab6.logo);
+
+    const picToURL = await axios.post(
+      `/api/upload/picture/${route.params.id}/128`,
+      picData,
+      {
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.lengthComputable) {
+            if (progressEvent.loaded >= (progressEvent.total || 0)) {
+              progress.value.loaded = null;
+              progress.value.message = 'Optimizing photos for use...';
+              return;
+            }
+
+            progress.value.loaded = Math.round(
+              (progressEvent.loaded * 100) / (progressEvent.total || 1),
+            );
+            progress.value.message =
+              'Uploading product photos... ' + progress.value.loaded + '%';
+          }
+        },
+      },
+    );
+
+    if (!picToURL.data) return;
+
+    formData.tab6.logo = picToURL.data.logo as string;
+  }
+
+  progress.value.loaded = null;
+  progress.value.message = 'Finalizing...';
+
+  const profile = {
+    super_admin: useAuth().user.value?.id as string,
+    ...structuredClone(toRaw(formData.tab1)),
+    ...structuredClone(toRaw(formData.tab2)),
+    ...structuredClone(toRaw(formData.tab3)),
+    ...structuredClone(toRaw(formData.tab4)),
+    ...structuredClone(toRaw(formData.tab5)),
+    ...structuredClone(toRaw(formData.tab6)),
+  };
+
+  const api = '/api/business/create' as const;
+  type userResponse = InternalApi[typeof api]['post'];
+  const resp = await axios.post<userResponse>(api, profile);
+  if (resp.data) {
+    await nextTick();
+    progress.value.completed = true;
+    progress.value.loaded = null;
+    progress.value.message = "Done!";
   }
 }
 function prevTab() {
@@ -568,107 +635,67 @@ function prevTab() {
 <template>
   <div class="container-md pt-8">
     <div class="container-sm no-edge">
-      <div
-        class="tab-page"
-        v-for="id in ['tab1']"
-        :class="currentTab === id ? 'active' : ''"
-      >
-        <header class="mb-8">
-          <h3 class="text-center">Build Your Online Business Presence</h3>
-          <p class="text-center">
+      <div class="tab-page" v-for="id in ['tab1']" :class="currentTab === id ? 'active' : ''">
+        <header class="mb-8 text-center">
+          <h3>Build Your Online Business Presence</h3>
+          <p>
             Follow and complete this form to create your Bizworld business page.
           </p>
         </header>
         <div class="field">
           <label>Industry/Category</label>
-          <p class="supp-text faint-text">
+          <p class="text-sm faint-text">
             Choose a category from the dropdown below that best fits your
             business. You can also select “Others” from the dropdown to make a
             new one.
           </p>
-          <LimbDropdown
-            v-model="formData.tab1.category"
-            class="select search"
-            :class="{ error: validation.tab1.r$.category.$error }"
-            :search-data="businessCategories"
-            :filter-function="smartCategorySearch"
-            v-slot="{ query, filteredData }"
-            id="biz-category"
-            placeholder="Select a category or Industry"
-          >
+          <LimbDropdown v-model="formData.tab1.category" type="search select"
+            :class="{ error: validation.tab1.r$.category.$error }" :search-data="businessCategories"
+            :filter-function="smartCategorySearch" v-slot="{ query, filteredData }" @change="
+              $event !== 'others' ||
+              nextTick(() =>
+                utils.document().getElementById('biz-category-new')?.focus(),
+              )
+              " id="biz-category" name="biz-category" placeholder="Select a category or Industry">
             <div class="drop menu">
-              <div
-                class="item"
-                v-for="category in query ? filteredData : businessCategories"
-                :key="category.id"
-              >
+              <div class="item" v-for="category in query ? filteredData : businessCategories" :key="category.id">
                 {{ category.name }}
               </div>
-              <div data-value="others" class="item" @click="focusNewCategory">
-                Others
-              </div>
+              <div data-value="others" class="item">Others</div>
             </div>
           </LimbDropdown>
-          <div
-            class="supp-text error-text"
-            v-for="error of validation.tab1.r$.category.$errors"
-            :key="error"
-          >
+          <div class="text-sm error-text" v-for="error of validation.tab1.r$.category.$errors" :key="error">
             <Icon name="material-symbols:close-rounded" />
             {{ error }}
           </div>
         </div>
         <div v-if="formData.tab1.category === 'others'" class="field">
           <label for="biz-category-new">New category name</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             Note: Your business will stay in the “Others” category until the new
             category is reviewed and standardized.
           </div>
-          <input
-            v-model="formData.tab1.newCategory"
-            id="biz-category-new"
-            :class="{ error: validation.tab1.r$.newCategory.$error }"
-            class="form-item"
-            type="text"
-            placeholder="Category name"
-            required
-          />
-          <div
-            class="supp-text error-text"
-            v-for="error of validation.tab1.r$.newCategory.$errors"
-            :key="error"
-          >
+          <input v-model="formData.tab1.newCategory" id="biz-category-new"
+            :class="{ error: validation.tab1.r$.newCategory.$error }" class="form-item" type="text"
+            placeholder="Category name" />
+          <div class="text-sm error-text" v-for="error of validation.tab1.r$.newCategory.$errors" :key="error">
             <Icon name="material-symbols:close-rounded" />
             {{ error }}
           </div>
         </div>
         <div class="field">
           <label for="biz-name">Business name</label>
-          <input
-            v-model="formData.tab1.bizName"
-            id="biz-name"
-            type="text"
-            placeholder="Business name"
-            :class="{ error: validation.tab1.r$.bizName.$error }"
-            class="form-item"
-          />
-          <div
-            class="supp-text error-text"
-            v-for="error of validation.tab1.r$.bizName.$errors"
-            :key="error"
-          >
+          <input v-model="formData.tab1.bizName" id="biz-name" type="text" placeholder="Business name"
+            :class="{ error: validation.tab1.r$.bizName.$error }" class="form-item" />
+          <div class="text-sm error-text" v-for="error of validation.tab1.r$.bizName.$errors" :key="error">
             <Icon name="material-symbols:close-rounded" />
             {{ error }}
           </div>
         </div>
       </div>
-      <div
-        class="tab-page"
-        v-for="id in ['tab2']"
-        :class="currentTab === id ? 'active' : ''"
-      >
-        <header>
-          <h3 class="text-center">Do You Have a Physical Location?</h3>
+      <div class="tab-page" v-for="id in ['tab2']" :class="currentTab === id ? 'active' : ''">
+        <header class="mb-8 text-center">
+          <h3>Do You Have a Physical Location?</h3>
           <p>
             Provide your store or office address if you'd like customers to
             visit you. This information will be displayed on your BizWorld
@@ -678,186 +705,66 @@ function prevTab() {
         <div class="field">
           <fieldset>
             <legend>Do you have a physical location?</legend>
-            <label>
-              <input
-                v-model="formData.tab2.physicalLocation"
-                value="yes"
-                type="radio"
-                class="form-item"
-                :class="{ error: validation.tab2.r$.physicalLocation.$error }"
-              />
-              Yes
-            </label>
-            <label>
-              <input
-                v-model="formData.tab2.physicalLocation"
-                value="no"
-                type="radio"
-                class="form-item"
-                :class="{ error: validation.tab2.r$.physicalLocation.$error }"
-              />
-              No
-            </label>
-            <div
-              class="supp-text error-text"
-              v-for="error of validation.tab2.r$.physicalLocation.$errors"
-              :key="error"
-            >
+            <div class="menu">
+              <label class="item">
+                <input v-model="formData.tab2.physicalLocation" value="yes" type="radio" name="physical-location"
+                  class="form-item" :class="{ error: validation.tab2.r$.physicalLocation.$error }" />
+                Yes
+              </label>
+              <label class="item">
+                <input v-model="formData.tab2.physicalLocation" value="no" type="radio" name="physical-location"
+                  class="form-item" :class="{ error: validation.tab2.r$.physicalLocation.$error }" />
+                No
+              </label>
+            </div>
+            <div class="text-sm error-text" v-for="error of validation.tab2.r$.physicalLocation.$errors" :key="error">
               <Icon name="material-symbols:close-rounded" />
               {{ error }}
             </div>
           </fieldset>
         </div>
-        <fieldset v-if="formData.tab2.physicalLocation === 'yes'">
+        <template v-if="formData.tab2.physicalLocation === 'yes'">
           <div class="field">
-            <label>Country</label>
-            <LimbDropdown
-              v-model="formData.tab2.country"
-              placeholder="Select a country"
-              class="search select"
-              :class="{ error: validation.tab2.r$.country.$error }"
-            >
-              <div class="drop menu">
-                <div class="item">Nigeria</div>
-              </div>
-            </LimbDropdown>
-            <div
-              class="supp-text error-text"
-              v-for="error of validation.tab2.r$.country.$errors"
-              :key="error"
-            >
+            <label>Location</label>
+            <input type="text" class="form-item" :class="{ error: validation.tab2.r$.location.$error }"
+              placeholder="Address or region" v-model="formData.tab2.location" name="biz-location" />
+            <div class="text-sm error-text" v-for="error of validation.tab2.r$.location.$errors" :key="error">
               <Icon name="material-symbols:close-rounded" />
               {{ error }}
             </div>
           </div>
           <div class="field">
-            <label>State</label>
-            <LimbDropdown
-              v-model="formData.tab2.state"
-              placeholder="Select a state"
-              :options="{ stretchWidth: true }"
-              class="search select"
-              :class="{ error: validation.tab2.r$.state.$error }"
-            >
-              <div class="drop menu">
-                <div class="item">Ogun</div>
-                <div class="item">Osun</div>
-              </div>
-            </LimbDropdown>
-            <div
-              class="supp-text error-text"
-              v-for="error of validation.tab2.r$.state.$errors"
-              :key="error"
-            >
+            <label>Map URL (Optional)</label>
+            <p class="text-sm">We need your exact business address for distance based search. Please: find your exact
+              location on <NuxtLink to="https://map.google.com" external target="_blank">Google Maps</NuxtLink>.
+              Then copy the URL and paste it below.</p>
+            <input v-model="formData.tab2.map" type="url" name="map-url" placeholder="https://maps.google.com/..."
+              class="form-item" :class="{ error: validation.tab2.r$.map.$error }" />
+            <div class="text-sm error-text" v-for="error of validation.tab2.r$.map.$errors" :key="error">
               <Icon name="material-symbols:close-rounded" />
               {{ error }}
             </div>
           </div>
-          <div class="field">
-            <label>Local Government Area</label>
-            <input
-              v-model="formData.tab2.lga"
-              placeholder="Enter LGA"
-              type="text"
-              class="form-item"
-              :class="{ error: validation.tab2.r$.lga.$error }"
-            />
-            <div
-              class="supp-text error-text"
-              v-for="error of validation.tab2.r$.lga.$errors"
-              :key="error"
-            >
-              <Icon name="material-symbols:close-rounded" />
-              {{ error }}
-            </div>
-          </div>
-          <div class="field">
-            <label>Town/City</label>
-            <input
-              v-model="formData.tab2.town"
-              placeholder="Enter town/city"
-              type="text"
-              class="form-item"
-              :class="{ error: validation.tab2.r$.town.$error }"
-            />
-            <div
-              class="supp-text error-text"
-              v-for="error of validation.tab2.r$.town.$errors"
-              :key="error"
-            >
-              <Icon name="material-symbols:close-rounded" />
-              {{ error }}
-            </div>
-          </div>
-          <div class="field">
-            <label>Street address</label>
-            <input
-              v-model="formData.tab2.street"
-              placeholder="Enter house number, street name"
-              type="text"
-              class="form-item"
-              :class="{ error: validation.tab2.r$.street.$error }"
-            />
-            <div
-              class="supp-text error-text"
-              v-for="error of validation.tab2.r$.street.$errors"
-              :key="error"
-            >
-              {{ error }}
-            </div>
-          </div>
-        </fieldset>
+        </template>
       </div>
-      <div
-        v-if="formData.tab2.physicalLocation"
-        class="tab-page"
-        v-for="id in ['tab3']"
-        :class="currentTab === id ? 'active' : ''"
-      >
-        <header>
-          <h3 class="text-center">Confirm Your Business Location</h3>
-          <p>We need your exact business address. Please:</p>
-          <ol class="list-decimal pl-6 mb-4">
-            <li>
-              Go to
-              <NuxtLink to="https://map.google.com" external target="_blank"
-                >Google Maps</NuxtLink
-              >.
-            </li>
-            <li>
-              Find your location and precisely adjust the map marker to your
-              business's spot by dragging and zooming.
-            </li>
-            <li>
-              Copy the generated address and paste it into the field below.
-            </li>
-          </ol>
+      <div class="tab-page" v-for="id in ['tab3']" :class="currentTab === id ? 'active' : ''">
+        <header class="mb-8 text-center">
+          <h3>Do You Serve Customers at Their Location?</h3>
+          <p>
+            If you provide services at customer locations (like home service or
+            delivery), let customers know where you operate. This helps them
+            understand if you can come to them.
+          </p>
         </header>
         <div class="field">
-          <label>Map URL</label>
-          <input
-            v-model="formData.tab3.map"
-            type="url"
-            class="form-item"
-            :class="{ error: validation.tab3.r$.map.$error }"
-          />
-          <div
-            class="supp-text error-text"
-            v-for="error of validation.tab3.r$.map.$errors"
-            :key="error"
-          >
-            <Icon name="material-symbols:close-rounded" />
-            {{ error }}
-          </div>
+          <label>Service area (optional)</label>
+          <input type="text" class="form-item" placeholder="Cities, neighborhoods, or regions you serve"
+            v-model="formData.tab3.serviceArea" name="service-area" />
         </div>
       </div>
-      <div
-        class="tab-page"
-        v-for="id in ['tab4']"
-        :class="currentTab === id ? 'active' : ''"
-      >
-        <header>
-          <h3 class="text-center">Add Contact Information</h3>
+      <div class="tab-page" v-for="id in ['tab4']" :class="currentTab === id ? 'active' : ''">
+        <header class="mb-8 text-center">
+          <h3>Add Contact Information</h3>
           <p>
             Help customers connect with you easily! Add at least a phone number
             or email address. This information will be prominently displayed on
@@ -866,165 +773,138 @@ function prevTab() {
         </header>
         <div class="field">
           <label>Phone number</label>
-          <input
-            v-model="formData.tab4.tel"
-            placeholder="Enter your business telepone"
-            type="tel"
-            class="form-item"
-            :class="{ error: validation.tab4.r$.tel.$error }"
-          />
-          <div
-            class="supp-text error-text"
-            v-for="error of validation.tab4.r$.tel.$errors"
-            :key="error"
-          >
+          <input v-model="formData.tab4.tel" placeholder="Enter your business telepone" type="tel" name="telephone"
+            class="form-item" :class="{ error: validation.tab4.r$.tel.$error }" />
+          <div class="text-sm error-text" v-for="error of validation.tab4.r$.tel.$errors" :key="error">
             <Icon name="material-symbols:close-rounded" />
             {{ error }}
           </div>
         </div>
         <div class="field">
           <label>Email</label>
-          <input
-            v-model="formData.tab4.email"
-            placeholder="Enter your business email address"
-            type="email"
-            class="form-item"
-            :class="{ error: validation.tab4.r$.email.$error }"
-          />
-          <div
-            class="supp-text error-text"
-            v-for="error of validation.tab4.r$.email.$errors"
-            :key="error"
-          >
+          <input v-model="formData.tab4.email" placeholder="Enter your business email address" type="email" name="email"
+            class="form-item" :class="{ error: validation.tab4.r$.email.$error }" />
+          <div class="text-sm error-text" v-for="error of validation.tab4.r$.email.$errors" :key="error">
             <Icon name="material-symbols:close-rounded" />
             {{ error }}
           </div>
         </div>
       </div>
-      <div
-        class="tab-page"
-        v-for="id in ['tab5']"
-        :class="currentTab === id ? 'active' : ''"
-      >
-        <header>
-          <h3 class="text-center">Set Your Business Hours</h3>
-          <p>
+      <div class="tab-page" v-for="id in ['tab5']" :class="currentTab === id ? 'active' : ''">
+        <header class="mb-8 text-center">
+          <h3>Set Your Business Hours</h3>
+          <p class="">
             Enter your regular business hours so customers know when to reach
             you.
           </p>
         </header>
-        <div
-          v-for="item in validation.tab5.r$.hours.$each"
-          class="field border-b p-2"
-        >
-          <label class="flex justify-between">
-            {{ item.day.$value }}
-            <input
-              v-model="item.avail.$value"
-              type="checkbox"
-              class="form-switch"
-            />
-          </label>
-          <div
-            v-if="item.avail.$value"
-            class="flex justify-between items-center"
-          >
-            <div>
-              <input
-                v-model="item.hours.opening.$value"
-                type="time"
-                class="compact form-item"
-              />
-              <div
-                class="supp-text error-text"
-                v-for="error of item.hours.opening.$errors"
-                :key="error"
-              >
-                <Icon name="material-symbols:close-rounded" />
-                {{ error }}
+        <div class="field">
+          <p class="text-sm">
+            You can start by selecting a preset for your availability and then
+            adjust exception days after.
+          </p>
+          <LimbDropdown :options="{ directionPriority: { x: 'center' } }" class="compact button">Choose preset
+          </LimbDropdown>
+          <div class="drop menu">
+            <div @click="applyHoursPreset('nil')" class="item">
+              Not available
+            </div>
+            <div @click="applyHoursPreset('always')" class="item">
+              Always open
+            </div>
+            <div @click="applyHoursPreset('selected')" class="item">
+              Open for selected hours
+            </div>
+            <div @click="applyHoursPreset('appointment')" class="item">
+              Appointments only
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div v-for="item in validation.tab5.r$.hours.$each" class="field border-b p-2">
+            <div class="flex gap-4 justify-between items-center">
+              <label>{{ item.day.$value }}</label>
+              <LimbDropdown type="select" class="lined" v-model="item.avail.$value" :name="`${item.day.$value}-avail`"
+                @change="item.hours.$self.$touch()"></LimbDropdown>
+              <div class="drop menu">
+                <div class="item" data-value="nil">Not available</div>
+                <div class="item" data-value="always">Always open</div>
+                <div class="item" data-value="selected">
+                  Open for selected hours
+                </div>
+                <div class="item" data-value="appointment">
+                  Appointments only
+                </div>
               </div>
             </div>
-            <Icon name="material-symbols:arrow-range-rounded" />
-            <div>
-              <input
-                v-model="item.hours.closing.$value"
-                type="time"
-                class="compact form-item"
-              />
-              <div
-                class="supp-text error-text"
-                v-for="error of item.hours.closing.$errors"
-                :key="error"
-              >
-                <Icon name="material-symbols:close-rounded" />
-                {{ error }}
+            <div class="text-sm error-text text-center" v-for="error of item.hours.$self.$errors" :key="error">
+              <Icon name="material-symbols:close-rounded" />
+              {{ error }}
+            </div>
+            <div v-if="item.avail.$value === 'selected'" class="flex justify-between items-start">
+              <div>
+                <input v-model="item.hours.opening.$value" type="time" class="compact lined form-item" :class="{
+                  error: item.hours.opening.$error || item.hours.$self.$error,
+                }" />
+                <div class="text-sm error-text" v-for="error of item.hours.opening.$errors" :key="error">
+                  <Icon name="material-symbols:close-rounded" />
+                  {{ error }}
+                </div>
+              </div>
+              <div class="flex flex-col items-end">
+                <input v-model="item.hours.closing.$value" type="time" class="compact lined form-item" :class="{
+                  error: item.hours.closing.$error || item.hours.$self.$error,
+                }" />
+                <div class="text-sm error-text" v-for="error of item.hours.closing.$errors" :key="error">
+                  <Icon name="material-symbols:close-rounded" />
+                  {{ error }}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div
-        class="tab-page"
-        v-for="id in ['tab6']"
-        :class="currentTab === id ? 'active' : ''"
-      >
-        <h3 class="text-center">Add More Details</h3>
-        <p>
-          Tell customers about your business. This description will appear on
-          your Business Profile and help them understand what you offer.
-        </p>
+      <div class="tab-page" v-for="id in ['tab6']" :class="currentTab === id ? 'active' : ''">
+        <header class="mb-8 text-center">
+          <h3 class="text-center">Add More Details</h3>
+          <p>
+            Tell customers about your business. This descriptions will appear on
+            your Business Profile and help them understand what you offer.
+          </p>
+        </header>
         <div class="field">
           <label>Business description</label>
-          <textarea
-            v-model="formData.tab6.desc"
-            class="form-item"
-            placeholder="What does your business do?"
-          ></textarea>
-          <div
-            class="supp-text error-text"
-            v-for="error of validation.tab6.r$.desc.$errors"
-            :key="error"
-          >
+          <textarea v-model="formData.tab6.desc" class="form-item" placeholder="What does your business do?"></textarea>
+          <div class="text-sm error-text" v-for="error of validation.tab6.r$.desc.$errors" :key="error">
+            <Icon name="material-symbols:close-rounded" />
             {{ error }}
           </div>
         </div>
         <div class="field">
           <label>Business logo</label>
-          <p class="supp-text faint-text">
+          <p class="text-sm faint-text">
             Upload your business logo here. It will be prominently displayed on
             your Business Profile.
           </p>
           <div v-if="formData.tab6.logo" class="thumbnail image">
-            <img
-              :src="utils.fileToURL(formData.tab6.logo)"
-              alt="Product photo"
-            />
-            <button
-              @click="formData.tab6.logo = undefined"
-              class="small circular icon button"
-              style="position: absolute; top: 0.25rem; right: 0.25rem"
-            >
-              <Icon name="material-symbols:delete-outline-rounded" />
+            <img :src="utils.fileToURL(formData.tab6.logo)" alt="Product photo" />
+            <button @click="formData.tab6.logo = undefined" class="text-xs compact circular outlined button overlay-bg"
+              style="position: absolute; top: 0.25rem; right: 0.25rem">
+              <Icon name="material-symbols:close-rounded" />
             </button>
           </div>
           <label v-if="!formData.tab6.logo" class="icon button design-takeover">
             <Icon name="material-symbols:add" /> Add photo
-            <input
-              type="file"
-              @change="
-                formData.tab6.logo = ($event.target as HTMLInputElement)
-                  .files?.[0] as File
-              "
-              accept="image/*"
-            />
+            <input type="file" @change="
+              formData.tab6.logo = ($event.target as HTMLInputElement)
+                .files?.[0] as File
+              " accept="image/*" />
           </label>
         </div>
       </div>
     </div>
-    <footer
-      class="sticky surface-bg p-4 pin-bottom-blend z-level-1 mt-12 bottom-0"
-      style="bottom: 0px; margin-top: 0.5rem"
-    >
+    <footer class="sticky surface-bg p-4 pin-bottom-blend z-level-1 mt-12 bottom-0"
+      style="bottom: 0px; margin-top: 0.5rem">
       <div v-if="currentTab === 'tab1'" class="flex flex-col">
         <p class="text-center">
           By continuing, you agree to our <a href="">Terms of Service</a> and
@@ -1046,6 +926,32 @@ function prevTab() {
       </div>
     </footer>
   </div>
+  <LimbModal id="upload-status" :options="{ closeOnEsc: false, closeOnWrapperClick: false }">
+    <div class="dialog centered max-w-125">
+      <div class="content">
+        <div v-if="progress.completed" class="flex flex-col items-center gap-3">
+          <Icon name="material-symbols:check-circle-outline-rounded" class="success-text text-5xl" />
+          <p class="text-center m-0">
+            You business profile is successfully created on Bizworld!
+          </p>
+          <div class="flex gap-4 w-full *:flex-1">
+            <NuxtLink :to="{
+              name: 'manage-biz-overview',
+              params: { id: progress.message },
+            }" class="exit-modal primary button">
+              Manage Business
+            </NuxtLink>
+            <NuxtLink to="/myshops" class="exit-modal outlined button">
+              My shops
+            </NuxtLink>
+          </div>
+        </div>
+        <div v-else class="flex flex-col items-center gap-4">
+          <div class="m3-progress" :class="{ indeterminate: !Boolean(progress.loaded) }"
+            :style="{ '--progress': progress.loaded?.toString() || '0' }"></div>
+          <p>{{ progress.message }}</p>
+        </div>
+      </div>
+    </div>
+  </LimbModal>
 </template>
-
-<style></style>

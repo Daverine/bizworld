@@ -28,8 +28,6 @@ export type DialogerSettings = {
   outDuration?: number;
   hashControl?: boolean;
   controller?: (event: DialogEvent) => unknown;
-  ready?: (event: DialogEvent) => void;
-  complete?: (event: DialogEvent) => void;
   caller?: HTMLElement;
 };
 
@@ -38,7 +36,6 @@ export function useDialoger(
   id: string,
   options?: DialogerSettings,
 ): Dialoger {
-  const router = useRouter();
   const route = useRoute();
   const showDialog = ref(false);
   const settings: DialogerSettings = {
@@ -144,7 +141,7 @@ export function useDialoger(
           top: window.scrollY,
           left: window.scrollX,
         };
-        if (!bb.openWithHash) router.replace({ hash: `#${id}` });
+        if (!bb.openWithHash) await navigateTo({ hash: `#${id}` }, { replace: true });
         window.addEventListener('popstate', backToExit);
         // exit when route hash changes
         unwatch.closeOnRouteChange = watch(
@@ -162,7 +159,7 @@ export function useDialoger(
       // If a controller function is provided in the settings, call it with the lightbox element and settings.
       // The controller function can be used to perform additional setup or customization of the lightbox.
       if (typeof settings.controller === 'function')
-        await settings.controller({
+        settings.controller({
           target: dialoger.value!,
           settings,
         });
@@ -174,24 +171,22 @@ export function useDialoger(
         document.addEventListener('keyup', exitByEscKeyPress);
       }
       dialoger.value!.classList.add('active');
-      setTimeout(() => {
-        if (typeof settings.ready === 'function')
-          settings.ready({
-            target: dialoger.value,
-            settings,
-          });
-        if (dialoger.value) {
-          dialoger.value.scrollTop = 0;
+      await utils.delay(settings.inDuration!);
+      if (dialoger.value) {
+        dialoger.value.scrollTop = 0;
 
-          let autoFocusEl = [
-            ...dialoger.value.querySelectorAll(
-              `:scope ${settings.autoFocusEl}`,
-            ),
-          ][0] as HTMLElement;
-          if (autoFocusEl) autoFocusEl.focus();
-          else utils.focusRangeOnTab(dialoger.value!);
-        }
-      }, settings.inDuration);
+        // Trigger a custom event 'isReady' on the dialog element to indicate that the dialog is ready.
+        utils.triggerEvent(dialoger.value, 'isReady', {
+          target: dialoger.value,
+          settings,
+        });
+
+        let autoFocusEl = [
+          ...dialoger.value.querySelectorAll(`:scope ${settings.autoFocusEl}`),
+        ][0] as HTMLElement;
+        if (autoFocusEl) autoFocusEl.focus();
+        else utils.focusRangeOnTab(dialoger.value!);
+      }
     } else {
       document.removeEventListener('keydown', KBDControls);
       dialoger.value!.removeEventListener('click', exitByClick);
@@ -205,21 +200,21 @@ export function useDialoger(
       if (settings.hashControl) {
         unwatch.closeOnRouteChange!();
         window.removeEventListener('popstate', backToExit);
-        router.replace({ hash: '' });
+        await navigateTo({ hash: '' }, { replace: true });
         bb.openWithHash = false;
         utils.afterNextRepaint(() => window.scrollTo(bb.scrollPosBeforeLock));
       }
-      setTimeout(() => {
-        dialoger.value?.style.setProperty('visibility', 'hidden');
-        if (typeof settings.complete === 'function')
-          settings.complete({
-            target: dialoger.value,
-            settings,
-          });
-        settings.caller?.focus();
-        settings.caller = undefined;
-        utils.unlockWindowScroll(bb.uniqueId!);
-      }, settings.outDuration);
+      await utils.delay(settings.outDuration!);
+      dialoger.value?.style.setProperty('visibility', 'hidden');
+      // Trigger a custom event 'isComplete' on the dialog element to indicate that the dialog has completed its closing process.
+      if (dialoger.value)
+        utils.triggerEvent(dialoger.value, 'isComplete', {
+          target: dialoger.value,
+          settings,
+        });
+      settings.caller?.focus();
+      settings.caller = undefined;
+      utils.unlockWindowScroll(bb.uniqueId!);
     }
   });
 

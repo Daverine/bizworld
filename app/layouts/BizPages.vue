@@ -41,7 +41,7 @@ const isReady = computed(() => data.details && avail.value);
   </DefinePageNav>
 
   <Details>
-    <div v-if="isReady" class="grid-layout">
+    <div class="grid-layout">
       <header
         class="flex"
         style="padding-top: 0.5rem; align-items: center; gap: 1rem"

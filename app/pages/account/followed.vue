@@ -1,5 +1,5 @@
 <script setup>
-    definePageMeta({layout: 'account', auth: true,});
+    definePageMeta({layout: 'account', auth: { only: 'user' },});
 	const userStore = useUserStore();
     defineOptions({	title: 'Following | BizWorld' });
 	onMounted(() => userStore.getFollowedCards());

@@ -1,5 +1,5 @@
 <script setup>
-definePageMeta({name: 'manage-biz-posts', layout: 'common', auth: true, });
+definePageMeta({name: 'manage-biz-posts', layout: 'common', auth: { only: 'user' }, });
 const feedStore = useFeedStore();
 onMounted(() => feedStore.getUpdate());
 </script>

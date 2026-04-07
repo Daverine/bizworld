@@ -58,7 +58,7 @@ function handleNewPhoto(event: Event) {
       <div>
         <div class="field">
           <label for="prod-title">Service</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             Add a specific service you are offering.
           </div>
           <input
@@ -72,12 +72,12 @@ function handleNewPhoto(event: Event) {
         </div>
         <div class="field">
           <label for="prod-price">Price</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             Set a price for your service to let customers know how much it
             costs.
           </div>
           <div class="grid gap-3 sm:grid-cols-2">
-            <LimbDropdown v-model="newService.price" class="select">
+            <LimbDropdown v-model="newService.price" type="select">
               <div class="drop menu">
                 <div class="active item">No price</div>
                 <div class="item">Free</div>
@@ -97,7 +97,7 @@ function handleNewPhoto(event: Event) {
         </div>
         <div class="field">
           <label for="prod-description">Description</label>
-          <p class="supp-text faint-text">
+          <p class="text-sm faint-text">
             Describe your service to help customers understand what you are
             offering.
           </p>
@@ -111,7 +111,7 @@ function handleNewPhoto(event: Event) {
         </div>
         <div class="field">
           <label>Add photo</label>
-          <div class="supp-text faint-text">
+          <div class="text-sm faint-text">
             Photos help customers to see what the service is all about.
           </div>
           <LimbIScroller :options="{ autoSetup: true }">

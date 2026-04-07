@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
-  compatibilityDate: '2024-04-03',
+  compatibilityDate: "2024-04-03",
   devtools: {
     enabled: true,
 
@@ -13,16 +13,21 @@ export default defineNuxtConfig({
     strict: true,
   },
   modules: [
-    '@hypernym/nuxt-anime',
-    '@vueuse/nuxt',
-    '@pinia/nuxt',
-    '@nuxt/icon',
-    '@nuxt/image',
-    '@nuxt/fonts',
-    '@regle/nuxt',
+    "@hypernym/nuxt-anime",
+    "@vueuse/nuxt",
+    "@pinia/nuxt",
+    "@nuxt/icon",
+    "@nuxt/image",
+    "@nuxt/fonts",
+    "@regle/nuxt",
+    "@nuxt/hints",
+    "@nuxt/eslint",
   ],
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: ["better-auth/vue", "@regle/rules", "@regle/core"],
+    },
   },
   image: {
     screens: {
@@ -35,28 +40,26 @@ export default defineNuxtConfig({
     presets: {
       logo: {
         modifiers: {
-          format: 'webp',
+          format: "webp",
           height: 128,
         },
       },
       thumbnail: {
         modifiers: {
-          format: 'webp',
+          format: "webp",
           width: 250,
         },
       },
     },
   },
-  css: ['~/assets/lui.css', '~/assets/main.css'],
+  css: ["~/assets/lui.css", "~/assets/main.css"],
   app: {
     head: {
-      link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.png' },
-      ],
+      link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.png" }],
     },
   },
   devServer: {
     port: 3000,
-    host: '127.0.0.1', // Or your desired host
+    host: "127.0.0.1", // Or your desired host
   },
 });

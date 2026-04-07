@@ -84,7 +84,7 @@ const { data, validation, submit, status } = useSignUp(callbackURL);
                   <div
                     v-for="error of validation.r$.firstname.$errors"
                     :key="error"
-                    class="supp-text error-text"
+                    class="text-sm error-text"
                   >
                     <Icon name="material-symbols:warning-outline-rounded" />
                     {{ error }}
@@ -101,7 +101,7 @@ const { data, validation, submit, status } = useSignUp(callbackURL);
                   <div
                     v-for="error of validation.r$.lastname.$errors"
                     :key="error"
-                    class="supp-text error-text"
+                    class="text-sm error-text"
                   >
                     <Icon name="material-symbols:warning-outline-rounded" />
                     {{ error }}
@@ -121,7 +121,7 @@ const { data, validation, submit, status } = useSignUp(callbackURL);
               <div
                 v-for="error of validation.r$.email.$errors"
                 :key="error"
-                class="supp-text error-text"
+                class="text-sm error-text"
               >
                 <Icon name="material-symbols:warning-outline-rounded" />
                 {{ error }}
@@ -139,7 +139,7 @@ const { data, validation, submit, status } = useSignUp(callbackURL);
               <div
                 v-for="error of validation.r$.password.$errors"
                 :key="error"
-                class="supp-text error-text"
+                class="text-sm error-text"
               >
                 <Icon name="material-symbols:warning-outline-rounded" />
                 {{ error }}

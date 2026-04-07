@@ -15,6 +15,7 @@ onMounted(() => {
 onUnmounted(() => window.removeEventListener('scroll', handleScroll));
 </script>
 <template>
+  <Html lang="en" />
   <Title>BizWorld | The Web World of Business</Title>
   <Menus />
   <AuthModals />

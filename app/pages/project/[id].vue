@@ -215,8 +215,8 @@ const servicesOffer = computed(() => [
   ...new Set(
     details.value.serviceOptions.reduce(
       (keys, obj) => keys.concat(Object.keys(obj.specifications)),
-      []
-    )
+      [],
+    ),
   ),
 ]);
 const choice = ref({
@@ -297,20 +297,20 @@ onMounted(() => {
                       avail.willOpenToday
                         ? `${avail.openTime[0]}:${avail.openTime[1]}`
                         : details.bizData.hours[
-                            avail.now.getDay() === 6
-                              ? 0
-                              : avail.now.getDay() + 1
-                          ]
-                        ? `${
-                            details.bizData.hours[
                               avail.now.getDay() === 6
                                 ? 0
                                 : avail.now.getDay() + 1
-                            ][0]
-                          } Tomorrow`
-                        : `${
-                            details.bizData.hours[avail.nextOpenDay][0]
-                          } on ${avail.whatDay(avail.nextOpenDay)}`
+                            ]
+                          ? `${
+                              details.bizData.hours[
+                                avail.now.getDay() === 6
+                                  ? 0
+                                  : avail.now.getDay() + 1
+                              ][0]
+                            } Tomorrow`
+                          : `${
+                              details.bizData.hours[avail.nextOpenDay][0]
+                            } on ${avail.whatDay(avail.nextOpenDay)}`
                     }}
                   </template>
                   <template v-else>
@@ -517,10 +517,10 @@ onMounted(() => {
               <div
                 class="text-center"
                 :set="
-                  (rating = (
+                  rating = (
                     details.reviews.reduce((n, i) => n + i.rating, 0) /
                     details.reviews.length
-                  ).toFixed(1))
+                  ).toFixed(1)
                 "
               >
                 <div class="font-semibold" style="font-size: 3em">
@@ -563,8 +563,9 @@ onMounted(() => {
               >
                 <div class="font-semibold">Reviews</div>
                 <LimbDropdown
+                  type="selection"
                   :options="{ directionPriority: { x: 'left' } }"
-                  class="outlined small button selection"
+                  class="outlined small button"
                 >
                   <Icon name="material-symbols:sort-rounded" class="lead" />
                   Sort:
@@ -580,7 +581,7 @@ onMounted(() => {
                   v-for="a in Math.min(5, details.reviews.length)"
                   class="dm-review"
                   style="padding: 0.5em"
-                  :set="(review = details.reviews[a - 1])"
+                  :set="review = details.reviews[a - 1]"
                 >
                   <header class="flex justify-between items-center gap-3">
                     <div class="small rounded-full avatar">
@@ -595,7 +596,7 @@ onMounted(() => {
                       <div class="dm-gap" style="gap: 0.5em">
                         <div
                           class="rating mini text-yellow-500"
-                          :set="(rating = review.rating)"
+                          :set="rating = review.rating"
                         >
                           <Icon
                             v-for="i in Math.floor(rating)"
