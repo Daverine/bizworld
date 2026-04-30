@@ -4,7 +4,7 @@
     Go back to my shops
   </NuxtLink>
   <NuxtLink
-    :to="{ name: 'manage-biz-overview', params: { id: $route.params.id } }"
+    :to="{ name: 'manage-biz-overview', params: { slug: $route.params.slug } }"
     exact-active-class="active"
     class="item exit-sidepanel ac-viewbox-ref"
   >
@@ -15,7 +15,7 @@
     Overview
   </NuxtLink>
   <NuxtLink
-    :to="{ name: 'manage-biz-posts', params: { id: $route.params.id } }"
+    :to="{ name: 'manage-biz-posts', params: { slug: $route.params.slug } }"
     exact-active-class="active"
     class="item exit-sidepanel ac-viewbox-ref"
   >
@@ -26,7 +26,7 @@
     Posts
   </NuxtLink>
   <NuxtLink
-    :to="{ name: 'manage-biz-info', params: { id: $route.params.id } }"
+    :to="{ name: 'manage-biz-info', params: { slug: $route.params.slug } }"
     exact-active-class="active"
     class="item exit-sidepanel ac-viewbox-ref"
   >
@@ -37,7 +37,7 @@
     Page Info
   </NuxtLink>
   <NuxtLink
-    :to="{ name: 'manage-biz-media', params: { id: $route.params.id } }"
+    :to="{ name: 'manage-biz-media', params: { slug: $route.params.slug } }"
     exact-active-class="active"
     class="item exit-sidepanel ac-viewbox-ref"
   >
@@ -48,7 +48,7 @@
     Media
   </NuxtLink>
   <NuxtLink
-    :to="{ name: 'manage-biz-products', params: { id: $route.params.id } }"
+    :to="{ name: 'manage-biz-products', params: { slug: $route.params.slug } }"
     exact-active-class="active"
     class="item exit-sidepanel ac-viewbox-ref"
   >
@@ -59,7 +59,7 @@
     Products
   </NuxtLink>
   <NuxtLink
-    :to="{ name: 'manage-biz-services', params: { id: $route.params.id } }"
+    :to="{ name: 'manage-biz-services', params: { slug: $route.params.slug } }"
     exact-active-class="active"
     class="item exit-sidepanel ac-viewbox-ref"
   >
@@ -70,7 +70,7 @@
     Services
   </NuxtLink>
   <NuxtLink
-    :to="{ name: 'manage-biz-layout', params: { id: $route.params.id } }"
+    :to="{ name: 'manage-biz-layout', params: { slug: $route.params.slug } }"
     exact-active-class="active"
     class="item exit-sidepanel ac-viewbox-ref"
   >
@@ -81,7 +81,7 @@
     Page Layout
   </NuxtLink>
   <NuxtLink
-    :to="{ name: 'manage-biz-support', params: { id: $route.params.id } }"
+    :to="{ name: 'manage-biz-support', params: { slug: $route.params.slug } }"
     exact-active-class="active"
     class="item exit-sidepanel ac-viewbox-ref"
   >

@@ -1,8 +1,8 @@
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id');
-  const maxWidth = getRouterParam(event, 'maxWidth');
+  const id = getRouterParam(event, "id");
+  const maxWidth = getRouterParam(event, "maxWidth");
   const body = await readMultipartFormData(event);
-  const data = utils.parseMultipartData(body);
+  const data = parseMultipartData(body);
   const processConfig = {
     width: Number(maxWidth) || 1200,
     uploadDir: id,

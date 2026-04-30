@@ -1,5 +1,5 @@
 <script setup>
-import Details from './Details.vue';
+import Details from "./Details.vue";
 const [DefinePageNav, PageNav] = createReusableTemplate();
 const data = useBizStore();
 const avail = useAvailability(data.details.hours);
@@ -9,31 +9,31 @@ const isReady = computed(() => data.details && avail.value);
 <template>
   <DefinePageNav>
     <NuxtLink
-      :to="{ name: 'biz-home', params: { id: $route.params.id } }"
+      :to="{ name: 'biz-home', params: { slug: $route.params.slug } }"
       exact-active-class="active"
       class="item exit-sidepanel"
       >Home</NuxtLink
     >
     <NuxtLink
-      :to="{ name: 'biz-feeds', params: { id: $route.params.id } }"
+      :to="{ name: 'biz-feeds', params: { slug: $route.params.slug } }"
       exact-active-class="active"
       class="item exit-sidepanel"
       >Feeds</NuxtLink
     >
     <NuxtLink
-      :to="{ name: 'biz-products', params: { id: $route.params.id } }"
+      :to="{ name: 'biz-products', params: { slug: $route.params.slug } }"
       exact-active-class="active"
       class="item exit-sidepanel"
       >Products</NuxtLink
     >
     <NuxtLink
-      :to="{ name: 'biz-services', params: { id: $route.params.id } }"
+      :to="{ name: 'biz-services', params: { slug: $route.params.slug } }"
       exact-active-class="active"
       class="item exit-sidepanel"
       >Services</NuxtLink
     >
     <NuxtLink
-      :to="{ name: 'biz-about', params: { id: $route.params.id } }"
+      :to="{ name: 'biz-about', params: { slug: $route.params.slug } }"
       exact-active-class="active"
       class="item exit-sidepanel"
       >About Us</NuxtLink
@@ -42,14 +42,8 @@ const isReady = computed(() => data.details && avail.value);
 
   <Details>
     <div class="grid-layout">
-      <header
-        class="flex"
-        style="padding-top: 0.5rem; align-items: center; gap: 1rem"
-      >
-        <div
-          class="flex-none"
-          style="position: relative; width: max-content; line-height: 0"
-        >
+      <header class="flex" style="padding-top: 0.5rem; align-items: center; gap: 1rem">
+        <div class="flex-none" style="position: relative; width: max-content; line-height: 0">
           <NuxtImg
             preset="logo"
             class="logo"
@@ -70,10 +64,7 @@ const isReady = computed(() => data.details && avail.value);
           <div class="faint-text">{{ data.details.mainCategory }}</div>
         </div>
         <button class="flex-none flat button ml-auto max-md:hidden">
-          <Icon
-            name="material-symbols:add-to-queue-outline-rounded"
-            class="lead"
-          />
+          <Icon name="material-symbols:add-to-queue-outline-rounded" class="lead" />
           Follow
         </button>
       </header>
@@ -84,7 +75,7 @@ const isReady = computed(() => data.details && avail.value);
       >
         <div class="container items">
           <NuxtLink
-            :to="{ name: 'biz-home', params: { id: $route.params.id } }"
+            :to="{ name: 'biz-home', params: { slug: $route.params.slug } }"
             class="xhover item as-icon visible-on-stuck"
           >
             <NuxtImg
@@ -98,10 +89,7 @@ const isReady = computed(() => data.details && avail.value);
             <div class="items max-md:hidden">
               <PageNav />
             </div>
-            <div
-              class="item open-sidepanel md:hidden"
-              data-target="bizsidepanel"
-            >
+            <div class="item open-sidepanel md:hidden" data-target="bizsidepanel">
               <SvgIcon name="menu" class="lead" />
               Menu
               <LimbSidePanel class="right" id="bizsidepanel">
@@ -113,7 +101,7 @@ const isReady = computed(() => data.details && avail.value);
                     <NuxtLink
                       :to="{
                         name: 'biz-home',
-                        params: { id: $route.params.id },
+                        params: { slug: $route.params.slug },
                       }"
                       class="xhover centered item exit-sidepanel"
                     >
@@ -144,34 +132,20 @@ const isReady = computed(() => data.details && avail.value);
                 <SvgIcon name="more_horiz" />
               </LimbDropdown>
               <div class="drop menu">
-                <div class="item">
-                  <SvgIcon name="follow" class="lead" /> Follow page
-                </div>
-                <div class="item">
-                  <SvgIcon name="bookmark_add" class="lead" /> Save card
-                </div>
-                <div class="item">
-                  <SvgIcon name="share" class="lead" /> Share
-                </div>
-                <div class="item">
-                  <SvgIcon name="report" class="lead" /> Report page
-                </div>
+                <div class="item"><SvgIcon name="follow" class="lead" /> Follow page</div>
+                <div class="item"><SvgIcon name="bookmark_add" class="lead" /> Save card</div>
+                <div class="item"><SvgIcon name="share" class="lead" /> Share</div>
+                <div class="item"><SvgIcon name="report" class="lead" /> Report page</div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <slot />
-      <footer
-        class="fluid grid-layout surface-v3-bg"
-        style="padding: 4rem 0rem 0rem"
-      >
+      <footer class="fluid grid-layout surface-v3-bg" style="padding: 4rem 0rem 0rem">
         <div class="footer-main">
           <div class="flex flex-col" style="flex-basis: 20%; gap: 1.5rem">
-            <div
-              class="flex-none"
-              style="position: relative; width: max-content; line-height: 0"
-            >
+            <div class="flex-none" style="position: relative; width: max-content; line-height: 0">
               <NuxtImg
                 preset="logo"
                 class="logo"
@@ -192,14 +166,10 @@ const isReady = computed(() => data.details && avail.value);
             <!-- <div class="faint-text">{{ data.details.mainCategory }}</div> -->
             <div class="flex-1">
               {{ data.details.description }}
-              <a :href="`${data.details.bizUrl}/about_us`" target="_blank"
-                >Learn more.</a
-              >
+              <a :href="`${data.details.bizUrl}/about_us`" target="_blank">Learn more.</a>
             </div>
             <div>
-              <div class="font-bold" style="margin-bottom: 0.75rem">
-                Earned barges on Bizword
-              </div>
+              <div class="font-bold" style="margin-bottom: 0.75rem">Earned barges on Bizword</div>
               <div class="flex gap-3 flex-wrap">
                 <div class="flex-none ft-badge">
                   <Badges name="verified" style="font-size: 3rem" />

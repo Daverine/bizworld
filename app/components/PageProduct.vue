@@ -1,21 +1,19 @@
-<script setup>
-const props = defineProps(['details']);
+<script setup lang="ts">
+const props = defineProps<{
+  details: product;
+}>();
 </script>
 <template>
-  <NuxtLink :to="`/${details.type}/${details.id}`" class="page-prod item">
-    <NuxtImg class="prod-pic" preset="thumbnail" :src="details.media" alt="" />
+  <NuxtLink :to="{ name: 'product-page', params: { slug: details.slug } }" class="page-prod item">
+    <NuxtImg class="prod-pic" preset="thumbnail" :src="details.photos[0]" alt="" />
     <div class="prod-content">
-      <div class="prod-price">₦{{ details.price.toLocaleString() }}</div>
-      <div
-        class="font-semibold line-clamp-3"
-        v-tooltip:aria.unblocking
-        :aria-label="details.title"
-      >
+      <div class="prod-price">₦{{ details.base_price.toLocaleString() }}</div>
+      <div class="font-semibold line-clamp-3" v-tooltip:aria.unblocking :aria-label="details.title">
         {{ details.title }}
       </div>
-      <div v-if="details.labels" class="flex gap-2 justify-center">
+      <!-- <div v-if="details?.labels" class="flex gap-2 justify-center">
         <span v-for="label in details.labels" class="label">{{ label }}</span>
-      </div>
+      </div> -->
     </div>
   </NuxtLink>
 </template>

@@ -3,9 +3,9 @@ export default defineEventHandler(async (event) => {
 
   if (!id && !slug) return;
 
-  return await db
-    .selectFrom("business")
+  return (await db
+    .selectFrom("product")
     .selectAll()
     .where(id ? "id" : "slug", "=", (id ? id : slug) as string)
-    .executeTakeFirst();
+    .executeTakeFirst()) as product | undefined;
 });

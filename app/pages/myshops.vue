@@ -1,74 +1,37 @@
 <script lang="ts" setup>
-definePageMeta({ layout: 'common', auth: { only: 'user' } });
-const businesses = ref<{
-  id: string;
-  slug: string;
-  business_name: string;
-  category: string;
-  followers: number;
-  unread_messages: number;
-}[]>([
-  {
-    id: '3900dkke',
-    slug: '@emmadavetechservices',
-    business_name: 'Emmadave Computer Technology Services',
-    category: 'Computer repair services',
-    followers: 3,
-    unread_messages: 3,
-  }
-]);
+definePageMeta({ layout: "common", auth: { only: "user" } });
+const { user } = useAuth();
+const { data: businesses } = await useFetch("/api/user/businesses", {
+  method: "post",
+  query: {
+    id: user.value?.id,
+  },
+});
 </script>
 <template>
   <main class="flex-1 col" id="feed">
-    <div
-      v-for="business in businesses"
-      class="mybiz-card card"
-      style="
-        display: flex;
-        flex-direction: column;
-        gap: 0.5em;
-        width: 100%;
-        padding: 10px;
-      "
-    >
-      <div style="display: flex; gap: 0.5em">
-        <div
-          class="rounded"
-          style="width: 90px; height: 90px; background-color: pink"
-        ></div>
-        <div
-          style="
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            width: calc(100% - 90px - 0.5em);
-          "
-        >
+    <div v-for="business in businesses" class="mybiz-card card flex flex-col w-full gap-3 p-2.5">
+      <div class="flex gap-4 items-center">
+        <NuxtImg
+          preset="logo"
+          :src="business.logo || '/images/bizpic.jpg'"
+          class="flex-none rounded image w-22.5"
+        />
+        <div class="flex-1 flex flex-col" style="justify-content: space-evenly">
           <div class="font-bold h6">{{ business.business_name }}</div>
-          <div class="faint-text">
-            <span>{{ business.slug }}</span> |
-            <span>{{ business.category }}</span>
-          </div>
-          <div class="flex flex-wrap font-semibold" style="gap: 1em">
-            <span
-              ><Icon
-                name="material-symbols:comment-outline-rounded"
-                class="small"
-              />
-              {{ business.unread_messages }} Messages</span
+          <div class="flex flex-wrap faint-text gap-x-2">
+            <NuxtLink
+              :to="{ name: 'biz-home', params: { slug: business.slug } }"
+              class="truncate"
+              >{{ business.slug }}</NuxtLink
             >
-            <span
-              ><Icon
-                name="material-symbols:groups-outline-rounded"
-                class="small"
-              />
-              {{ business.followers }} Followers</span
-            >
+            |
+            <span class="truncate">{{ business.category }}</span>
           </div>
         </div>
       </div>
       <div class="w-full flex flex-wrap" style="gap: 0.5em">
-        <NuxtLink :to="`/manage/${business.id}/overview`" class="compact flex-1 button"
+        <NuxtLink :to="`/manage/${business.slug}/overview`" class="compact flex-1 button"
           >Manage page</NuxtLink
         >
         <button class="compact flex-1 button">Create post</button>
@@ -80,15 +43,10 @@ const businesses = ref<{
         </LimbDropdown>
         <div class="drop menu">
           <div class="item">
-            <Icon
-              name="material-symbols:campaign-outline-rounded"
-              class="lead"
-            />
+            <Icon name="material-symbols:campaign-outline-rounded" class="lead" />
             Promote
           </div>
-          <div class="item">
-            <Icon name="material-symbols:share-outline" class="lead" /> Share
-          </div>
+          <div class="item"><Icon name="material-symbols:share-outline" class="lead" /> Share</div>
         </div>
       </div>
     </div>

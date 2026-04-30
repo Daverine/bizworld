@@ -86,7 +86,7 @@ export const useSignIn = (callbackURL: string) => {
   });
 
   async function submit() {
-    validation.r$.$validate();
+    await validation.r$.$validate();
     if (validation.r$.$invalid) {
       await nextTick();
       (document.querySelector(".error") as HTMLElement)?.focus();
@@ -157,7 +157,7 @@ export const useSignUp = (callbackURL: string = "/home") => {
     success: false,
   });
   async function submit() {
-    validation.r$.$validate();
+    await validation.r$.$validate();
     if (validation.r$.$invalid) {
       await nextTick();
       (document.querySelector(".error") as HTMLElement)?.focus();

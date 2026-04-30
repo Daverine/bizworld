@@ -1,4 +1,4 @@
-type styleValue = string | [string, 'important' | ''];
+type styleValue = string | [string, "important" | ""];
 
 declare global {
   interface Window {
@@ -28,22 +28,19 @@ export const utils = {
     }
 
     if (!window.lui_EscTracker.includes(trackId) && !byForce) {
-      console.warn('The passed TrackId is not tracked', trackId);
+      console.warn("The passed TrackId is not tracked", trackId);
       return;
     }
 
     if (window.lui_EscTracker.slice(-1)[0] === trackId || byForce) {
-      window.lui_EscTracker = window.lui_EscTracker.filter(
-        (el: string) => el !== trackId,
-      );
+      window.lui_EscTracker = window.lui_EscTracker.filter((el: string) => el !== trackId);
       return true;
     }
   },
   getScrollbarSize() {
     if (!window.lui_ScollbarSize) {
-      const el = document.createElement('div');
-      el.style.cssText =
-        'overflow: scroll; visibility: hidden; position: absolute;';
+      const el = document.createElement("div");
+      el.style.cssText = "overflow: scroll; visibility: hidden; position: absolute;";
       document.body.appendChild(el);
       const scrollbarHeight = el.offsetHeight - el.clientHeight;
       document.body.removeChild(el);
@@ -61,63 +58,44 @@ export const utils = {
     if (!window.lui_ScrollLockers) window.lui_ScrollLockers = [];
     if (!window.lui_ScrollLockers.length) {
       let scrollBarWidth = `${this.winScrollbarSize().x}px`;
-      document.documentElement.classList.add('scroll-locked');
+      document.documentElement.classList.add("scroll-locked");
       document.documentElement.style.marginRight = scrollBarWidth;
-      document.documentElement.style.overflow = 'hidden';
-      (
-        [...document.querySelectorAll('.respect-lock')] as HTMLElement[]
-      ).forEach((el) => {
-        el.setAttribute(
-          'data-lui-styleBeforeLock',
-          el.getAttribute('style') || '',
-        );
+      document.documentElement.style.overflow = "hidden";
+      ([...document.querySelectorAll(".respect-lock")] as HTMLElement[]).forEach((el) => {
+        el.setAttribute("data-lui-styleBeforeLock", el.getAttribute("style") || "");
         el.style.maxWidth = `calc(100% - ${scrollBarWidth})`;
         el.style.marginRight = scrollBarWidth;
       });
     }
-    if (!window.lui_ScrollLockers.includes(lockerId))
-      window.lui_ScrollLockers.push(lockerId);
+    if (!window.lui_ScrollLockers.includes(lockerId)) window.lui_ScrollLockers.push(lockerId);
   },
   unlockWindowScroll(lockerId: string): void {
-    if (
-      window.lui_ScrollLockers &&
-      window.lui_ScrollLockers.includes(lockerId)
-    ) {
-      window.lui_ScrollLockers = window.lui_ScrollLockers.filter(
-        (el: string) => el !== lockerId,
-      );
+    if (window.lui_ScrollLockers && window.lui_ScrollLockers.includes(lockerId)) {
+      window.lui_ScrollLockers = window.lui_ScrollLockers.filter((el: string) => el !== lockerId);
 
       if (!window.lui_ScrollLockers.length) {
-        document.documentElement.style.marginRight = '';
-        document.documentElement.style.overflow = '';
-        document.documentElement.classList.remove('scroll-locked');
-        [...document.querySelectorAll('.respect-lock')].forEach((el) => {
-          el.setAttribute(
-            'style',
-            el.getAttribute('data-lui-styleBeforeLock') || '',
-          );
-          el.removeAttribute('data-lui-styleBeforeLock');
+        document.documentElement.style.marginRight = "";
+        document.documentElement.style.overflow = "";
+        document.documentElement.classList.remove("scroll-locked");
+        [...document.querySelectorAll(".respect-lock")].forEach((el) => {
+          el.setAttribute("style", el.getAttribute("data-lui-styleBeforeLock") || "");
+          el.removeAttribute("data-lui-styleBeforeLock");
         });
       }
     }
   },
-  getUniqueId(nameSpace: string = 'unique-id'): string {
-    if (typeof window.lui_uuid !== 'number') window.lui_uuid = 0;
+  getUniqueId(nameSpace: string = "unique-id"): string {
+    if (typeof window.lui_uuid !== "number") window.lui_uuid = 0;
     window.lui_uuid++;
     return nameSpace + window.lui_uuid;
   },
   getCssVal(el: Element, prop: string): string {
     return window.getComputedStyle(el).getPropertyValue(prop);
   },
-  setCSS(
-    el: HTMLElement,
-    props: Partial<Record<keyof CSSStyleDeclaration, styleValue>>,
-  ) {
+  setCSS(el: HTMLElement, props: Partial<Record<keyof CSSStyleDeclaration, styleValue>>) {
     Object.entries(props).forEach((prop) => {
-      if (Array.isArray(prop[1]))
-        el.style.setProperty(prop[0], prop[1][0], prop[1][1]);
-      else if (typeof prop[1] === 'string')
-        el.style.setProperty(prop[0], prop[1]);
+      if (Array.isArray(prop[1])) el.style.setProperty(prop[0], prop[1][0], prop[1][1]);
+      else if (typeof prop[1] === "string") el.style.setProperty(prop[0], prop[1]);
     });
   },
   contentSize(el: Element): { height: number; width: number } {
@@ -146,17 +124,12 @@ export const utils = {
       left: box.left + window.scrollX - docElem.clientLeft,
     };
   },
-  getParents(
-    el: Element,
-    selector?: string,
-    until?: Element | string,
-  ): Element[] {
+  getParents(el: Element, selector?: string, until?: Element | string): Element[] {
     if (until) {
-      if (typeof until === 'string') {
+      if (typeof until === "string") {
         until =
-          [...document.querySelectorAll(until)].find((elem) =>
-            elem.contains(el),
-          ) || document.documentElement;
+          [...document.querySelectorAll(until)].find((elem) => elem.contains(el)) ||
+          document.documentElement;
       } else if (!until.contains(el)) until = document.documentElement;
     } else until = document.documentElement;
 
@@ -193,16 +166,11 @@ export const utils = {
 
     return prevElements;
   },
-  triggerEvent(
-    el: Element | Window,
-    eventType: string | Event,
-    customData?: unknown,
-  ): void {
-    if (typeof eventType === 'string') {
+  triggerEvent(el: Element | Window, eventType: string | Event, customData?: unknown): void {
+    if (typeof eventType === "string") {
       if (customData !== undefined)
         el.dispatchEvent(new CustomEvent(eventType, { detail: customData }));
-      else if (typeof (el as any)[eventType] === 'function')
-        (el as any)[eventType]();
+      else if (typeof (el as any)[eventType] === "function") (el as any)[eventType]();
       else el.dispatchEvent(new Event(eventType, { bubbles: true }));
     } else el.dispatchEvent(eventType);
   },
@@ -212,13 +180,13 @@ export const utils = {
     );
   },
   isObject(value: any): boolean {
-    return typeof value === 'object' && value !== null && !Array.isArray(value);
+    return typeof value === "object" && value !== null && !Array.isArray(value);
   },
   isClose(elem: Element, selectors: string | string[]): boolean {
-    if (typeof selectors === 'string') return Boolean(elem.closest(selectors));
+    if (typeof selectors === "string") return !!elem.closest(selectors);
 
     let isClose = false;
-    selectors.forEach((node) => (isClose = Boolean(elem.closest(node))));
+    selectors.forEach((node) => (isClose = !!elem.closest(node)));
 
     return isClose;
   },
@@ -229,11 +197,11 @@ export const utils = {
       ),
     ].filter(
       (el) =>
-        !el.hasAttribute('disabled') &&
-        !el.getAttribute('aria-hidden') &&
-        this.getCssVal(el, 'display') !== 'none' &&
-        this.getCssVal(el, 'visibility') !== 'hidden' &&
-        !el.closest('[inert]'),
+        !el.hasAttribute("disabled") &&
+        !el.getAttribute("aria-hidden") &&
+        this.getCssVal(el, "display") !== "none" &&
+        this.getCssVal(el, "visibility") !== "hidden" &&
+        !el.closest("[inert]"),
     ) as HTMLElement[];
     if (!focusableElements[0]) {
       if (e) e.preventDefault();
@@ -246,14 +214,10 @@ export const utils = {
       focusableElements.includes(document.activeElement as HTMLElement) &&
       e
     ) {
-      if (document.activeElement === last && !e.shiftKey && e.key === 'Tab') {
+      if (document.activeElement === last && !e.shiftKey && e.key === "Tab") {
         e.preventDefault();
         first.focus();
-      } else if (
-        document.activeElement === first &&
-        e.shiftKey &&
-        e.key === 'Tab'
-      ) {
+      } else if (document.activeElement === first && e.shiftKey && e.key === "Tab") {
         e.preventDefault();
         last?.focus();
       }
@@ -275,7 +239,7 @@ export const utils = {
       requestAnimationFrame(() =>
         requestAnimationFrame(() => {
           if (func) func();
-          resolve('void');
+          resolve("void");
         }),
       ),
     );
@@ -289,10 +253,9 @@ export const utils = {
   compareArrays: (a: any[], b: any[]): boolean =>
     a.length === b.length && a.every((element, index) => element === b[index]),
   durationInMilliseconds: (duration: string): number =>
-    parseFloat(duration) * (duration.includes('ms') ? 1 : 1000),
+    parseFloat(duration) * (duration.includes("ms") ? 1 : 1000),
   delay: (ms: number) => new Promise((resolve) => setTimeout(resolve, ms)),
-  fileToURL: (file: File | string) =>
-    typeof file === 'string' ? file : URL.createObjectURL(file),
+  fileToURL: (file: File | string) => (typeof file === "string" ? file : URL.createObjectURL(file)),
   window: () => window,
   document: () => document,
 };

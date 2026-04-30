@@ -1,24 +1,48 @@
+import { B } from "vue-router/dist/index-D_VEAp3P.js";
+
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
-  const category =
-    body.category === "others" && body.newCategory ? `others:${body.newCategory}` : body.category;
+  let {
+    super_admin,
+    category,
+    new_category,
+    business_name,
+    slug,
+    physical_location,
+    country,
+    state,
+    city,
+    address,
+    map,
+    coverage,
+    email,
+    telephone,
+    hours,
+    description,
+    logo,
+  } = await readBody(event);
+
+  category = category === "others" && new_category ? `others:${new_category}` : category;
+  coverage = coverage.filter(Boolean);
 
   const newBusiness = await db
     .insertInto("business")
     .values({
-      super_admin: body.super_admin,
-      category: category,
-      business_name: body.bizName,
-      slug: body.slug,
-      location:
-        body.physicalLocation === "yes"
-          ? `${body.street}, ${body.town}, ${body.state}, ${body.country}`
-          : null,
-      map: body.map || null,
-      email: body.email,
-      telephone: body.tel,
-      hours: JSON.stringify(body.hours),
-      description: body.desc,
+      super_admin,
+      category,
+      business_name,
+      slug,
+      physical_location,
+      country,
+      state,
+      city,
+      address,
+      map,
+      coverage,
+      email,
+      telephone,
+      hours: JSON.stringify(hours),
+      description,
+      logo,
       is_active: true,
     })
     .returningAll()

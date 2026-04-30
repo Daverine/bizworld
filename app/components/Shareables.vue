@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-defineOptions({ name: 'rc-shareables' });
-defineProps(['name']);
+defineOptions({ name: "rc-shareables" });
+defineProps(["name"]);
 
-const userStore = useUserStore();
 const searchStore = useSearchStore();
 const { loggedIn, user, signOut } = useAuth();
 const { store: colorMode } = useColorMode({
   modes: {
-    light: 'light-mode',
-    dark: 'dark-mode',
+    light: "light-mode",
+    dark: "dark-mode",
   },
 });
 </script>
@@ -16,8 +15,14 @@ const { store: colorMode } = useColorMode({
 <template>
   <div class="drop menu" v-if="name === 'profile_menu'">
     <div class="header centered xhover item flex-col">
-      <NuxtImg preset="logo" :src="userStore.userData.profileImg" class="free-img rounded-full image" />
-      <div>Welcome, <strong>{{ user?.first_name }}</strong></div>
+      <NuxtImg
+        preset="logo"
+        :src="user?.image || '/images/profilepic.jpg'"
+        class="rounded-full image"
+      />
+      <div>
+        Welcome, <strong>{{ user?.name }}</strong>
+      </div>
     </div>
     <AccountNavItems />
     <div class="item" @click="signOut()">
@@ -26,39 +31,69 @@ const { store: colorMode } = useColorMode({
   </div>
   <template v-else-if="name === 'supports'">
     <div class="item">
-      <Icon name="material-symbols:help-outline-rounded" class="lead" /> Help
-      center
+      <Icon name="material-symbols:help-outline-rounded" class="lead" /> Help center
     </div>
     <div class="item">
       <Icon name="material-symbols:feedback-outline-rounded" class="lead" />
       Give feedback
     </div>
   </template>
-  <div v-else-if="name === 'main_menu'" class="container-lg items m-auto" style="border-radius: var(--default-radius)">
-    <button class="item as-icon open-sidepanel" v-tooltip:aria.unblocking aria-label="Menu" data-target="msidepanel">
+  <div
+    v-else-if="name === 'main_menu'"
+    class="container-lg items m-auto"
+    style="border-radius: var(--default-radius)"
+  >
+    <button
+      class="item as-icon open-sidepanel"
+      v-tooltip:aria.unblocking
+      aria-label="Menu"
+      data-target="msidepanel"
+    >
       <Icon name="material-symbols:menu-rounded" />
     </button>
     <NuxtLink :to="loggedIn ? '/home' : '/'" class="xhover item as-icon">
       <NuxtImg preset="logo" src="/images/logo_sqr.png" alt="site logo" class="logo-lg site-logo" />
     </NuxtLink>
     <form class="xhover adaptable item max-md:hidden" @submit.prevent="searchStore.triggerSearch()">
-      <label class="input container-text transparent" style="background-color: var(--surface-v4) !important">
+      <label
+        class="input container-text transparent"
+        style="background-color: var(--surface-v4) !important"
+      >
         <Icon name="material-symbols:search-rounded" class="xhover" />
-        <input v-model="searchStore.searchBox" type="search" autocomplete="off" placeholder="Your search here."
-          class="subject" />
-        <button type="button" v-tooltip:aria.unblocking aria-label="Scan Business QR" class="icon open-modal"
-          data-target="scanqr-modal">
+        <input
+          v-model="searchStore.searchBox"
+          type="search"
+          autocomplete="off"
+          placeholder="Your search here."
+          class="subject"
+        />
+        <button
+          type="button"
+          v-tooltip:aria.unblocking
+          aria-label="Scan Business QR"
+          class="icon open-modal"
+          data-target="scanqr-modal"
+        >
           <Icon name="material-symbols:qr-code-scanner-rounded" />
         </button>
-        <button type="button" v-tooltip:aria.unblocking aria-label="Configure search" class="icon open-modal"
-          data-target="search-modal">
+        <button
+          type="button"
+          v-tooltip:aria.unblocking
+          aria-label="Configure search"
+          class="icon open-modal"
+          data-target="search-modal"
+        >
           <Icon name="material-symbols:settings-applications-outline-rounded" />
         </button>
       </label>
     </form>
     <div class="items r-aligned">
-      <div v-tooltip:aria.unblocking aria-label="Search" class="open-modal as-icon item md:hidden max-sm:hidden"
-        data-target="search-modal">
+      <div
+        v-tooltip:aria.unblocking
+        aria-label="Search"
+        class="open-modal as-icon item md:hidden max-sm:hidden"
+        data-target="search-modal"
+      >
         <Icon name="material-symbols:search-rounded" />
       </div>
       <div class="item open-modal" data-target="explore-modal">
@@ -67,18 +102,30 @@ const { store: colorMode } = useColorMode({
       </div>
       <!-- <rc-shareables name="do_more_item" /> -->
       <template v-if="loggedIn">
-        <LimbDropdown :options="{ directionPriority: { x: 'center' } }" class="as-icon item ac-viewbox-ref"
-          v-tooltip:aria.unblocking aria-label="Notifications">
+        <LimbDropdown
+          :options="{ directionPriority: { x: 'center' } }"
+          class="as-icon item ac-viewbox-ref"
+          v-tooltip:aria.unblocking
+          aria-label="Notifications"
+        >
           <i class="icon ac-viewbox">
             <Icon name="material-symbols:notifications-outline-rounded" />
             <Icon name="material-symbols:notifications-rounded" />
           </i>
         </LimbDropdown>
         <rc-shareables name="notifications_menu" />
-        <LimbDropdown :options="{ directionPriority: { x: 'left' } }" v-tooltip:aria.unblocking
-          aria-label="Your profile" class="xhover as-icon item">
-          <NuxtImg preset="logo" :src="user?.image || '/images/profilepic.jpg'" alt="profile"
-            class="rounded-full logo" />
+        <LimbDropdown
+          :options="{ directionPriority: { x: 'left' } }"
+          v-tooltip:aria.unblocking
+          aria-label="Your profile"
+          class="xhover as-icon item"
+        >
+          <NuxtImg
+            preset="logo"
+            :src="user?.image || '/images/profilepic.jpg'"
+            alt="profile"
+            class="rounded-full logo"
+          />
         </LimbDropdown>
         <rc-shareables name="profile_menu" />
       </template>
@@ -86,21 +133,21 @@ const { store: colorMode } = useColorMode({
         <div class="items max-lg:hidden">
           <div class="item open-modal" data-target="login-modal">Log in</div>
           <div class="xhover item as-icon pl-0">
-            <button class="primary button open-modal" data-target="register-modal">
-              Sign Up
-            </button>
+            <button class="primary button open-modal" data-target="register-modal">Sign Up</button>
           </div>
         </div>
-        <LimbDropdown :options="{ directionPriority: { x: 'left' } }" v-tooltip:aria.unblocking aria-label="Account"
-          class="item as-icon lg:hidden">
+        <LimbDropdown
+          :options="{ directionPriority: { x: 'left' } }"
+          v-tooltip:aria.unblocking
+          aria-label="Account"
+          class="item as-icon lg:hidden"
+        >
           <Icon name="material-symbols:person-add-outline-rounded" />
           <span class="max-lg:hidden">Account</span>
         </LimbDropdown>
         <div class="drop menu">
           <div class="item open-modal" data-target="login-modal">Log in</div>
-          <div class="item open-modal" data-target="register-modal">
-            Sign Up
-          </div>
+          <div class="item open-modal" data-target="register-modal">Sign Up</div>
         </div>
       </template>
     </div>
@@ -121,9 +168,7 @@ const { store: colorMode } = useColorMode({
     <aside class="flex-none col sidemenu max-lg:hidden">
       <div id="admenu" v-scrollPin="{ top: 84, bottom: 16 }">
         <div style="width: 100%">
-          <h6 class="text-center" style="margin-bottom: 16px">
-            Sponsored (Ads)
-          </h6>
+          <h6 class="text-center" style="margin-bottom: 16px">Sponsored (Ads)</h6>
           <div class="ads">
             <div class="text-center ad">
               <NuxtImg format="webp" src="/images/ads.jpg" alt="ad" />
@@ -157,12 +202,17 @@ const { store: colorMode } = useColorMode({
       </ClientOnly>
     </div>
   </div>
-  <div v-else-if="name === 'notifications_menu'" class="pointing drop menu"
-    style="width: 300px; height: calc(100vh - 84px); max-height: 600px">
+  <div
+    v-else-if="name === 'notifications_menu'"
+    class="pointing drop menu"
+    style="width: 300px; height: calc(100vh - 84px); max-height: 600px"
+  >
     <div class="flex flex-col p-4" style="height: 100%">
       <div class="flex-1 flex flex-col items-center justify-center gap-3">
-        <Icon name="material-symbols-light:notifications-off-outline-rounded"
-          style="font-size: 6rem; color: var(--on-surface-v2)" />
+        <Icon
+          name="material-symbols-light:notifications-off-outline-rounded"
+          style="font-size: 6rem; color: var(--on-surface-v2)"
+        />
         <span class="text">You have no new notifications.</span>
       </div>
       <div class="transparent compact divider"></div>

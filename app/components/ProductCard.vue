@@ -28,7 +28,10 @@ const router = useRouter();
 
 async function clickAction(e: Event) {
   await utils.safeClick(e, () =>
-    navigateTo({ name: 'product-page', params: { id: props.details.id } }, { open: { target: '_blank' } })
+    navigateTo(
+      { name: "product-page", params: { slug: props.details.slug } },
+      { open: { target: "_blank" } },
+    ),
   );
 }
 </script>
@@ -52,26 +55,42 @@ async function clickAction(e: Event) {
         </button>
       </LimbIScroller>
       <div v-if="details.rating">
-        <i v-tooltip:aria.unblocking :aria-label="`Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
-          class="icon of-small text-yellow-500 mr-2">
+        <i
+          v-tooltip:aria.unblocking
+          :aria-label="`Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
+          class="icon of-small text-yellow-500 mr-2"
+        >
           <Icon name="material-symbols:star-rounded" v-for="i in Math.floor(details.rating.rate)" />
-          <Icon name="material-symbols:star-half-rounded"
-            v-if="details.rating.rate - Math.floor(details.rating.rate) >= 0.5" />
-          <Icon name="material-symbols:star-outline-rounded" v-for="i in 5 - Math.round(details.rating.rate)" />
+          <Icon
+            name="material-symbols:star-half-rounded"
+            v-if="details.rating.rate - Math.floor(details.rating.rate) >= 0.5"
+          />
+          <Icon
+            name="material-symbols:star-outline-rounded"
+            v-for="i in 5 - Math.round(details.rating.rate)"
+          />
         </i>
       </div>
       <div class="itm-gap">
         <div class="of-small font-semibold truncate">
-          <Icon v-if="details.bizDetails.verified" name="material-symbols:verified-outline" v-tooltip:aria.unblocking
-            aria-label="Seller is verified" class="mr-2 of-small green-text" />
-          <span v-tooltip:aria.unblocking :aria-label="details.bizDetails.name">{{ details.bizDetails.name }}</span>
+          <Icon
+            v-if="details.bizDetails.verified"
+            name="material-symbols:verified-outline"
+            v-tooltip:aria.unblocking
+            aria-label="Seller is verified"
+            class="mr-2 of-small green-text"
+          />
+          <span v-tooltip:aria.unblocking :aria-label="details.bizDetails.name">{{
+            details.bizDetails.name
+          }}</span>
         </div>
-        <div v-tooltip:aria.unblocking :aria-label="details.bizDetails.location.address"
-          class="of-small font-semibold truncate">
+        <div
+          v-tooltip:aria.unblocking
+          :aria-label="details.bizDetails.location.address"
+          class="of-small font-semibold truncate"
+        >
           <Icon name="material-symbols:location-on-outline-rounded" class="of-small mr-2" />
-          {{
-            `${details.bizDetails.location.city}, ${details.bizDetails.location.state}`
-          }}
+          {{ `${details.bizDetails.location.city}, ${details.bizDetails.location.state}` }}
         </div>
       </div>
     </div>
@@ -93,7 +112,7 @@ async function clickAction(e: Event) {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 
-    &>img {
+    & > img {
       width: 100%;
       height: auto;
       border-radius: inherit;

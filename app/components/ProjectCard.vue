@@ -27,15 +27,10 @@ const props = defineProps<{
 </script>
 <template>
   <article class="project-card">
-    <NuxtImg
-      class="itm-display"
-      preset="thumbnail"
-      :src="details.media"
-      alt=""
-    />
+    <NuxtImg class="itm-display" preset="thumbnail" :src="details.media" alt="" />
     <div class="itm-content">
       <NuxtLink
-        :to="{ name: 'project-page', params: { id: details.id } }"
+        :to="{ name: 'project-page', params: { slug: details.id } }"
         class="line-clamp-2 font-semibold"
         v-tooltip:aria.unblocking
         :aria-label="details.title"
@@ -43,16 +38,10 @@ const props = defineProps<{
         {{ details.title }}
       </NuxtLink>
       <div class="itm-price">₦{{ details.price.toLocaleString() }}</div>
-      <div
-        class="truncate font-semibold of-small"
-        style="color: var(--on-surface-variant)"
-      >
-        <Icon
-          name="material-symbols:timelapse-outline-rounded"
-          class="of-small mr-2"
-        />
+      <div class="truncate font-semibold of-small" style="color: var(--on-surface-variant)">
+        <Icon name="material-symbols:timelapse-outline-rounded" class="of-small mr-2" />
         Deliver within
-        {{ details.duration > 1 ? details.duration + ' days' : '24 hours' }}
+        {{ details.duration > 1 ? details.duration + " days" : "24 hours" }}
       </div>
       <div v-if="details.rating">
         <i
@@ -60,10 +49,7 @@ const props = defineProps<{
           :aria-label="`Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
           class="icon of-small text-yellow-500 mr-2"
         >
-          <Icon
-            name="material-symbols:star-rounded"
-            v-for="i in Math.floor(details.rating.rate)"
-          />
+          <Icon name="material-symbols:star-rounded" v-for="i in Math.floor(details.rating.rate)" />
           <Icon
             name="material-symbols:star-half-rounded"
             v-if="details.rating.rate - Math.floor(details.rating.rate) >= 0.5"
@@ -91,13 +77,8 @@ const props = defineProps<{
         :aria-label="details.bizDetails.location.address"
         class="of-small font-semibold truncate"
       >
-        <Icon
-          name="material-symbols:location-on-outline-rounded"
-          class="of-small mr-2"
-        />
-        {{
-          `${details.bizDetails.location.city}, ${details.bizDetails.location.state}`
-        }}
+        <Icon name="material-symbols:location-on-outline-rounded" class="of-small mr-2" />
+        {{ `${details.bizDetails.location.city}, ${details.bizDetails.location.state}` }}
       </div>
     </div>
   </article>
