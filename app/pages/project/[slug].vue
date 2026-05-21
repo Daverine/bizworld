@@ -1,11 +1,10 @@
 <script setup>
-definePageMeta({ layout: 'details', name: 'project-page' });
+definePageMeta({ layout: "details", name: "project-page" });
 
 const details = ref({
-  type: 'service',
-  id: 'serv134344',
-  title:
-    'Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW',
+  type: "service",
+  id: "serv134344",
+  title: "Create, design and format a document in Word, Powerpoint, Excel and CorelDRAW",
   desc: `
     <p>We are deeply committed to crafting professional logo designs that align with your specific requirements.</p>
     <p>Our Pledge:</p>
@@ -25,167 +24,167 @@ const details = ref({
   price: 6000,
   media: [
     {
-      type: 'pic',
-      url: '/images/product.jpeg',
-      thumbnail: '/images/product.jpeg',
+      type: "pic",
+      url: "/images/product.jpeg",
+      thumbnail: "/images/product.jpeg",
     },
     {
-      type: 'pic',
-      url: '/images/product.jpeg',
-      thumbnail: '/images/product.jpeg',
+      type: "pic",
+      url: "/images/product.jpeg",
+      thumbnail: "/images/product.jpeg",
     },
     {
-      type: 'pic',
-      url: '/images/product.jpeg',
-      thumbnail: '/images/product.jpeg',
+      type: "pic",
+      url: "/images/product.jpeg",
+      thumbnail: "/images/product.jpeg",
     },
   ],
   serviceOptions: [
     {
-      type: 'basic',
-      description: '',
+      type: "basic",
+      description: "",
       duration: 2, // in days
       price: 5000,
       specifications: {
-        'Number of Revisions': '2',
-        'Number of Pages': '1',
-        'Number of Plugins/Extensions Installed': '1',
+        "Number of Revisions": "2",
+        "Number of Pages": "1",
+        "Number of Plugins/Extensions Installed": "1",
       },
     },
     {
-      type: 'standard',
-      description: '',
+      type: "standard",
+      description: "",
       duration: 2, // in days
       price: 8000,
       specifications: {
-        'Number of Revisions': '5',
-        'Number of Pages': '3',
-        'Number of Plugins/Extensions Installed': '1',
-        'Responsive Design': false,
+        "Number of Revisions": "5",
+        "Number of Pages": "3",
+        "Number of Plugins/Extensions Installed": "1",
+        "Responsive Design": false,
       },
     },
     {
-      type: 'premium',
-      description: '',
+      type: "premium",
+      description: "",
       duration: 2, // in days
       price: 12000,
       specifications: {
-        'Number of Revisions': '10',
-        'Number of Pages': '5',
-        'Number of Plugins/Extensions Installed': '1',
-        'Responsive Design': true,
+        "Number of Revisions": "10",
+        "Number of Pages": "5",
+        "Number of Plugins/Extensions Installed": "1",
+        "Responsive Design": true,
       },
     },
   ],
   reviews: [
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 3,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 3,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 2,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 2,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 2,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
     {
-      userid: 'e8e34',
-      username: 'daverine',
-      userpic: '/images/profile_pic.jpg',
+      userid: "e8e34",
+      username: "daverine",
+      userpic: "/images/profile_pic.jpg",
       anonymous: false,
       timestamp: 1694061107318,
       rating: 4,
-      review: 'I enjoy my experience doing business with you guys. keep it up.',
+      review: "I enjoy my experience doing business with you guys. keep it up.",
     },
   ],
   bizData: {
-    logo: '/images/logo-sq.png',
-    bizName: 'Emmadave Computer Technology Services',
-    bizId: 'biz3884',
-    mainCategory: 'Computer repair services',
+    logo: "/images/logo-sq.png",
+    bizName: "Emmadave Computer Technology Services",
+    bizId: "biz3884",
+    mainCategory: "Computer repair services",
     contacts: {
-      tel: '08157483233',
-      email: 'contact_us@edtech.com',
+      tel: "08157483233",
+      email: "contact_us@edtech.com",
     },
     verified: true,
     rating: {
@@ -193,19 +192,19 @@ const details = ref({
       raters: 30,
     },
     location: {
-      address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
-      city: 'Abeokuta',
-      state: 'Ogun State',
-      url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
+      address: "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+      city: "Abeokuta",
+      state: "Ogun State",
+      url: "https://goo.gl/maps/y9ExQLSq37FL6EHm6",
     },
     hours: [
       false,
-      ['8:30', '18:30'],
-      ['8:30', '18:30'],
-      ['15:30', '18:30'],
-      ['8:30', '18:30'],
+      ["8:30", "18:30"],
+      ["8:30", "18:30"],
+      ["15:30", "18:30"],
+      ["8:30", "18:30"],
       false,
-      ['8:30', '18:30'],
+      ["8:30", "18:30"],
     ],
   },
 });
@@ -232,13 +231,13 @@ onMounted(() => {
     choice.value.spec = details.value.serviceOptions[0].type;
   }
   watchEffect(() => {
-    isSmallScreen.value = useMediaQuery('(min-width: 863px)').value;
+    isSmallScreen.value = useMediaQuery("(min-width: 863px)").value;
   });
 });
 </script>
 <template>
   <Title>{{ `${details.title} | Bizworld` }}</Title>
-  <main class="grid-layout" style="padding-top: 1rem">
+  <main class="layout-grid" style="padding-top: 1rem">
     <div class="page-cont">
       <section class="page-sec1">
         <div class="flex gap-3 items-start">
@@ -255,30 +254,20 @@ onMounted(() => {
         <section>
           <div class="a-block">
             <div class="lead" style="position: relative; align-self: center">
-              <NuxtImg
-                preset="logo"
-                :src="details.bizData.logo"
-                class="loose avatar"
-              />
+              <NuxtImg preset="logo" :src="details.bizData.logo" class="loose avatar" />
               <SvgIcon
                 name="verified_sp"
                 v-tooltip:aria.unblocking
                 aria-label="Verified"
-                class="small green-text"
+                class="text-sm green-text"
                 style="position: absolute; bottom: 0px; right: 0px"
               />
             </div>
             <div class="content">
-              <NuxtLink
-                :to="`/business/${details.bizData.bizId}`"
-                class="font-bold truncate m-0"
-              >
+              <NuxtLink :to="`/business/${details.bizData.bizId}`" class="font-bold truncate m-0">
                 {{ details.bizData.bizName }}
               </NuxtLink>
-              <div
-                class="flex flex-wrap small font-semibold"
-                style="gap: 0.25em 0.75em"
-              >
+              <div class="flex flex-wrap text-sm font-semibold" style="gap: 0.25em 0.75em">
                 <span
                   v-tooltip:aria.unblocking
                   :aria-label="
@@ -287,25 +276,19 @@ onMounted(() => {
                       : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
                   "
                 >
-                  <Icon
-                    name="material-symbols:recent-patient-outline-rounded"
-                  />
+                  <Icon name="material-symbols:recent-patient-outline-rounded" />
                   <template v-if="avail.isClosed">
-                    <span class="error-text">Closed.</span>
+                    <span class="text-error">Closed.</span>
                     Opens
                     {{
                       avail.willOpenToday
                         ? `${avail.openTime[0]}:${avail.openTime[1]}`
                         : details.bizData.hours[
-                              avail.now.getDay() === 6
-                                ? 0
-                                : avail.now.getDay() + 1
+                              avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
                             ]
                           ? `${
                               details.bizData.hours[
-                                avail.now.getDay() === 6
-                                  ? 0
-                                  : avail.now.getDay() + 1
+                                avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
                               ][0]
                             } Tomorrow`
                           : `${
@@ -314,42 +297,25 @@ onMounted(() => {
                     }}
                   </template>
                   <template v-else>
-                    <span v-if="avail.closesSoon" class="warning-text">
-                      Closes soon.
-                    </span>
-                    <span v-else class="success-text">Open.</span>
+                    <span v-if="avail.closesSoon" class="text-warning"> Closes soon. </span>
+                    <span v-else class="text-success">Open.</span>
                     Closes
                     {{ `${avail.closeTime[0]}:${avail.closeTime[1]}` }}
                   </template>
                 </span>
               </div>
-              <div
-                class="flex flex-wrap small font-semibold"
-                style="gap: 0.25em 0.75em"
-              >
-                <span
-                  v-tooltip:aria.unblocking
-                  aria-label="Average Rate (Number of raters)"
-                >
-                  <Icon
-                    name="material-symbols:star-rounded"
-                    class="text-yellow-500"
-                  />
+              <div class="flex flex-wrap text-sm font-semibold" style="gap: 0.25em 0.75em">
+                <span v-tooltip:aria.unblocking aria-label="Average Rate (Number of raters)">
+                  <Icon name="material-symbols:star-rounded" class="text-yellow-500" />
                   {{
                     `${(
-                      details.reviews.reduce((n, i) => n + i.rating, 0) /
-                      details.reviews.length
+                      details.reviews.reduce((n, i) => n + i.rating, 0) / details.reviews.length
                     ).toFixed(1)} (${details.reviews.length} reviews)`
                   }}
                 </span>
-                <span
-                  v-tooltip:aria.unblocking
-                  :aria-label="details.bizData.location.address"
-                >
+                <span v-tooltip:aria.unblocking :aria-label="details.bizData.location.address">
                   <Icon name="material-symbols:location-on-outline-rounded" />
-                  {{
-                    `${details.bizData.location.city}, ${details.bizData.location.state}`
-                  }}
+                  {{ `${details.bizData.location.city}, ${details.bizData.location.state}` }}
                 </span>
               </div>
             </div>
@@ -382,9 +348,7 @@ onMounted(() => {
             padding: 1rem;
           "
         >
-          <div class="font-bold" style="margin-bottom: 1rem">
-            Service option
-          </div>
+          <div class="font-bold" style="margin-bottom: 1rem">Service option</div>
           <div class="fillable-eq menu">
             <label
               v-for="(option, index) in details.serviceOptions"
@@ -392,7 +356,7 @@ onMounted(() => {
               :class="{ active: option.type === choice.spec }"
             >
               <input
-                class="big form-item"
+                class="text-lg form-item"
                 type="radio"
                 :value="option.type"
                 v-model="choice.spec"
@@ -400,9 +364,7 @@ onMounted(() => {
               <div>
                 <span class="capitalize">{{ option.type }}</span>
                 <br />
-                <span class="font-bold"
-                  >₦{{ option.price.toLocaleString() }}</span
-                >
+                <span class="font-bold">₦{{ option.price.toLocaleString() }}</span>
               </div>
             </label>
           </div>
@@ -417,14 +379,8 @@ onMounted(() => {
                 <tr v-for="(value, key) in option.specifications">
                   <td>{{ key }}</td>
                   <td class="r-aligned">
-                    <Icon
-                      v-if="value === true"
-                      name="material-symbols:check-rounded"
-                    />
-                    <Icon
-                      v-else-if="value === false"
-                      name="material-symbols:close-rounded"
-                    />
+                    <Icon v-if="value === true" name="material-symbols:check-rounded" />
+                    <Icon v-else-if="value === false" name="material-symbols:close-rounded" />
                     <template v-else>{{ value }}</template>
                   </td>
                 </tr>
@@ -439,11 +395,10 @@ onMounted(() => {
             />
             <div class="content">
               <div class="heading">Secure personal details</div>
-              <div class="faint-text">
-                Your personal and payment information is kept confidential and
-                secure. We do not share your details with third parties without
-                your explicit consent, ensuring your privacy is always
-                protected.
+              <div class="opacity-65">
+                Your personal and payment information is kept confidential and secure. We do not
+                share your details with third parties without your explicit consent, ensuring your
+                privacy is always protected.
               </div>
             </div>
           </div>
@@ -458,25 +413,17 @@ onMounted(() => {
               <thead>
                 <tr>
                   <th>Packages</th>
-                  <th
-                    v-for="option in details.serviceOptions"
-                    class="text-center"
-                  >
+                  <th v-for="option in details.serviceOptions" class="text-center">
                     <span class="capitalize">{{ option.type }}</span>
                     <br />
-                    <span class="font-bold"
-                      >₦{{ option.price.toLocaleString() }}</span
-                    >
+                    <span class="font-bold">₦{{ option.price.toLocaleString() }}</span>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="offer in servicesOffer">
                   <td>{{ offer }}</td>
-                  <td
-                    v-for="option in details.serviceOptions"
-                    class="text-center"
-                  >
+                  <td v-for="option in details.serviceOptions" class="text-center">
                     <Icon
                       v-if="option.specifications[offer] === true"
                       name="material-symbols:check-rounded"
@@ -489,9 +436,7 @@ onMounted(() => {
                       v-else-if="option.specifications[offer] === undefined"
                       name="material-symbols:check-indeterminate-small-rounded"
                     />
-                    <template v-else>{{
-                      option.specifications[offer]
-                    }}</template>
+                    <template v-else>{{ option.specifications[offer] }}</template>
                   </td>
                 </tr>
               </tbody>
@@ -502,10 +447,7 @@ onMounted(() => {
         <!-- Review and Rating Section -->
         <section>
           <div v-collapser class="ac-viewbox-ref active heading a-block">
-            <Icon
-              name="material-symbols:reviews-outline-rounded"
-              class="lead"
-            />
+            <Icon name="material-symbols:reviews-outline-rounded" class="lead" />
             Ratings and Reviews
             <i class="ac-viewbox trailing icon">
               <Icon name="material-symbols:chevron-left-rounded" />
@@ -518,24 +460,19 @@ onMounted(() => {
                 class="text-center"
                 :set="
                   rating = (
-                    details.reviews.reduce((n, i) => n + i.rating, 0) /
-                    details.reviews.length
+                    details.reviews.reduce((n, i) => n + i.rating, 0) / details.reviews.length
                   ).toFixed(1)
                 "
               >
                 <div class="font-semibold" style="font-size: 3em">
                   {{
                     (
-                      details.reviews.reduce((n, i) => n + i.rating, 0) /
-                      details.reviews.length
+                      details.reviews.reduce((n, i) => n + i.rating, 0) / details.reviews.length
                     ).toFixed(1)
                   }}
                 </div>
-                <div class="rating small text-yellow-500">
-                  <Icon
-                    v-for="i in Math.floor(rating)"
-                    name="material-symbols:star-rounded"
-                  />
+                <div class="rating text-sm text-yellow-500">
+                  <Icon v-for="i in Math.floor(rating)" name="material-symbols:star-rounded" />
                   <Icon
                     v-if="rating - Math.floor(rating) >= 0.5"
                     name="material-symbols:star-half-rounded"
@@ -549,7 +486,7 @@ onMounted(() => {
                 <div>All reviews are from verified purchases.</div>
               </div>
               <div class="text-center">
-                <p class="small font-semibold">
+                <p class="text-sm font-semibold">
                   Patronize {{ details.bizData.bizName }} to write a review
                   <a href="#">Learn more.</a>
                 </p>
@@ -557,15 +494,12 @@ onMounted(() => {
             </div>
             <hr />
             <div>
-              <div
-                class="flex justify-between gap-3 items-center"
-                style="margin-bottom: 1rem"
-              >
+              <div class="flex justify-between gap-3 items-center" style="margin-bottom: 1rem">
                 <div class="font-semibold">Reviews</div>
                 <LimbDropdown
                   type="selection"
                   :options="{ directionPriority: { x: 'left' } }"
-                  class="outlined small button"
+                  class="outlined text-sm button"
                 >
                   <Icon name="material-symbols:sort-rounded" class="lead" />
                   Sort:
@@ -584,20 +518,13 @@ onMounted(() => {
                   :set="review = details.reviews[a - 1]"
                 >
                   <header class="flex justify-between items-center gap-3">
-                    <div class="small rounded-full avatar">
-                      <NuxtImg
-                        preset="logo"
-                        src="/Images/profilepic.jpg"
-                        alt="profile picture"
-                      />
+                    <div class="text-sm rounded-full avatar">
+                      <NuxtImg preset="logo" src="/Images/profilepic.jpg" alt="profile picture" />
                     </div>
                     <div class="content flex-1">
                       <div class="font-bold">{{ review.username }}</div>
                       <div class="dm-gap" style="gap: 0.5em">
-                        <div
-                          class="rating mini text-yellow-500"
-                          :set="rating = review.rating"
-                        >
+                        <div class="rating text-xs text-yellow-500" :set="rating = review.rating">
                           <Icon
                             v-for="i in Math.floor(rating)"
                             name="material-symbols:star-rounded"
@@ -616,21 +543,16 @@ onMounted(() => {
                     <LimbDropdown>
                       <Icon name="material-symbols:more-vert" />
                     </LimbDropdown>
-                    <div class="drop menu small">
+                    <div class="drop menu text-sm">
                       <div class="item">
-                        <Icon
-                          name="material-symbols:flag-outline-rounded"
-                          class="lead"
-                        />
+                        <Icon name="material-symbols:flag-outline-rounded" class="lead" />
                         Report
                       </div>
                     </div>
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
-                    <span class="faint-text small font-semibold"
-                      >12-01-2034</span
-                    >
+                    <span class="opacity-65 text-sm font-semibold">12-01-2034</span>
                   </footer>
                 </div>
                 <div v-if="details.reviews.length > 5" class="text-center">
@@ -661,7 +583,7 @@ onMounted(() => {
               :class="{ active: option.type === choice.spec }"
             >
               <input
-                class="big form-item"
+                class="text-lg form-item"
                 type="radio"
                 :value="option.type"
                 v-model="choice.spec"
@@ -669,9 +591,7 @@ onMounted(() => {
               <div>
                 <span class="capitalize">{{ option.type }}</span>
                 <br />
-                <span class="font-bold"
-                  >₦{{ option.price.toLocaleString() }}</span
-                >
+                <span class="font-bold">₦{{ option.price.toLocaleString() }}</span>
               </div>
             </label>
           </div>
@@ -688,14 +608,8 @@ onMounted(() => {
               <tr v-for="(value, key) in option.specifications">
                 <td>{{ key }}</td>
                 <td class="r-aligned">
-                  <Icon
-                    v-if="value === true"
-                    name="material-symbols:check-rounded"
-                  />
-                  <Icon
-                    v-else-if="value === false"
-                    name="material-symbols:close-rounded"
-                  />
+                  <Icon v-if="value === true" name="material-symbols:check-rounded" />
+                  <Icon v-else-if="value === false" name="material-symbols:close-rounded" />
                   <template v-else>{{ value }}</template>
                 </td>
               </tr>
@@ -710,10 +624,7 @@ onMounted(() => {
                 .filter((el) => el.type === choice.spec)[0]
                 ?.price.toLocaleString()
             }})
-            <Icon
-              name="material-symbols:chevron-right-rounded"
-              class="trailing"
-            />
+            <Icon name="material-symbols:chevron-right-rounded" class="trailing" />
           </button>
           <div class="flex gap-3">
             <button class="w-full outlined button">
@@ -730,17 +641,11 @@ onMounted(() => {
             </LimbDropdown>
             <div class="drop menu">
               <div class="item">
-                <Icon
-                  name="material-symbols:chat-outline-rounded"
-                  class="lead"
-                />
+                <Icon name="material-symbols:chat-outline-rounded" class="lead" />
                 Chat contractor
               </div>
               <div class="item">
-                <Icon
-                  name="material-symbols:bookmark-add-outline-rounded"
-                  class="lead"
-                />
+                <Icon name="material-symbols:bookmark-add-outline-rounded" class="lead" />
                 Add to favourite
               </div>
               <div class="item">
@@ -748,17 +653,11 @@ onMounted(() => {
                 Share
               </div>
               <div class="item">
-                <Icon
-                  name="material-symbols:category-search-outline-rounded"
-                  class="lead"
-                />
+                <Icon name="material-symbols:category-search-outline-rounded" class="lead" />
                 View related
               </div>
               <div class="item">
-                <Icon
-                  name="material-symbols:report-outline-rounded"
-                  class="lead"
-                />
+                <Icon name="material-symbols:report-outline-rounded" class="lead" />
                 Report
               </div>
             </div>
@@ -766,16 +665,13 @@ onMounted(() => {
         </div>
         <!-- Buyer's Protection Section -->
         <div class="compact success note" style="margin-top: 1rem">
-          <Icon
-            name="material-symbols:verified-user-outline-rounded"
-            style="font-size: 1.875em"
-          />
+          <Icon name="material-symbols:verified-user-outline-rounded" style="font-size: 1.875em" />
           <div class="content">
             <div class="heading">Secure personal details</div>
-            <div class="faint-text">
-              Your personal and payment information is kept confidential and
-              secure. We do not share your details with third parties without
-              your explicit consent, ensuring your privacy is always protected.
+            <div class="opacity-65">
+              Your personal and payment information is kept confidential and secure. We do not share
+              your details with third parties without your explicit consent, ensuring your privacy
+              is always protected.
             </div>
           </div>
         </div>
@@ -783,20 +679,17 @@ onMounted(() => {
     </div>
     <!-- Call to Action Section -->
     <div
-      class="mobile-screen-only sticky surface-bg w-full z-level-2 pin-bottom-blend"
+      class="mobile-screen-only sticky bg-surface fluid z-level-2 pin-bottom-blend"
       style="bottom: 0px"
     >
-      <div class="container flex gap-3" style="padding: 0.5rem 0rem">
+      <div class="max-w-6xl auto-contain flex gap-3" style="padding: 0.5rem 0rem">
         <button class="flex-1 primary button">
           Continue (₦{{
             details.serviceOptions
               .filter((el) => el.type === choice.spec)[0]
               ?.price.toLocaleString()
           }})
-          <Icon
-            name="material-symbols:chevron-right-rounded"
-            class="trailing"
-          />
+          <Icon name="material-symbols:chevron-right-rounded" class="trailing" />
         </button>
         <button class="flex-1 outlined button max-md:hidden">
           <Icon name="material-symbols:chat-outline-rounded" class="lead" />
@@ -816,10 +709,7 @@ onMounted(() => {
             Chat contractor
           </div>
           <div class="item">
-            <Icon
-              name="material-symbols:bookmark-add-outline-rounded"
-              class="lead"
-            />
+            <Icon name="material-symbols:bookmark-add-outline-rounded" class="lead" />
             Add to favourite
           </div>
           <div class="item">
@@ -827,10 +717,7 @@ onMounted(() => {
             Share
           </div>
           <div class="item">
-            <Icon
-              name="material-symbols:category-search-outline-rounded"
-              class="lead"
-            />
+            <Icon name="material-symbols:category-search-outline-rounded" class="lead" />
             View related
           </div>
           <div class="item">

@@ -19,29 +19,29 @@ interface cartItem {
   };
   checked: boolean;
 }
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
-export const useCartStore = defineStore('cart', {
+export const useCartStore = defineStore("cart", {
   state: () => ({
     items: [
       {
-        type: 'product',
-        id: 'prod1',
+        type: "product",
+        id: "prod1",
         title:
-          'Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery',
+          "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         price: 100000,
-        media: '/images/product.jpeg',
-        productOptions: ['4GB/64GB', 'Yellow'],
+        media: "/images/product.jpeg",
+        productOptions: ["4GB/64GB", "Yellow"],
         quantity: 1,
-        delivery: 'Self-pickup',
+        delivery: "Self-pickup",
         bizData: {
-          logo: '/images/logo-sq.png',
-          bizName: 'Emmadave Computer Technology Services',
-          bizUrl: 'https://www.edtech.com',
-          mainCategory: 'Computer repair services',
+          logo: "/images/logo-sq.png",
+          bizName: "Emmadave Computer Technology Services",
+          bizUrl: "https://www.edtech.com",
+          mainCategory: "Computer repair services",
           contacts: {
-            tel: '08157483233',
-            email: 'contact_us@edtech.com',
+            tel: "08157483233",
+            email: "contact_us@edtech.com",
           },
           verified: true,
           rating: {
@@ -49,32 +49,32 @@ export const useCartStore = defineStore('cart', {
             raters: 30,
           },
           location: {
-            address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
-            city: 'Abeokuta',
-            state: 'Ogun State',
-            url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
+            address: "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            city: "Abeokuta",
+            state: "Ogun State",
+            url: "https://goo.gl/maps/y9ExQLSq37FL6EHm6",
           },
         },
         checked: true,
       },
       {
-        type: 'product',
-        id: 'prod2',
+        type: "product",
+        id: "prod2",
         title:
-          'Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery',
+          "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         price: 100000,
-        media: '/images/product.jpeg',
-        productOptions: ['4GB/64GB', 'Yellow'],
+        media: "/images/product.jpeg",
+        productOptions: ["4GB/64GB", "Yellow"],
         quantity: 1,
-        delivery: 'Self-pickup',
+        delivery: "Self-pickup",
         bizData: {
-          logo: '/images/logo-sq.png',
-          bizName: 'Emmadave Computer Technology Services',
-          bizUrl: 'https://www.edtech.com',
-          mainCategory: 'Computer repair services',
+          logo: "/images/logo-sq.png",
+          bizName: "Emmadave Computer Technology Services",
+          bizUrl: "https://www.edtech.com",
+          mainCategory: "Computer repair services",
           contacts: {
-            tel: '08157483233',
-            email: 'contact_us@edtech.com',
+            tel: "08157483233",
+            email: "contact_us@edtech.com",
           },
           verified: true,
           rating: {
@@ -82,32 +82,32 @@ export const useCartStore = defineStore('cart', {
             raters: 30,
           },
           location: {
-            address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
-            city: 'Abeokuta',
-            state: 'Ogun State',
-            url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
+            address: "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            city: "Abeokuta",
+            state: "Ogun State",
+            url: "https://goo.gl/maps/y9ExQLSq37FL6EHm6",
           },
         },
         checked: true,
       },
       {
-        type: 'product',
-        id: 'prod3',
+        type: "product",
+        id: "prod3",
         title:
-          'Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery',
+          "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         price: 100000,
-        media: '/images/product.jpeg',
-        productOptions: ['4GB/64GB', 'Yellow'],
+        media: "/images/product.jpeg",
+        productOptions: ["4GB/64GB", "Yellow"],
         quantity: 1,
-        delivery: 'Self-pickup',
+        delivery: "Self-pickup",
         bizData: {
-          logo: '/images/logo-sq.png',
-          bizName: 'Emmadave Computer Technology Services',
-          bizUrl: 'https://www.edtech.com',
-          mainCategory: 'Computer repair services',
+          logo: "/images/logo-sq.png",
+          bizName: "Emmadave Computer Technology Services",
+          bizUrl: "https://www.edtech.com",
+          mainCategory: "Computer repair services",
           contacts: {
-            tel: '08157483233',
-            email: 'contact_us@edtech.com',
+            tel: "08157483233",
+            email: "contact_us@edtech.com",
           },
           verified: true,
           rating: {
@@ -115,32 +115,32 @@ export const useCartStore = defineStore('cart', {
             raters: 30,
           },
           location: {
-            address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
-            city: 'Abeokuta',
-            state: 'Ogun State',
-            url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
+            address: "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            city: "Abeokuta",
+            state: "Ogun State",
+            url: "https://goo.gl/maps/y9ExQLSq37FL6EHm6",
           },
         },
         checked: true,
       },
       {
-        type: 'product',
-        id: 'prod4',
+        type: "product",
+        id: "prod4",
         title:
-          'Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery',
+          "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         price: 100000,
-        media: '/images/product.jpeg',
-        productOptions: ['4GB/64GB', 'Yellow'],
+        media: "/images/product.jpeg",
+        productOptions: ["4GB/64GB", "Yellow"],
         quantity: 1,
-        delivery: 'Self-pickup',
+        delivery: "Self-pickup",
         bizData: {
-          logo: '/images/logo-sq.png',
-          bizName: 'Emmadave Computer Technology Services',
-          bizUrl: 'https://www.edtech.com',
-          mainCategory: 'Computer repair services',
+          logo: "/images/logo-sq.png",
+          bizName: "Emmadave Computer Technology Services",
+          bizUrl: "https://www.edtech.com",
+          mainCategory: "Computer repair services",
           contacts: {
-            tel: '08157483233',
-            email: 'contact_us@edtech.com',
+            tel: "08157483233",
+            email: "contact_us@edtech.com",
           },
           verified: true,
           rating: {
@@ -148,32 +148,32 @@ export const useCartStore = defineStore('cart', {
             raters: 30,
           },
           location: {
-            address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
-            city: 'Abeokuta',
-            state: 'Ogun State',
-            url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
+            address: "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            city: "Abeokuta",
+            state: "Ogun State",
+            url: "https://goo.gl/maps/y9ExQLSq37FL6EHm6",
           },
         },
         checked: true,
       },
       {
-        type: 'product',
-        id: 'prod5',
+        type: "product",
+        id: "prod5",
         title:
-          'Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery',
+          "Dell Inspiron 5050, Intel Core i5 5th Gen, 8gb RAM, 256gb SSD. Very clean and rugged laptop. Suitable for office use. Long lasting battery",
         price: 100000,
-        media: '/images/product.jpeg',
-        productOptions: ['4GB/64GB', 'Yellow'],
+        media: "/images/product.jpeg",
+        productOptions: ["4GB/64GB", "Yellow"],
         quantity: 1,
-        delivery: 'Self-pickup',
+        delivery: "Self-pickup",
         bizData: {
-          logo: '/images/logo-sq.png',
-          bizName: 'Emmadave Computer Technology Services',
-          bizUrl: 'https://www.edtech.com',
-          mainCategory: 'Computer repair services',
+          logo: "/images/logo-sq.png",
+          bizName: "Emmadave Computer Technology Services",
+          bizUrl: "https://www.edtech.com",
+          mainCategory: "Computer repair services",
           contacts: {
-            tel: '08157483233',
-            email: 'contact_us@edtech.com',
+            tel: "08157483233",
+            email: "contact_us@edtech.com",
           },
           verified: true,
           rating: {
@@ -181,10 +181,10 @@ export const useCartStore = defineStore('cart', {
             raters: 30,
           },
           location: {
-            address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
-            city: 'Abeokuta',
-            state: 'Ogun State',
-            url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
+            address: "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+            city: "Abeokuta",
+            state: "Ogun State",
+            url: "https://goo.gl/maps/y9ExQLSq37FL6EHm6",
           },
         },
         checked: true,
@@ -193,7 +193,7 @@ export const useCartStore = defineStore('cart', {
   }),
   actions: {
     removeFromCart(id: string) {
-      console.log('removing item with id: ', id);
+      console.log("removing item with id: ", id);
       this.items = this.items.filter((el) => el.id !== id);
     },
     addToCart(item: any) {

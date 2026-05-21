@@ -1,7 +1,7 @@
 <script setup>
-definePageMeta({ layout: 'account', auth: { only: 'user' } });
+definePageMeta({ layout: "account", auth: { only: "user" } });
 const userStore = useUserStore();
-defineOptions({ title: 'Profile | BizWorld' });
+defineOptions({ title: "Profile | BizWorld" });
 </script>
 <template>
   <table class="simple rounded loose table profileTab">
@@ -50,11 +50,11 @@ defineOptions({ title: 'Profile | BizWorld' });
       </tr>
     </tbody>
   </table>
-  <div class="text-center container">
+  <div class="text-center max-w-6xl auto-contain">
     <h4>Are you looking for employment?</h4>
     <p>
-      You can create a work profile for yourself on Bizworld. Employers can
-      easily search for keywords that matches you profile and get you employed.
+      You can create a work profile for yourself on Bizworld. Employers can easily search for
+      keywords that matches you profile and get you employed.
     </p>
     <div class="compact button">Create a work profile</div>
   </div>

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { DialogEvent } from "~/composables/dialoger";
-
 definePageMeta({
   name: "add-service",
   layout: "details",
@@ -32,14 +30,13 @@ function handleNewPhoto(event: Event) {
 }
 </script>
 <template>
-  <div class="container-md">
+  <div class="max-w-180 auto-contain">
     <header
       v-scrollPin="{ notifyStuckState: true, top: 63 }"
-      class="scrollpin z-level-1"
-      style="min-height: 5.75rem; margin-bottom: 1rem"
+      class="scrollpin z-level-1 min-h-23 mb-4 pointer-none-only [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
-        class="p-h3 lined heading h3 flex gap-3 justify-between items-end surface-bg pin-top-blend m-0"
+        class="lined heading text-h3 transition-[font-size] duration-200 flex gap-3 justify-between items-end bg-surface pin-top-blend m-0"
       >
         Add service
         <NuxtLink
@@ -47,18 +44,18 @@ function handleNewPhoto(event: Event) {
             name: 'manage-biz-services',
             params: { slug: $route.params.slug },
           }"
-          class="compact small button"
+          class="compact text-sm button"
         >
           <Icon name="material-symbols:arrow-back-rounded" />
           <span class="content max-sm:hidden">Back</span>
         </NuxtLink>
       </div>
     </header>
-    <div id="add-service" class="container-sm no-edge" style="min-height: 80vh">
+    <div id="add-service" class="max-w-lg auto-contain no-edge" style="min-height: 80vh">
       <div>
         <div class="field">
           <label for="prod-title">Service</label>
-          <div class="text-sm faint-text">Add a specific service you are offering.</div>
+          <div class="text-sm opacity-65">Add a specific service you are offering.</div>
           <input
             v-model="newService.title"
             id="prod-title"
@@ -70,7 +67,7 @@ function handleNewPhoto(event: Event) {
         </div>
         <div class="field">
           <label for="prod-price">Price</label>
-          <div class="text-sm faint-text">
+          <div class="text-sm opacity-65">
             Set a price for your service to let customers know how much it costs.
           </div>
           <div class="grid gap-3 sm:grid-cols-2">
@@ -94,7 +91,7 @@ function handleNewPhoto(event: Event) {
         </div>
         <div class="field">
           <label for="prod-description">Description</label>
-          <p class="text-sm faint-text">
+          <p class="text-sm opacity-65">
             Describe your service to help customers understand what you are offering.
           </p>
           <textarea
@@ -107,7 +104,7 @@ function handleNewPhoto(event: Event) {
         </div>
         <div class="field">
           <label>Add photo</label>
-          <div class="text-sm faint-text">
+          <div class="text-sm opacity-65">
             Photos help customers to see what the service is all about.
           </div>
           <LimbIScroller :options="{ autoSetup: true }">
@@ -115,7 +112,7 @@ function handleNewPhoto(event: Event) {
               <img :src="fileToURL(photo)" alt="Service photo" />
               <button
                 @click="newService.photo.splice(index, 1)"
-                class="small circular icon button"
+                class="text-sm circular icon button"
                 style="position: absolute; top: 0.25rem; right: 0.25rem"
               >
                 <Icon name="material-symbols:delete-outline-rounded" />
@@ -140,7 +137,7 @@ function handleNewPhoto(event: Event) {
       </div>
     </div>
     <footer
-      class="sticky surface-bg p-4 pin-bottom-blend z-level-1"
+      class="sticky bg-surface p-4 pin-bottom-blend z-level-1"
       style="bottom: 0px; margin-top: 0.5rem"
     >
       <div class="flex flex-col">

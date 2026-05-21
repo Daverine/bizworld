@@ -35,3 +35,65 @@ export type product = {
   average_rating: string;
   review_count: string;
 };
+
+export type bizData = {
+  id: string;
+  slug: string;
+  super_admin: string;
+  business_name: string;
+  category: string;
+  physical_location: boolean;
+  country?: string;
+  state?: string;
+  city?: string;
+  address?: string;
+  map?: string;
+  coverage?: string[];
+  telephone: string;
+  email: string;
+  hours: [
+    {
+      day: "Sunday";
+      avail: "nil" | "always" | "selected" | "appointment";
+      hours: { opening?: string; closing?: string };
+    },
+    {
+      day: "Monday";
+      avail: "nil" | "always" | "selected" | "appointment";
+      hours: { opening?: string; closing?: string };
+    },
+    {
+      day: "Tuesday";
+      avail: "nil" | "always" | "selected" | "appointment";
+      hours: { opening?: string; closing?: string };
+    },
+    {
+      day: "Wednesday";
+      avail: "nil" | "always" | "selected" | "appointment";
+      hours: { opening?: string; closing?: string };
+    },
+    {
+      day: "Thursday";
+      avail: "nil" | "always" | "selected" | "appointment";
+      hours: { opening?: string; closing?: string };
+    },
+    {
+      day: "Friday";
+      avail: "nil" | "always" | "selected" | "appointment";
+      hours: { opening?: string; closing?: string };
+    },
+    {
+      day: "Saturday";
+      avail: "nil" | "always" | "selected" | "appointment";
+      hours: { opening?: string; closing?: string };
+    },
+  ];
+  description: string;
+  average_rating?: string;
+  badges?: string[];
+  cover_photo?: string;
+  created_at: Date;
+  is_active: boolean;
+  logo?: string;
+  review_count?: number;
+};

@@ -97,7 +97,7 @@ export const useSignIn = (callbackURL: string) => {
       return;
     }
 
-    useAuth().signIn.email(
+    await useAuth().signIn.email(
       {
         email: data.email,
         password: data.password,
@@ -156,6 +156,7 @@ export const useSignUp = (callbackURL: string = "/home") => {
     error: null,
     success: false,
   });
+
   async function submit() {
     await validation.r$.$validate();
     if (validation.r$.$invalid) {
@@ -168,7 +169,7 @@ export const useSignUp = (callbackURL: string = "/home") => {
       return;
     }
 
-    useAuth().signUp.email(
+    await useAuth().signUp.email(
       {
         name: data.firstname,
         first_name: data.firstname,

@@ -40,7 +40,7 @@ const { store: colorMode } = useColorMode({
   </template>
   <div
     v-else-if="name === 'main_menu'"
-    class="container-lg items m-auto"
+    class="max-w-340 auto-contain items m-auto"
     style="border-radius: var(--default-radius)"
   >
     <button
@@ -55,10 +55,7 @@ const { store: colorMode } = useColorMode({
       <NuxtImg preset="logo" src="/images/logo_sqr.png" alt="site logo" class="logo-lg site-logo" />
     </NuxtLink>
     <form class="xhover adaptable item max-md:hidden" @submit.prevent="searchStore.triggerSearch()">
-      <label
-        class="input container-text transparent"
-        style="background-color: var(--surface-v4) !important"
-      >
+      <label class="input max-w-[65ch] auto-contain transparent bg-surface-v4">
         <Icon name="material-symbols:search-rounded" class="xhover" />
         <input
           v-model="searchStore.searchBox"
@@ -164,25 +161,6 @@ const { store: colorMode } = useColorMode({
     <div class="item">@ Copyright 2023</div>
     <div class="item">Emmadave Inc.</div>
   </div>
-  <template v-else-if="name === 'ad_menu'">
-    <aside class="flex-none col sidemenu max-lg:hidden">
-      <div id="admenu" v-scrollPin="{ top: 84, bottom: 16 }">
-        <div style="width: 100%">
-          <h6 class="text-center" style="margin-bottom: 16px">Sponsored (Ads)</h6>
-          <div class="ads">
-            <div class="text-center ad">
-              <NuxtImg format="webp" src="/images/ads.jpg" alt="ad" />
-              <div>
-                Fix your laptops and desktops (Hardware and Software).
-                <button class="primary button">contact us</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- <rc-shareables name="common_footer" /> -->
-      </div>
-    </aside>
-  </template>
   <div v-else-if="name === 'color_scheme'" class="field" style="align-self: flex-end">
     <label>Color scheme settings</label>
     <div class="fillable compact pills menu w-full">

@@ -1,26 +1,17 @@
 <script setup>
-definePageMeta({ name: 'manage-biz-info', layout: 'common', auth: { only: 'user' } });
+definePageMeta({ name: "manage-biz-info", layout: "common", auth: { only: "user" } });
 </script>
 <template>
-  <main class="flex-1 col" id="feed">
-    <header class="sp-wrapper w-full z-level-1 p-h" style="margin-bottom: 1rem">
+  <main class="max-w-180 auto-contain">
+    <header
+      v-scrollPin="{ notifyStuckState: true, top: 63 }"
+      class="scrollpin z-level-1 min-h-23 mb-4 pointer-none-only [&.is-stuck_.text-h3]:text-2xl"
+    >
       <div
-        v-scrollPin="{ top: 63, independent: true }"
-        class="surface-bg"
+        class="lined heading text-h3 transition-[font-size] duration-200 flex gap-3 justify-between items-end bg-surface pin-top-blend m-0"
       >
-        <div class="w-full l-aligned">
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: baseline;
-            "
-          >
-            <div class="p-h3 h3">Business Information</div>
-            <button class="compact button">Edit</button>
-          </div>
-          <hr class="mb-0" />
-        </div>
+        Business Information
+        <button class="compact text-sm button">Edit</button>
       </div>
     </header>
     <section>
@@ -37,8 +28,8 @@ definePageMeta({ name: 'manage-biz-info', layout: 'common', auth: { only: 'user'
         <div class="field">
           <label>Description</label>
           <div>
-            We offer technical services on laptop and desktop computers. We
-            offer computer tech training; And we also do web development.
+            We offer technical services on laptop and desktop computers. We offer computer tech
+            training; And we also do web development.
           </div>
         </div>
       </fieldset>
@@ -70,10 +61,7 @@ definePageMeta({ name: 'manage-biz-info', layout: 'common', auth: { only: 'user'
         <div class="field">
           <label>Main location</label>
           <div>
-            <p>
-              3, Nepa Road, beside Igbagboyemi Pharmacy Isabo, 11102, Abeokuta,
-              Nigeria.
-            </p>
+            <p>3, Nepa Road, beside Igbagboyemi Pharmacy Isabo, 11102, Abeokuta, Nigeria.</p>
             <iframe
               class="google-maps"
               src="https://maps.google.com/maps?q=2880%20Broadway,%20New%20York&t=&z=13&ie=UTF8&iwloc=&output=embed"

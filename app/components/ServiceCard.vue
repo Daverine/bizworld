@@ -47,36 +47,36 @@ async function clickAction(e: Event) {
           <NuxtLink
             :to="{ name: 'biz-home', params: { slug: details.id } }"
             target="_blank"
-            class="h6 font-bold m-0 line-clamp-2"
+            class="text-h6 font-bold m-0 line-clamp-2"
           >
             {{ details.bizName }}
           </NuxtLink>
-          <span class="faint-text font-semibold">{{ details.mainCategory }}</span>
+          <span class="opacity-65 font-semibold">{{ details.mainCategory }}</span>
         </div>
       </div>
       <div
-        class="flex flex-wrap items-center justify-center of-small font-semibold"
+        class="flex flex-wrap items-center justify-center text-sm font-semibold"
         style="column-gap: 0.7em"
       >
         <span
           v-tooltip:aria.unblocking
           :aria-label="details.location.address"
-          style="color: var(--on-surface-variant)"
+          class="text-surface-v4"
         >
-          <Icon name="material-symbols:location-on-outline-rounded" class="of-small" />
+          <Icon name="material-symbols:location-on-outline-rounded" class="text-sm" />
           {{ `${details.location.city}, ${details.location.state}` }}
         </span>
         <span
           v-tooltip:aria.unblocking
           :aria-label="`(Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
         >
-          <Icon class="of-small text-yellow-500" name="material-symbols:star-rounded" />
+          <Icon class="text-sm text-yellow-500" name="material-symbols:star-rounded" />
           {{ `${details.rating.rate} (${details.rating.raters})` }}
         </span>
         <span>
           <Icon
             name="material-symbols:event-outline-rounded"
-            class="of-small mr-2"
+            class="text-sm mr-2"
             v-tooltip:aria.unblocking
             aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
           />
@@ -89,7 +89,7 @@ async function clickAction(e: Event) {
             "
           >
             <template v-if="avail.isClosed">
-              <span class="error-text">Closed. </span>
+              <span class="text-error">Closed. </span>
               Opens
               {{
                 avail.willOpenToday
@@ -112,8 +112,8 @@ async function clickAction(e: Event) {
               }}
             </template>
             <template v-else>
-              <span v-if="avail.closesSoon" class="warning-text"> Closes soon. </span>
-              <span v-else class="success-text">Open.</span>
+              <span v-if="avail.closesSoon" class="text-warning"> Closes soon. </span>
+              <span v-else class="text-success">Open.</span>
               Closes
               {{
                 `${(avail.closeTime as processedTime)[0]}:${
@@ -135,10 +135,10 @@ async function clickAction(e: Event) {
             {{ service }}
           </span>
         </div>
-        <button class="mini l-scroll">
+        <button class="text-xs l-scroll">
           <Icon name="material-symbols:arrow-back-ios-new-rounded" />
         </button>
-        <button class="mini r-scroll">
+        <button class="text-xs r-scroll">
           <Icon name="material-symbols:arrow-forward-ios-rounded" />
         </button>
       </LimbIScroller>
@@ -174,7 +174,7 @@ async function clickAction(e: Event) {
   position: relative;
   padding: 1rem;
   cursor: pointer;
-  border-radius: var(--sm-radius);
+  border-radius: var(--radius-block);
   box-shadow: inset 0px 0px 0px 1px var(--outline);
 
   @media screen and (max-width: 600px) {

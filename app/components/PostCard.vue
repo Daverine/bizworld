@@ -1,53 +1,67 @@
 <script>
-    export default {
-        props: ['details'],
-        data() {
-            return {
-                template: {
-					cardId: 'post34885',
-					cardType: 'post',
-					date: 'May 28',
-					title: '', // optional
-					postText: 'Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.',
-					media: [{ type: 'image', source: '/images/ads.jpg', altTxt: 'pic' }],
-					visibility: 132,
-					thumbsUp: 0,
-					comments: [],
-					bizDetails: {
-						name: 'Emmadave Computer Technology Services',
-						url: 'https://www.edtech.com',
-						place: {
-							address: '3, Nepa road, beside Igbagboyemi Pharmacy,Isabo 111102',
-							city: 'Abeokuta',
-							state: 'Ogun state',
-							map: 'https://goo.gl/mapsy9ExQLSq37FL6EHm6'
-						},
-						verify: true
-					}
-				}
-            }
-        }
-    }
+export default {
+  props: ["details"],
+  data() {
+    return {
+      template: {
+        cardId: "post34885",
+        cardType: "post",
+        date: "May 28",
+        title: "", // optional
+        postText:
+          "Edtech on work. View profile. Just trying to test how it appears on saved route. It should look nice at least. Is it? Ko bad naa.",
+        media: [{ type: "image", source: "/images/ads.jpg", altTxt: "pic" }],
+        visibility: 132,
+        thumbsUp: 0,
+        comments: [],
+        bizDetails: {
+          name: "Emmadave Computer Technology Services",
+          url: "https://www.edtech.com",
+          place: {
+            address: "3, Nepa road, beside Igbagboyemi Pharmacy,Isabo 111102",
+            city: "Abeokuta",
+            state: "Ogun state",
+            map: "https://goo.gl/mapsy9ExQLSq37FL6EHm6",
+          },
+          verify: true,
+        },
+      },
+    };
+  },
+};
 </script>
 <template>
-    <div class="itm-tag">
-        <SvgIcon name="article" />
+  <div class="itm-tag">
+    <SvgIcon name="article" />
+  </div>
+  <div class="itm-display">
+    <div class="itm-media">
+      <canvas
+        :style="`background-image: url(${details.media.find((el) => el.type === 'image')?.source})`"
+      ></canvas>
     </div>
-    <div class="itm-display">
-        <div class="itm-media">
-            <canvas :style="`background-image: url(${details.media.find(el => el.type === 'image')?.source})`"></canvas>
-        </div>
+  </div>
+  <div class="itm-content">
+    <div class="link itm-title">{{ details.postText }}</div>
+    <div class="itm-gap">
+      <div class="truncate">
+        <SvgIcon
+          name="verified"
+          v-if="details.bizDetails.verify"
+          title="Verified"
+          class="text-xs green-text mr-2"
+        />
+        <a
+          :href="details.bizDetails.url"
+          target="_blank"
+          :title="details.bizDetails.name"
+          class="text-sm opacity-65 font-semibold"
+          >{{ details.bizDetails.name }}</a
+        >
+      </div>
     </div>
-    <div class="itm-content">
-        <div class="link itm-title">{{ details.postText }}</div>
-        <div class="itm-gap">
-            <div class="truncate">
-                <SvgIcon name="verified" v-if="details.bizDetails.verify" title="Verified" class="mini green-text mr-2" />
-                <a :href="details.bizDetails.url" target="_blank" :title="details.bizDetails.name" class="small faint-text font-semibold">{{ details.bizDetails.name }}</a>
-            </div>
-        </div>
-        <!-- <div class="itm-gap">
-            <span class="small font-semibold" style="color: var(--on-surface-variant);">Post</span>
+    <!-- <div class="itm-gap">
+            <span class="text-sm font-semibold text-surface-v3">Post</span>
         </div> -->
-    </div>
+  </div>
 </template>

@@ -5,15 +5,17 @@ const { loggedIn } = useAuth();
 <template>
   <header class="hm-header">
     <HomeHeader />
-    <div role="button" class="mouse_scroll" @click="
-      (
-        $event.currentTarget as HTMLElement
-      )?.parentElement?.nextElementSibling?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest',
-      })
-      ">
+    <div
+      role="button"
+      class="mouse_scroll"
+      @click="
+        ($event.currentTarget as HTMLElement)?.parentElement?.nextElementSibling?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest',
+        })
+      "
+    >
       <div class="mouse">
         <div class="wheel"></div>
       </div>
@@ -24,134 +26,133 @@ const { loggedIn } = useAuth();
       </div>
     </div>
   </header>
-  <div class="menu sticky z-level-2 surface-bg" style="top: 0px; border-bottom: 1px solid var(--outline)">
+  <div
+    class="menu sticky z-level-2 bg-surface"
+    style="top: 0px; border-bottom: 1px solid var(--outline)"
+  >
     <Shareables name="main_menu" />
   </div>
   <article id="firstSec">
     <section class="sec-block">
-      <div class="big text-center container-text">
+      <div class="text-lg text-center max-w-[65ch] auto-contain">
         <h1>
-          Do <span class="primary-text">business</span> at your
-          <span class="primary-text">conveniency</span>
+          Do <span class="text-primary">business</span> at your
+          <span class="text-primary">conveniency</span>
         </h1>
         <p>
-          Perceive Bizworld as a massive online marketplace where you meet a
-          variety of businesses and careers showcasing themselves.
+          Perceive Bizworld as a massive online marketplace where you meet a variety of businesses
+          and careers showcasing themselves.
         </p>
         <p>
-          You can get updates from stores, offices, and businesses in general.
-          You can rate and write reviews on their offered products and services.
+          You can get updates from stores, offices, and businesses in general. You can rate and
+          write reviews on their offered products and services.
         </p>
         <div v-if="!loggedIn" class="text-center">
-          <button class="primary button open-modal" data-target="register-modal">
-            SIGN UP
-          </button>
+          <button class="primary button open-modal" data-target="register-modal">SIGN UP</button>
         </div>
       </div>
     </section>
     <section class="sec-block">
-      <div class="container grid grid-cols-1 md:grid-cols-2">
+      <div class="max-w-6xl auto-contain grid grid-cols-1 md:grid-cols-2">
         <div class="col">
-          <NuxtImg format="webp" sizes="800px" densities="1x" src="/images/explore.jpg" alt="picture depicting explore"
-            class="rounded-sm" />
+          <NuxtImg
+            format="webp"
+            sizes="800px"
+            densities="1x"
+            src="/images/explore.jpg"
+            alt="picture depicting explore"
+            class="rounded-sm"
+          />
         </div>
-        <div class="col container-text big">
+        <div class="col max-w-[65ch] auto-contain text-lg">
           <div>
             <h2>
-              <span class="primary-text">Explore</span> businesses around you
-              without leaving <span class="primary-text">your spot</span>
+              <span class="text-primary">Explore</span> businesses around you without leaving
+              <span class="text-primary">your spot</span>
             </h2>
             <p>
-              You can browse for businesses based on listed categories of
-              commonly needed products and services. You can compare enterprises
-              and determine where you should get things done.
+              You can browse for businesses based on listed categories of commonly needed products
+              and services. You can compare enterprises and determine where you should get things
+              done.
             </p>
             <ul>
               <li>Find the category of service or shopping you need</li>
               <li>Compare distance, ratings and reviews of businesses</li>
               <li>View business info like location, what they offer, etc.</li>
               <li>Navigate to a business page to interact with the business</li>
-              <li>
-                Rate and write a review on a business based on your experience
-              </li>
+              <li>Rate and write a review on a business based on your experience</li>
               <!-- Browse for products and services around you and know where to get things done without having to ask anyone. Our explore section displays businesses in categories of what they offer. So you can easily compare businesses there. If the category you are looking for is not there you can make use of seach instead.</li> -->
             </ul>
             <p>
-              If you can not find the category of interest on our explore page,
-              use the search feature instead.
+              If you can not find the category of interest on our explore page, use the search
+              feature instead.
             </p>
             <div class="text-center">
-              <button class="primary button open-modal" data-target="explore-modal">
-                EXPLORE
-              </button>
+              <button class="primary button open-modal" data-target="explore-modal">EXPLORE</button>
             </div>
           </div>
         </div>
       </div>
     </section>
     <section class="sec-block">
-      <div class="container grid grid-cols-1 md:grid-cols-2" style="direction: rtl">
+      <div class="max-w-6xl auto-contain grid grid-cols-1 md:grid-cols-2" style="direction: rtl">
         <div class="col">
-          <NuxtImg format="webp" sizes="800px" densities="1x" src="/images/qr.jpg" alt="picture depicting qr"
-            class="rounded-sm" />
+          <NuxtImg
+            format="webp"
+            sizes="800px"
+            densities="1x"
+            src="/images/qr.jpg"
+            alt="picture depicting qr"
+            class="rounded-sm"
+          />
         </div>
-        <div class="col container-text big" style="direction: ltr">
+        <div class="col max-w-[65ch] auto-contain text-lg" style="direction: ltr">
           <div>
             <h2>
-              <span class="primary-text">Know</span> their products and services
-              <span class="primary-text">without asking</span>
+              <span class="text-primary">Know</span> their products and services
+              <span class="text-primary">without asking</span>
             </h2>
             <p>
-              <em>BizWorld QR codes</em> are a convenient way to access
-              information about businesses. These QR codes are often placed in
-              public areas to make it easy for people to access a business’s
-              page. You can use the QR code scanner on this page for such codes.
+              <em>BizWorld QR codes</em> are a convenient way to access information about
+              businesses. These QR codes are often placed in public areas to make it easy for people
+              to access a business’s page. You can use the QR code scanner on this page for such
+              codes.
             </p>
             <!-- <p>Scan a business bizWorld QR Code and get to know what products or services a business offer. Businesses that have page(s) on bizWorld usually have their BizWorld QR Code pasted in public places to help people easyly access their page. You can utilize the QR scanner on this page on such Code and directly access a business page and explore their business world.</p> -->
             <div class="text-center">
-              <button class="primary button open-modal" data-target="scanqr-modal">
-                SCAN QR
-              </button>
+              <button class="primary button open-modal" data-target="scanqr-modal">SCAN QR</button>
             </div>
           </div>
         </div>
       </div>
     </section>
     <section class="sec-block">
-      <div class="big text-center container-text">
-        <h2>
-          Take <span class="primary-text">your business online</span> with ease
-        </h2>
+      <div class="text-lg text-center max-w-[65ch] auto-contain">
+        <h2>Take <span class="text-primary">your business online</span> with ease</h2>
         <p>
-          Are you a business owner? Do you want people to connect with your
-          business with ease online? We have you covered. Click on the Get
-          Started button below to create your microsite here on BizWorld today
-          and get connected with new clients and customers.
+          Are you a business owner? Do you want people to connect with your business with ease
+          online? We have you covered. Click on the Get Started button below to create your
+          microsite here on BizWorld today and get connected with new clients and customers.
         </p>
         <div class="text-center">
-          <button class="primary button open-modal" data-target="create-biz">
-            GET STARTED
-          </button>
+          <button class="primary button open-modal" data-target="create-biz">GET STARTED</button>
         </div>
       </div>
     </section>
   </article>
   <footer style="background-color: rgba(128, 128, 128, 0.1)">
-    <div class="container flex gap-6 flex-wrap justify-between" style="padding: 2.75rem 1.25rem 1.25rem">
+    <div
+      class="max-w-6xl auto-contain flex gap-6 flex-wrap justify-between"
+      style="padding: 2.75rem 1.25rem 1.25rem"
+    >
       <div class="col">
         <div class="heading">
           <NuxtImg preset="logo" src="/images/logo.png" style="max-height: 1.25em" />
         </div>
         <div class="vertical text menu">
-          <div class="item open-modal" data-target="search-modal">
-            Business search
-          </div>
-          <div class="item open-modal" data-target="scanqr-modal">
-            Scan QR code
-          </div>
-          <div class="item open-modal" data-target="explore-modal">
-            Explore categories
-          </div>
+          <div class="item open-modal" data-target="search-modal">Business search</div>
+          <div class="item open-modal" data-target="scanqr-modal">Scan QR code</div>
+          <div class="item open-modal" data-target="explore-modal">Explore categories</div>
           <a href="#" class="item">Bring your business online</a>
           <a href="#" class="item">Showcase yourself</a>
         </div>
@@ -192,8 +193,11 @@ const { loggedIn } = useAuth();
         </div>
       </div>
     </div>
-    <div class="wrappable text menu" style="padding: 10px 0px; background-color: rgba(128, 128, 128, 0.1)">
-      <div class="container items">
+    <div
+      class="wrappable text menu"
+      style="padding: 10px 0px; background-color: rgba(128, 128, 128, 0.1)"
+    >
+      <div class="max-w-6xl auto-contain items">
         <div class="item">Terms of use</div>
         <div class="item">About us</div>
         <div class="item">Help</div>

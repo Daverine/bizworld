@@ -1,6 +1,6 @@
 <script>
 export default {
-  props: ['details', 'isSaved'],
+  props: ["details", "isSaved"],
   methods: {
     nextOpenDay(hours) {
       let ex = new Date().getDay() === 6 ? 0 : new Date().getDay() + 1,
@@ -15,60 +15,33 @@ export default {
       return result;
     },
     whatDay(index) {
-      return [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-      ][index];
+      return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][index];
     },
   },
 };
 </script>
 <template>
-  <div
-    class="biz-card card open-modal"
-    :data-type="details.type"
-    data-target="sc-details"
-  >
+  <div class="biz-card card open-modal" :data-type="details.type" data-target="sc-details">
     <div class="biz-display">
-      <NuxtImg
-        height="128"
-        format="webp"
-        densities="1x"
-        :src="details.bizLogo"
-      />
+      <NuxtImg height="128" format="webp" densities="1x" :src="details.bizLogo" />
       <SvgIcon
         v-if="details.verified"
         name="verified_sp"
         title="Verified"
-        class="small green-text"
+        class="text-sm green-text"
         style="position: absolute; bottom: 0px; right: 0px"
       />
     </div>
     <div class="biz-title">{{ details.bizName }}</div>
-    <div class="small font-semibold">{{ details.mainCategory }}</div>
+    <div class="text-sm font-semibold">{{ details.mainCategory }}</div>
     <div class="sc-gap">
-      <span
-        v-if="details.rating"
-        class="font-semibold"
-        title="Average Rate (Number of raters)"
-      >
-        <SvgIcon name="star_filled" class="text-yellow-500 mini mr-2" />
-        <span class="small">{{
-          `${details.rating.rate} (${details.rating.raters})`
-        }}</span>
+      <span v-if="details.rating" class="font-semibold" title="Average Rate (Number of raters)">
+        <SvgIcon name="star_filled" class="text-yellow-500 text-xs mr-2" />
+        <span class="text-sm">{{ `${details.rating.rate} (${details.rating.raters})` }}</span>
       </span>
     </div>
     <div style="display: flex; flex-flow: row; gap: 0.25em; margin-top: 0.5rem">
-      <a
-        :href="details.bizUrl"
-        target="_blank"
-        class="primary compact button ex-open-modal"
-      >
+      <a :href="details.bizUrl" target="_blank" class="primary compact button ex-open-modal">
         <SvgIcon name="public" class="lead" /> Visit
       </a>
       <LimbDropdown
@@ -78,13 +51,9 @@ export default {
         <SvgIcon name="more_horiz" class="lead" /> More
       </LimbDropdown>
       <div class="drop menu">
-        <div class="item">
-          <SvgIcon name="unfollow" class="lead" /> Unfollow
-        </div>
+        <div class="item"><SvgIcon name="unfollow" class="lead" /> Unfollow</div>
         <div class="item"><SvgIcon name="share" class="lead" /> Share</div>
-        <div class="item">
-          <SvgIcon name="report" class="lead" /> Report page
-        </div>
+        <div class="item"><SvgIcon name="report" class="lead" /> Report page</div>
       </div>
     </div>
   </div>

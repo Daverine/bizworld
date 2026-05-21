@@ -93,11 +93,11 @@ const validation = {
       ),
       size: withMessage(
         (value) =>
-          !Boolean(
+          !(
             value &&
             (value as (File | string)[]).some(
               (el) => typeof el !== "string" && el.size >= 5 * 1024 * 1024,
-            ),
+            )
           ),
         "Each photo must be less than 5MB in size.",
       ),
@@ -110,6 +110,22 @@ const validation = {
         (value: Maybe<number>) => typeof value === "number" && value > 0,
         "A base price must be specified for the product.",
       ),
+      lowestInOptions: withMessage((value: Maybe<number>) => {
+        if (!newProduct.tab2.option_group) return true;
+        let lowestOptionPrice = Math.min(
+          ...newProduct.tab2.option_group.options.map((option) => option.price ?? Infinity),
+          ...(newProduct.tab2.option_group.options.some((option) => option.sub_options)
+            ? newProduct.tab2.option_group.options.flatMap(
+                (option) =>
+                  option.sub_options?.map((sub_option) => sub_option.price ?? Infinity) || [],
+              )
+            : []),
+        );
+        if (isFinite(lowestOptionPrice)) {
+          return typeof value === "number" && value <= lowestOptionPrice;
+        }
+        return true;
+      }, "Base price must be less than or equal to the lowest option price."),
     },
     option_group: {
       title: {
@@ -387,6 +403,7 @@ function processProductOption({ settings, exit }: Dialoger) {
       newProduct.tab2.option_group?.options.push({ ...optionPlaceholder.value });
   }
 
+  validation.tab2.r$.base_price.$touch();
   exit();
 }
 function addSpecification(template?: string[]) {
@@ -423,10 +440,10 @@ async function nextTab() {
   if (validation[key].r$.$invalid) {
     await nextTick();
     (
-      document.querySelector(".tab-page.active .error, .tab-page.active .error-text") as HTMLElement
+      document.querySelector(".tab-page.active .error, .tab-page.active .text-error") as HTMLElement
     )?.focus();
     document
-      .querySelector(".tab-page.active .error, .tab-page.active .error-text")
+      .querySelector(".tab-page.active .error, .tab-page.active .text-error")
       ?.closest(".field")
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
@@ -566,14 +583,13 @@ function prevTab() {
 </script>
 
 <template>
-  <div class="container-md">
+  <div class="max-w-180 auto-contain">
     <header
       v-scrollPin="{ notifyStuckState: true, top: 63 }"
-      class="scrollpin z-level-1"
-      style="min-height: 5.75rem; margin-bottom: 1rem"
+      class="scrollpin z-level-1 min-h-23 mb-4 pointer-none-only [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
-        class="p-h3 lined heading h3 flex gap-3 justify-between items-end surface-bg pin-top-blend m-0"
+        class="lined heading text-h3 transition-[font-size] duration-200 flex gap-3 justify-between items-end bg-surface pin-top-blend m-0"
       >
         Add product
         <NuxtLink
@@ -581,14 +597,14 @@ function prevTab() {
             name: 'manage-biz-products',
             params: { slug: $route.params.slug },
           }"
-          class="compact small button"
+          class="compact text-sm button"
         >
           <Icon name="material-symbols:arrow-back-rounded" />
           <span class="content max-sm:hidden">Back</span>
         </NuxtLink>
       </div>
     </header>
-    <div id="add-product" class="container-sm no-edge min-h-[80vh]">
+    <div id="add-product" class="max-w-lg auto-contain no-edge min-h-[80vh]">
       <form
         class="tab-page"
         @submit.prevent="nextTab"
@@ -597,7 +613,7 @@ function prevTab() {
       >
         <div class="field">
           <label for="prod-category">Product category</label>
-          <p class="text-sm faint-text">
+          <p class="text-sm opacity-65">
             Choose a category from the dropdown below that best fits the product you're adding. You
             can also select “Others” from the dropdown to make a new one.
           </p>
@@ -620,7 +636,7 @@ function prevTab() {
             </div>
           </LimbDropdown>
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab1.r$.category.$errors"
             :key="error"
           >
@@ -630,7 +646,7 @@ function prevTab() {
         </div>
         <div v-if="newProduct.tab1.category === 'others'" class="field">
           <label for="prod-category-new">New category name</label>
-          <div class="text-sm faint-text">
+          <div class="text-sm opacity-65">
             Note: Your product will stay in the “Others” category of our explore section until the
             new category is reviewed and standardized.
           </div>
@@ -643,7 +659,7 @@ function prevTab() {
             placeholder="Category name"
           />
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab1.r$.new_category.$errors"
             :key="error"
           >
@@ -653,7 +669,7 @@ function prevTab() {
         </div>
         <div class="field">
           <label for="prod-title">Title</label>
-          <div class="text-sm faint-text">
+          <div class="text-sm opacity-65">
             It should be descriptive and unique as possible. Include brand name, model, and key
             features.
           </div>
@@ -666,7 +682,7 @@ function prevTab() {
             placeholder="Product title"
           />
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab1.r$.title.$errors"
             :key="error"
           >
@@ -676,7 +692,7 @@ function prevTab() {
         </div>
         <div class="field">
           <label>Add photo</label>
-          <div class="text-sm faint-text">
+          <div class="text-sm opacity-65">
             Photos help customers to see the product. Use clear, well-lit images that showcase the
             product from different angles. A photo can be dragged to re-order it.
           </div>
@@ -693,18 +709,18 @@ function prevTab() {
               <button
                 type="button"
                 @click="newProduct.tab1.photos.splice(index, 1)"
-                class="text-xs compact circular outlined button overlay-bg"
+                class="text-xs compact circular outlined button bg-overlay"
                 style="position: absolute; top: 0.25rem; right: 0.25rem"
               >
                 <Icon name="material-symbols:close-rounded" />
               </button>
-              <div v-if="typeof photo !== 'string'" class="small">
+              <div v-if="typeof photo !== 'string'" class="text-sm">
                 {{ (photo.size / 1024 / 1024).toFixed(1) }}MB
               </div>
             </div>
           </LimbIScroller>
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error in validation.tab1.r$.photos.$self.$errors"
             :key="error"
           >
@@ -729,7 +745,7 @@ function prevTab() {
             placeholder="e.g. https://youtube.com/..."
           />
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab1.r$.video_link.$errors"
             :key="error"
           >
@@ -747,7 +763,7 @@ function prevTab() {
       >
         <div class="field">
           <label for="prod-price">Price</label>
-          <div class="text-sm faint-text">
+          <div class="text-sm opacity-65">
             If there is a product options, price here should be the lower price option. Price can
             also be added with product options.
           </div>
@@ -759,7 +775,7 @@ function prevTab() {
             placeholder="Product price"
           />
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab2.r$.base_price.$errors"
             :key="error"
           >
@@ -769,7 +785,7 @@ function prevTab() {
         </div>
         <div class="field">
           <label>Product options</label>
-          <div class="text-sm faint-text">
+          <div class="text-sm opacity-65">
             Product options are variations of the product, such as color, size, or config option.
             You can add a maximum of two option groups.
           </div>
@@ -790,7 +806,7 @@ function prevTab() {
               "
               v-tooltip:aria.unblocking
               aria-label="Remove option group"
-              class="ml-auto small circular bg-transparent icon button"
+              class="ml-auto text-sm circular bg-transparent icon button"
             >
               <Icon name="material-symbols:close-rounded" />
             </button>
@@ -807,7 +823,7 @@ function prevTab() {
                 placeholder="e.g. Color, Size, etc."
               />
               <div
-                class="text-sm error-text"
+                class="text-sm text-error"
                 v-for="error of validation.tab2.r$.option_group.title.$errors"
                 :key="error"
               >
@@ -826,7 +842,7 @@ function prevTab() {
                   class="item open-modal"
                   data-target="app-option"
                   :data-option-id="index"
-                  v-tooltip.aria.unblocking
+                  v-tooltip:aria.unblocking
                   aria-label="Click to modify"
                 >
                   <img
@@ -836,25 +852,25 @@ function prevTab() {
                   />
                   <div class="content">
                     <div class="font-bold">{{ option.label }}</div>
-                    <div v-if="option.price" class="primary-text font-bold">
+                    <div v-if="option.price" class="text-primary font-bold">
                       ₦{{ option.price.toLocaleString() }}
                     </div>
                   </div>
                   <button
                     type="button"
                     @click="newProduct.tab2.option_group.options.splice(index, 1)"
-                    class="small circular trailing icon button ex-open-modal"
+                    class="text-sm circular trailing icon button ex-open-modal"
                   >
                     <Icon name="material-symbols:delete-outline-rounded" />
                   </button>
                 </div>
                 <button type="button" class="button as-app open-modal" data-target="app-option">
-                  <Icon class="huge" name="material-symbols:add" />
+                  <Icon class="text-xl" name="material-symbols:add" />
                   Add option
                 </button>
               </div>
               <div
-                class="text-sm error-text"
+                class="text-sm text-error"
                 v-for="error of validation.tab2.r$.option_group.options.$self?.$errors"
                 :key="error"
               >
@@ -866,7 +882,7 @@ function prevTab() {
         </div>
         <div v-if="newProduct.tab2.option_group" class="field">
           <label>Product sub-option</label>
-          <div class="text-sm faint-text">
+          <div class="text-sm opacity-65">
             <p>
               A sub-option group can also be added if necessary. For example, if your main option
               group is "Size," your sub-option group could be "Colour." This enables customers to
@@ -891,7 +907,7 @@ function prevTab() {
               @click="newProduct.tab2.sub_option_group = undefined"
               v-tooltip:aria.unblocking
               aria-label="Remove sub-option group"
-              class="ml-auto small circular bg-transparent icon button"
+              class="ml-auto text-sm circular bg-transparent icon button"
             >
               <Icon name="material-symbols:close-rounded" />
             </button>
@@ -908,7 +924,7 @@ function prevTab() {
                 placeholder="e.g. Color, Size, etc."
               />
               <div
-                class="text-sm error-text"
+                class="text-sm text-error"
                 v-for="error of validation.tab2.r$.sub_option_group.title.$errors"
                 :key="error"
               >
@@ -936,14 +952,14 @@ function prevTab() {
                   />
                   <div class="content">
                     <div class="font-bold">{{ option.label }}</div>
-                    <div v-if="option.price" class="primary-text font-bold">
+                    <div v-if="option.price" class="text-primary font-bold">
                       ₦{{ option.price.toLocaleString() }}
                     </div>
                   </div>
                   <button
                     type="button"
                     @click="newProduct.tab2.sub_option_group.options.splice(index, 1)"
-                    class="small circular trailing icon button ex-open-modal"
+                    class="text-sm circular trailing icon button ex-open-modal"
                   >
                     <Icon name="material-symbols:delete-outline-rounded" />
                   </button>
@@ -954,12 +970,12 @@ function prevTab() {
                   data-sub-category
                   data-target="app-option"
                 >
-                  <Icon class="huge" name="material-symbols:add" />
+                  <Icon class="text-xl" name="material-symbols:add" />
                   Add option
                 </button>
               </div>
               <div
-                class="text-sm error-text"
+                class="text-sm text-error"
                 v-for="error of validation.tab2.r$.sub_option_group.options.$self?.$errors"
                 :key="error"
               >
@@ -979,7 +995,7 @@ function prevTab() {
       >
         <div class="field">
           <label>Product Specifications</label>
-          <div class="text-sm faint-text">
+          <div class="text-sm opacity-65">
             <p>
               Product specifications provide detailed information about the product's features,
               dimensions, materials, and other relevant details that help customers make informed
@@ -1025,7 +1041,7 @@ function prevTab() {
                       type="text"
                       placeholder="Specification name"
                     />
-                    <div class="text-sm error-text" v-for="error of spec.name.$errors" :key="error">
+                    <div class="text-sm text-error" v-for="error of spec.name.$errors" :key="error">
                       <Icon name="material-symbols:error-rounded" />
                       {{ error }}
                     </div>
@@ -1042,7 +1058,7 @@ function prevTab() {
                       placeholder="Specification value"
                     />
                     <div
-                      class="text-sm error-text"
+                      class="text-sm text-error"
                       v-for="error of spec.value.$errors"
                       :key="error"
                     >
@@ -1057,7 +1073,7 @@ function prevTab() {
                     @click="newProduct.tab3.specifications.splice(index, 1)"
                     v-tooltip:aria.unblocking
                     aria-label="Remove specification"
-                    class="small circular outlined icon button"
+                    class="text-sm circular outlined icon button"
                   >
                     <Icon name="material-symbols:delete-outline-rounded" />
                   </button>
@@ -1068,7 +1084,7 @@ function prevTab() {
               <tr>
                 <td colspan="3">
                   <div
-                    class="text-sm text-center font-normal mb-3 error-text"
+                    class="text-sm text-center font-normal mb-3 text-error"
                     v-for="error of validation.tab3.r$.specifications.$self.$errors"
                     :key="error"
                   >
@@ -1085,7 +1101,7 @@ function prevTab() {
         </div>
         <div class="field">
           <label>Your review</label>
-          <p class="text-sm faint-text">
+          <p class="text-sm opacity-65">
             Share your personal review of the product. Highlight its key features, benefits, and
             what makes it a great choice for customers. A compelling description can help buyers
             make an informed decision.
@@ -1098,7 +1114,7 @@ function prevTab() {
             placeholder="Write your review here..."
           ></textarea>
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab3.r$.overview.$errors"
             :key="error"
           >
@@ -1108,7 +1124,7 @@ function prevTab() {
         </div>
         <div class="field">
           <label>Product details attachment (PDF)</label>
-          <p class="text-sm faint-text">
+          <p class="text-sm opacity-65">
             You can also add a PDF attachment that contains detailed information about the product,
             such as a user manual, spec sheet, or brochure. This can provide customers with
             additional insights and help them make a more informed purchasing decision.
@@ -1125,7 +1141,7 @@ function prevTab() {
             <button
               type="button"
               @click="newProduct.tab3.details_attachment = undefined"
-              class="text-xs compact circular outlined button overlay-bg"
+              class="text-xs compact circular outlined button bg-overlay"
               style="position: absolute; top: 0.25rem; right: 0.25rem"
             >
               <Icon name="material-symbols:close-rounded" />
@@ -1148,7 +1164,7 @@ function prevTab() {
       </form>
     </div>
     <footer
-      class="sticky surface-bg p-4 pin-bottom-blend z-level-1"
+      class="sticky bg-surface p-4 pin-bottom-blend z-level-1"
       style="bottom: 0px; margin-top: 0.5rem"
     >
       <div v-if="currentTab === 'tab1'" class="flex flex-col">
@@ -1206,7 +1222,7 @@ function prevTab() {
               placeholder="Option label"
             />
             <div
-              class="text-sm error-text"
+              class="text-sm text-error"
               v-for="error of validation.optionPlaceholder.r$.label.$errors"
               :key="error"
             >
@@ -1234,17 +1250,17 @@ function prevTab() {
               <button
                 type="button"
                 @click="optionPlaceholder.photo = undefined"
-                class="text-xs compact circular outlined button overlay-bg"
+                class="text-xs compact circular outlined button bg-overlay"
                 style="position: absolute; top: 0.25rem; right: 0.25rem"
               >
                 <Icon name="material-symbols:close-rounded" />
               </button>
-              <div v-if="typeof optionPlaceholder.photo !== 'string'" class="small">
+              <div v-if="typeof optionPlaceholder.photo !== 'string'" class="text-sm">
                 {{ (optionPlaceholder.photo.size / 1024 / 1024).toFixed(1) }}MB
               </div>
             </div>
             <div
-              class="text-sm error-text"
+              class="text-sm text-error"
               v-for="error of validation.optionPlaceholder.r$.photo.$errors"
               :key="error"
             >
@@ -1273,7 +1289,7 @@ function prevTab() {
           </div>
           <div v-if="optionPlaceholder.sub_options" class="field">
             <label>sub-option group</label>
-            <div class="text-sm faint-text">
+            <div class="text-sm opacity-65">
               Toggle the sub-option you want to add to this option. You can also click on the price
               to modify it.
             </div>
@@ -1299,7 +1315,7 @@ function prevTab() {
                 />
                 <div class="content">
                   <div class="font-bold">{{ option.label }}</div>
-                  <label class="primary-text"
+                  <label class="text-primary"
                     >₦
                     <LimbCurrencyInput
                       v-model="optionPlaceholder.sub_options[index]!.price"
@@ -1308,7 +1324,7 @@ function prevTab() {
                         optionPlaceholder.sub_options![index]!.price_changed! =
                           $event.target.value !== option.price
                       "
-                      class="form-item text-fit primary-text"
+                      class="form-item text-fit text-primary"
                       placeholder="Add option price"
                     />
                   </label>
@@ -1325,7 +1341,7 @@ function prevTab() {
           <div v-if="progress.completed" class="flex flex-col items-center gap-3">
             <Icon
               name="material-symbols:check-circle-outline-rounded"
-              class="success-text text-5xl"
+              class="text-success text-5xl"
             />
             <p class="text-center m-0">Product added successfully!</p>
             <div class="flex gap-4 w-full *:flex-1">
@@ -1342,7 +1358,7 @@ function prevTab() {
             </div>
           </div>
           <div v-else-if="progress.completed === null" class="flex flex-col items-center gap-3">
-            <Icon name="material-symbols:error-outline-rounded" class="error-text text-5xl" />
+            <Icon name="material-symbols:error-outline-rounded" class="text-error text-5xl" />
             <p class="text-center m-0">An error occurred.</p>
             <div class="flex gap-4 w-full *:flex-1">
               <button @click="nextTab" class="primary button">Try again</button>

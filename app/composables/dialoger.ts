@@ -1,6 +1,6 @@
 // Usage: import { useDialoger } from 'components/composables/useDialoger.ts';
 // Usage: const { showDialog } = useDialoger(dialoger, 'dialoger-id', options);
-import type { ShallowRef, WatchStopHandle } from 'vue';
+import type { ShallowRef, WatchStopHandle } from "vue";
 
 export type DialogEvent = {
   target: HTMLElement | null;
@@ -39,17 +39,17 @@ export function useDialoger(
   const route = useRoute();
   const showDialog = ref(false);
   const settings: DialogerSettings = {
-    namespace: 'dialog',
-    toggler: '.open-dialog',
-    toExcuseToggler: '.ex-open-dialog',
+    namespace: "dialog",
+    toggler: ".open-dialog",
+    toExcuseToggler: ".ex-open-dialog",
     closeOnEsc: true,
     closeOnWrapperClick: true,
     dismissible: true,
-    dismisser: '.exit-dialog',
-    autoFocusEl: '[dg-autofocus]',
+    dismisser: ".exit-dialog",
+    autoFocusEl: "[dg-autofocus]",
     commands: {
-      open: 'open dialog',
-      close: 'close dialog',
+      open: "open dialog",
+      close: "close dialog",
     },
     inDuration: 500,
     outDuration: 500,
@@ -68,30 +68,28 @@ export function useDialoger(
   function exitByClick(e: MouseEvent) {
     if (
       (settings.closeOnWrapperClick && e.target === dialoger.value) ||
-      (settings.dismissible &&
-        (e.target as HTMLElement).closest(settings.dismisser!))
+      (settings.dismissible && (e.target as HTMLElement).closest(settings.dismisser!))
     )
       showDialog.value = false;
   }
 
   function KBDControls(e: KeyboardEvent) {
     // tab function in dialog
-    if (e.key === 'Tab') utils.focusRangeOnTab(dialoger.value!, e);
+    if (e.key === "Tab") utils.focusRangeOnTab(dialoger.value!, e);
     // Control + A function in dialog
-    else if (e.ctrlKey && e.code === 'KeyA') {
-      if (document.querySelectorAll('input:focus, textarea:focus')[0]) return;
+    else if (e.ctrlKey && e.code === "KeyA") {
+      if (document.querySelectorAll("input:focus, textarea:focus")[0]) return;
       e.preventDefault();
       utils.setHighlightRange(dialoger.value!);
     }
   }
 
   function exitByEscKeyPress(e: KeyboardEvent) {
-    if (e.key === 'Escape' && utils.checkEscStatus(bb.uniqueId!))
-      showDialog.value = false;
+    if (e.key === "Escape" && utils.checkEscStatus(bb.uniqueId!)) showDialog.value = false;
   }
 
   function backToExit() {
-    history.pushState(null, '', window.location.href);
+    history.pushState(null, "", window.location.href);
     showDialog.value = false;
   }
 
@@ -109,9 +107,9 @@ export function useDialoger(
     bb.uniqueId = utils.getUniqueId(settings.namespace!);
 
     // click on dialoger toggler to open dialog
-    document.addEventListener('click', toOpenDialog);
+    document.addEventListener("click", toOpenDialog);
 
-    dialoger.value!.addEventListener('dgconsole', ((e: CustomEvent<string>) => {
+    dialoger.value!.addEventListener("dgconsole", ((e: CustomEvent<string>) => {
       if (e.detail === settings.commands!.open) showDialog.value = true;
       else if (e.detail === settings.commands!.close) showDialog.value = false;
     }) as EventListener);
@@ -134,7 +132,7 @@ export function useDialoger(
   watch(showDialog, async (value) => {
     if (value) {
       document.body.append(dialoger.value!);
-      dialoger.value!.style.visibility = 'visible';
+      dialoger.value!.style.visibility = "visible";
       await utils.afterNextRepaint();
       if (settings.hashControl) {
         bb.scrollPosBeforeLock = {
@@ -142,7 +140,7 @@ export function useDialoger(
           left: window.scrollX,
         };
         if (!bb.openWithHash) await navigateTo({ hash: `#${id}` }, { replace: true });
-        window.addEventListener('popstate', backToExit);
+        window.addEventListener("popstate", backToExit);
         // exit when route hash changes
         unwatch.closeOnRouteChange = watch(
           () => route.hash,
@@ -158,25 +156,25 @@ export function useDialoger(
 
       // If a controller function is provided in the settings, call it with the lightbox element and settings.
       // The controller function can be used to perform additional setup or customization of the lightbox.
-      if (typeof settings.controller === 'function')
+      if (typeof settings.controller === "function")
         settings.controller({
           target: dialoger.value!,
           settings,
         });
 
-      document.addEventListener('keydown', KBDControls);
-      dialoger.value!.addEventListener('click', exitByClick);
+      document.addEventListener("keydown", KBDControls);
+      dialoger.value!.addEventListener("click", exitByClick);
       if (settings.closeOnEsc) {
         utils.trackEscOn(bb.uniqueId!);
-        document.addEventListener('keyup', exitByEscKeyPress);
+        document.addEventListener("keyup", exitByEscKeyPress);
       }
-      dialoger.value!.classList.add('active');
+      dialoger.value!.classList.add("active");
       await utils.delay(settings.inDuration!);
       if (dialoger.value) {
         dialoger.value.scrollTop = 0;
 
         // Trigger a custom event 'isReady' on the dialog element to indicate that the dialog is ready.
-        utils.triggerEvent(dialoger.value, 'isReady', {
+        utils.triggerEvent(dialoger.value, "isReady", {
           target: dialoger.value,
           settings,
         });
@@ -188,27 +186,27 @@ export function useDialoger(
         else utils.focusRangeOnTab(dialoger.value!);
       }
     } else {
-      document.removeEventListener('keydown', KBDControls);
-      dialoger.value!.removeEventListener('click', exitByClick);
+      document.removeEventListener("keydown", KBDControls);
+      dialoger.value!.removeEventListener("click", exitByClick);
       if (settings.closeOnEsc) {
         // safely get out of escape track
         utils.checkEscStatus(bb.uniqueId!, true);
-        document.removeEventListener('keyup', exitByEscKeyPress);
+        document.removeEventListener("keyup", exitByEscKeyPress);
       }
 
-      dialoger.value?.classList.remove('active');
+      dialoger.value?.classList.remove("active");
       if (settings.hashControl) {
         unwatch.closeOnRouteChange!();
-        window.removeEventListener('popstate', backToExit);
-        await navigateTo({ hash: '' }, { replace: true });
+        window.removeEventListener("popstate", backToExit);
+        await navigateTo({ hash: "" }, { replace: true });
         bb.openWithHash = false;
         utils.afterNextRepaint(() => window.scrollTo(bb.scrollPosBeforeLock));
       }
       await utils.delay(settings.outDuration!);
-      dialoger.value?.style.setProperty('visibility', 'hidden');
+      dialoger.value?.style.setProperty("visibility", "hidden");
       // Trigger a custom event 'isComplete' on the dialog element to indicate that the dialog has completed its closing process.
       if (dialoger.value)
-        utils.triggerEvent(dialoger.value, 'isComplete', {
+        utils.triggerEvent(dialoger.value, "isComplete", {
           target: dialoger.value,
           settings,
         });
@@ -221,11 +219,11 @@ export function useDialoger(
   onBeforeUnmount(() => {
     // stop all asynchronous watcher
     Object.keys(unwatch).forEach((el) => {
-      if (typeof unwatch[el] === 'function') unwatch[el]!();
+      if (typeof unwatch[el] === "function") unwatch[el]!();
     });
     showDialog.value = false;
-    document.removeEventListener('keydown', KBDControls);
-    document.removeEventListener('click', toOpenDialog);
+    document.removeEventListener("keydown", KBDControls);
+    document.removeEventListener("click", toOpenDialog);
     utils.checkEscStatus(bb.uniqueId!, true);
     utils.unlockWindowScroll(bb.uniqueId!);
   });

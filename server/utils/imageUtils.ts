@@ -1,6 +1,6 @@
-import fs from 'fs/promises';
-import path from 'path';
-import sharp, { SharpInput } from 'sharp';
+import fs from "fs/promises";
+import path from "path";
+import sharp, { SharpInput } from "sharp";
 
 export async function optimizeAndSaveImages(
   input: SharpInput | SharpInput[],
@@ -10,13 +10,8 @@ export async function optimizeAndSaveImages(
     uploadDir?: string;
   } = {},
 ) {
-  const config = { width: 1200, quality: 80, uploadDir: 'temp', ...options };
-  const uploadDir = path.join(
-    process.cwd(),
-    'public',
-    'uploads',
-    config.uploadDir,
-  );
+  const config = { width: 1200, quality: 80, uploadDir: "temp", ...options };
+  const uploadDir = path.join(process.cwd(), "public", "uploads", config.uploadDir);
 
   await fs.mkdir(uploadDir, { recursive: true });
 

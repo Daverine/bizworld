@@ -9,14 +9,13 @@ const { data: products } = await useFetch("/api/business/products", {
 });
 </script>
 <template>
-  <main class="container-md">
+  <main class="max-w-180 auto-contain">
     <header
       v-scrollPin="{ notifyStuckState: true, top: 63 }"
-      class="scrollpin z-level-1"
-      style="min-height: 5.75rem; margin-bottom: 1rem"
+      class="scrollpin z-level-1 min-h-23 mb-4 pointer-none-only [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
-        class="p-h3 lined heading h3 flex gap-3 justify-between items-end surface-bg pin-top-blend m-0"
+        class="lined heading text-h3 transition-[font-size] duration-200 flex gap-3 justify-between items-end bg-surface pin-top-blend m-0"
       >
         Products
         <NuxtLink

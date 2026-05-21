@@ -1,69 +1,49 @@
 <script setup>
-definePageMeta({ layout: 'details', auth: { only: 'user' }, noFab: true });
+definePageMeta({ layout: "details", auth: { only: "user" }, noFab: true });
 </script>
 <template>
   <div class="messaging-view">
     <div class="history-view">
       <header
-        class="pin-top-blend surface-bg"
-        style="
-          display: flex;
-          flex-flow: column nowrap;
-          gap: 0.5em;
-          padding: 0.5em;
-        "
+        class="pin-top-blend bg-surface"
+        style="display: flex; flex-flow: column nowrap; gap: 0.5em; padding: 0.5em"
       >
-        <LimbDropdown
-          type="selection"
-          style="display: flex; align-items: center"
-        >
+        <LimbDropdown type="selection" style="display: flex; align-items: center">
           <template #trailing>
-            <Icon
-              name="material-symbols:expand-more-rounded"
-              class="trailing"
-            />
+            <Icon name="material-symbols:expand-more-rounded" class="trailing" />
           </template>
         </LimbDropdown>
         <div class="drop menu">
           <div class="active item">
             <div
-              class="lead avatar rounded-full mini"
+              class="lead avatar rounded-full text-xs"
               style="flex: 0 0 auto; background-color: #999"
             ></div>
             <div style="flex: 1 1 auto">
               <div class="text text-left">
-                <div
-                  class="font-semibold"
-                  style="font-size: 1.125em; line-height: 1.25"
-                >
+                <div class="font-semibold" style="font-size: 1.125em; line-height: 1.25">
                   Ayoola Folorunso
                 </div>
-                <div class="small faint-text">Personal Account</div>
+                <div class="text-sm opacity-65">Personal Account</div>
               </div>
             </div>
           </div>
           <div class="item">
             <div
-              class="lead avatar rounded-full mini"
+              class="lead avatar rounded-full text-xs"
               style="flex: 0 0 auto; background-color: #999"
             ></div>
             <div style="flex: 1 1 auto">
               <div class="text text-left">
-                <div
-                  class="font-semibold"
-                  style="font-size: 1.125em; line-height: 1.25"
-                >
+                <div class="font-semibold" style="font-size: 1.125em; line-height: 1.25">
                   Emmadave Computers
                 </div>
-                <div class="small faint-text">Business Account</div>
+                <div class="text-sm opacity-65">Business Account</div>
               </div>
             </div>
           </div>
         </div>
-        <label
-          class="transparent input"
-          style="background-color: var(--surface-v4)"
-        >
+        <label class="transparent input bg-surface-v4">
           <Icon name="material-symbols:search-rounded" />
           <input type="text" class="subject" placeholder="Search" />
         </label>
@@ -71,36 +51,25 @@ definePageMeta({ layout: 'details', auth: { only: 'user' }, noFab: true });
       <div style="flex: 1 1 auto"></div>
       <footer class="pin-bottom-blend" style="padding: 0.5em">
         <button class="button primary w-full">
-          <Icon
-            name="material-symbols:chat-add-on-outline-rounded"
-            class="lead"
-          />
+          <Icon name="material-symbols:chat-add-on-outline-rounded" class="lead" />
           New chat
         </button>
       </footer>
     </div>
     <div class="chat-view">
-      <header
-        style="padding: 0em 0.5em; border-bottom: 1px solid var(--outline)"
-      >
-        <div
-          class="icon-bar compact menu"
-          style="border-radius: var(--default-radius)"
-        >
+      <header style="padding: 0em 0.5em; border-bottom: 1px solid var(--outline)">
+        <div class="icon-bar compact menu" style="border-radius: var(--default-radius)">
           <div class="adaptable xhover item">
             <div
-              class="lead avatar rounded-full mini"
+              class="lead avatar rounded-full text-xs"
               style="flex: 0 0 auto; background-color: #999"
             ></div>
             <div style="flex: 1 1 auto">
               <div class="text text-left">
-                <div
-                  class="font-semibold"
-                  style="font-size: 1.125em; line-height: 1.25"
-                >
+                <div class="font-semibold" style="font-size: 1.125em; line-height: 1.25">
                   Ayoola Folorunso
                 </div>
-                <div class="small faint-text">Online</div>
+                <div class="text-sm opacity-65">Online</div>
               </div>
             </div>
           </div>

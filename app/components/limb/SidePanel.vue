@@ -3,15 +3,15 @@ const props = defineProps<{
   id: string;
   options?: DialogerSettings;
 }>();
-const sidepanel = useTemplateRef('panel');
+const sidepanel = useTemplateRef("panel");
 const options: DialogerSettings = {
-  namespace: 'sidepanel',
-  toggler: '.open-sidepanel',
+  namespace: "sidepanel",
+  toggler: ".open-sidepanel",
   closeOnEsc: true,
   closeOnWrapperClick: true,
   dismissible: true,
-  autoFocusEl: '[sp-autofocus]',
-  dismisser: '.exit-sidepanel',
+  autoFocusEl: "[sp-autofocus]",
+  dismisser: ".exit-sidepanel",
   inDuration: 500,
   outDuration: 500,
   ...props.options,

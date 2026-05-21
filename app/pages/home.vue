@@ -1,28 +1,35 @@
 <script setup>
-import Common from '~/layouts/Common.vue';
-definePageMeta({ name: 'home', auth: { only: 'user' } });
+import Common from "~/layouts/Common.vue";
+definePageMeta({ name: "home", auth: { only: "user" } });
 const feedStore = useFeedStore();
 onMounted(() => feedStore.getUpdate());
 </script>
 <template>
   <header class="hm-header">
     <HomeHeader />
-    <div role="button" class="text-center" style="margin-bottom: 2rem" @click="
-      $event.currentTarget.parentElement.nextElementSibling.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest',
-      })
-      ">
+    <div
+      role="button"
+      class="text-center"
+      style="margin-bottom: 2rem"
+      @click="
+        $event.currentTarget.parentElement.nextElementSibling.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest',
+        })
+      "
+    >
       <Icon name="material-symbols:keyboard-double-arrow-down-rounded" style="font-size: 2em" />
-      <div style="font-size: 1.2em; line-height: 1; font-weight: 500">
-        FEEDS
-      </div>
+      <div style="font-size: 1.2em; line-height: 1; font-weight: 500">FEEDS</div>
     </div>
   </header>
   <Common>
-    <main class="flex-1 container-md" style="padding: 1rem 1rem">
-      <LimbIScroller v-scrollPin="{ top: 63 }" class="pin-top-blend z-level-1" style="margin-bottom: 1rem">
+    <main class="max-w-180 auto-contain" style="padding: 1rem 1rem">
+      <LimbIScroller
+        v-scrollPin="{ top: 63 }"
+        class="pin-top-blend z-level-1"
+        style="margin-bottom: 1rem"
+      >
         <div class="rail fillable menu scroll-items">
           <div class="items" style="margin: 0px auto">
             <div class="active item">For you</div>
@@ -52,7 +59,7 @@ onMounted(() => feedStore.getUpdate());
 .mp-menu {
   top: 0px;
   border-bottom: 1px solid var(--outline);
-  background-color: var(--surface);
+  background-color: var(--color-surface);
 }
 
 .call-text {

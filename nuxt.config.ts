@@ -26,7 +26,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
-      include: ["better-auth/vue", "@regle/rules", "@regle/core"],
+      include: ["@regle/core", "@regle/rules", "better-auth/client/plugins", "better-auth/vue"],
     },
   },
   image: {

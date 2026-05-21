@@ -286,14 +286,13 @@ const formData = reactive<{
     state?: string;
     city?: string;
     address?: string;
-    location?: string;
     map?: string;
   };
   tab3: {
     coverage: string[];
   };
   tab4: {
-    tel?: number;
+    telephone?: number;
     email?: string;
   };
   tab5: {
@@ -423,7 +422,7 @@ const validation = {
     },
   }),
   tab4: useRegle(formData.tab4, {
-    tel: { required: withMessage(required, "Telephone number is required") },
+    telephone: { required: withMessage(required, "Telephone number is required") },
     email: {
       required: withMessage(required, "Email address is required"),
       email,
@@ -536,10 +535,10 @@ async function nextTab() {
   if (validation[key]?.r$.$invalid) {
     await nextTick();
     (
-      document.querySelector(".tab-page.active .error, .tab-page.active .error-text") as HTMLElement
+      document.querySelector(".tab-page.active .error, .tab-page.active .text-error") as HTMLElement
     )?.focus();
     document
-      .querySelector(".tab-page.active .error, .tab-page.active .error-text")
+      .querySelector(".tab-page.active .error, .tab-page.active .text-error")
       ?.closest(".field")
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
@@ -602,8 +601,8 @@ function prevTab() {
 }
 </script>
 <template>
-  <div class="container-md pt-8">
-    <div class="container-sm no-edge">
+  <div class="max-w-180 auto-contain pt-8">
+    <div class="max-w-lg auto-contain no-edge">
       <form
         class="tab-page"
         @submit.prevent="nextTab"
@@ -616,7 +615,7 @@ function prevTab() {
         </header>
         <div class="field">
           <label>Industry/Category</label>
-          <p class="text-sm faint-text">
+          <p class="text-sm opacity-65">
             Choose a category from the dropdown below that best fits your business. You can also
             select “Others” from the dropdown to make a new one.
           </p>
@@ -647,7 +646,7 @@ function prevTab() {
             </div>
           </LimbDropdown>
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab1.r$.category.$errors"
             :key="error"
           >
@@ -656,7 +655,7 @@ function prevTab() {
         </div>
         <div v-if="formData.tab1.category === 'others'" class="field">
           <label for="biz-category-new">New category name</label>
-          <div class="text-sm faint-text">
+          <div class="text-sm opacity-65">
             Note: Your business will stay in the “Others” category until the new category is
             reviewed and standardized.
           </div>
@@ -669,7 +668,7 @@ function prevTab() {
             placeholder="Category name"
           />
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab1.r$.new_category.$errors"
             :key="error"
           >
@@ -687,7 +686,7 @@ function prevTab() {
             class="form-item"
           />
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab1.r$.business_name.$errors"
             :key="error"
           >
@@ -696,7 +695,7 @@ function prevTab() {
         </div>
         <div class="field">
           <label for="biz-name">BizWorld address</label>
-          <p class="text-sm faint-text">
+          <p class="text-sm opacity-65">
             Create a bizworld address for your business page or click on the generate button to
             generate one based on your business name.
           </p>
@@ -728,7 +727,7 @@ function prevTab() {
             class="form-item"
           />
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab1.r$.slug.$errors"
             :key="error"
           >
@@ -781,7 +780,7 @@ function prevTab() {
               </label>
             </div>
             <div
-              class="text-sm error-text"
+              class="text-sm text-error"
               v-for="error of validation.tab2.r$.physical_location.$errors"
               :key="error"
             >
@@ -804,7 +803,7 @@ function prevTab() {
               <div class="item">Nigeria</div>
             </div>
             <div
-              class="text-sm error-text"
+              class="text-sm text-error"
               v-for="error of validation.tab2.r$.country.$errors"
               :key="error"
             >
@@ -822,7 +821,7 @@ function prevTab() {
               name="biz-state"
             />
             <div
-              class="text-sm error-text"
+              class="text-sm text-error"
               v-for="error of validation.tab2.r$.state.$errors"
               :key="error"
             >
@@ -840,7 +839,7 @@ function prevTab() {
               name="biz-city"
             />
             <div
-              class="text-sm error-text"
+              class="text-sm text-error"
               v-for="error of validation.tab2.r$.city.$errors"
               :key="error"
             >
@@ -858,7 +857,7 @@ function prevTab() {
               name="biz-address"
             />
             <div
-              class="text-sm error-text"
+              class="text-sm text-error"
               v-for="error of validation.tab2.r$.address.$errors"
               :key="error"
             >
@@ -882,7 +881,7 @@ function prevTab() {
               :class="{ error: validation.tab2.r$.map.$error }"
             />
             <div
-              class="text-sm error-text"
+              class="text-sm text-error"
               v-for="error of validation.tab2.r$.map.$errors"
               :key="error"
             >
@@ -925,7 +924,7 @@ function prevTab() {
                     @click="formData.tab3.coverage.splice(index - 1, 1)"
                     v-tooltip:aria.unblocking
                     aria-label="Remove coverage area"
-                    class="small circular outlined icon button"
+                    class="text-sm circular outlined icon button"
                   >
                     <Icon name="material-symbols:delete-outline-rounded" />
                   </button>
@@ -934,7 +933,7 @@ function prevTab() {
               <tr>
                 <td colspan="2">
                   <div
-                    class="text-sm error-text text-center mb-3"
+                    class="text-sm text-error text-center mb-3"
                     v-for="error of validation.tab3.r$.coverage.$self.$errors"
                     :key="error"
                   >
@@ -981,16 +980,16 @@ function prevTab() {
         <div class="field">
           <label>Phone number</label>
           <input
-            v-model="formData.tab4.tel"
+            v-model="formData.tab4.telephone"
             placeholder="Enter your business telephone number"
             type="tel"
             name="telephone"
             class="form-item"
-            :class="{ error: validation.tab4.r$.tel.$error }"
+            :class="{ error: validation.tab4.r$.telephone.$error }"
           />
           <div
-            class="text-sm error-text"
-            v-for="error of validation.tab4.r$.tel.$errors"
+            class="text-sm text-error"
+            v-for="error of validation.tab4.r$.telephone.$errors"
             :key="error"
           >
             <Icon name="material-symbols:error-rounded" /> {{ error }}
@@ -1007,7 +1006,7 @@ function prevTab() {
             :class="{ error: validation.tab4.r$.email.$error }"
           />
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab4.r$.email.$errors"
             :key="error"
           >
@@ -1060,7 +1059,7 @@ function prevTab() {
               </div>
             </div>
             <div
-              class="text-sm error-text text-center"
+              class="text-sm text-error text-center"
               v-for="error of item.hours.$self.$errors"
               :key="error"
             >
@@ -1077,7 +1076,7 @@ function prevTab() {
                   }"
                 />
                 <div
-                  class="text-sm error-text"
+                  class="text-sm text-error"
                   v-for="error of item.hours.opening.$errors"
                   :key="error"
                 >
@@ -1094,7 +1093,7 @@ function prevTab() {
                   }"
                 />
                 <div
-                  class="text-sm error-text"
+                  class="text-sm text-error"
                   v-for="error of item.hours.closing.$errors"
                   :key="error"
                 >
@@ -1127,7 +1126,7 @@ function prevTab() {
             placeholder="What does your business do?"
           ></textarea>
           <div
-            class="text-sm error-text"
+            class="text-sm text-error"
             v-for="error of validation.tab6.r$.description.$errors"
             :key="error"
           >
@@ -1138,7 +1137,7 @@ function prevTab() {
       </form>
     </div>
     <footer
-      class="sticky surface-bg p-4 pin-bottom-blend z-level-1 mt-12 bottom-0"
+      class="sticky bg-surface p-4 pin-bottom-blend z-level-1 mt-12 bottom-0"
       style="bottom: 0px; margin-top: 0.5rem"
     >
       <div v-if="currentTab === 'tab1'" class="flex flex-col">
@@ -1180,7 +1179,7 @@ function prevTab() {
         <div v-if="progress.completed" class="flex flex-col items-center gap-3">
           <Icon
             name="material-symbols:check-circle-outline-rounded"
-            class="success-text text-5xl"
+            class="text-success text-5xl"
           />
           <p class="text-center m-0">You business profile is successfully created on Bizworld!</p>
           <div class="flex gap-4 w-full *:flex-1">

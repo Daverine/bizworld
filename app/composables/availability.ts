@@ -7,80 +7,97 @@ export type weeklySchedule = [
   unprocessedTime | false,
   unprocessedTime | false,
   unprocessedTime | false,
-  unprocessedTime | false
+  unprocessedTime | false,
 ];
-export const useAvailability = (weeklySchedule: weeklySchedule) => {
+
+type hours = [
+  {
+    day: "Sunday";
+    avail: "nil" | "always" | "selected" | "appointment";
+    hours: { opening?: string; closing?: string };
+  },
+  {
+    day: "Monday";
+    avail: "nil" | "always" | "selected" | "appointment";
+    hours: { opening?: string; closing?: string };
+  },
+  {
+    day: "Tuesday";
+    avail: "nil" | "always" | "selected" | "appointment";
+    hours: { opening?: string; closing?: string };
+  },
+  {
+    day: "Wednesday";
+    avail: "nil" | "always" | "selected" | "appointment";
+    hours: { opening?: string; closing?: string };
+  },
+  {
+    day: "Thursday";
+    avail: "nil" | "always" | "selected" | "appointment";
+    hours: { opening?: string; closing?: string };
+  },
+  {
+    day: "Friday";
+    avail: "nil" | "always" | "selected" | "appointment";
+    hours: { opening?: string; closing?: string };
+  },
+  {
+    day: "Saturday";
+    avail: "nil" | "always" | "selected" | "appointment";
+    hours: { opening?: string; closing?: string };
+  },
+];
+export const useAvailability = (weeklySchedule: hours) => {
   const now = useNow({ interval: 10000 });
-  const openTime = computed<processedTime | false>(() =>
-    weeklySchedule[now.value.getDay()] === false
-      ? false
-      : ((weeklySchedule[now.value.getDay()] as unprocessedTime)[0]
-          .split(':')
-          .map((el) => Number(el)) as processedTime)
-  );
-  const closeTime = computed<processedTime | false>(() =>
-    openTime.value === false
-      ? false
-      : ((weeklySchedule[now.value.getDay()] as unprocessedTime)[1]
-          .split(':')
-          .map((el) => Number(el)) as processedTime)
-  );
+  const today = computed(() => weeklySchedule[now.value.getDay()]);
+  const openTime = computed(() => {
+    if (today.value?.avail !== "selected") return;
+    return today.value?.hours.opening?.split(":").map((el) => Number(el)) as [number, number];
+  });
+  const closeTime = computed(() => {
+    if (!openTime.value) return;
+    return today.value?.hours.closing?.split(":").map((el) => Number(el)) as [number, number];
+  });
   const isClosed = computed(
     () =>
       !openTime.value ||
       openTime.value[0] > now.value.getHours() ||
-      (openTime.value[0] === now.value.getHours() &&
-        openTime.value[1] > now.value.getMinutes()) ||
-      (closeTime.value !== false &&
+      (openTime.value[0] === now.value.getHours() && openTime.value[1] > now.value.getMinutes()) ||
+      (closeTime.value &&
         (closeTime.value[0] < now.value.getHours() ||
           (closeTime.value[0] === now.value.getHours() &&
-            closeTime.value[1] < now.value.getMinutes())))
+            closeTime.value[1] < now.value.getMinutes()))),
   );
   const willOpenToday = computed(
     () =>
-      openTime.value !== false &&
+      openTime.value &&
       (openTime.value[0] > now.value.getHours() ||
-        (openTime.value[0] === now.value.getHours() &&
-          openTime.value[1] > now.value.getMinutes()))
+        (openTime.value[0] === now.value.getHours() && openTime.value[1] > now.value.getMinutes())),
   );
   const closesSoon = computed(
     () =>
       !isClosed.value &&
-      closeTime.value !== false &&
+      closeTime.value &&
       closeTime.value[0] * 60 +
-        closeTime.value[1] -
-        (now.value.getHours() * 60 + now.value.getMinutes()) <
-        90
+      closeTime.value[1] -
+      (now.value.getHours() * 60 + now.value.getMinutes()) <
+      90,
   );
   const nextOpenDay = computed(() => {
-    let ex = now.value.getDay() === 6 ? 0 : now.value.getDay() + 1;
-    let i = 1;
-    let result: number | boolean = false;
+    let tomorrowOfWeekDays = now.value.getDay() === 6 ? 0 : now.value.getDay() + 1;
 
-    for (; i < 6; i++) {
-      if (weeklySchedule[ex > 5 ? -1 + i : ex + i] !== false) {
-        result = ex > 5 ? -1 + i : ex + i;
-        break;
-      }
+    for (let i = 1; i < 6; i++) {
+      let nextDay = weeklySchedule[(tomorrowOfWeekDays > 5 ? -1 : tomorrowOfWeekDays) + i];
+      if (nextDay?.avail !== "nil") return nextDay;
     }
-    return result;
   });
   function whatDay(index: number) {
-    return [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-    ][index];
+    return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][index];
   }
 
   return {
     now,
-    openTime,
-    closeTime,
+    today,
     isClosed,
     willOpenToday,
     closesSoon,

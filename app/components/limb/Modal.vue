@@ -3,16 +3,16 @@ const props = defineProps<{
   id: string;
   options?: DialogerSettings;
 }>();
-const modal = useTemplateRef('modal');
+const modal = useTemplateRef("modal");
 const options: DialogerSettings = {
-  namespace: 'modal',
-  toggler: '.open-modal',
-  toExcuseToggler: '.ex-open-modal',
+  namespace: "modal",
+  toggler: ".open-modal",
+  toExcuseToggler: ".ex-open-modal",
   closeOnEsc: true,
   closeOnWrapperClick: true,
   dismissible: true,
-  autoFocusEl: '[md-autofocus]',
-  dismisser: '.exit-modal',
+  autoFocusEl: "[md-autofocus]",
+  dismisser: ".exit-modal",
   inDuration: 500,
   outDuration: 500,
   ...props.options,

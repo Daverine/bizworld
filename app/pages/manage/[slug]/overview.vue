@@ -1,22 +1,21 @@
 <script setup>
-definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
+definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
 </script>
 <template>
-  <main class="flex-1 container-md p-4">
+  <main class="flex-1 max-w-180 auto-contain p-4">
     <header
       v-scrollPin="{ notifyStuckState: true, top: 63 }"
-      class="scrollpin z-level-1 pin-top-blend surface-bg"
-      style="margin-bottom: 1rem"
+      class="scrollpin z-level-1 min-h-23 mb-4 pointer-none-only [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
-        class="p-h3 lined heading h3 m-0 items-end flex gap-3 justify-between"
+        class="lined heading text-h3 transition-[font-size] duration-200 flex gap-3 justify-between items-end bg-surface pin-top-blend m-0"
       >
         Overview
       </div>
     </header>
     <section class="body-sec">
       <section>
-        <div class="heading small">Progress summary</div>
+        <div class="heading text-sm">Progress summary</div>
         <div class="flex gap-4 justify-around flex-wrap">
           <div class="sum-item">
             <header class="flex gap-2 flex-nowrap">
@@ -24,7 +23,7 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
               Max Visitors
               <Icon name="material-symbols:info-outline-rounded" />
             </header>
-            <div class="h2 content">1024</div>
+            <div class="text-h2 content">1024</div>
           </div>
           <div class="sum-item">
             <header class="flex gap-2 flex-nowrap">
@@ -32,7 +31,7 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
               Post Engagement
               <Icon name="material-symbols:info-outline-rounded" />
             </header>
-            <div class="h2 content">200</div>
+            <div class="text-h2 content">200</div>
           </div>
           <div class="sum-item">
             <header class="flex gap-2 flex-nowrap">
@@ -40,16 +39,13 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
               Page Reviews
               <Icon name="material-symbols:info-outline-rounded" />
             </header>
-            <div class="h2 content">20</div>
+            <div class="text-h2 content">20</div>
           </div>
         </div>
       </section>
       <section>
-        <div class="heading small">Earned barge</div>
-        <div
-          class="flex gap-4 justify-around flex-wrap items-center"
-          style="margin-bottom: 1rem"
-        >
+        <div class="heading text-sm">Earned barge</div>
+        <div class="flex gap-4 justify-around flex-wrap items-center" style="margin-bottom: 1rem">
           <div class="flex flex-col items-center gap-3">
             <Badges name="verified" style="font-size: 4rem" />
             <div class="font-semibold">Verified</div>
@@ -65,14 +61,14 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
         </div>
         <div class="text-center">
           <div class="mb-2">
-            Badges boost customers' trust in your business. You can learn more
-            about what each of our badges means and how to earn them.
+            Badges boost customers' trust in your business. You can learn more about what each of
+            our badges means and how to earn them.
           </div>
           <button class="button">Learn more</button>
         </div>
       </section>
       <section>
-        <div class="heading small">Your service plan</div>
+        <div class="heading text-sm">Your service plan</div>
         <div class="note">
           <img
             src="/images/basic.webp"
@@ -81,17 +77,14 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
           />
           <div class="flex-1" style="min-width: 60%">
             <p>
-              Bizworld basic plan enable you to create a maximum of one
-              microsite on our platform and also enables you to post a maximum
-              of 10 products and services.
+              Bizworld basic plan enable you to create a maximum of one microsite on our platform
+              and also enables you to post a maximum of 10 products and services.
             </p>
           </div>
         </div>
         <div class="text-center">
           <div class="mb-2">See all our available market plan.</div>
-          <button class="button open-modal" data-target="marketplan">
-            Market plans
-          </button>
+          <button class="button open-modal" data-target="marketplan">Market plans</button>
           <LimbModal id="marketplan">
             <div class="dialog self-scroll p-4">
               <div class="note">
@@ -102,9 +95,8 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
                 />
                 <div class="flex-1" style="min-width: 60%">
                   <p>
-                    Bizworld free plan enable you to create a maximum of one
-                    microsite for free on our platform and also enables you to
-                    post a maximum of 10 products and services.
+                    Bizworld free plan enable you to create a maximum of one microsite for free on
+                    our platform and also enables you to post a maximum of 10 products and services.
                   </p>
                 </div>
               </div>
@@ -116,10 +108,9 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
                 />
                 <div class="flex-1" style="min-width: 60%">
                   <p>
-                    Bizworld free plan enable you to create a maximum of one
-                    microsite free of charge on our platform and also enables
-                    you to post a maximum of 50 products and services. This
-                    offer will do for small business.
+                    Bizworld free plan enable you to create a maximum of one microsite free of
+                    charge on our platform and also enables you to post a maximum of 50 products and
+                    services. This offer will do for text-sm business.
                   </p>
                 </div>
               </div>
@@ -131,10 +122,9 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
                 />
                 <div class="flex-1" style="min-width: 60%">
                   <p>
-                    Bizworld free plan enable you to create a maximum of one
-                    microsite free of charge on our platform and also enables
-                    you to post a maximum of 50 products and services. This
-                    offer will do for small business.
+                    Bizworld free plan enable you to create a maximum of one microsite free of
+                    charge on our platform and also enables you to post a maximum of 50 products and
+                    services. This offer will do for text-sm business.
                   </p>
                 </div>
               </div>
@@ -143,7 +133,7 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
         </div>
       </section>
       <section>
-        <div class="heading small">Business tools</div>
+        <div class="heading text-sm">Business tools</div>
         <div class="grid menu grid-cols-2 app-items rounded">
           <NavMenuManagement />
         </div>
@@ -159,7 +149,7 @@ definePageMeta({ name: 'manage-biz-overview', layout: 'common', auth: false });
   gap: 1.5rem;
 }
 .sum-item {
-  background-color: var(--surface-v3);
+  background-color: var(--color-surface-v3);
   padding: 0.75em;
   display: flex;
   flex-flow: column nowrap;

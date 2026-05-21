@@ -3,8 +3,8 @@ const searchStore = useSearchStore();
 
 function popupSubmitSearch(e) {
   e.currentTarget
-    .closest('.modal')
-    .dispatchEvent(new CustomEvent('plconsole', { detail: 'close panel' }));
+    .closest(".modal")
+    .dispatchEvent(new CustomEvent("plconsole", { detail: "close panel" }));
   searchStore.triggerSearch();
 }
 </script>
@@ -13,10 +13,7 @@ function popupSubmitSearch(e) {
     <div class="dialog self-scroll">
       <header class="header flex gap-3">
         <div class="font-bold truncate">COMMAND A SEARCH</div>
-        <button
-          class="circular flat button as-text exit-modal"
-          style="margin-left: auto"
-        >
+        <button class="circular flat button as-text exit-modal" style="margin-left: auto">
           <Icon name="material-symbols:close-rounded" />
         </button>
       </header>
@@ -62,20 +59,14 @@ function popupSubmitSearch(e) {
         <table class="clear table">
           <thead>
             <tr>
-              <th colspan="2" class="text-center transparent-bg">
-                SEARCH CONFIGURATION
-              </th>
+              <th colspan="2" class="text-center bg-transparent">SEARCH CONFIGURATION</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>Search in:</td>
               <td>
-                <LimbDropdown
-                  v-model="searchStore.searchIn"
-                  type="select"
-                  class="w-full"
-                >
+                <LimbDropdown v-model="searchStore.searchIn" type="select" class="w-full">
                 </LimbDropdown>
                 <div class="drop menu">
                   <div
@@ -91,11 +82,7 @@ function popupSubmitSearch(e) {
             <tr>
               <td>Location:</td>
               <td>
-                <LimbDropdown
-                  v-model="searchStore.location"
-                  type="select"
-                  class="w-full"
-                >
+                <LimbDropdown v-model="searchStore.location" type="select" class="w-full">
                 </LimbDropdown>
                 <div class="drop menu">
                   <div data-value="nigeria" class="item">Nigeria</div>
@@ -111,10 +98,7 @@ function popupSubmitSearch(e) {
     <div class="dialog self-scroll">
       <div class="header flex gap-3">
         <div class="font-bold truncate">Scan Business QR</div>
-        <button
-          class="circular flat button as-text exit-modal"
-          style="margin-left: auto"
-        >
+        <button class="circular flat button as-text exit-modal" style="margin-left: auto">
           <Icon name="material-symbols:close-rounded" />
         </button>
       </div>
@@ -169,7 +153,7 @@ function popupSubmitSearch(e) {
               fill="#E8F0FE"
             ></path>
           </svg>
-          <div class="w-full text-center faint-text font-semibold">
+          <div class="w-full text-center opacity-65 font-semibold">
             Drag a business QR image here.
           </div>
         </div>
@@ -187,59 +171,44 @@ function popupSubmitSearch(e) {
     <div class="dialog">
       <div class="header flex gap-3">
         <div class="font-bold truncate">Create post</div>
-        <button
-          class="circular flat button as-text exit-modal"
-          style="margin-left: auto"
-        >
+        <button class="circular flat button as-text exit-modal" style="margin-left: auto">
           <Icon name="material-symbols:close-rounded" />
         </button>
       </div>
       <div class="content">
         <div class="field">
           <label>Post as:</label>
-          <LimbDropdown
-            type="selection"
-            style="display: flex; align-items: center"
-          >
+          <LimbDropdown type="selection" style="display: flex; align-items: center">
             <template #trailing>
-              <Icon
-                name="material-symbols:expand-more-rounded"
-                class="trailing"
-              />
+              <Icon name="material-symbols:expand-more-rounded" class="trailing" />
             </template>
           </LimbDropdown>
           <div class="drop menu">
             <div class="active item">
               <div
-                class="lead avatar rounded-full mini"
+                class="lead avatar rounded-full text-xs"
                 style="flex: 0 0 auto; background-color: #999"
               ></div>
               <div style="flex: 1 1 auto">
                 <div class="text text-left">
-                  <div
-                    class="font-semibold"
-                    style="font-size: 1.125em; line-height: 1.25"
-                  >
+                  <div class="font-semibold" style="font-size: 1.125em; line-height: 1.25">
                     Ayoola Folorunso
                   </div>
-                  <div class="small faint-text">Personal Account</div>
+                  <div class="text-sm opacity-65">Personal Account</div>
                 </div>
               </div>
             </div>
             <div class="item">
               <div
-                class="lead avatar rounded-full mini"
+                class="lead avatar rounded-full text-xs"
                 style="flex: 0 0 auto; background-color: #999"
               ></div>
               <div style="flex: 1 1 auto">
                 <div class="text text-left">
-                  <div
-                    class="font-semibold"
-                    style="font-size: 1.125em; line-height: 1.25"
-                  >
+                  <div class="font-semibold" style="font-size: 1.125em; line-height: 1.25">
                     Emmadave Computers
                   </div>
-                  <div class="small faint-text">Business Account</div>
+                  <div class="text-sm opacity-65">Business Account</div>
                 </div>
               </div>
             </div>
@@ -249,7 +218,7 @@ function popupSubmitSearch(e) {
           <div class="field">
             <textarea
               placeholder="What did you want to post?"
-              class="form-item huge transparent"
+              class="form-item text-xl transparent"
             ></textarea>
           </div>
           <div class="field">
@@ -261,9 +230,7 @@ function popupSubmitSearch(e) {
                 <Icon name="material-symbols:mood-outline-rounded" />
               </div>
               <div class="item">
-                <Icon
-                  name="material-symbols:add-photo-alternate-outline-rounded"
-                />
+                <Icon name="material-symbols:add-photo-alternate-outline-rounded" />
               </div>
               <div class="item">
                 <Icon name="material-symbols:attach-file-add-rounded" />

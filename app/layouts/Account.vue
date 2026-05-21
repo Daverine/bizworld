@@ -1,13 +1,13 @@
 <script setup>
-import Common from './Common.vue';
+import Common from "./Common.vue";
 
 const userStore = useUserStore();
-defineOptions({ title: 'Your account page | BizWorld' });
+defineOptions({ title: "Your account page | BizWorld" });
 </script>
 <template>
   <Common>
-    <div class="container-md">
-      <header class="container gap-3 flex" style="margin-top: 0.5rem">
+    <div class="max-w-180 auto-contain">
+      <header class="gap-3 flex mt-2">
         <div class="flex-none">
           <NuxtImg
             preset="logo"
@@ -19,9 +19,7 @@ defineOptions({ title: 'Your account page | BizWorld' });
         </div>
         <div class="flex-1">
           <h5>
-            {{
-              `${userStore.userData.firstName} ${userStore.userData.lastName}`
-            }}
+            {{ `${userStore.userData.firstName} ${userStore.userData.lastName}` }}
           </h5>
           <div class="font-semibold">
             <span>{{ userStore.userData.following.length }} Following </span>
@@ -30,47 +28,28 @@ defineOptions({ title: 'Your account page | BizWorld' });
           </div>
         </div>
       </header>
-      <LimbIScroller
-        v-scrollPin="{ top: 63 }"
-        class="z-level-1"
-        style="margin-top: 1rem"
-      >
+      <LimbIScroller v-scrollPin="{ top: 63 }" class="z-level-1" style="margin-top: 1rem">
         <div class="l-scroll">
-          <SvgIcon name="double_arrow_left" class="mini" />
+          <SvgIcon name="double_arrow_left" class="text-xs" />
         </div>
         <div class="r-scroll">
-          <SvgIcon name="double_arrow_right" class="mini" />
+          <SvgIcon name="double_arrow_right" class="text-xs" />
         </div>
         <div class="rail menu scroll-items">
           <div class="items" style="margin: 0px auto">
-            <NuxtLink
-              to="/account/profile"
-              class="item"
-              exact-active-class="active"
+            <NuxtLink to="/account/profile" class="item" exact-active-class="active"
               >Profile</NuxtLink
             >
-            <NuxtLink
-              to="/account/reviews"
-              class="item"
-              exact-active-class="active"
+            <NuxtLink to="/account/reviews" class="item" exact-active-class="active"
               >Reviews</NuxtLink
             >
-            <NuxtLink
-              to="/account/saved"
-              class="item"
-              exact-active-class="active"
+            <NuxtLink to="/account/saved" class="item" exact-active-class="active"
               >Saved cards</NuxtLink
             >
-            <NuxtLink
-              to="/account/followed"
-              class="item"
-              exact-active-class="active"
+            <NuxtLink to="/account/followed" class="item" exact-active-class="active"
               >Followed providers</NuxtLink
             >
-            <NuxtLink
-              to="/account/settings"
-              class="item"
-              exact-active-class="active"
+            <NuxtLink to="/account/settings" class="item" exact-active-class="active"
               >Settings</NuxtLink
             >
           </div>

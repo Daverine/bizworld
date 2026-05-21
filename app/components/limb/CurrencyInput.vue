@@ -1,20 +1,20 @@
 <script lang="ts" setup>
 const model = defineModel({
   set(value: string) {
-    value = value.replace(/[^0-9]/g, '');
+    value = value.replace(/[^0-9]/g, "");
     if (value) return parseFloat(value);
     return;
   },
   get(value: number | undefined) {
     if (value) return value.toLocaleString();
-    return '';
+    return "";
   },
 });
 function currencyFormat(e: Event) {
   let target = e.target as HTMLInputElement;
   let value = target.value;
   // Remove non-numeric characters except decimal and optionally a minus sign
-  value = value.replace(/[^0-9]/g, '');
+  value = value.replace(/[^0-9]/g, "");
 
   // Format as currency
   if (value) {

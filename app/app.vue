@@ -1,7 +1,8 @@
 <script setup>
-import AuthModals from './components/AuthModals.vue';
+import AuthModals from "./components/AuthModals.vue";
 
 const mainStore = useMainStore();
+const { isLoading } = useLoadingIndicator();
 
 function handleScroll() {
   if (window.scrollY >= window.innerHeight / 2) mainStore.mutateSFM(true);
@@ -9,10 +10,10 @@ function handleScroll() {
 }
 
 onMounted(() => {
-  window.dispatchEvent(new Event('scroll'));
-  window.addEventListener('scroll', handleScroll);
+  window.dispatchEvent(new Event("scroll"));
+  window.addEventListener("scroll", handleScroll);
 });
-onUnmounted(() => window.removeEventListener('scroll', handleScroll));
+onUnmounted(() => window.removeEventListener("scroll", handleScroll));
 </script>
 <template>
   <Html lang="en" />
@@ -20,6 +21,9 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll));
   <Menus />
   <AuthModals />
   <NuxtLayout>
+    <div v-if="isLoading">
+      <div class="m3-progress"></div>
+    </div>
     <NuxtPage />
   </NuxtLayout>
   <Modals />

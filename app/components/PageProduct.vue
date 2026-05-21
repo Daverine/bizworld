@@ -7,7 +7,7 @@ const props = defineProps<{
   <NuxtLink :to="{ name: 'product-page', params: { slug: details.slug } }" class="page-prod item">
     <NuxtImg class="prod-pic" preset="thumbnail" :src="details.photos[0]" alt="" />
     <div class="prod-content">
-      <div class="prod-price">₦{{ details.base_price.toLocaleString() }}</div>
+      <div class="prod-price">₦{{ Number(details.base_price).toLocaleString() }}</div>
       <div class="font-semibold line-clamp-3" v-tooltip:aria.unblocking :aria-label="details.title">
         {{ details.title }}
       </div>
@@ -26,7 +26,7 @@ const props = defineProps<{
   max-width: 100%;
   position: relative;
   text-align: center;
-  border-radius: var(--sm-radius);
+  border-radius: var(--radius-block);
   border: 1px solid transparent;
   line-height: 1.375;
   text-decoration: none !important;

@@ -38,8 +38,8 @@ const props = defineProps<{
         {{ details.title }}
       </NuxtLink>
       <div class="itm-price">₦{{ details.price.toLocaleString() }}</div>
-      <div class="truncate font-semibold of-small" style="color: var(--on-surface-variant)">
-        <Icon name="material-symbols:timelapse-outline-rounded" class="of-small mr-2" />
+      <div class="truncate font-semibold text-sm" style="color: var(--on-surface-variant)">
+        <Icon name="material-symbols:timelapse-outline-rounded" class="text-sm mr-2" />
         Deliver within
         {{ details.duration > 1 ? details.duration + " days" : "24 hours" }}
       </div>
@@ -47,7 +47,7 @@ const props = defineProps<{
         <i
           v-tooltip:aria.unblocking
           :aria-label="`Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
-          class="icon of-small text-yellow-500 mr-2"
+          class="icon text-sm text-yellow-500 mr-2"
         >
           <Icon name="material-symbols:star-rounded" v-for="i in Math.floor(details.rating.rate)" />
           <Icon
@@ -60,13 +60,13 @@ const props = defineProps<{
           />
         </i>
       </div>
-      <div class="of-small font-semibold truncate">
+      <div class="text-sm font-semibold truncate">
         <Icon
           v-if="details.bizDetails.verified"
           name="material-symbols:verified-outline"
           v-tooltip:aria.unblocking
           aria-label="Seller is verified"
-          class="mr-2 of-small green-text"
+          class="mr-2 text-sm green-text"
         />
         <span v-tooltip:aria.unblocking :aria-label="details.bizDetails.name">{{
           details.bizDetails.name
@@ -75,9 +75,9 @@ const props = defineProps<{
       <div
         v-tooltip:aria.unblocking
         :aria-label="details.bizDetails.location.address"
-        class="of-small font-semibold truncate"
+        class="text-sm font-semibold truncate"
       >
-        <Icon name="material-symbols:location-on-outline-rounded" class="of-small mr-2" />
+        <Icon name="material-symbols:location-on-outline-rounded" class="text-sm mr-2" />
         {{ `${details.bizDetails.location.city}, ${details.bizDetails.location.state}` }}
       </div>
     </div>
@@ -90,7 +90,7 @@ const props = defineProps<{
   width: 15rem;
   max-width: 100%;
   position: relative;
-  border-radius: var(--sm-radius);
+  border-radius: var(--radius-block);
   box-shadow: inset 0px 0px 0px 1px var(--outline);
 
   .itm-display {

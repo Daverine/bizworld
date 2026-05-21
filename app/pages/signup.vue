@@ -1,15 +1,12 @@
 <script lang="ts" setup>
-const callbackURL = (useRoute().query.redirect as string) || '/home';
+const callbackURL = (useRoute().query.redirect as string) || "/home";
 const { data, validation, submit, status } = useSignUp(callbackURL);
 </script>
 
 <template>
   <header>
     <div class="menu" style="height: 64px">
-      <div
-        class="container items m-auto"
-        style="border-radius: var(--default-radius)"
-      >
+      <div class="max-w-6xl auto-contain items m-auto" style="border-radius: var(--default-radius)">
         <div
           class="item as-icon open-sidepanel"
           v-tooltip:aria.unblocking
@@ -29,16 +26,14 @@ const { data, validation, submit, status } = useSignUp(callbackURL);
       </div>
     </div>
   </header>
-  <section class="max-w-150 mx-auto my-8">
+  <section class="max-w-150 auto-contain my-8">
     <header class="text-center mb-12">
       <h5>Join BizWorld</h5>
     </header>
     <div class="flex *:flex-1 gap-6">
       <div
         class="col"
-        style="
-          background-image: linear-gradient(rgb(48 187 48), rgb(10 81 194));
-        "
+        style="background-image: linear-gradient(rgb(48 187 48), rgb(10 81 194))"
       ></div>
       <div class="col flex flex-col py-8">
         <div class="content">
@@ -62,11 +57,7 @@ const { data, validation, submit, status } = useSignUp(callbackURL);
           <form @submit.prevent="submit">
             <div v-if="status.error" class="error note mb-8">
               {{ status.error.message }}
-              <button
-                type="button"
-                class="exit-note"
-                @click="status.error = null"
-              >
+              <button type="button" class="exit-note" @click="status.error = null">
                 <Icon name="material-symbols:close-small-rounded" />
               </button>
             </div>
@@ -84,7 +75,7 @@ const { data, validation, submit, status } = useSignUp(callbackURL);
                   <div
                     v-for="error of validation.r$.firstname.$errors"
                     :key="error"
-                    class="text-sm error-text"
+                    class="text-sm text-error"
                   >
                     <Icon name="material-symbols:warning-outline-rounded" />
                     {{ error }}
@@ -101,7 +92,7 @@ const { data, validation, submit, status } = useSignUp(callbackURL);
                   <div
                     v-for="error of validation.r$.lastname.$errors"
                     :key="error"
-                    class="text-sm error-text"
+                    class="text-sm text-error"
                   >
                     <Icon name="material-symbols:warning-outline-rounded" />
                     {{ error }}
@@ -121,7 +112,7 @@ const { data, validation, submit, status } = useSignUp(callbackURL);
               <div
                 v-for="error of validation.r$.email.$errors"
                 :key="error"
-                class="text-sm error-text"
+                class="text-sm text-error"
               >
                 <Icon name="material-symbols:warning-outline-rounded" />
                 {{ error }}
@@ -139,7 +130,7 @@ const { data, validation, submit, status } = useSignUp(callbackURL);
               <div
                 v-for="error of validation.r$.password.$errors"
                 :key="error"
-                class="text-sm error-text"
+                class="text-sm text-error"
               >
                 <Icon name="material-symbols:warning-outline-rounded" />
                 {{ error }}

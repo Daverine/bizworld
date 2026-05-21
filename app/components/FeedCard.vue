@@ -1,5 +1,5 @@
 <script setup>
-defineProps(['details']);
+defineProps(["details"]);
 </script>
 <template>
   <div class="feed-card card">
@@ -32,21 +32,15 @@ defineProps(['details']);
         </svg>
       </div>
       <div style="flex: 1 1 auto">
-        <NuxtLink
-          :to="details.bizDetails.url"
-          external
-          class="font-bold text-color"
-          >{{ details.bizDetails.name }}</NuxtLink
-        >
+        <NuxtLink :to="details.bizDetails.url" external class="font-bold text-on-surface">{{
+          details.bizDetails.name
+        }}</NuxtLink>
         <div
-          class="faint-text small font-semibold"
+          class="opacity-65 text-sm font-semibold"
           style="display: flex; gap: 10px; flex: 1 1 auto"
         >
           <div>
-            <Icon
-              name="material-symbols:schedule-outline-rounded"
-              class="mini mr-2"
-            />
+            <Icon name="material-symbols:schedule-outline-rounded" class="text-xs mr-2" />
             <NuxtTime :datetime="details.date" relative />
           </div>
         </div>
@@ -59,10 +53,7 @@ defineProps(['details']);
       </LimbDropdown>
       <div class="drop menu">
         <div class="item">
-          <Icon
-            name="material-symbols:remove-from-queue-outline-rounded"
-            class="lead"
-          />
+          <Icon name="material-symbols:remove-from-queue-outline-rounded" class="lead" />
           Unfollow business
         </div>
         <div class="item">
@@ -87,19 +78,13 @@ defineProps(['details']);
     </div>
     <hr class="m-0" />
     <div
-      class="icon-bar transparent small compact menu fillable"
+      class="icon-bar transparent text-sm compact menu fillable"
       style="padding: 0em 0.5em; border-radius: var(--default-radius)"
     >
       <div class="as-icon item" v-tooltip:aria.unblocking aria-label="Thumb up">
-        <Icon name="material-symbols:thumb-up-outline-rounded" /> ({{
-          details.thumbsUp
-        }})
+        <Icon name="material-symbols:thumb-up-outline-rounded" /> ({{ details.thumbsUp }})
       </div>
-      <div
-        class="as-icon item"
-        v-tooltip:aria.unblocking
-        aria-label="Private reply"
-      >
+      <div class="as-icon item" v-tooltip:aria.unblocking aria-label="Private reply">
         <Icon name="material-symbols:reply-rounded" />
       </div>
       <div class="as-icon item" v-tooltip:aria.unblocking aria-label="Share">

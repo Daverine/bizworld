@@ -47,10 +47,10 @@ async function clickAction(e: Event) {
         <div class="scroll-items items-center" style="gap: 0.5em; margin: 0px auto">
           <span v-for="label in details.labels" class="label">{{ label }}</span>
         </div>
-        <button class="mini l-scroll">
+        <button class="text-xs l-scroll">
           <Icon name="material-symbols:arrow-back-ios-new-rounded" />
         </button>
-        <button class="mini r-scroll">
+        <button class="text-xs r-scroll">
           <Icon name="material-symbols:arrow-forward-ios-rounded" />
         </button>
       </LimbIScroller>
@@ -58,7 +58,7 @@ async function clickAction(e: Event) {
         <i
           v-tooltip:aria.unblocking
           :aria-label="`Rated ${details.rating.rate} in ${details.rating.raters} reviews`"
-          class="icon of-small text-yellow-500 mr-2"
+          class="icon text-sm text-yellow-500 mr-2"
         >
           <Icon name="material-symbols:star-rounded" v-for="i in Math.floor(details.rating.rate)" />
           <Icon
@@ -72,13 +72,13 @@ async function clickAction(e: Event) {
         </i>
       </div>
       <div class="itm-gap">
-        <div class="of-small font-semibold truncate">
+        <div class="text-sm font-semibold truncate">
           <Icon
             v-if="details.bizDetails.verified"
             name="material-symbols:verified-outline"
             v-tooltip:aria.unblocking
             aria-label="Seller is verified"
-            class="mr-2 of-small green-text"
+            class="mr-2 text-sm green-text"
           />
           <span v-tooltip:aria.unblocking :aria-label="details.bizDetails.name">{{
             details.bizDetails.name
@@ -87,9 +87,9 @@ async function clickAction(e: Event) {
         <div
           v-tooltip:aria.unblocking
           :aria-label="details.bizDetails.location.address"
-          class="of-small font-semibold truncate"
+          class="text-sm font-semibold truncate"
         >
-          <Icon name="material-symbols:location-on-outline-rounded" class="of-small mr-2" />
+          <Icon name="material-symbols:location-on-outline-rounded" class="text-sm mr-2" />
           {{ `${details.bizDetails.location.city}, ${details.bizDetails.location.state}` }}
         </div>
       </div>
@@ -103,7 +103,7 @@ async function clickAction(e: Event) {
   width: 15rem;
   max-width: 100%;
   position: relative;
-  border-radius: var(--sm-radius);
+  border-radius: var(--radius-block);
   box-shadow: inset 0px 0px 0px 1px var(--outline);
 
   .itm-display {

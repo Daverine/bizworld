@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const callbackURL = useRoute().fullPath === '/' ? '/home' : useRoute().fullPath;
+const callbackURL = useRoute().fullPath === "/" ? "/home" : useRoute().fullPath;
 const login = useSignIn(callbackURL);
 const signup = useSignUp(callbackURL);
 </script>
@@ -14,14 +14,17 @@ const signup = useSignUp(callbackURL);
       </div>
       <div class="content">
         <div class="field">
-          <button class="outlined button" @click="
-            async () => {
-              await useAuth().signIn.social({
-                provider: 'google',
-                callbackURL,
-              });
-            }
-          ">
+          <button
+            class="outlined button"
+            @click="
+              async () => {
+                await useAuth().signIn.social({
+                  provider: 'google',
+                  callbackURL,
+                });
+              }
+            "
+          >
             <Icon name="material-icon-theme:google" />
             Continue with Google
           </button>
@@ -39,17 +42,35 @@ const signup = useSignUp(callbackURL);
             <label>Names</label>
             <div class="2-fields">
               <div class="field">
-                <input v-model="signup.data.firstname" class="form-item"
-                  :class="{ error: signup.validation.r$.firstname.$error }" type="text" placeholder="First name" />
-                <div v-for="error of signup.validation.r$.firstname.$errors" :key="error" class="text-sm error-text">
+                <input
+                  v-model="signup.data.firstname"
+                  class="form-item"
+                  :class="{ error: signup.validation.r$.firstname.$error }"
+                  type="text"
+                  placeholder="First name"
+                />
+                <div
+                  v-for="error of signup.validation.r$.firstname.$errors"
+                  :key="error"
+                  class="text-sm text-error"
+                >
                   <Icon name="material-symbols:error-rounded" />
                   {{ error }}
                 </div>
               </div>
               <div class="field">
-                <input v-model="signup.data.lastname" class="form-item"
-                  :class="{ error: signup.validation.r$.lastname.$error }" type="text" placeholder="Last name" />
-                <div v-for="error of signup.validation.r$.lastname.$errors" :key="error" class="text-sm error-text">
+                <input
+                  v-model="signup.data.lastname"
+                  class="form-item"
+                  :class="{ error: signup.validation.r$.lastname.$error }"
+                  type="text"
+                  placeholder="Last name"
+                />
+                <div
+                  v-for="error of signup.validation.r$.lastname.$errors"
+                  :key="error"
+                  class="text-sm text-error"
+                >
                   <Icon name="material-symbols:error-rounded" />
                   {{ error }}
                 </div>
@@ -58,18 +79,36 @@ const signup = useSignUp(callbackURL);
           </div>
           <div class="field">
             <label>Email</label>
-            <input v-model="signup.data.email" class="form-item" :class="{ error: signup.validation.r$.email.$error }"
-              type="text" placeholder="Email address" />
-            <div v-for="error of signup.validation.r$.email.$errors" :key="error" class="text-sm error-text">
+            <input
+              v-model="signup.data.email"
+              class="form-item"
+              :class="{ error: signup.validation.r$.email.$error }"
+              type="text"
+              placeholder="Email address"
+            />
+            <div
+              v-for="error of signup.validation.r$.email.$errors"
+              :key="error"
+              class="text-sm text-error"
+            >
               <Icon name="material-symbols:error-rounded" />
               {{ error }}
             </div>
           </div>
           <div class="field">
             <label>Password</label>
-            <input v-model="signup.data.password" class="form-item"
-              :class="{ error: signup.validation.r$.password.$error }" type="password" placeholder="Password" />
-            <div v-for="error of signup.validation.r$.password.$errors" :key="error" class="text-sm error-text">
+            <input
+              v-model="signup.data.password"
+              class="form-item"
+              :class="{ error: signup.validation.r$.password.$error }"
+              type="password"
+              placeholder="Password"
+            />
+            <div
+              v-for="error of signup.validation.r$.password.$errors"
+              :key="error"
+              class="text-sm text-error"
+            >
               <Icon name="material-symbols:error-rounded" />
               {{ error }}
             </div>
@@ -101,14 +140,17 @@ const signup = useSignUp(callbackURL);
       </div>
       <div class="content">
         <div class="field">
-          <button class="outlined button" @click="
-            async () => {
-              await useAuth().signIn.social({
-                provider: 'google',
-                callbackURL,
-              });
-            }
-          ">
+          <button
+            class="outlined button"
+            @click="
+              async () => {
+                await useAuth().signIn.social({
+                  provider: 'google',
+                  callbackURL,
+                });
+              }
+            "
+          >
             <Icon name="material-icon-theme:google" />
             Continue with Google
           </button>
@@ -123,33 +165,52 @@ const signup = useSignUp(callbackURL);
           </div>
           <div class="field">
             <label>Email</label>
-            <input v-model="login.data.email" class="form-item" :class="{ error: login.validation.r$.email.$error }"
-              type="text" placeholder="Email address" />
-            <div class="text-sm error-text" v-for="error of login.validation.r$.email.$errors" :key="error">
+            <input
+              v-model="login.data.email"
+              class="form-item"
+              :class="{ error: login.validation.r$.email.$error }"
+              type="text"
+              placeholder="Email address"
+            />
+            <div
+              class="text-sm text-error"
+              v-for="error of login.validation.r$.email.$errors"
+              :key="error"
+            >
               <Icon name="material-symbols:error-rounded" />
               {{ error }}
             </div>
           </div>
           <div class="field">
             <label>Password</label>
-            <input v-model="login.data.password" class="form-item"
-              :class="{ error: login.validation.r$.password.$error }" type="password" placeholder="Password" />
-            <div class="text-sm error-text" v-for="error of login.validation.r$.password.$errors" :key="error">
+            <input
+              v-model="login.data.password"
+              class="form-item"
+              :class="{ error: login.validation.r$.password.$error }"
+              type="password"
+              placeholder="Password"
+            />
+            <div
+              class="text-sm text-error"
+              v-for="error of login.validation.r$.password.$errors"
+              :key="error"
+            >
               <Icon name="material-symbols:error-rounded" />
               {{ error }}
             </div>
           </div>
           <div class="field">
-            <button class="primary button" :class="{ loading: login.status.isLoading }"
-              :disabled="login.status.isLoading">
+            <button
+              class="primary button"
+              :class="{ loading: login.status.isLoading }"
+              :disabled="login.status.isLoading"
+            >
               Continue
             </button>
           </div>
           <hr />
         </form>
-        <p class="text-center">
-          New to BizWorld? <NuxtLink to="/signup">Sign up</NuxtLink>
-        </p>
+        <p class="text-center">New to BizWorld? <NuxtLink to="/signup">Sign up</NuxtLink></p>
       </div>
     </div>
   </LimbModal>

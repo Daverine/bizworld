@@ -1,81 +1,84 @@
-<script setup>
+<script lang="ts" setup>
 definePageMeta({ layout: "biz-pages", name: "biz-home" });
+const route = useRoute();
+const bizData = inject("bizData") as Ref<bizData>;
+const { data: products } = useFetch("/api/business/products", {
+  query: { slug: route.params.slug },
+});
+const { today, isClosed, willOpenToday, closesSoon, nextOpenDay } = useAvailability(
+  bizData.value.hours,
+);
 const data = useBizStore();
-const avail = useAvailability(data.details.hours);
-const isReady = computed(() => data.details && avail.value);
 </script>
 
 <template>
-  <main>
-    <div class="dm-display" style="position: relative; padding-top: calc(100% / 6 * 2)">
-      <NuxtImg
-        format="webp"
-        sizes="1280px"
-        class="open-lightbox"
-        data-target="lightbox1"
-        :data-lightbox="data.details.coverPic"
-        style="
-          position: absolute;
-          height: 100%;
-          width: 100%;
-          object-fit: cover;
-          top: 0px;
-          left: 0px;
-        "
-        :src="data.details.coverPic"
-        alt="Business page cover picture"
-      />
-    </div>
-    <div class="flex gap-3 flex-wrap items-center" style="padding: 1rem">
+  <main class="fluid layout-grid">
+    <NuxtImg
+      format="webp"
+      sizes="1280px"
+      class="open-lightbox aspect-6/2 object-cover"
+      data-target="lightbox1"
+      :data-lightbox="bizData.cover_photo"
+      :src="bizData.cover_photo || '/images/ads.jpg'"
+      alt="Business page cover picture"
+    />
+    <div class="flex gap-3 flex-wrap items-center p-4">
       <Icon name="material-symbols:domain-rounded" class="flex-none" />
-      <div class="flex-1" style="min-width: 65%">
-        {{ data.details.description }}
-        <a :href="`${data.details.bizUrl}/about_us`">Learn more.</a>
+      <div class="flex-1 min-w-[65%]">
+        {{ bizData.description }}
       </div>
       <button class="flex-none ml-auto primary compact button">Contact Us</button>
     </div>
-    <div class="w-full grid-layout surface-v2-bg" style="padding: 1rem">
-      <div class="flex gap-3 flex-wrap items-center">
+    <div class="fluid layout-grid bg-surface-v2 p-4">
+      <div class="flex gap-3 flex-wrap items-center px-4">
         <Icon name="material-symbols:today-outline-rounded" class="flex-none" />
-        <div class="flex-1" style="min-width: 65%">
-          <span
-            v-tooltip:aria.unblocking
-            :aria-label="
-              !avail.openTime
-                ? 'Did not open today at all.'
-                : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
-            "
+        <div class="flex-1 min-w-[65%]">
+          <span v-if="today?.avail === 'always'">Available throughout today.</span>
+          <span v-else-if="today?.avail === 'appointment'"
+            >Available by appointment only today.</span
           >
-            We are currently
-            <template v-if="avail.isClosed">
-              <span class="error-text">closed. </span>
-              Opens
-              {{
-                avail.willOpenToday
-                  ? `${avail.openTime[0]}:${avail.openTime[1]}. `
-                  : data.details.hours[avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1]
-                    ? `${
-                        data.details.hours[avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1][0]
-                      } Tomorrow. `
-                    : `${
-                        data.details.hours[avail.nextOpenDay][0]
-                      } on ${avail.whatDay(avail.nextOpenDay)}. `
-              }}
+          <span v-else-if="today?.avail === 'nil'">Not available at all today.</span>
+          <span v-else>
+            <template v-if="isClosed">
+              <template v-if="willOpenToday"
+                ><span class="error-text">Currently closed.</span> Opens today by
+                {{ today?.hours.opening }}
+              </template>
+              <template v-else>
+                <span class="error-text">Have closed for today.</span>
+                <template v-if="nextOpenDay">
+                  Available next on {{ nextOpenDay?.day }}
+                  <template v-if="nextOpenDay.avail === 'appointment'"
+                    >by appointment only</template
+                  >
+                  <template v-else-if="nextOpenDay.avail === 'always'">throughout the day</template>
+                  <template v-else
+                    >at {{ nextOpenDay?.hours.opening }} -
+                    {{ nextOpenDay?.hours.closing }}</template
+                  >.
+                </template>
+              </template>
             </template>
             <template v-else>
-              <span v-if="avail.closesSoon" class="warning-text"> Closes soon. </span>
-              <span v-else class="success-text">Open.</span>
-              Closes
-              {{ `${avail.closeTime[0]}:${avail.closeTime[1]}. ` }}
+              <span v-if="closesSoon" class="warning-text"> Closes soon. </span>
+              <span v-else class="success-text">Available.</span>
+              Closes {{ today?.hours.closing }}.
             </template>
-            <a href="#">Check our business hours</a>
-          </span>
-          <Icon
-            name="material-symbols:info-outline-rounded"
-            class="mini ml-2 faint-text-more"
-            v-tooltip:aria.unblocking
-            aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
-          />
+            <Icon
+              name="material-symbols:info-outline-rounded"
+              class="text-xs ml-2 opacity-65"
+              v-tooltip:aria.unblocking
+              aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
+            /> </span
+          >&nbsp;
+          <NuxtLink
+            :to="{
+              name: 'biz-about',
+              params: { slug: $route.params.slug },
+              hash: '#biz-hours',
+            }"
+            >Check our business hours.</NuxtLink
+          >
         </div>
         <NuxtLink
           :to="{
@@ -89,19 +92,16 @@ const isReady = computed(() => data.details && avail.value);
         </NuxtLink>
       </div>
     </div>
-    <section>
-      <div class="heading" style="padding: 1rem">New and Trending products</div>
+    <section v-if="products">
+      <div class="heading p-4">New and Trending products</div>
       <LimbIScroller class="flex justify-center">
         <div class="scroll-items gap-3">
-          <PageProduct
-            v-for="i in Math.min(6, data.products.length)"
-            :set="product = data.products[i - 1]"
-            :details="product"
-            class="flex-none"
-          />
+          <template v-for="i in Math.min(6, products.length)" :key="i">
+            <PageProduct :details="products[i - 1]!" class="flex-none" />
+          </template>
           <NuxtLink
             :to="{ name: 'biz-products', params: { slug: $route.params.slug } }"
-            v-if="data.products.length > 6"
+            v-if="products.length > 6"
             class="button flat as-app"
             style="width: 12.5rem; align-self: stretch"
           >
@@ -121,21 +121,17 @@ const isReady = computed(() => data.details && avail.value);
         </div>
       </LimbIScroller>
     </section>
-    <section>
-      <div class="heading" style="padding: 1rem">Our projects listing</div>
+    <section v-if="data.projects">
+      <div class="heading p-4">Our projects listing</div>
       <LimbIScroller class="flex justify-center">
         <div class="scroll-items gap-3">
-          <PageService
-            v-for="i in Math.min(6, data.projects.length)"
-            :set="project = data.projects[i - 1]"
-            :details="project"
-            class="flex-none"
-          />
+          <template v-for="i in Math.min(6, data.projects.length)" :key="i">
+            <PageService :details="data.projects[i - 1]!" class="flex-none" />
+          </template>
           <NuxtLink
             :to="{ name: 'biz-services', params: { slug: $route.params.slug } }"
             v-if="data.projects.length > 6"
-            class="button flat as-app"
-            style="width: 12.5rem; align-self: stretch"
+            class="button flat as-app self-stretch w-50"
           >
             <Icon name="material-symbols:arrow-forward-rounded" />
             Show All
@@ -160,66 +156,75 @@ const isReady = computed(() => data.details && avail.value);
           bottom: 64,
           sticky: true,
         }"
-        class="page-aside biz-pin text-center"
+        class="page-aside text-center"
       >
-        <div class="flex-none" style="position: relative; width: max-content; line-height: 0">
+        <div class="flex-none relative w-max leading-0">
           <NuxtImg
             preset="logo"
-            class="logo"
-            style="width: 5rem; height: 5rem; object-fit: contain"
-            :src="data.details.logo"
+            class="size-20 object-contain"
+            :src="bizData.logo || '/images/bizpic.jpg'"
             alt="Business Logo"
           />
           <SvgIcon
-            v-if="data.details.verified"
+            v-if="bizData.badges?.includes('verified')"
             name="verified_sp"
             v-tooltip:aria.unblocking
             aria-label="Verified"
-            style="position: absolute; bottom: 0.5em; right: 0.5em"
+            class="absolute bottom-2 right-2"
           />
         </div>
-        <h6 class="text-center">{{ data.details.bizName }}</h6>
-        <div class="faint-text">{{ data.details.mainCategory }}</div>
-        <p>
-          <span
-            v-tooltip:aria.unblocking
-            :aria-label="
-              !avail.openTime
-                ? 'Did not open today at all.'
-                : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
-            "
+        <div>
+          <h6 class="mb-0">{{ bizData.business_name }}</h6>
+          <div class="opacity-65">{{ bizData.category }}</div>
+        </div>
+        <div>
+          <span v-if="today?.avail === 'always'">Available throughout today.</span>
+          <span v-else-if="today?.avail === 'appointment'"
+            >Available by appointment only today.</span
           >
-            We are currently
-            <template v-if="avail.isClosed">
-              <span class="error-text">closed. </span>
-              Opens
-              {{
-                avail.willOpenToday
-                  ? `${avail.openTime[0]}:${avail.openTime[1]}. `
-                  : data.details.hours[avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1]
-                    ? `${
-                        data.details.hours[avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1][0]
-                      } Tomorrow. `
-                    : `${
-                        data.details.hours[avail.nextOpenDay][0]
-                      } on ${avail.whatDay(avail.nextOpenDay)}. `
-              }}
+          <span v-else-if="today?.avail === 'nil'">Not available at all today.</span>
+          <span v-else>
+            <template v-if="isClosed">
+              <template v-if="willOpenToday"
+                ><span class="error-text">Currently closed.</span> Opens today by
+                {{ today?.hours.opening }}
+              </template>
+              <template v-else>
+                <span class="error-text">Have closed for today.</span>
+                <template v-if="nextOpenDay">
+                  Available next on {{ nextOpenDay?.day }}
+                  <template v-if="nextOpenDay.avail === 'appointment'"
+                    >by appointment only</template
+                  >
+                  <template v-else-if="nextOpenDay.avail === 'always'">throughout the day</template>
+                  <template v-else
+                    >at {{ nextOpenDay?.hours.opening }} -
+                    {{ nextOpenDay?.hours.closing }}</template
+                  >.
+                </template>
+              </template>
             </template>
             <template v-else>
-              <span v-if="avail.closesSoon" class="warning-text"> Closes soon. </span>
-              <span v-else class="success-text">Open.</span>
-              Closes
-              {{ `${avail.closeTime[0]}:${avail.closeTime[1]}. ` }}
+              <span v-if="closesSoon" class="warning-text"> Closes soon. </span>
+              <span v-else class="success-text">Available.</span>
+              Closes {{ today?.hours.closing }}.
             </template>
-            <a href="#">Check our business hours</a>
-          </span>
-          <Icon
-            name="material-symbols:info-outline-rounded"
-            class="mini ml-2 faint-text-more"
-            v-tooltip:aria.unblocking
-            aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
-          />
-        </p>
+            <Icon
+              name="material-symbols:info-outline-rounded"
+              class="text-xs ml-2 opacity-65"
+              v-tooltip:aria.unblocking
+              aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
+            /> </span
+          >&nbsp;
+          <NuxtLink
+            :to="{
+              name: 'biz-about',
+              params: { slug: $route.params.slug },
+              hash: '#biz-hours',
+            }"
+            >Check our business hours.</NuxtLink
+          >
+        </div>
         <div class="flex gap-3">
           <button class="primary button">Contact Us</button>
           <button class="button">View Location</button>
@@ -227,32 +232,29 @@ const isReady = computed(() => data.details && avail.value);
       </div>
       <div class="posts-main">
         <div class="heading">Updates from us</div>
-        <FeedCard
-          v-for="i in Math.min(6, data.feeds.length)"
-          :set="feed = data.feeds[i - 1]"
-          :details="feed"
-        />
+        <template v-for="i in Math.min(6, data.feeds.length)" :key="i">
+          <FeedCard :details="data.feeds[i - 1]" />
+        </template>
         <NuxtLink
           :to="{ name: 'biz-feeds', params: { slug: $route.params.slug } }"
-          class="w-full button"
-          style="max-width: 500px"
+          class="w-full button max-w-125"
         >
           View more posts
         </NuxtLink>
       </div>
     </section>
-    <section class="text-center" style="padding: 6.25rem">
+    <section class="auto-contain text-center p-25">
       <h3>Thanks for visiting our website.</h3>
-      <p class="container-text huge font-semibold">
+      <p class="max-w-[65ch] auto-contain text-xl font-semibold">
         We hope you got what you’re looking for. You can make inquiries if not. We hope to see you
         soon.
       </p>
-      <button class="secondary button" style="margin-top: 1rem">Start Chat</button>
+      <button class="secondary button mt-4">Start Chat</button>
     </section>
   </main>
 </template>
 
-<style>
+<style scoped>
 .show-onpinned {
   opacity: 0;
   transition: all 100ms ease;
@@ -287,7 +289,9 @@ const isReady = computed(() => data.details && avail.value);
 .page-aside {
   align-self: start;
   display: flex;
-  border-radius: var(--sm-radius);
+  flex-direction: column;
+  gap: 0.5rem;
+  border-radius: var(--radius-block);
   border: 1px solid var(--outline);
   margin-left: auto;
   margin-right: auto;
@@ -295,31 +299,5 @@ const isReady = computed(() => data.details && avail.value);
   max-width: 100%;
   padding: 1rem;
   align-items: center;
-  flex-direction: column;
-}
-
-.ft-badge {
-  filter: saturate(0.1);
-  text-align: center;
-  color: transparent;
-
-  &:hover {
-    filter: saturate(1);
-    color: inherit;
-  }
-}
-
-.footer-main {
-  display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(4, 1fr);
-
-  @media screen and (max-width: 960px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media screen and (max-width: 550px) {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

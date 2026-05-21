@@ -4,7 +4,7 @@ const { items: cartItems } = storeToRefs(useCartStore());
 const { loggedIn } = useAuth();
 const userStore = useUserStore();
 function toTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 </script>
 
@@ -17,7 +17,12 @@ function toTop() {
             <Icon name="material-symbols:arrow-back-rounded" />
           </button>
           <NuxtLink to="/" class="xhover centered item exit-sidepanel">
-            <NuxtImg preset="logo" src="/images/logo.png" alt="site logo" class="logo-sm site-logo" />
+            <NuxtImg
+              preset="logo"
+              src="/images/logo.png"
+              alt="site logo"
+              class="logo-sm site-logo"
+            />
           </NuxtLink>
         </div>
         <NavMenuManagement v-if="$route.path.split('/').includes('manage')" />
@@ -37,8 +42,12 @@ function toTop() {
         {{ cartItems.length }}
       </div>
     </NuxtLink>
-    <LimbDropdown :options="{ directionPriority: { x: 'left', y: 'center' }, view: 'horizontal' }"
-      v-tooltip:aria.unblocking aria-label="Do more" class="icon outlined fab secondary button">
+    <LimbDropdown
+      :options="{ directionPriority: { x: 'left', y: 'center' }, view: 'horizontal' }"
+      v-tooltip:aria.unblocking
+      aria-label="Do more"
+      class="icon outlined fab secondary button"
+    >
       <Icon name="material-symbols:apps" />
     </LimbDropdown>
     <div class="pointing drop menu">
@@ -51,15 +60,22 @@ function toTop() {
           <Icon name="material-symbols:qr-code-scanner-rounded" />
           <span class="text label">Scan QR</span>
         </div>
-        <div v-if="loggedIn && userStore.userData.manageBisiness" class="bar-item item open-modal exit-dd"
-          data-target="create-post">
+        <div
+          v-if="loggedIn && userStore.userData.manageBisiness"
+          class="bar-item item open-modal exit-dd"
+          data-target="create-post"
+        >
           <Icon name="material-symbols:edit-square-outline-rounded" />
           <span class="text label">Post</span>
         </div>
       </div>
     </div>
-    <button id="qaction" @click="toTop" class="outlined fab compact radius-lg secondary button"
-      :class="{ 'now-visible': mainStore.showFixedMenu }">
+    <button
+      id="qaction"
+      @click="toTop"
+      class="outlined fab compact radius-lg secondary button"
+      :class="{ 'now-visible': mainStore.showFixedMenu }"
+    >
       <Icon name="material-symbols:vertical-align-top-rounded" />
     </button>
   </div>
@@ -75,12 +91,12 @@ function toTop() {
   }
 }
 
-#msidepanel>.panel {
+#msidepanel > .panel {
   display: flex;
   flex-flow: column nowrap;
 }
 
-#msidepanel>.panel>footer {
+#msidepanel > .panel > footer {
   margin-top: auto;
 }
 </style>

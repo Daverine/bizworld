@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps(['details', 'isSaved']);
+defineProps(["details", "isSaved"]);
 </script>
 <template>
   <BusinessCard v-if="details.type === 'business'" :details="details" />
@@ -19,14 +19,9 @@ defineProps(['details', 'isSaved']);
       <Icon name="material-symbols:more-vert" />
     </LimbDropdown>
     <div class="drop menu">
+      <div class="item"><Icon name="material-symbols:share-outline" class="lead" /> Share</div>
       <div class="item">
-        <Icon name="material-symbols:share-outline" class="lead" /> Share
-      </div>
-      <div class="item">
-        <Icon
-          name="material-symbols:bookmark-remove-outline-rounded"
-          class="lead"
-        />
+        <Icon name="material-symbols:bookmark-remove-outline-rounded" class="lead" />
         Unsave
       </div>
     </div>
@@ -83,7 +78,7 @@ defineProps(['details', 'isSaved']);
     column-gap: 0.5em;
   }
 
-  &[data-type='business'] {
+  &[data-type="business"] {
     --display-width: 4.25rem;
   }
 

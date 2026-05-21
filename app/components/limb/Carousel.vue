@@ -45,18 +45,18 @@ interface Tmp {
   slidesPerView: number;
 }
 
-const carousel = useTemplateRef('carousel');
+const carousel = useTemplateRef("carousel");
 const props = defineProps<{ options?: Partial<Settings> }>();
 const settings: Settings = {
-  namespace: 'carousel',
+  namespace: "carousel",
   autoSetup: true,
   continuous: true,
   slidesPerView: 1,
-  sliderMove: 'slide',
-  spaceBetween: '0.5rem',
+  sliderMove: "slide",
+  spaceBetween: "0.5rem",
   breakpoints: [],
-  animation: 'slide',
-  direction: 'horizontal',
+  animation: "slide",
+  direction: "horizontal",
   transitionDuration: 500,
   autoslide: false,
   autoslideInterval: 5000,
@@ -85,8 +85,8 @@ const tmp = reactive<Tmp>({
   currSlideNo: 0,
   slidesPerView: settings.slidesPerView,
   spaceBetween: settings.spaceBetween,
-  uniqueId: '',
-  continuous: settings.continuous && settings.continuous !== 'rewind',
+  uniqueId: "",
+  continuous: settings.continuous && settings.continuous !== "rewind",
 });
 
 let changeInSlides: MutationObserver,
@@ -102,40 +102,40 @@ let changeInSlides: MutationObserver,
 
 onMounted(() => {
   tmp.uniqueId = utils.getUniqueId(settings.namespace);
-  viewbox = carousel.value?.querySelector(':scope > .cs-viewbox') || null;
+  viewbox = carousel.value?.querySelector(":scope > .cs-viewbox") || null;
 
   if (!viewbox) {
-    console.error('A carousel in this page does not have it viewbox');
+    console.error("A carousel in this page does not have it viewbox");
     return;
   }
 
-  slider = viewbox.querySelector(':scope > .cs-slider') || null;
+  slider = viewbox.querySelector(":scope > .cs-slider") || null;
 
   if (!slider) {
-    console.error('A carousel on this page does not have it slider');
+    console.error("A carousel on this page does not have it slider");
     return;
   }
 
-  prevBtn = carousel.value?.querySelector(':scope .cs-prev') || null;
-  nextBtn = carousel.value?.querySelector(':scope .cs-next') || null;
-  trackerCont = carousel.value?.querySelector(':scope .cs-trackers') || null;
+  prevBtn = carousel.value?.querySelector(":scope .cs-prev") || null;
+  nextBtn = carousel.value?.querySelector(":scope .cs-next") || null;
+  trackerCont = carousel.value?.querySelector(":scope .cs-trackers") || null;
   slider.style.transitionDuration = `${settings.transitionDuration}ms`;
-  slider.setAttribute('data-anim', settings.animation);
+  slider.setAttribute("data-anim", settings.animation);
   slider.ondragstart = () => false;
-  slider.addEventListener('mousedown', gestureStart);
-  slider.addEventListener('touchstart', gestureStart);
+  slider.addEventListener("mousedown", gestureStart);
+  slider.addEventListener("touchstart", gestureStart);
 
   if (settings.autoslide && settings.pauseOnHover) {
-    slider.addEventListener('mouseenter', stopAutoslider);
-    slider.addEventListener('mouseleave', startAutoslider);
+    slider.addEventListener("mouseenter", stopAutoslider);
+    slider.addEventListener("mouseleave", startAutoslider);
   }
 
-  prevBtn?.addEventListener('click', prevSlides);
-  nextBtn?.addEventListener('click', nextSlides);
-  trackerCont?.addEventListener('click', trackControl);
+  prevBtn?.addEventListener("click", prevSlides);
+  nextBtn?.addEventListener("click", nextSlides);
+  trackerCont?.addEventListener("click", trackControl);
 
   changeInSlides = new MutationObserver(sizeResponse);
-  window.addEventListener('resize', sizeResponse);
+  window.addEventListener("resize", sizeResponse);
   sizeResponse();
 });
 
@@ -143,7 +143,7 @@ onBeforeUnmount(() => {
   clearInterval(tmp.autoslider);
   clearTimeout(tmp.updateSet);
   stopAutoslider();
-  window.removeEventListener('resize', sizeResponse);
+  window.removeEventListener("resize", sizeResponse);
 });
 
 function sizeResponse() {
@@ -156,15 +156,11 @@ function sizeResponse() {
       (el) =>
         (el.minWidth || el.maxWidth) &&
         (!el.minWidth || el.minWidth <= mediaWidth) &&
-        (!el.maxWidth || el.maxWidth >= mediaWidth)
+        (!el.maxWidth || el.maxWidth >= mediaWidth),
     );
     let breakpoint =
-      matchedBreakpoints
-        .filter((el) => el.maxWidth)
-        .sort((a, b) => a.maxWidth - b.maxWidth)[0] ||
-      matchedBreakpoints
-        .filter((el) => el.minWidth)
-        .sort((a, b) => b.minWidth - a.minWidth)[0];
+      matchedBreakpoints.filter((el) => el.maxWidth).sort((a, b) => a.maxWidth - b.maxWidth)[0] ||
+      matchedBreakpoints.filter((el) => el.minWidth).sort((a, b) => b.minWidth - a.minWidth)[0];
 
     tmp.breakpoint = {
       slidesPerView: settings.slidesPerView,
@@ -179,38 +175,30 @@ function sizeResponse() {
 
 function init() {
   slides = [...(slider?.querySelectorAll(`:scope > .cs-slide`) || [])].filter(
-    (el) => !el.matches(`[data-creator='${tmp.uniqueId}']`)
+    (el) => !el.matches(`[data-creator='${tmp.uniqueId}']`),
   ) as HTMLElement[];
   if (!slides[0]) return;
-  slider?.classList.add('ghost-walk');
+  slider?.classList.add("ghost-walk");
 
   if (!initialized || tmp.slidesNo !== slides.length) {
-    [
-      ...(slider?.querySelectorAll(`:scope [data-creator='${tmp.uniqueId}']`) ||
-        []),
-    ].forEach((el) => el.remove());
-    tmp.continuous =
-      settings.continuous &&
-      settings.continuous !== 'rewind' &&
-      slides.length > 1;
+    [...(slider?.querySelectorAll(`:scope [data-creator='${tmp.uniqueId}']`) || [])].forEach((el) =>
+      el.remove(),
+    );
+    tmp.continuous = settings.continuous && settings.continuous !== "rewind" && slides.length > 1;
     slides.forEach((slide, index) => {
-      slide.setAttribute('data-csid', `${index + 1}`);
+      slide.setAttribute("data-csid", `${index + 1}`);
 
       if (tmp.continuous) {
         let slideClone = slide.cloneNode(true) as HTMLElement;
-        slideClone.setAttribute('data-creator', tmp.uniqueId);
-        [...slideClone.querySelectorAll(':scope *')].forEach((el) => {
-          el.removeAttribute('data-lightbox');
-          el.removeAttribute('data-find-lightbox-content');
+        slideClone.setAttribute("data-creator", tmp.uniqueId);
+        [...slideClone.querySelectorAll(":scope *")].forEach((el) => {
+          el.removeAttribute("data-lightbox");
+          el.removeAttribute("data-find-lightbox-content");
         });
-        slideClone.classList.remove('active');
+        slideClone.classList.remove("active");
         slider?.append(slideClone);
         if (!index) slider?.prepend(slideClone.cloneNode(true));
-        else
-          slider?.insertBefore(
-            slideClone.cloneNode(true),
-            slider.children[index] as Node
-          );
+        else slider?.insertBefore(slideClone.cloneNode(true), slider.children[index] as Node);
       }
     });
     initialized = true;
@@ -218,13 +206,11 @@ function init() {
 
   tmp.slidesNo = slides.length;
   tmp.currSlideNo = Number(
-    slides
-      .find((el) => el.classList.contains('active'))
-      ?.getAttribute('data-csid') || 1
+    slides.find((el) => el.classList.contains("active"))?.getAttribute("data-csid") || 1,
   );
   currSlide = slides[tmp.currSlideNo - 1] as HTMLElement;
   tmp.spaceBetween =
-    typeof tmp.breakpoint.spaceBetween === 'number'
+    typeof tmp.breakpoint.spaceBetween === "number"
       ? `${tmp.breakpoint.spaceBetween}px`
       : tmp.breakpoint.spaceBetween;
   tmp.slidesPerView =
@@ -232,9 +218,7 @@ function init() {
       ? tmp.slidesNo
       : tmp.breakpoint.slidesPerView;
 
-  let rawSlides = [
-    ...(slider?.querySelectorAll(`:scope > .cs-slide`) || []),
-  ] as HTMLElement[];
+  let rawSlides = [...(slider?.querySelectorAll(`:scope > .cs-slide`) || [])] as HTMLElement[];
   rawSlides.forEach((el) => {
     el.style.width = `calc(((100% + ${tmp.spaceBetween}) / ${tmp.slidesPerView}) - ${tmp.spaceBetween})`;
     el.style.marginRight = tmp.spaceBetween;
@@ -242,12 +226,12 @@ function init() {
 
   tmp.slideSize =
     currSlide.getBoundingClientRect().width +
-    parseFloat(utils.getCssVal(currSlide, 'margin-right'));
+    parseFloat(utils.getCssVal(currSlide, "margin-right"));
   tmp.minExt = tmp.continuous ? -(tmp.slideSize * tmp.slidesNo) : 0;
   tmp.maxExt = tmp.minExt - tmp.slideSize * (tmp.slidesNo - tmp.slidesPerView);
 
   update();
-  utils.afterNextRepaint(() => slider?.classList.remove('ghost-walk'));
+  utils.afterNextRepaint(() => slider?.classList.remove("ghost-walk"));
   if (settings.autoslide) startAutoslider();
 }
 
@@ -258,13 +242,13 @@ function update(newSlideNo: number = tmp.currSlideNo || 1) {
     ? newSlideNo < 1
       ? 1
       : newSlideNo > tmp.slidesNo
-      ? tmp.slidesNo
-      : newSlideNo
+        ? tmp.slidesNo
+        : newSlideNo
     : newSlideNo < 1
-    ? tmp.slidesNo + newSlideNo
-    : newSlideNo > tmp.slidesNo
-    ? newSlideNo - tmp.slidesNo
-    : newSlideNo;
+      ? tmp.slidesNo + newSlideNo
+      : newSlideNo > tmp.slidesNo
+        ? newSlideNo - tmp.slidesNo
+        : newSlideNo;
 
   prevSlide = currSlide;
   tmp.currSlideNo = newSlideNo;
@@ -272,59 +256,57 @@ function update(newSlideNo: number = tmp.currSlideNo || 1) {
 
   tmp.newCoord = Math.min(
     tmp.minExt,
-    Math.max(tmp.minExt - (newSlideNo - 1) * tmp.slideSize, tmp.maxExt)
+    Math.max(tmp.minExt - (newSlideNo - 1) * tmp.slideSize, tmp.maxExt),
   );
   if (slider) slider.style.transform = `translateX(${tmp.newCoord}px)`;
   tmp.updateSet = setTimeout(() => {
     [...(slider?.querySelectorAll(`:scope > .cs-slide`) || [])].forEach((el) =>
-      el.classList.remove('active')
+      el.classList.remove("active"),
     );
-    [
-      ...(slider?.querySelectorAll(
-        `:scope > .cs-slide[data-csid='${newSlideNo}']`
-      ) || []),
-    ].forEach((el) => el.classList.add('active'));
+    [...(slider?.querySelectorAll(`:scope > .cs-slide[data-csid='${newSlideNo}']`) || [])].forEach(
+      (el) => el.classList.add("active"),
+    );
   }, settings.transitionDuration);
 
   if (!settings.continuous && tmp.slidesNo > 1) {
     if (tmp.currSlideNo === 1) {
-      prevBtn?.classList.add('disabled');
-      nextBtn?.classList.remove('disabled');
+      prevBtn?.classList.add("disabled");
+      nextBtn?.classList.remove("disabled");
     } else if (tmp.currSlideNo === tmp.slidesNo) {
-      nextBtn?.classList.add('disabled');
-      prevBtn?.classList.remove('disabled');
+      nextBtn?.classList.add("disabled");
+      prevBtn?.classList.remove("disabled");
     } else {
-      prevBtn?.classList.remove('disabled');
-      nextBtn?.classList.remove('disabled');
+      prevBtn?.classList.remove("disabled");
+      nextBtn?.classList.remove("disabled");
     }
   }
 
   if (tmp.slidesNo === 1) {
-    prevBtn?.classList.add('disabled');
-    nextBtn?.classList.add('disabled');
+    prevBtn?.classList.add("disabled");
+    nextBtn?.classList.add("disabled");
   }
 
   if (trackerCont) {
     let trackers = [...trackerCont.querySelectorAll(`:scope > .cs-tracker`)];
-    trackers.forEach((el) => el.classList.remove('active'));
+    trackers.forEach((el) => el.classList.remove("active"));
     let tracker = trackers[newSlideNo - 1];
 
     if (tracker) {
-      tracker.classList.add('active');
-      utils.triggerEvent(trackerCont.parentElement!, 'activeView', tracker);
+      tracker.classList.add("active");
+      utils.triggerEvent(trackerCont.parentElement!, "activeView", tracker);
     }
   }
   tmp.coordChange = false;
 }
 
 function dist(e: MouseEvent | TouchEvent) {
-  if (settings.direction === 'vertical')
-    return 'touches' in e ? e.touches[0]?.clientY || 0 : e.clientY;
-  return 'touches' in e ? e.touches[0]?.clientX || 0 : e.clientX;
+  if (settings.direction === "vertical")
+    return "touches" in e ? e.touches[0]?.clientY || 0 : e.clientY;
+  return "touches" in e ? e.touches[0]?.clientX || 0 : e.clientX;
 }
 
 function gestureStart(e: MouseEvent | TouchEvent) {
-  if (e.type === 'mousedown' && (e as MouseEvent).button != 0) return;
+  if (e.type === "mousedown" && (e as MouseEvent).button != 0) return;
 
   if (settings.autoslide) stopAutoslider();
   tmp.gestureTarget = e.target;
@@ -334,40 +316,31 @@ function gestureStart(e: MouseEvent | TouchEvent) {
   tmp.coordChange = false;
   tmp.endCoord = tmp.startCoord;
 
-  slider?.classList.add('swiping');
+  slider?.classList.add("swiping");
 
-  if (e.type === 'touchstart') {
-    document.addEventListener('touchmove', gestureMove);
-    document.addEventListener('touchend', gestureEnd);
-  } else if (e.type === 'mousedown') {
-    document.addEventListener('mousemove', gestureMove);
-    document.addEventListener('mouseup', gestureEnd);
+  if (e.type === "touchstart") {
+    document.addEventListener("touchmove", gestureMove);
+    document.addEventListener("touchend", gestureEnd);
+  } else if (e.type === "mousedown") {
+    document.addEventListener("mousemove", gestureMove);
+    document.addEventListener("mouseup", gestureEnd);
   }
 }
 
 function gestureMove(e: MouseEvent | TouchEvent) {
-  tmp.moveDir =
-    tmp.endCoord > dist(e) ? 1 : tmp.endCoord < dist(e) ? -1 : tmp.moveDir;
+  tmp.moveDir = tmp.endCoord > dist(e) ? 1 : tmp.endCoord < dist(e) ? -1 : tmp.moveDir;
   tmp.endCoord = dist(e);
   if (Math.abs(tmp.endCoord - tmp.startCoord) > 5) tmp.coordChange = true;
 
   if (tmp.coordChange) {
     tmp.newCoord =
-      tmp.initCoord +
-      tmp.endCoord -
-      tmp.startCoord +
-      tmp.movePastSlides * Math.abs(tmp.minExt);
+      tmp.initCoord + tmp.endCoord - tmp.startCoord + tmp.movePastSlides * Math.abs(tmp.minExt);
 
     if (tmp.continuous) {
-      if (tmp.moveDir === 1 && tmp.newCoord < tmp.maxExt)
-        tmp.movePastSlides += 1;
-      else if (tmp.moveDir === -1 && tmp.newCoord > tmp.minExt)
-        tmp.movePastSlides -= 1;
+      if (tmp.moveDir === 1 && tmp.newCoord < tmp.maxExt) tmp.movePastSlides += 1;
+      else if (tmp.moveDir === -1 && tmp.newCoord > tmp.minExt) tmp.movePastSlides -= 1;
       tmp.newCoord =
-        tmp.initCoord +
-        tmp.endCoord -
-        tmp.startCoord +
-        tmp.movePastSlides * Math.abs(tmp.minExt);
+        tmp.initCoord + tmp.endCoord - tmp.startCoord + tmp.movePastSlides * Math.abs(tmp.minExt);
     }
 
     if (slider) slider.style.transform = `translateX(${tmp.newCoord}px)`;
@@ -375,83 +348,73 @@ function gestureMove(e: MouseEvent | TouchEvent) {
 }
 
 function gestureEnd(e: MouseEvent | TouchEvent) {
-  if (e.type === 'touchend') {
-    document.removeEventListener('touchmove', gestureMove);
-    document.removeEventListener('touchend', gestureEnd);
+  if (e.type === "touchend") {
+    document.removeEventListener("touchmove", gestureMove);
+    document.removeEventListener("touchend", gestureEnd);
   } else {
-    document.removeEventListener('mousemove', gestureMove);
-    document.removeEventListener('mouseup', gestureEnd);
+    document.removeEventListener("mousemove", gestureMove);
+    document.removeEventListener("mouseup", gestureEnd);
   }
 
   tmp.moveDir = 0;
   tmp.movePastSlides = 0;
 
-  if (slider?.classList.contains('swiping') && tmp.coordChange) {
+  if (slider?.classList.contains("swiping") && tmp.coordChange) {
     let changeExt = tmp.endCoord - tmp.startCoord;
     let movedSlidesCount = Math.ceil(Math.abs(changeExt / tmp.slideSize));
 
     if (
       Math.abs(changeExt) > tmp.slideSize / 3 ||
-      (Math.abs(changeExt) > tmp.slideSize / 20 &&
-        new Date().getTime() - tmp.gT < 300)
+      (Math.abs(changeExt) > tmp.slideSize / 20 && new Date().getTime() - tmp.gT < 300)
     ) {
-      slider.classList.remove('swiping');
+      slider.classList.remove("swiping");
       movedSlidesCount = settings.continuous
         ? movedSlidesCount > tmp.slidesNo
           ? movedSlidesCount % tmp.slidesNo
           : movedSlidesCount
         : movedSlidesCount;
-      update(
-        tmp.currSlideNo + (changeExt > 0 ? -movedSlidesCount : movedSlidesCount)
-      );
+      update(tmp.currSlideNo + (changeExt > 0 ? -movedSlidesCount : movedSlidesCount));
     } else {
       tmp.newCoord = tmp.initCoord + changeExt;
       if (slider) slider.style.transform = `translateX(${tmp.newCoord}px)`;
       utils.afterNextRepaint(() => {
-        slider?.classList.remove('swiping');
+        slider?.classList.remove("swiping");
         update(tmp.currSlideNo);
       });
     }
   } else {
     if (
       tmp.gestureTarget instanceof HTMLElement &&
-      tmp.gestureTarget.closest('[data-lightbox], [data-find-lightbox-content]')
+      tmp.gestureTarget.closest("[data-lightbox], [data-find-lightbox-content]")
     ) {
       let toggler = tmp.gestureTarget.closest(
-        '[data-lightbox], [data-find-lightbox-content]'
+        "[data-lightbox], [data-find-lightbox-content]",
       ) as HTMLElement;
       let lightboxElem = document.querySelector(
-        `#${toggler.getAttribute('data-target')}`
+        `#${toggler.getAttribute("data-target")}`,
       ) as HTMLElement;
       if (lightboxElem)
-        utils.triggerEvent(lightboxElem, 'lbconsole', {
-          command: 'view in lightbox',
+        utils.triggerEvent(lightboxElem, "lbconsole", {
+          command: "view in lightbox",
           el: toggler,
         });
     }
-    slider?.classList.remove('swiping');
+    slider?.classList.remove("swiping");
     update(tmp.currSlideNo);
   }
 
-  if (
-    settings.pauseOnHover &&
-    slider?.contains(e.target as Node) &&
-    e.type !== 'touchend'
-  )
-    return;
+  if (settings.pauseOnHover && slider?.contains(e.target as Node) && e.type !== "touchend") return;
   if (settings.autoslide) startAutoslider();
 }
 
 function prevSlides() {
-  let newSlideNo =
-    tmp.currSlideNo - (settings.sliderMove === 'page' ? tmp.slidesPerView : 1);
+  let newSlideNo = tmp.currSlideNo - (settings.sliderMove === "page" ? tmp.slidesPerView : 1);
 
   if (tmp.continuous && newSlideNo < 1) {
-    slider?.classList.add('ghost-walk');
-    if (slider)
-      slider.style.transform = `translateX(${tmp.newCoord + tmp.minExt}px)`;
+    slider?.classList.add("ghost-walk");
+    if (slider) slider.style.transform = `translateX(${tmp.newCoord + tmp.minExt}px)`;
     utils.afterNextRepaint(() => {
-      slider?.classList.remove('ghost-walk');
+      slider?.classList.remove("ghost-walk");
       utils.afterNextRepaint(() => update(newSlideNo));
     });
   } else {
@@ -462,15 +425,13 @@ function prevSlides() {
 }
 
 function nextSlides() {
-  let newSlideNo =
-    tmp.currSlideNo + (settings.sliderMove === 'page' ? tmp.slidesPerView : 1);
+  let newSlideNo = tmp.currSlideNo + (settings.sliderMove === "page" ? tmp.slidesPerView : 1);
 
   if (tmp.continuous && newSlideNo > tmp.slidesNo) {
-    slider?.classList.add('ghost-walk');
-    if (slider)
-      slider.style.transform = `translateX(${tmp.newCoord - tmp.minExt}px)`;
+    slider?.classList.add("ghost-walk");
+    if (slider) slider.style.transform = `translateX(${tmp.newCoord - tmp.minExt}px)`;
     utils.afterNextRepaint(() => {
-      slider?.classList.remove('ghost-walk');
+      slider?.classList.remove("ghost-walk");
       utils.afterNextRepaint(() => update(newSlideNo));
     });
   } else {
@@ -481,31 +442,24 @@ function nextSlides() {
 }
 
 function trackControl(e: MouseEvent) {
-  let tracker = (e.target as HTMLElement).closest('.cs-trackers > .cs-tracker');
+  let tracker = (e.target as HTMLElement).closest(".cs-trackers > .cs-tracker");
 
   if (tracker) {
-    update(
-      [
-        ...(trackerCont?.querySelectorAll(`:scope > .cs-tracker`) || []),
-      ].indexOf(tracker) + 1
-    );
+    update([...(trackerCont?.querySelectorAll(`:scope > .cs-tracker`) || [])].indexOf(tracker) + 1);
     if (tmp.autosliding) startAutoslider();
   }
 }
 
 function startAutoslider() {
-  if (slider?.classList.contains('swiping')) return;
+  if (slider?.classList.contains("swiping")) return;
   stopAutoslider();
   tmp.autoslider = setInterval(() => {
-    let newSlideNo =
-      tmp.currSlideNo +
-      (settings.sliderMove === 'page' ? tmp.slidesPerView : 1);
+    let newSlideNo = tmp.currSlideNo + (settings.sliderMove === "page" ? tmp.slidesPerView : 1);
 
     if (tmp.continuous && newSlideNo > tmp.slidesNo) {
-      slider?.classList.add('ghost-walk');
-      if (slider)
-        slider.style.transform = `translateX(${tmp.newCoord - tmp.minExt}px)`;
-      utils.afterNextRepaint(() => slider?.classList.remove('ghost-walk'));
+      slider?.classList.add("ghost-walk");
+      if (slider) slider.style.transform = `translateX(${tmp.newCoord - tmp.minExt}px)`;
+      utils.afterNextRepaint(() => slider?.classList.remove("ghost-walk"));
     } else if (!tmp.continuous && newSlideNo > tmp.slidesNo) newSlideNo = 1;
     utils.afterNextRepaint(() => update(newSlideNo));
   }, settings.autoslideInterval);
@@ -526,11 +480,7 @@ function stopAutoslider() {
         </div>
         <div class="cs-controls">
           <button type="button" class="cs-nav cs-prev">
-            <Icon
-              mode="svg"
-              name="material-symbols:chevron-left"
-              class="icon"
-            />
+            <Icon mode="svg" name="material-symbols:chevron-left" class="icon" />
           </button>
           <button type="button" class="cs-nav cs-next">
             <Icon mode="svg" name="material-symbols:chevron-right" />

@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 definePageMeta({
-  name: 'search',
-  layout: 'common',
+  name: "search",
+  layout: "common",
 });
 const searchStore = useSearchStore();
 const route = useRoute();
 
 onBeforeRouteLeave(() => {
-  searchStore.searchBox = '';
+  searchStore.searchBox = "";
 });
 onMounted(() => {
   if (!searchStore.searchBox) {
@@ -24,13 +24,13 @@ function updateResult() {
 
 <template>
   <Title>BizWorld | Search: {{ $route.query.q }}</Title>
-  <main class="container-md">
+  <main class="max-w-180 auto-contain">
     <LimbIScroller
       v-scrollPin="{ top: 63 }"
       class="pin-top-blend z-level-1"
       style="margin: 1rem 0rem"
     >
-      <div class="rail small menu scroll-items">
+      <div class="rail text-sm menu scroll-items">
         <div class="compact item xhover">
           Result in:
           <LimbDropdown
@@ -41,7 +41,7 @@ function updateResult() {
           >
             <Icon
               name="material-symbols:category-search-outline-rounded"
-              class="primary-text mr-2"
+              class="text-primary mr-2"
             />
           </LimbDropdown>
           <div class="drop menu">
@@ -71,10 +71,7 @@ function updateResult() {
     <div v-if="searchStore.resultIn === 'businesses'" class="biz-cards-grid">
       <BusinessCard v-for="item in searchStore.searchResult" :details="item" />
     </div>
-    <div
-      v-else-if="searchStore.resultIn === 'products'"
-      class="product-cards-grid"
-    >
+    <div v-else-if="searchStore.resultIn === 'products'" class="product-cards-grid">
       <ProductCard v-for="item in searchStore.searchResult" :details="item" />
     </div>
     <div class="divider">

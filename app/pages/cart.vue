@@ -1,5 +1,5 @@
 <script setup>
-definePageMeta({ layout: 'details' });
+definePageMeta({ layout: "details" });
 const cartStore = useCartStore();
 const allChecked = computed({
   get() {
@@ -15,7 +15,7 @@ const allChecked = computed({
 
 <template>
   <Title>Shopping Cart | BizWorld</Title>
-  <main class="grid-layout" style="padding-top: 1rem">
+  <main class="layout-grid" style="padding-top: 1rem">
     <div class="page-cont">
       <section class="page-sec1">
         <h3>Shopping Cart</h3>
@@ -24,7 +24,8 @@ const allChecked = computed({
             class="sticky z-level-1"
             style="
               top: 72px;
-              box-shadow: 0px 1px 0px 0px var(--on-surface),
+              box-shadow:
+                0px 1px 0px 0px var(--on-surface),
                 0px 5px 10px 5px var(--blend-bg);
             "
           >
@@ -38,41 +39,23 @@ const allChecked = computed({
           <tbody>
             <tr v-for="item in cartStore.items">
               <td>
-                <input
-                  type="checkbox"
-                  v-model="item.checked"
-                  class="form-item"
-                />
+                <input type="checkbox" v-model="item.checked" class="form-item" />
               </td>
               <td>
                 <div class="flex gap-3">
                   <div class="flex-none">
-                    <NuxtImg
-                      preset="thumbnail"
-                      class="thumbnail"
-                      :src="item.media"
-                    />
+                    <NuxtImg preset="thumbnail" class="thumbnail" :src="item.media" />
                   </div>
                   <div class="flex-1">
                     <div class="heading line-clamp-2">
                       {{ item.title }}
                     </div>
-                    <div
-                      class="flex justify-between flex-wrap gap-3 items-center mini"
-                    >
-                      <a
-                        :href="item.bizData.bizUrl"
-                        class="font-semibold truncate"
-                        >{{ item.bizData.bizName }}</a
-                      >
-                      <div
-                        class="flex flex-wrap gap-2"
-                        style="margin-top: 0.5em"
-                      >
-                        <div
-                          v-for="option in item.productOptions"
-                          class="label"
-                        >
+                    <div class="flex justify-between flex-wrap gap-3 items-center text-xs">
+                      <a :href="item.bizData.bizUrl" class="font-semibold truncate">{{
+                        item.bizData.bizName
+                      }}</a>
+                      <div class="flex flex-wrap gap-2" style="margin-top: 0.5em">
+                        <div v-for="option in item.productOptions" class="label">
                           {{ option }}
                         </div>
                       </div>
@@ -80,15 +63,13 @@ const allChecked = computed({
                   </div>
                 </div>
                 <div class="flex flex-col gap-2">
-                  <div
-                    class="flex flex-wrap justify-between gap-3 small font-semibold"
-                  >
+                  <div class="flex flex-wrap justify-between gap-3 text-sm font-semibold">
                     <div>Unit Price: ₦{{ item.price.toLocaleString() }}</div>
                     <div>Dellivery: {{ item.delivery }}</div>
                     <div>
-                      <div class="small input-box" style="width: 7rem">
+                      <div class="text-sm input-box" style="width: 7rem">
                         <button
-                          class="addon icon of-mini button"
+                          class="addon icon text-xs button"
                           @click="
                             () => {
                               if (item.quantity > 1) item.quantity--;
@@ -115,31 +96,22 @@ const allChecked = computed({
                             }
                           "
                         />
-                        <button
-                          class="addon icon of-mini button"
-                          @click="item.quantity++"
-                        >
+                        <button class="addon icon text-xs button" @click="item.quantity++">
                           <Icon name="material-symbols:add-rounded" />
                         </button>
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="flex flex-wrap justify-between gap-3 items-center"
-                  >
+                  <div class="flex flex-wrap justify-between gap-3 items-center">
                     <div>
                       Amount:
-                      <span class="font-bold h6 primary-text"
-                        >₦{{
-                          (item.price * item.quantity).toLocaleString()
-                        }}</span
+                      <span class="font-bold text-h6 text-primary"
+                        >₦{{ (item.price * item.quantity).toLocaleString() }}</span
                       >
                     </div>
                     <div class="flex gap-2">
                       <button class="flat compact icon button">
-                        <Icon
-                          name="material-symbols:bookmark-add-outline-rounded"
-                        />
+                        <Icon name="material-symbols:bookmark-add-outline-rounded" />
                       </button>
                       <button
                         @click="cartStore.removeFromCart(item.id)"
@@ -185,7 +157,7 @@ const allChecked = computed({
             <div>Tax</div>
             <div>₦0</div>
           </div>
-          <div class="flex justify-between gap-2 h6 font-bold">
+          <div class="flex justify-between gap-2 text-h6 font-bold">
             <div>Total</div>
             <div>
               ₦{{
@@ -204,13 +176,10 @@ const allChecked = computed({
 
       <!-- checkout details mobile -->
       <div
-        class="mobile-screen-only sticky surface-bg w-full z-level-2 pin-bottom-blend"
+        class="mobile-screen-only sticky bg-surface w-full z-level-2 pin-bottom-blend"
         style="bottom: 0px"
       >
-        <div
-          class="container flex items-center gap-3"
-          style="padding: 0.5rem 0rem"
-        >
+        <div class="max-w-6xl auto-contain flex items-center gap-3" style="padding: 0.5rem 0rem">
           <div class="flex flex-col">
             <div
               class="flat as-text mute-interaction button open-modal"
@@ -228,10 +197,7 @@ const allChecked = computed({
                       ₦{{
                         cartStore.items
                           .filter((item) => item.checked)
-                          .reduce(
-                            (acc, item) => acc + item.price * item.quantity,
-                            0
-                          )
+                          .reduce((acc, item) => acc + item.price * item.quantity, 0)
                           .toLocaleString()
                       }}
                     </div>
@@ -244,16 +210,13 @@ const allChecked = computed({
                     <div>Tax</div>
                     <div>₦0</div>
                   </div>
-                  <div class="flex justify-between gap-2 h6 font-bold">
+                  <div class="flex justify-between gap-2 text-h6 font-bold">
                     <div>Total</div>
                     <div>
                       ₦{{
                         cartStore.items
                           .filter((item) => item.checked)
-                          .reduce(
-                            (acc, item) => acc + item.price * item.quantity,
-                            0
-                          )
+                          .reduce((acc, item) => acc + item.price * item.quantity, 0)
                           .toLocaleString()
                       }}
                     </div>
@@ -263,8 +226,8 @@ const allChecked = computed({
                   </div>
                 </div>
               </div>
-            </LimbModal> 
-            <div class="flex justify-between gap-2 h6 font-bold">
+            </LimbModal>
+            <div class="flex justify-between gap-2 text-h6 font-bold">
               <div>Total</div>
               <div>
                 ₦{{

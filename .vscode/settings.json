@@ -1,19 +1,4 @@
 {
-  "editor.defaultFormatter": "oxc.oxc-vscode",
-  "[vue]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "editor.tabSize": 2,
-  "[css]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  }
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "oxc.oxc-vscode"
 }

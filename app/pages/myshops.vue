@@ -9,8 +9,12 @@ const { data: businesses } = await useFetch("/api/user/businesses", {
 });
 </script>
 <template>
-  <main class="flex-1 col" id="feed">
-    <div v-for="business in businesses" class="mybiz-card card flex flex-col w-full gap-3 p-2.5">
+  <main class="max-w-180 auto-contain">
+    <div
+      v-if="businesses?.length"
+      v-for="business in businesses"
+      class="mybiz-card card flex flex-col w-full gap-3 p-2.5"
+    >
       <div class="flex gap-4 items-center">
         <NuxtImg
           preset="logo"
@@ -18,8 +22,8 @@ const { data: businesses } = await useFetch("/api/user/businesses", {
           class="flex-none rounded image w-22.5"
         />
         <div class="flex-1 flex flex-col" style="justify-content: space-evenly">
-          <div class="font-bold h6">{{ business.business_name }}</div>
-          <div class="flex flex-wrap faint-text gap-x-2">
+          <div class="font-bold text-h6">{{ business.business_name }}</div>
+          <div class="flex flex-wrap opacity-65 gap-x-2">
             <NuxtLink
               :to="{ name: 'biz-home', params: { slug: business.slug } }"
               class="truncate"
@@ -49,6 +53,14 @@ const { data: businesses } = await useFetch("/api/user/businesses", {
           <div class="item"><Icon name="material-symbols:share-outline" class="lead" /> Share</div>
         </div>
       </div>
+    </div>
+    <div v-else class="flex flex-col items-center gap-4 my-auto p-8">
+      <Icon name="material-symbols:storefront-outline-rounded" class="text-6xl opacity-65" />
+      <div class="text-center">
+        <div class="font-bold">You don't have any shops yet</div>
+        <p class="opacity-65">Create your first shop to get started.</p>
+      </div>
+      <NuxtLink to="/new-shop" class="button">Create your shop</NuxtLink>
     </div>
   </main>
 </template>

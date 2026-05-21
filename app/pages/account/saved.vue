@@ -1,16 +1,19 @@
 <script setup>
-definePageMeta({ layout: 'account', auth: { only: 'user' }, });
-defineOptions({ title: 'Saved cards | BizWorld' });
+definePageMeta({ layout: "account", auth: { only: "user" } });
+defineOptions({ title: "Saved cards | BizWorld" });
 const userStore = useUserStore();
 onMounted(() => userStore.getSavedCards());
 </script>
 
 <template>
-	<h6 class="text-center">Saved Cards</h6>
+  <h6 class="text-center">Saved Cards</h6>
 
-	<ItemCard v-for="result in userStore.savedCards" :details="result" :isSaved="true" />
+  <ItemCard v-for="result in userStore.savedCards" :details="result" :isSaved="true" />
 
-	<div class="divider"><button class="button">More results
-			<SvgIcon class="trailing" name="expand_more" />
-		</button></div>
+  <div class="divider">
+    <button class="button">
+      More results
+      <SvgIcon class="trailing" name="expand_more" />
+    </button>
+  </div>
 </template>

@@ -11,21 +11,33 @@ const { loggedIn, signOut } = useAuth();
         </i>
         Home
       </NuxtLink>
-      <NuxtLink to="/messaging" exact-active-class="active" class="item exit-sidepanel ac-viewbox-ref">
+      <NuxtLink
+        to="/messaging"
+        exact-active-class="active"
+        class="item exit-sidepanel ac-viewbox-ref"
+      >
         <i class="lead icon ac-viewbox">
           <Icon name="material-symbols:chat-outline-rounded" />
           <Icon name="material-symbols:chat-rounded" />
         </i>
         Messaging
       </NuxtLink>
-      <NuxtLink to="/myshops" exact-active-class="active" class="item exit-sidepanel ac-viewbox-ref">
+      <NuxtLink
+        to="/myshops"
+        exact-active-class="active"
+        class="item exit-sidepanel ac-viewbox-ref"
+      >
         <i class="lead icon ac-viewbox">
           <Icon name="material-symbols:store-outline-rounded" />
           <Icon name="material-symbols:store-rounded" />
         </i>
         My Shops
       </NuxtLink>
-      <div v-collapser class="item xactive ac-viewbox-ref" :class="{ active: $route.path.includes('/account') }">
+      <div
+        v-collapser
+        class="item xactive ac-viewbox-ref"
+        :class="{ active: $route.path.includes('/account') }"
+      >
         <i class="lead icon ac-viewbox">
           <Icon name="material-symbols:person-outline-rounded" />
           <Icon name="material-symbols:person-rounded" />
@@ -88,7 +100,10 @@ const { loggedIn, signOut } = useAuth();
       </button>
       <div class="transparent compact divider"></div>
       <div class="xhover item p-0">
-        <button class="w-full primary button open-modal exit-sidepanel" data-target="register-modal">
+        <button
+          class="w-full primary button open-modal exit-sidepanel"
+          data-target="register-modal"
+        >
           Sign Up
         </button>
       </div>

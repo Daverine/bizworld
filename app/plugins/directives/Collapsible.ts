@@ -6,39 +6,42 @@ export default {
         return;
       }
 
-      const collapsible = el.nextElementSibling instanceof HTMLElement && el.nextElementSibling.matches('.collapsible')
-        ? el.nextElementSibling as HTMLElement
-        : null;
-      const accordion = el.getAttribute('data-collapsible');
+      const collapsible =
+        el.nextElementSibling instanceof HTMLElement &&
+        el.nextElementSibling.matches(".collapsible")
+          ? (el.nextElementSibling as HTMLElement)
+          : null;
+      const accordion = el.getAttribute("data-collapsible");
 
       if (collapsible) {
-        if (el.classList.contains('active')) {
-          collapsible.style.height = collapsible.scrollHeight + 'px';
+        if (el.classList.contains("active")) {
+          collapsible.style.height = collapsible.scrollHeight + "px";
 
           if (accordion) {
             let activeElems = [
-              ...(el.parentNode?.querySelectorAll(
-                `:scope > [data-collapsible='${accordion}']`
-              ) || []),
+              ...(el.parentNode?.querySelectorAll(`:scope > [data-collapsible='${accordion}']`) ||
+                []),
             ].filter(
-              (elem) => elem instanceof HTMLElement && elem.classList.contains('active') && elem !== el
+              (elem) =>
+                elem instanceof HTMLElement && elem.classList.contains("active") && elem !== el,
             ) as HTMLElement[];
             if (activeElems[0]) {
-              activeElems.forEach((el) => el.dispatchEvent(new Event('click')));
+              activeElems.forEach((el) => el.dispatchEvent(new Event("click")));
             }
           }
-          setTimeout(() => {
-            collapsible.style.height = 'auto';
-            utils.triggerEvent(window, 'resize');
-          }, utils.durationInMilliseconds(utils.getCssVal(collapsible, 'transition-duration')));
-        } else {
-          collapsible.style.height = collapsible.scrollHeight + 'px';
-          utils.afterNextRepaint(() => collapsible.style.removeProperty('height'));
           setTimeout(
-            () => utils.triggerEvent(window, 'resize'),
-            utils.durationInMilliseconds(
-              utils.getCssVal(collapsible, 'transition-duration')
-            )
+            () => {
+              collapsible.style.height = "auto";
+              utils.triggerEvent(window, "resize");
+            },
+            utils.durationInMilliseconds(utils.getCssVal(collapsible, "transition-duration")),
+          );
+        } else {
+          collapsible.style.height = collapsible.scrollHeight + "px";
+          utils.afterNextRepaint(() => collapsible.style.removeProperty("height"));
+          setTimeout(
+            () => utils.triggerEvent(window, "resize"),
+            utils.durationInMilliseconds(utils.getCssVal(collapsible, "transition-duration")),
           );
         }
       }
@@ -47,9 +50,9 @@ export default {
 
     observer.observe(el, {
       attributes: true,
-      attributeFilter: ['class'],
+      attributeFilter: ["class"],
     });
     utils.afterNextRepaint(() => collapser());
-    el.addEventListener('click', () => el.classList.toggle('active'));
+    el.addEventListener("click", () => el.classList.toggle("active"));
   },
 };

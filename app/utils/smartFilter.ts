@@ -32,10 +32,7 @@ export function smartCategorySearch(query: string, categories: Category[]): Cate
 
   // 2. Starts With Match on Category Name (Medium Score)
   categories.forEach((category) => {
-    if (
-      category.name.toLowerCase().startsWith(lowerQuery) &&
-      !resultsMap.has(category.id)
-    ) {
+    if (category.name.toLowerCase().startsWith(lowerQuery) && !resultsMap.has(category.id)) {
       resultsMap.set(category.id, { category: category, score: 2 });
     }
   });
@@ -44,7 +41,7 @@ export function smartCategorySearch(query: string, categories: Category[]): Cate
   categories.forEach((category) => {
     if (category.keywords && !resultsMap.has(category.id)) {
       const isKeywordMatch = category.keywords.some((keyword: string) =>
-        keyword.toLowerCase().includes(lowerQuery)
+        keyword.toLowerCase().includes(lowerQuery),
       );
 
       if (isKeywordMatch) {
@@ -55,10 +52,7 @@ export function smartCategorySearch(query: string, categories: Category[]): Cate
 
   // 4. Substring Match on Category Name (Lowest Score)
   categories.forEach((category) => {
-    if (
-      category.name.toLowerCase().includes(lowerQuery) &&
-      !resultsMap.has(category.id)
-    ) {
+    if (category.name.toLowerCase().includes(lowerQuery) && !resultsMap.has(category.id)) {
       resultsMap.set(category.id, { category: category, score: 0 });
     }
   });

@@ -1,5 +1,5 @@
 <script setup>
-definePageMeta({ layout: 'biz-pages', name: 'biz-about' });
+definePageMeta({ layout: "biz-pages", name: "biz-about" });
 const data = useBizStore();
 const avail = useAvailability(data.details.hours);
 const isReady = computed(() => data.details && avail.value);
@@ -8,15 +8,14 @@ const isReady = computed(() => data.details && avail.value);
 <template>
   <main v-if="isReady" class="about-main">
     <div class="heading text-center">About Us</div>
-    <div class="container-text">
+    <div class="max-w-[65ch] auto-contain">
       <p>{{ data.details.description }}</p>
     </div>
-    <section class="container-text">
+    <section class="max-w-[65ch] auto-contain">
       <div class="heading text-center">Contact Us</div>
       <p>
-        There are various ways you can contacts us. If have an account on
-        Bizworld, you can easily send us message here and we would reply as soon
-        as possible.
+        There are various ways you can contacts us. If have an account on Bizworld, you can easily
+        send us message here and we would reply as soon as possible.
       </p>
       <div class="text-center p-4">
         <button class="compact button">Chat Us Now</button>
@@ -34,9 +33,9 @@ const isReady = computed(() => data.details && avail.value);
         </tbody>
       </table>
     </section>
-    <section id="biz-hours" class="container-text">
+    <section id="biz-hours" class="max-w-[65ch] auto-contain">
       <div class="heading text-center">Business Hours</div>
-      <table class="mx-auto clear table selectable text-center">
+      <table class="auto-contain clear table selectable text-center">
         <thead>
           <tr>
             <th>Day</th>
@@ -59,18 +58,14 @@ const isReady = computed(() => data.details && avail.value);
         </tbody>
       </table>
     </section>
-    <section class="container-text">
+    <section class="max-w-[65ch] auto-contain">
       <div class="heading text-center">Office Address</div>
       <p>
         {{ data.details.location.address }}, {{ data.details.location.city }},
         {{ data.details.location.state }}.
       </p>
       <div class="text-center p-4">
-        <NuxtLink
-          :to="data.details.location.map"
-          external
-          target="_blank"
-          class="button"
+        <NuxtLink :to="data.details.location.map" external target="_blank" class="button"
           >View on Map</NuxtLink
         >
       </div>

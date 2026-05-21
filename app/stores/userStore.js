@@ -1,19 +1,19 @@
-import followed from '@/assets/jsons/followed.json';
-import reviews from '@/assets/jsons/reviews.json';
+import followed from "@/assets/jsons/followed.json";
+import reviews from "@/assets/jsons/reviews.json";
 
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore("user", {
   state: () => ({
     auth: false,
-    routeProceed: '',
+    routeProceed: "",
     userData: {
-      firstName: 'Ayoola',
-      lastName: 'Folorunso',
-      email: 'folorunsodavid1@gmail.com',
-      country: 'Nigeria',
-      profileImg: '/images/profile.jpg',
+      firstName: "Ayoola",
+      lastName: "Folorunso",
+      email: "folorunsodavid1@gmail.com",
+      country: "Nigeria",
+      profileImg: "/images/profile.jpg",
       following: [],
       bookmarks: [],
-      searchLocation: 'Itori, Ewekoro, Ogun state, Nigeria',
+      searchLocation: "Itori, Ewekoro, Ogun state, Nigeria",
       manageBisiness: true,
     },
     savedCards: [],

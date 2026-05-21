@@ -1,5 +1,5 @@
 <script setup>
-definePageMeta({ layout: 'biz-pages', name: 'biz-services' });
+definePageMeta({ layout: "biz-pages", name: "biz-services" });
 const data = useBizStore();
 const avail = useAvailability(data.details.hours);
 const isReady = computed(() => data.details && avail.value);

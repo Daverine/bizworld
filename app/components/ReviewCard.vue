@@ -1,24 +1,24 @@
 <script>
 export default {
-  props: ['details'],
+  props: ["details"],
   data() {
     return {
       template: {
-        bizName: 'Emmadave Computer Technology Services',
-        bizLogo: '/images/logo-sq.png',
-        bizUrl: 'https://www.edtech.com',
-        bizCategory: 'Computer repair services',
+        bizName: "Emmadave Computer Technology Services",
+        bizLogo: "/images/logo-sq.png",
+        bizUrl: "https://www.edtech.com",
+        bizCategory: "Computer repair services",
         location: {
-          address: '3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102',
-          city: 'Abeokuta',
-          state: 'Ogun State',
-          url: 'https://goo.gl/maps/y9ExQLSq37FL6EHm6',
+          address: "3 Nepal road, beside Igbagboyemi Pharmacy, Isabo 111102",
+          city: "Abeokuta",
+          state: "Ogun State",
+          url: "https://goo.gl/maps/y9ExQLSq37FL6EHm6",
         },
         verified: true,
-        date: '3 days ago',
+        date: "3 days ago",
         rating: 4,
         comment:
-          'I know him as a computer engineer. And I have no reason to doubt his authenticity. But let see how it goes',
+          "I know him as a computer engineer. And I have no reason to doubt his authenticity. But let see how it goes",
       },
     };
   },
@@ -32,18 +32,16 @@ export default {
         <SvgIcon
           v-if="details.verified"
           name="verified_sp"
-          class="small"
+          class="text-sm"
           style="position: absolute; bottom: 0px; right: 0px"
         />
       </div>
       <div style="flex: 1 1 auto">
         <div class="fcd-displayname">{{ details.bizName }}</div>
-        <div class="faint-text fcd-bizcategory">{{ details.bizCategory }}</div>
+        <div class="opacity-65 fcd-bizcategory">{{ details.bizCategory }}</div>
       </div>
       <div>
-        <LimbDropdown
-          :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
-        >
+        <LimbDropdown :options="{ directionPriority: { x: 'left', y: 'bottom' } }">
           <SvgIcon name="more_horiz" />
         </LimbDropdown>
         <div class="drop menu">
@@ -53,15 +51,12 @@ export default {
       </div>
     </header>
     <section style="display: flex; gap: 10px">
-      <div class="rating small text-yellow-500">
+      <div class="rating text-sm text-yellow-500">
         <SvgIcon v-for="i in Math.floor(details.rating)" name="star_filled" />
-        <SvgIcon
-          v-if="details.rating - Math.floor(details.rating) >= 0.5"
-          name="star_half"
-        />
+        <SvgIcon v-if="details.rating - Math.floor(details.rating) >= 0.5" name="star_half" />
         <SvgIcon v-for="i in 5 - Math.round(details.rating)" name="star" />
       </div>
-      <div><SvgIcon name="schedule" class="mini" /> {{ details.date }}</div>
+      <div><SvgIcon name="schedule" class="text-xs" /> {{ details.date }}</div>
     </section>
     <section>{{ details.comment }}</section>
   </article>

@@ -8,7 +8,7 @@ const props = defineProps<{
     price: string;
     priceFigure?: number;
     description?: string;
-  }
+  };
 }>();
 </script>
 <template>
@@ -24,7 +24,11 @@ const props = defineProps<{
       </div>
       <div v-if="details.price !== 'No price'">
         <span v-if="details.price === 'From'" class="label mr-2">From</span>
-        <span class="serv-price">{{ ['From', 'Fixed'].includes(details.price) ? `₦${details.priceFigure!.toLocaleString()}` : details.price  }}</span>
+        <span class="serv-price">{{
+          ["From", "Fixed"].includes(details.price)
+            ? `₦${details.priceFigure!.toLocaleString()}`
+            : details.price
+        }}</span>
       </div>
     </div>
   </NuxtLink>
@@ -36,7 +40,7 @@ const props = defineProps<{
   width: 32.5rem;
   max-width: 100%;
   position: relative;
-  border-radius: var(--sm-radius);
+  border-radius: var(--radius-block);
   border: 1px solid transparent;
   line-height: 1.375;
   display: grid;
