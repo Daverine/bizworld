@@ -155,9 +155,7 @@ const vbb = reactive<reactiveBrainBox>({
   slidesData: undefined,
   playing: false,
 });
-const unwatch: {
-  [key: string]: WatchStopHandle;
-} = {};
+const unwatch: Record<string, WatchStopHandle> = {};
 
 let toolbar: HTMLElement;
 let progressBar: HTMLElement;

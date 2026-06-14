@@ -1,39 +1,22 @@
-export function parseMultipartData(data: any[] | undefined): { [key: string]: any } {
-  const parsedData: { [key: string]: any } = {};
+import sharp from "sharp";
+
+export async function parseMultipartData(event: any) {
+  const data = await readMultipartFormData(event);
+  const parsedData: Record<string, any> = {};
   data?.forEach((el: any) => {
-    let key = el.name as string;
-    let value = el.filename ? { filename: el.filename, data: el.data } : el.data;
-    if (parsedData[key] && Array.isArray(parsedData[key])) {
-      parsedData[key].push(value);
-    } else {
-      parsedData[key] = data.filter((item: any) => item.name === key).length > 1 ? [value] : value;
-    }
+    if (parsedData[el.name]) parsedData[el.name].push(el);
+    else parsedData[el.name] = [el];
   });
   return parsedData;
 }
 export async function checkSlugUniqueness(slug: string, checkIn: string): Promise<boolean> {
-  let result;
-
-  switch (checkIn) {
-    case "business":
-      result = await db
-        .selectFrom("business")
-        .select("slug")
-        .where("slug", "=", slug)
-        .executeTakeFirst();
-      break;
-    case "product":
-      result = await db
-        .selectFrom("product")
-        .select("slug")
-        .where("slug", "=", slug)
-        .executeTakeFirst();
-      break;
-  }
-
-  return !result; // If result is null, slug is unique
+  // If result is null, slug is unique
+  return !(await db
+    .selectFrom(checkIn === "business" ? "business" : "product")
+    .select("slug")
+    .where("slug", "=", slug)
+    .executeTakeFirst());
 }
-
 export async function uniqueSlugFrom(text: string, checkIn: string, namespace?: string) {
   const baseSlug = text
     .toLowerCase()
@@ -56,24 +39,37 @@ export async function uniqueSlugFrom(text: string, checkIn: string, namespace?: 
   return slug;
 }
 export async function getIdFromSlug(slug: string, checkIn: "business" | "product") {
-  let result;
+  return (
+    await db
+      .selectFrom(checkIn === "business" ? "business" : "product")
+      .select("id")
+      .where("slug", "=", slug)
+      .executeTakeFirst()
+  )?.id;
+}
+export async function optimizeImages(
+  input: sharp.SharpInput | sharp.SharpInput[],
+  options: {
+    width?: number;
+    quality?: number;
+  },
+) {
+  return await sharp(input)
+    .rotate()
+    .resize({ width: options.width || 1200, withoutEnlargement: true })
+    .webp({ quality: options.quality || 80 })
+    .toBuffer();
+}
+export async function saveToStorage(data: {
+  data: Buffer;
+  uploadDir?: string;
+  extension?: string;
+}) {
+  const filename = `${Date.now()}-${Math.floor(Math.random() * 1e6)}${data.extension || ""}`;
+  const uploadDir = data.uploadDir ? data.uploadDir : "temp";
+  const storageKey = `${uploadDir}/${filename}`;
+  const storage = useStorage("uploads");
 
-  switch (checkIn) {
-    case "business":
-      result = await db
-        .selectFrom("business")
-        .select("id")
-        .where("slug", "=", slug)
-        .executeTakeFirst();
-      break;
-    case "product":
-      result = await db
-        .selectFrom("product")
-        .select("id")
-        .where("slug", "=", slug)
-        .executeTakeFirst();
-      break;
-  }
-
-  return result?.id;
+  await storage.setItemRaw(storageKey, data.data);
+  return `/uploads/${storageKey}`;
 }

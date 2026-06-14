@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
+import { defineNuxtConfig } from "nuxt/config";
+
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: {
@@ -17,16 +19,21 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "@pinia/nuxt",
     "@nuxt/icon",
-    "@nuxt/image",
     "@nuxt/fonts",
     "@regle/nuxt",
-    "@nuxt/hints",
     "@nuxt/eslint",
+    "@nuxt/image",
   ],
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {
-      include: ["@regle/core", "@regle/rules", "better-auth/client/plugins", "better-auth/vue"],
+      include: [
+        "@regle/core",
+        "@regle/rules",
+        "@vueuse/integrations/useSortable",
+        "better-auth/client/plugins",
+        "better-auth/vue",
+      ],
     },
   },
   image: {
@@ -61,5 +68,13 @@ export default defineNuxtConfig({
   devServer: {
     port: 3000,
     host: "127.0.0.1", // Or your desired host
+  },
+  nitro: {
+    storage: {
+      uploads: {
+        driver: "fs",
+        base: "./public/uploads",
+      },
+    },
   },
 });

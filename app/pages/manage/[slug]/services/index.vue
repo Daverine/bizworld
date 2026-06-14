@@ -6,7 +6,7 @@ const data = useBizStore();
   <main class="max-w-180 auto-contain">
     <header
       v-scrollPin="{ notifyStuckState: true, top: 63 }"
-      class="scrollpin z-level-1 min-h-23 mb-4 pointer-none-only [&.is-stuck_.text-h3]:text-2xl"
+      class="scrollpin z-level-1 min-h-23 mb-4 self-pointer-none [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
         class="lined heading text-h3 transition-[font-size] duration-200 flex gap-3 justify-between items-end bg-surface pin-top-blend m-0"
@@ -20,7 +20,7 @@ const data = useBizStore();
         </NuxtLink>
       </div>
     </header>
-    <section class="body-sec">
+    <section>
       <p>
         Let customers discover your business by adding services to your Business Page on Bizworld.
       </p>

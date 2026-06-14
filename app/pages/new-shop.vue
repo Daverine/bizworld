@@ -580,17 +580,18 @@ async function nextTab() {
     ...structuredClone(toRaw(formData.tab6)),
   };
 
-  const resp = await $fetch("/api/business/create", {
+  await $fetch("/api/business/create", {
     method: "post",
     body: profile,
+  }).catch((error) => {
+    console.log("Product upload failed", error);
+    return;
   });
 
-  if (resp) {
-    await nextTick();
-    progress.value.completed = true;
-    progress.value.loaded = null;
-    progress.value.message = "Done!";
-  }
+  await nextTick();
+  progress.value.completed = true;
+  progress.value.loaded = null;
+  progress.value.message = "Done!";
 }
 function prevTab() {
   const currentIndex = Object.keys(formData).indexOf(currentTab.value);

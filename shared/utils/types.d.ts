@@ -2,9 +2,8 @@ export type product = {
   id: string;
   slug: string;
   business_id: string;
-  category?: string;
-  new_category?: string;
-  title?: string;
+  category: string;
+  title: string;
   photos: string[];
   video_link?: string;
   base_price: string;
@@ -30,10 +29,12 @@ export type product = {
     name: string;
     value: string;
   }[];
-  overview?: string;
+  overview: string;
   details_attachment?: string;
-  average_rating: string;
-  review_count: string;
+  average_rating?: string;
+  review_count?: string;
+  created_at: string;
+  hidden?: boolean;
 };
 
 export type bizData = {
@@ -92,7 +93,7 @@ export type bizData = {
   average_rating?: string;
   badges?: string[];
   cover_photo?: string;
-  created_at: Date;
+  created_at: string;
   is_active: boolean;
   logo?: string;
   review_count?: number;

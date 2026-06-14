@@ -79,16 +79,12 @@
 
   /* Set default styles for elements. */
 
-  :root {
-    color-scheme: dark light;
-  }
-
   html {
     background-color: var(--color-surface-v2);
   }
 
   body {
-    color: var(--on-surface);
+    color: var(--color-on-surface);
     background: var(--color-surface);
   }
 
@@ -187,31 +183,13 @@
   }
 }
 
-@utility pointer-none-only {
+@utility self-pointer-none {
   pointer-events: none;
 
   & > * {
     pointer-events: auto;
   }
 }
-
-@utility scrollbar-none {
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-@utility scrollbar-thin {
-  scrollbar-width: thin;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-}
-
 @utility auto-contain {
   position: relative;
   margin-inline: auto;
@@ -221,6 +199,29 @@
   position: relative;
   margin-inline: auto;
   width: calc(100% - (--value(integer) * var(--spacing) * 2));
+}
+@utility photo-box {
+  position: relative;
+  width: 100%;
+  object-fit: contain;
+  overflow: hidden;
+  display: flex;
+  place-items: center;
+
+  & > img {
+    position: relative;
+    width: 100%;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--box-photo);
+    background-size: cover;
+    filter: blur(8px);
+    transform: scale(1.1);
+  }
 }
 
 @theme {
@@ -373,10 +374,8 @@ svg.icon {
 
 .products-grid {
   display: grid;
-  align-items: center;
-  justify-items: center;
-  justify-content: center;
-  align-content: center;
+  place-items: center;
+  place-content: center;
   grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
   gap: 1rem;
   padding-bottom: 3rem;

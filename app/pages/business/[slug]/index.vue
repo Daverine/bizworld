@@ -13,21 +13,25 @@ const data = useBizStore();
 
 <template>
   <main class="fluid layout-grid">
-    <NuxtImg
-      format="webp"
-      sizes="1280px"
-      class="open-lightbox aspect-6/2 object-cover"
-      data-target="lightbox1"
-      :data-lightbox="bizData.cover_photo"
-      :src="bizData.cover_photo || '/images/ads.jpg'"
-      alt="Business page cover picture"
-    />
-    <div class="flex gap-3 flex-wrap items-center p-4">
-      <Icon name="material-symbols:domain-rounded" class="flex-none" />
-      <div class="flex-1 min-w-[65%]">
-        {{ bizData.description }}
+    <div class="grid-stacker items-end">
+      <NuxtImg
+        format="webp"
+        sizes="1280px"
+        class="open-lightbox aspect-5/2 object-cover"
+        data-target="lightbox1"
+        :data-lightbox="bizData.cover_photo"
+        :src="bizData.cover_photo || '/images/ads.jpg'"
+        alt="Business page cover picture"
+      />
+      <div
+        class="bg-linear-to-t from-black to-transparent text-white flex gap-3 flex-wrap items-center p-4"
+      >
+        <Icon name="material-symbols:domain-rounded" class="flex-none" />
+        <div class="flex-1 min-w-[65%]">
+          {{ bizData.description }}
+        </div>
+        <button class="flex-none ml-auto primary compact button">Contact Us</button>
       </div>
-      <button class="flex-none ml-auto primary compact button">Contact Us</button>
     </div>
     <div class="fluid layout-grid bg-surface-v2 p-4">
       <div class="flex gap-3 flex-wrap items-center px-4">

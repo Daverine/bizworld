@@ -5,7 +5,7 @@ definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
   <main class="flex-1 max-w-180 auto-contain p-4">
     <header
       v-scrollPin="{ notifyStuckState: true, top: 63 }"
-      class="scrollpin z-level-1 min-h-23 mb-4 pointer-none-only [&.is-stuck_.text-h3]:text-2xl"
+      class="scrollpin z-level-1 min-h-23 mb-4 self-pointer-none [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
         class="lined heading text-h3 transition-[font-size] duration-200 flex gap-3 justify-between items-end bg-surface pin-top-blend m-0"
@@ -13,7 +13,7 @@ definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
         Overview
       </div>
     </header>
-    <section class="body-sec">
+    <section class="flex flex-col gap-6">
       <section>
         <div class="heading text-sm">Progress summary</div>
         <div class="flex gap-4 justify-around flex-wrap">
@@ -143,11 +143,6 @@ definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
 </template>
 
 <style scoped>
-.body-sec {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
 .sum-item {
   background-color: var(--color-surface-v3);
   padding: 0.75em;

@@ -21,10 +21,10 @@ onUnmounted(() => window.removeEventListener("scroll", handleScroll));
   <Menus />
   <AuthModals />
   <NuxtLayout>
-    <div v-if="isLoading">
-      <div class="m3-progress"></div>
-    </div>
     <NuxtPage />
   </NuxtLayout>
   <Modals />
+  <div class="fixed inset-0 z-level-5 grid place-items-center" v-if="isLoading">
+    <div class="m3-progress indeterminate"></div>
+  </div>
 </template>

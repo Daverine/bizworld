@@ -3320,7 +3320,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
 }
 
 .drop.menu {
-  --icon-pad-offset: 0.25em;
+  --icon-pad-offset: -0.25em;
   width: -moz-max-content;
   width: max-content;
   max-width: calc(100vw - 1rem);

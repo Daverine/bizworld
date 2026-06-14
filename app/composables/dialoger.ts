@@ -61,9 +61,7 @@ export function useDialoger(
     openWithHash: false,
     scrollPosBeforeLock: { top: 0, left: 0 },
   };
-  const unwatch: {
-    [key: string]: WatchStopHandle;
-  } = {};
+  const unwatch: Record<string, WatchStopHandle> = {};
 
   function exitByClick(e: MouseEvent) {
     if (

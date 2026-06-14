@@ -33,9 +33,7 @@ type Brainbox = Options & {
   hideDropdownTimeout?: ReturnType<typeof setTimeout>;
   // event data to be used for a bb.page dropdown coordinates.
   pageEvent?: MouseEvent;
-  selectionValue: {
-    [key: string]: string;
-  };
+  selectionValue: Record<string, string>;
 };
 
 // get dropdown element and necessary dropdown properties
@@ -119,9 +117,7 @@ let selectors: {
   items_filtered: string;
   dropdown_exiter: string;
 };
-const unwatch: {
-  [key: string]: WatchStopHandle;
-} = {};
+const unwatch: Record<string, WatchStopHandle> = {};
 let dropMenu: HTMLElement, uniqueId: string;
 let selectableContentBox: HTMLElement,
   selectablePlaceholder: HTMLElement,

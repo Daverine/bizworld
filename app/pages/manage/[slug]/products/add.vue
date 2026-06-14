@@ -2,12 +2,11 @@
 import type { Maybe } from "@regle/core";
 import { url, required, requiredIf } from "@regle/rules";
 import { useSortable } from "@vueuse/integrations/useSortable";
-import axios from "axios";
 
 definePageMeta({
   name: "add-product",
   layout: "details",
-  auth: false,
+  auth: { only: "user" },
   noCart: true,
 });
 
@@ -21,7 +20,7 @@ const newProduct = reactive<{
     video_link?: string;
   };
   tab2: {
-    base_price: number;
+    base_price?: number;
     option_group?: {
       title: string;
       options: {
@@ -48,14 +47,13 @@ const newProduct = reactive<{
     }[];
     overview?: string;
     details_attachment?: File | string;
+    location?: string;
   };
 }>({
   tab1: {
     photos: [],
   },
-  tab2: {
-    base_price: 0,
-  },
+  tab2: {},
   tab3: {
     specifications: [],
   },
@@ -475,103 +473,92 @@ async function nextTab() {
 
   progress.value.completed = false;
 
-  // check if files have be uploaded before
-  if (
-    newProduct.tab1.photos.some((photo) => typeof photo !== "string") ||
-    (newProduct.tab2.option_group &&
-      newProduct.tab2.option_group.options.some(
-        ({ photo }) => photo && typeof photo !== "string",
-      )) ||
-    (newProduct.tab2.sub_option_group &&
-      newProduct.tab2.sub_option_group.options.some(
-        ({ photo }) => photo && typeof photo !== "string",
-      )) ||
-    (newProduct.tab3.details_attachment && typeof newProduct.tab3.details_attachment !== "string")
-  ) {
-    const filesData = new FormData();
-    newProduct.tab1.photos.forEach((photo, index) => {
-      if (typeof photo === "string") return;
-      filesData.append("photos", photo, index.toString());
-    });
-    newProduct.tab2.option_group?.options.forEach((option, index) => {
-      if (option.photo && typeof option.photo !== "string")
-        filesData.append("option_group", option.photo, index.toString());
-    });
-    newProduct.tab2.sub_option_group?.options.forEach((option, index) => {
-      if (option.photo && typeof option.photo !== "string")
-        filesData.append("sub_option_group", option.photo, index.toString());
-    });
+  try {
+    // check if files have be uploaded before
     if (
-      newProduct.tab3.details_attachment &&
-      typeof newProduct.tab3.details_attachment !== "string"
+      newProduct.tab1.photos.some((photo) => typeof photo !== "string") ||
+      (newProduct.tab2.option_group &&
+        newProduct.tab2.option_group.options.some(
+          ({ photo }) => photo && typeof photo !== "string",
+        )) ||
+      (newProduct.tab2.sub_option_group &&
+        newProduct.tab2.sub_option_group.options.some(
+          ({ photo }) => photo && typeof photo !== "string",
+        )) ||
+      (newProduct.tab3.details_attachment && typeof newProduct.tab3.details_attachment !== "string")
     ) {
-      filesData.append("details_attachment", newProduct.tab3.details_attachment);
-    }
+      const filesData = new FormData();
+      newProduct.tab1.photos.forEach((photo, index) => {
+        if (typeof photo === "string") return;
+        filesData.append("photos", photo, index.toString());
+      });
+      newProduct.tab2.option_group?.options.forEach((option, index) => {
+        if (option.photo && typeof option.photo !== "string")
+          filesData.append("option_group", option.photo, index.toString());
+      });
+      newProduct.tab2.sub_option_group?.options.forEach((option, index) => {
+        if (option.photo && typeof option.photo !== "string")
+          filesData.append("sub_option_group", option.photo, index.toString());
+      });
+      if (
+        newProduct.tab3.details_attachment &&
+        typeof newProduct.tab3.details_attachment !== "string"
+      ) {
+        filesData.append("details_attachment", newProduct.tab3.details_attachment);
+      }
 
-    const uploads = await axios.post(`/api/upload/picture/${route.params.slug}/900`, filesData, {
-      onUploadProgress: (progressEvent) => {
-        if (progressEvent.lengthComputable) {
-          if (progressEvent.loaded >= (progressEvent.total || 0)) {
-            progress.value.loaded = undefined;
-            progress.value.message = "Processing files for use...";
-            return;
-          }
+      progress.value.loaded = undefined;
+      progress.value.message = "Uploading product files...";
 
-          progress.value.loaded = Math.round(
-            (progressEvent.loaded * 100) / (progressEvent.total || 1),
-          );
-          progress.value.message = "Uploading product files... " + progress.value.loaded + "%";
-        }
-      },
-    });
+      const uploads = await $fetch("/api/file-upload", {
+        query: { upload_dir: route.params.slug, image_width: 900 },
+        body: filesData,
+        method: "post",
+      });
 
-    if (!uploads.data) {
-      progress.value.completed = null;
-      return;
-    }
-
-    Object.keys(uploads.data).forEach((key) => {
-      if (key === "photos") {
-        uploads.data[key].forEach((elem: { filename: string; data: string }) => {
+      if ("photos" in uploads) {
+        uploads.photos.forEach((elem) => {
           newProduct.tab1.photos[parseInt(elem.filename)] = elem.data;
         });
-      } else if (key === "option_group") {
-        uploads.data[key].forEach((elem: { filename: string; data: string }) => {
+      }
+      if ("option_group" in uploads) {
+        uploads.option_group.forEach((elem) => {
           newProduct.tab2.option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
         });
-      } else if (key === "sub_option_group") {
-        uploads.data[key].forEach((elem: { filename: string; data: string }) => {
+      }
+      if ("sub_option_group" in uploads) {
+        uploads.sub_option_group.forEach((elem) => {
           newProduct.tab2.sub_option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
         });
-      } else if (key === "details_attachment") {
-        newProduct.tab3.details_attachment = uploads.data[key];
       }
+      if ("details_attachment" in uploads) {
+        newProduct.tab3.details_attachment = uploads.details_attachment[0]?.data;
+      }
+    }
+    progress.value.loaded = undefined;
+    progress.value.message = "Adding product...";
+
+    const product = {
+      business_slug: route.params.slug as string,
+      ...structuredClone(toRaw(newProduct.tab1)),
+      ...structuredClone(toRaw(newProduct.tab2)),
+      ...structuredClone(toRaw(newProduct.tab3)),
+    };
+
+    await $fetch("/api/product/create", {
+      method: "post",
+      body: product,
     });
-  }
-  progress.value.loaded = undefined;
-  progress.value.message = "Adding product...";
 
-  const product = {
-    business_slug: route.params.slug as string,
-    ...structuredClone(toRaw(newProduct.tab1)),
-    ...structuredClone(toRaw(newProduct.tab2)),
-    ...structuredClone(toRaw(newProduct.tab3)),
-  };
-
-  const { data, error } = await useFetch("/api/product/create", {
-    method: "post",
-    body: product,
-  });
-
-  if (error.value) {
+    progress.value.loaded = undefined;
+    progress.value.message = "Done";
+    await nextTick();
+    progress.value.completed = true;
+  } catch (error) {
     progress.value.completed = null;
+    console.log("Product upload failed", error);
     return;
   }
-
-  progress.value.loaded = undefined;
-  progress.value.message = "Done";
-  await nextTick();
-  progress.value.completed = true;
 }
 function prevTab() {
   const currentIndex = Object.keys(newProduct).indexOf(currentTab.value);
@@ -586,7 +573,7 @@ function prevTab() {
   <div class="max-w-180 auto-contain">
     <header
       v-scrollPin="{ notifyStuckState: true, top: 63 }"
-      class="scrollpin z-level-1 min-h-23 mb-4 pointer-none-only [&.is-stuck_.text-h3]:text-2xl"
+      class="scrollpin z-level-1 min-h-23 mb-4 self-pointer-none [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
         class="lined heading text-h3 transition-[font-size] duration-200 flex gap-3 justify-between items-end bg-surface pin-top-blend m-0"
@@ -768,7 +755,7 @@ function prevTab() {
             also be added with product options.
           </div>
           <LimbCurrencyInput
-            v-model="newProduct.tab2.base_price"
+            v-model.number="newProduct.tab2.base_price"
             id="prod-price"
             class="form-item"
             :class="{ error: validation.tab2.r$.base_price.$error }"
@@ -1133,12 +1120,32 @@ function prevTab() {
             v-if="newProduct.tab3.details_attachment"
             class="flex flex-col items-center relative w-max mb-3"
           >
-            <embed
-              :src="utils.fileToURL(newProduct.tab3.details_attachment)"
-              type="application/pdf"
-              class="w-full h-64"
-            />
+            <div
+              v-if="newProduct.tab3.details_attachment"
+              class="flex flex-col items-center relative w-max mb-3"
+            >
+              <Icon name="mdi:file-pdf-box" class="text-6xl text-red-500" />
+              <div class="text-sm">
+                {{
+                  typeof newProduct.tab3.details_attachment === "string"
+                    ? newProduct.tab3.details_attachment.split("/").slice(-1)[0]
+                    : newProduct.tab3.details_attachment.name
+                }}
+              </div>
+              <div v-if="typeof newProduct.tab3.details_attachment !== 'string'" class="text-sm">
+                {{ (newProduct.tab3.details_attachment.size / 1024 / 1024).toFixed(1) }}MB
+              </div>
+              <button
+                type="button"
+                @click="newProduct.tab3.details_attachment = undefined"
+                class="text-xs compact circular outlined button bg-overlay"
+                style="position: absolute; top: 0.25rem; right: 0.25rem"
+              >
+                <Icon name="material-symbols:close-rounded" />
+              </button>
+            </div>
             <button
+              v-else
               type="button"
               @click="newProduct.tab3.details_attachment = undefined"
               class="text-xs compact circular outlined button bg-overlay"
@@ -1159,6 +1166,17 @@ function prevTab() {
               accept="application/pdf, .pdf"
             />
           </label>
+        </div>
+        <div class="field">
+          <label>Product location</label>
+          <p class="text-sm opacity-65">
+            Specify the location where the product is available. This information helps customers
+            find products that are conveniently located for them. You can enter a city, state, or
+            specific address.
+          </p>
+          <button type="button" class="compact button open-modal" data-target="prod-location">
+            Specify product location
+          </button>
         </div>
         <button type="submit" class="sr-only">Next</button>
       </form>
@@ -1233,7 +1251,7 @@ function prevTab() {
           <div class="field">
             <label>Price (optional)</label>
             <LimbCurrencyInput
-              v-model="optionPlaceholder.price"
+              v-model.number="optionPlaceholder.price"
               id="option-price"
               class="form-item"
               placeholder="Option price"
@@ -1318,7 +1336,7 @@ function prevTab() {
                   <label class="text-primary"
                     >₦
                     <LimbCurrencyInput
-                      v-model="optionPlaceholder.sub_options[index]!.price"
+                      v-model.number="optionPlaceholder.sub_options[index]!.price"
                       :id="`sub-option${index}-price`"
                       @input="
                         optionPlaceholder.sub_options![index]!.price_changed! =
@@ -1331,6 +1349,48 @@ function prevTab() {
                 </div>
               </div>
             </div>
+          </div>
+        </form>
+      </div>
+    </LimbModal>
+    <LimbModal id="prod-location">
+      <div class="dialog">
+        <div class="header flex gap-3">
+          <div class="font-bold truncate">Add Location</div>
+          <button
+            type="button"
+            class="circular flat button as-text exit-modal"
+            style="margin-left: auto"
+          >
+            <Icon name="material-symbols:close-rounded" />
+          </button>
+        </div>
+        <form class="content">
+          <div class="field">
+            <label>Location</label>
+            <input
+              class="form-item"
+              id="prod-location"
+              type="text"
+              placeholder="Enter product location"
+            />
+          </div>
+          <div class="field">
+            <label>Address (optional)</label>
+            <input
+              class="form-item"
+              id="prod-address"
+              type="text"
+              placeholder="Enter product address"
+            />
+          </div>
+          <div class="field">
+            <label>City (optional)</label>
+            <input class="form-item" id="prod-city" type="text" placeholder="Enter city" />
+          </div>
+          <div class="field">
+            <label>State (optional)</label>
+            <input class="form-item" id="prod-state" type="text" placeholder="Enter state" />
           </div>
         </form>
       </div>
