@@ -1,8 +1,4 @@
 <template>
-  <NuxtLink to="/myshops" class="item exit-sidepanel">
-    <Icon name="material-symbols:arrow-back-rounded" class="lead" />
-    Go back to my shops
-  </NuxtLink>
   <NuxtLink
     :to="{ name: 'manage-biz-overview', params: { slug: $route.params.slug } }"
     exact-active-class="active"
@@ -13,39 +9,6 @@
       <Icon name="material-symbols:layers-rounded" />
     </i>
     Overview
-  </NuxtLink>
-  <NuxtLink
-    :to="{ name: 'manage-biz-posts', params: { slug: $route.params.slug } }"
-    exact-active-class="active"
-    class="item exit-sidepanel ac-viewbox-ref"
-  >
-    <i class="icon ac-viewbox">
-      <Icon name="material-symbols:article-outline-rounded" />
-      <Icon name="material-symbols:article-rounded" />
-    </i>
-    Posts
-  </NuxtLink>
-  <NuxtLink
-    :to="{ name: 'manage-biz-info', params: { slug: $route.params.slug } }"
-    exact-active-class="active"
-    class="item exit-sidepanel ac-viewbox-ref"
-  >
-    <i class="icon ac-viewbox">
-      <Icon name="material-symbols:contact-page-outline-rounded" />
-      <Icon name="material-symbols:contact-page-rounded" />
-    </i>
-    Page Info
-  </NuxtLink>
-  <NuxtLink
-    :to="{ name: 'manage-biz-media', params: { slug: $route.params.slug } }"
-    exact-active-class="active"
-    class="item exit-sidepanel ac-viewbox-ref"
-  >
-    <i class="icon ac-viewbox">
-      <Icon name="material-symbols:perm-media-outline-rounded" />
-      <Icon name="material-symbols:perm-media-rounded" />
-    </i>
-    Media
   </NuxtLink>
   <NuxtLink
     :to="{ name: 'manage-biz-products', params: { slug: $route.params.slug } }"
@@ -68,6 +31,39 @@
       <Icon name="material-symbols:home-repair-service-rounded" />
     </i>
     Services
+  </NuxtLink>
+  <NuxtLink
+    :to="{ name: 'manage-biz-posts', params: { slug: $route.params.slug } }"
+    exact-active-class="active"
+    class="item exit-sidepanel ac-viewbox-ref"
+  >
+    <i class="icon ac-viewbox">
+      <Icon name="material-symbols:article-outline-rounded" />
+      <Icon name="material-symbols:article-rounded" />
+    </i>
+    Posts
+  </NuxtLink>
+  <NuxtLink
+    :to="{ name: 'manage-biz-media', params: { slug: $route.params.slug } }"
+    exact-active-class="active"
+    class="item exit-sidepanel ac-viewbox-ref"
+  >
+    <i class="icon ac-viewbox">
+      <Icon name="material-symbols:perm-media-outline-rounded" />
+      <Icon name="material-symbols:perm-media-rounded" />
+    </i>
+    Media
+  </NuxtLink>
+  <NuxtLink
+    :to="{ name: 'manage-biz-info', params: { slug: $route.params.slug } }"
+    exact-active-class="active"
+    class="item exit-sidepanel ac-viewbox-ref"
+  >
+    <i class="icon ac-viewbox">
+      <Icon name="material-symbols:contact-page-outline-rounded" />
+      <Icon name="material-symbols:contact-page-rounded" />
+    </i>
+    Page Info
   </NuxtLink>
   <NuxtLink
     :to="{ name: 'manage-biz-layout', params: { slug: $route.params.slug } }"

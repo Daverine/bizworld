@@ -6,6 +6,10 @@ const props = defineProps<{
 const emit = defineEmits<{
   update: [value?: { action: "delete" | "toggle-visibility"; productId: string }];
 }>();
+const { data: bizData } = await useFetch("/api/business/query", {
+  query: { id: props.details.business_id },
+});
+const img = useImage();
 
 async function deleteProduct() {
   try {
@@ -27,11 +31,10 @@ async function toggleVisibility() {
       method: "patch",
       query: {
         id: props.details.id,
+        action: "visibility",
       },
       body: {
-        set: {
-          hidden: !props.details.hidden,
-        },
+        hidden: !props.details.hidden,
       },
     });
     emit("update", { action: "toggle-visibility", productId: props.details.id });
@@ -51,23 +54,56 @@ async function clickAction(e: Event) {
   <article @click="clickAction" class="page-prod item">
     <div
       class="photo-box aspect-square rounded-[inherit]"
-      :style="`--box-photo: url(${details.photos[0]})`"
+      :style="`--box-photo: url(${img(details.photos[0]!, {}, { preset: 'thumbnail' })})`"
     >
       <NuxtImg preset="thumbnail" :src="details.photos[0]" alt="Product image" />
+      <button
+        v-if="!manage"
+        class="text-on-surface-v3 bg-overlay absolute right-2 bottom-2 text-lg"
+      >
+        <Icon name="material-symbols:favorite-outline-rounded" />
+      </button>
     </div>
-    <div class="flex flex-col px-4">
-      <div class="text-2xl font-semibold">₦{{ Number(details.base_price).toLocaleString() }}</div>
+    <div class="flex flex-col px-2">
+      <template v-if="details.promo && details.base_promo_price">
+        <div class="mt-1 -mb-2 flex items-center justify-center gap-1">
+          <div class="text-on-surface-v1 line-through">
+            ₦{{ Number(details.base_price).toLocaleString() }}
+          </div>
+          <div class="label compact px-2 py-0.5 text-xs">
+            -{{
+              Math.round(
+                100 - (Number(details.base_promo_price) / Number(details.base_price)) * 100,
+              )
+            }}%
+          </div>
+        </div>
+        <div class="text-xl font-semibold">
+          ₦{{ Number(details.base_promo_price).toLocaleString() }}
+        </div>
+      </template>
+      <div v-else class="text-xl font-semibold">
+        ₦{{ Number(details.base_price).toLocaleString() }}
+      </div>
       <NuxtLink
         :to="{
           name: 'product-page',
           params: { slug: details.slug },
         }"
-        class="line-clamp-3"
+        class="line-clamp-3 font-semibold"
         v-tooltip:aria.unblocking
         :aria-label="details.title"
       >
         {{ details.title }}
       </NuxtLink>
+      <div v-if="$route.params.slug !== bizData?.slug" class="truncate text-xs">
+        Sold by:
+        <NuxtLink
+          class="font-semibold"
+          :to="{ name: 'biz-home', params: { slug: bizData?.slug } }"
+          >{{ bizData?.business_name }}</NuxtLink
+        >
+      </div>
       <div v-if="details.average_rating" class="text-center leading-4">
         <i
           v-tooltip:aria.unblocking
@@ -92,7 +128,7 @@ async function clickAction(e: Event) {
             v-for="i in 5 - Math.round(Number(details.average_rating))"
           />
         </i>
-        <div class="opacity-65">
+        <div class="-mt-1 text-sm opacity-65">
           {{
             Number(details.review_count)
               ? `${Number(details.review_count).toLocaleString()} review(s)`
@@ -100,25 +136,37 @@ async function clickAction(e: Event) {
           }}
         </div>
       </div>
+      <button
+        v-if="!manage"
+        class="outlined button open-modal mt-1 w-full"
+        data-target="general-pre-cart"
+        :data-ref="details.id"
+      >
+        Add to Cart
+      </button>
     </div>
     <template v-if="manage">
       <div
         v-if="details.hidden"
-        class="absolute inset-0 bg-surface/75 flex items-center justify-center text-center p-4 rounded-[inherit]"
+        class="bg-surface/75 absolute inset-0 flex items-center justify-center rounded-[inherit] p-4 text-center"
       >
         <div>
-          <Icon name="material-symbols:visibility-off-outline-rounded" class="text-4xl mb-2" />
+          <Icon name="material-symbols:visibility-off-outline-rounded" class="mb-2 text-4xl" />
           <div class="font-bold">Hidden</div>
           <p class="opacity-65">This product will be hidden from customers.</p>
         </div>
       </div>
       <LimbDropdown
+        @click="console.log(details)"
         :options="{ directionPriority: { x: 'left' } }"
         class="circular icon flat button absolute top-2 right-2"
       >
         <Icon name="material-symbols:more-vert" />
       </LimbDropdown>
       <div class="drop menu">
+        <div class="item open-modal" :data-ref="details.id" data-target="prod-config">
+          <Icon name="material-symbols:settings-outline-rounded" class="lead" /> Configure
+        </div>
         <NuxtLink
           :to="{
             name: 'edit-product',
@@ -149,7 +197,7 @@ async function clickAction(e: Event) {
 .page-prod {
   display: flex;
   flex-direction: column;
-  width: 16rem;
+  width: 12.5rem;
   max-width: 100%;
   padding-bottom: 1rem;
   position: relative;

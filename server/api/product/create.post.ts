@@ -7,11 +7,13 @@ export default defineEventHandler(async (event) => {
     photos,
     video_link,
     base_price,
+    base_promo_price,
     option_group,
     sub_option_group,
     specifications,
     overview,
     details_attachment,
+    location,
   } = await readBody(event);
 
   // Generate unique ID and slug
@@ -22,11 +24,14 @@ export default defineEventHandler(async (event) => {
   const newProduct = await db
     .insertInto("product")
     .values({
+      availability: "available",
       base_price,
+      base_promo_price,
       business_id: business_id!,
       category,
       details_attachment,
       is_active: true,
+      location,
       option_group: JSON.stringify(option_group),
       overview,
       photos,

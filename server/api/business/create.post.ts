@@ -1,5 +1,3 @@
-import { B } from "vue-router/dist/index-D_VEAp3P.js";
-
 export default defineEventHandler(async (event) => {
   let {
     super_admin,
@@ -24,7 +22,7 @@ export default defineEventHandler(async (event) => {
   category = category === "others" && new_category ? `others:${new_category}` : category;
   coverage = coverage.filter(Boolean);
 
-  const newBusiness = await db
+  return (await db
     .insertInto("business")
     .values({
       super_admin,
@@ -46,7 +44,5 @@ export default defineEventHandler(async (event) => {
       is_active: true,
     })
     .returningAll()
-    .executeTakeFirst();
-
-  return newBusiness;
+    .executeTakeFirst()) as bizData | undefined;
 });

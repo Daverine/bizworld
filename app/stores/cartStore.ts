@@ -1,26 +1,3 @@
-interface cartItem {
-  type: string;
-  id: string;
-  title: string;
-  price: number;
-  media: string;
-  productOptions: string[];
-  quantity: number;
-  delivery: string;
-  bizData: {
-    logo: string;
-    bizName: string;
-    bizUrl: string;
-    mainCategory: string;
-    contacts: { tel: string; email: string };
-    verified: boolean;
-    rating: { rate: number; raters: number };
-    location: { address: string; city: string; state: string; url: string };
-  };
-  checked: boolean;
-}
-import { defineStore } from "pinia";
-
 export const useCartStore = defineStore("cart", {
   state: () => ({
     items: [

@@ -7,10 +7,11 @@ const [model, modifiers] = defineModel({
       if (!isNaN(numberValue)) return numberValue;
       return undefined;
     }
+    if (value === "") return undefined;
     return value;
   },
-  get(value: number | string | undefined) {
-    if (value === undefined) return "";
+  get(value: number | string | undefined | null) {
+    if (value === undefined || value === null) return "";
     return Number(value).toLocaleString();
   },
 });

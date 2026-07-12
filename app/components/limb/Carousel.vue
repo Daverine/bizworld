@@ -516,3 +516,147 @@ function stopAutoslider() {
     <slot v-else></slot>
   </div>
 </template>
+<style>
+.carousel {
+  display: block;
+  position: relative;
+  max-width: 100%;
+
+  .cs-viewbox {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    width: 100%;
+    border-radius: var(--radius-block);
+  }
+
+  .cs-slider {
+    display: flex;
+    align-items: stretch;
+    backface-visibility: hidden;
+    list-style: none;
+    overflow: visible;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    transition: transform 500ms cubic-bezier(0, 0, 0.25, 1);
+
+    &[data-anim="slide"] {
+      flex-flow: row nowrap;
+    }
+
+    &.swiping,
+    &.ghost-walk {
+      transition-duration: 0ms !important;
+    }
+
+    .cs-slide {
+      display: flex;
+      flex: 0 0 auto;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+      list-style: none;
+      position: relative;
+      width: 100%;
+      height: auto;
+      z-index: 0;
+    }
+  }
+
+  .cs-trackers {
+    pointer-events: none;
+
+    .cs-tracker {
+      pointer-events: auto;
+      cursor: pointer;
+    }
+  }
+}
+
+/* apply default style on cs-tracker, cs-prev, and cs-next. */
+.carousel.lui {
+  .cs-trackers {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    flex-flow: row nowrap;
+    max-width: 100%;
+    gap: 0.5rem;
+    margin: 0.5rem auto 0rem;
+    padding: 0.5em;
+    overflow: hidden;
+    scroll-behavior: auto;
+
+    & > * {
+      flex: 0 0 auto;
+    }
+
+    & .cs-tracker:not(.thumbnail) {
+      display: inline-block;
+      position: relative;
+      background-color: var(--outline);
+      border: 0;
+      border-radius: 50%;
+      height: 0.625em;
+      width: 0.625em;
+      margin: 0;
+      padding: 0;
+      opacity: 0.75;
+      transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+
+      &.active {
+        background-color: var(--color-primary);
+        opacity: 1;
+      }
+    }
+  }
+
+  .cs-prev,
+  .cs-next {
+    background: var(--color-surface);
+    width: 2em;
+    height: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    opacity: 0.5;
+    padding: 0px;
+    margin: 0;
+    color: var(--color-on-surface);
+    cursor: pointer;
+    font-size: 1.25rem;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: opacity ease 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &.disabled {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  .cs-prev {
+    left: 0px;
+  }
+
+  .cs-next {
+    right: 0px;
+  }
+
+  &:not(:hover) > .cs-prev,
+  &:not(:hover) > .cs-next {
+    opacity: 0;
+  }
+}
+</style>

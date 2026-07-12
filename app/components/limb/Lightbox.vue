@@ -68,10 +68,9 @@ type BrainBox = {
   mouseGT?: number;
   youtubeSlides: boolean;
   viewportMeta: string;
-  prevHash: string;
+  exitedWithBrowserBack: boolean;
   openWithHash: boolean;
   inOutTimeout?: ReturnType<typeof setTimeout>;
-  scrollPosBeforeLock?: { top: number; left: number };
 };
 
 type reactiveBrainBox = {
@@ -96,6 +95,7 @@ type slideContent = {
 };
 
 const route = useRoute();
+const router = useRouter();
 const props = defineProps({
   id: {
     type: String,
@@ -142,8 +142,8 @@ const bb: BrainBox = {
   captionTogglePrevented: false,
   youtubeSlides: false,
   viewportMeta: "",
-  prevHash: "",
   openWithHash: false,
+  exitedWithBrowserBack: false,
 };
 const vbb = reactive<reactiveBrainBox>({
   //view brainbox
@@ -223,7 +223,7 @@ function setInteractionRange(e: KeyboardEvent) {
   }
 }
 function backToExit() {
-  history.pushState(null, "", window.location.href);
+  bb.exitedWithBrowserBack = true;
   vbb.showLightbox = false;
 }
 function exitWithEscKey(e: KeyboardEvent) {
@@ -422,7 +422,8 @@ function reAdjustSlide() {
       el.classList.remove("disabled"),
     );
   }
-  currContent.style.transform = `translate(${bb.newCoords.x}px, ${bb.newCoords.y}px) scale(${bb.newCoords.zoom})`;
+  if (currContent)
+    currContent.style.transform = `translate(${bb.newCoords.x}px, ${bb.newCoords.y}px) scale(${bb.newCoords.zoom})`;
   resizeIframe();
 }
 
@@ -519,12 +520,10 @@ watch(
       lightbox.value!.style.visibility = "visible";
       if (vbb.slidesNo) update();
       if (settings.hashControl) {
-        bb.scrollPosBeforeLock = { top: window.scrollY, left: window.scrollX };
         if (!bb.openWithHash) {
-          bb.prevHash = route.hash;
-          await navigateTo({ hash: `#${props.id}` }, { replace: true });
+          window.history.pushState(null, "", `${window.location.href.split("#")[0]}#${props.id}`);
+          window.addEventListener("popstate", backToExit);
         }
-        window.addEventListener("popstate", backToExit);
         // exit when route hash changes
         unwatch.closeOnRouteChange = watch(
           () => route.hash,
@@ -634,11 +633,11 @@ watch(
       lightbox.value!.classList.remove("active");
 
       if (settings.hashControl) {
-        if (typeof unwatch.closeOnRouteChange === "function") unwatch.closeOnRouteChange();
+        unwatch.closeOnRouteChange && unwatch.closeOnRouteChange();
         window.removeEventListener("popstate", backToExit);
-        await navigateTo({ hash: bb.prevHash }, { replace: true });
+        if (!bb.exitedWithBrowserBack) window.history.back();
+        bb.exitedWithBrowserBack = false;
         bb.openWithHash = false;
-        utils.afterNextRepaint(() => window.scrollTo(bb.scrollPosBeforeLock));
       }
       clearTimeout(bb.inOutTimeout);
       bb.inOutTimeout = setTimeout(() => {
@@ -646,7 +645,7 @@ watch(
           lightbox.value?.style.setProperty("visibility", "hidden");
           utils.triggerEvent(lightbox.value, "lightboxCompleted", settings);
         }
-        slides.value!.forEach((el) => el.classList.remove("active", "prev-slide", "next-slide"));
+        slides.value?.forEach((el) => el.classList.remove("active", "prev-slide", "next-slide"));
         // reset viewport meta to what it was before
         document.head
           .querySelector("meta[name=viewport]")
@@ -759,7 +758,7 @@ async function update(newSlideNo: number = vbb.currSlideNo) {
 
   let refresh = newSlideNo === vbb.currSlideNo;
   if (!refresh) {
-    slides.value!.forEach((el) => el.classList.remove("active", "prev-slide", "next-slide"));
+    slides.value?.forEach((el) => el.classList.remove("active", "prev-slide", "next-slide"));
 
     if (newSlideNo < vbb.currSlideNo) currSlide?.classList.add("next-slide");
     else if (newSlideNo > vbb.currSlideNo) currSlide?.classList.add("prev-slide");
@@ -1256,7 +1255,7 @@ function stopSlideshow() {
             d="M.19 126.34l38.86 133.92c3.17 5.54 9.12 9.58 15.33 7.78l95.66-27.88 72.87 21.32c11.08 3.54 17.08-3.67 19.89-13.1l53.28-183.84c0-6.37-3.6-12.32-9.75-14.12L117.3.89c-7.77-2.23-16.27-.56-18.84 8.18l-24.9 84.71-68.12 22.66c-3.59 1.2-6.19 6.66-5.25 9.9zm46.87 71.35c0 4.44 2.49 8.94 6.76 10.65l167.54 49.15c8.62 2.51 14.7 1.67 17.67-8.31l53.44-182.65c.79-5.41-.78-9.21-5.8-12.27L115.15 3.8c-5.55-1.47-10.96 1.06-13.5 6.41L47.06 197.69zm9.17 3.01l170 50.13c3.43.95 4.3-.8 5.14-3.72l53.03-181.1c.96-3.31-.33-4.52-3.27-5.35l-166.1-48.63c-4.22-1.26-5.45-1.01-6.71 3.34L55.33 196.34c-.47 1.56-.44 3.18.9 4.36zm24.35-38.79c0 2.27 1.81 1.76 2.82 2.05l142.93 41.87c2.22.65 2.94.89 3.7-1.74l38.55-131.68c.85-2.92-1.04-2.84-3.43-3.53L124.04 27.56c-2.54-.74-3.46-1.43-4.34 1.66L80.58 161.91zm33.78-67.47c-.33 0-1.27 1.6-2.95.83-.79-.37-1.17-1.19-1.1-2.03l-5.35-1.58-18.51 63.25c.61-.33 2.96-.73 3.69-.84 20.25-3.22 43.04 3.25 65.62-1.18 2.7-.52 2.55-.98 1.38-3.33-2.85-5.69-10.41-14.73 1.98-16.48 15.61-2.19 25.62 3.59 42.29-2.59l-1.87-2.97c-.63-.94-.45-1.49-.14-2.51l4.85-17.13-3.15-23.64-6.55 2.86c-.45.18-.73.63-1.06.97-1.9 1.91-9.75 10.14-10.52 10.39-15.08 4.78-21.58 8.69-35.65 15.54-.68.34-1.39.77-2.15.77-1.05 0-1.93-.96-1.93-1.99 0-1.15.74-1.68 1.63-2.09l7.54-3.68-7.43-.95c-.69-.16-1.23-.72-1.44-1.37l-.4-9.42c0-1.43-.15-1.14.33-2.39.63-1.74 2.1-5.05 2.39-6.74l1.74-10.2c-.13.01-.46.15-.58.2l-17.57 6.53c-2.95 1.22-12.14 9.22-15.09 11.77zM185.1 165c-15.37 6.3-43.92-.09-54.44 5.76-1.26.7-1.39 1.74-1.39 3.1l97.72 28.6 14.8-50.64c-.09.02-.19.11-.28.17-.96.64-2.26.23-2.83-.74l-9.7-17.7c-4.29 1-13.22-.84-17.58 1.68-.68.4-1.33.89-1.9 1.43-7.59 7.32-35.7 2.64-34.58 6.38 1.37 4.51 11.46 11 13.27 16.39.92 2.73-.62 4.56-3.09 5.57zm-33.62-87.66c-1.46 6.27-1.91 10.62-4.23 16.98-.22.56.14 6.9.18 7.98 2.9.07 8.12 1.03 11.01 1.39.81.12.69.08 1.35-.25 8.05-4.03 12.2-6.89 21.07-8.67 1.01-.2 5.53-5.27 6.57-6.34l-1.06-3.91c-.79.53-1.55 1.62-2.49 1.9-3.88 1.17-9.75-14.08-12.48-17.18-.17 3.16-1.48 20.69-2.83 21.83-4.06 3.43-14.96-12.31-17.09-13.73zm56.9 31.11l-4.99 17.29 2.07 3.52c.4 0 1.25-.2 1.68-.28 6.04-.83 13.34-.07 19.51-.07l-8.99-16.08-4.2-15.33c-.63.3-1.84.93-2.47.93-2.28 0-3.78-5.37-4.81-6.56l2.2 16.58zm25.03 24.76l8.96 16.51 4.84-16.41-8.65-2.51c-.41 1.56-3.92 2.12-5.15 2.41zm-75.62-56.32c-1.44 1.99 5.26 7.3 7.46 8.87 1.31.92 2.2-16.29 2.2-18.06-5.54 6.14-3.94.81-9.66 9.19z"
           />
         </svg>
-        <figcaption class="font-semibold text-xl">No Lightbox Element Present</figcaption>
+        <figcaption class="text-xl font-semibold">No Lightbox Element Present</figcaption>
       </figure>
       <button
         aria-label="Previous Slide"
@@ -1301,3 +1300,514 @@ function stopSlideshow() {
     </LimbIScroller>
   </div>
 </template>
+<style>
+.lightbox {
+  --menu-height: 3.125rem;
+
+  display: block;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  border: 0px none;
+  outline: 0px none;
+  margin: 0px;
+  padding: 0px;
+  z-index: var(--z-level-5);
+  visibility: hidden;
+  background-color: transparent;
+  opacity: 0;
+  transition:
+    opacity 0ms linear 500ms,
+    background-color 350ms ease;
+
+  &::before {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    background-color: var(--color-surface-v2);
+    border: 0px none;
+    border-radius: inherit;
+    user-select: none;
+    pointer-events: none;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0;
+    transition: opacity 300ms;
+  }
+
+  & > .slides {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: calc(100% - var(--menu-height));
+    max-width: 100%;
+    top: var(--menu-height);
+    left: 0px;
+    z-index: 10;
+    backface-visibility: hidden;
+    opacity: 0;
+    transition:
+      transform 500ms ease-out,
+      opacity 350ms ease 150ms;
+
+    .slide {
+      display: flex;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      margin: 0px;
+      padding: 0px;
+      opacity: 0;
+      transform: translate(0px, 0px) scale(0.7);
+      z-index: -1;
+      pointer-events: none;
+
+      &.active,
+      &.prev-slide,
+      &.next-slide {
+        z-index: initial;
+        transition:
+          transform 300ms cubic-bezier(0, 0, 0.25, 1),
+          opacity 300ms cubic-bezier(0, 0, 0.25, 1);
+      }
+
+      &.active {
+        opacity: 1;
+        transform: translate(0px, 0px) scale(1);
+      }
+
+      &.prev-slide {
+        transform: translate(-100%, 0px) scale(0.7);
+      }
+
+      &.next-slide {
+        transform: translate(100%, 0px) scale(0.7);
+      }
+
+      .content {
+        display: flex;
+        position: absolute;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        transform-origin: center center;
+        transform: translate(0px, 0px) scale(1);
+        transition:
+          transform 0.2s cubic-bezier(0, 0, 0.25, 1) 0s,
+          opacity 0.7s linear 0s;
+
+        &.zoom-dragging,
+        &.zooming {
+          transition-duration: 0ms;
+
+          img {
+            cursor: grabbing !important;
+          }
+        }
+
+        * {
+          display: inline-block;
+          max-height: 100%;
+          max-width: 100%;
+          cursor: grab;
+          pointer-events: initial;
+          user-select: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        &[data-cont-type="youtube"]:before,
+        &[data-cont-type="iframe"]:before {
+          content: "";
+          position: absolute;
+          width: 50px;
+          height: 50px;
+          border: 5px solid var(--color-on-surface);
+          border-top-color: var(--color-surface);
+          border-radius: calc(infinity * 1px);
+          z-index: -1;
+          animation: spin 0.6s linear;
+          animation-iteration-count: infinite;
+        }
+      }
+
+      .caption {
+        display: block;
+        align-self: flex-end;
+        width: 100%;
+        height: fit-content;
+        max-height: 70%;
+        overflow: auto;
+        padding: 1em 1em;
+        margin: 0 auto;
+        font-size: 0.875rem;
+        text-align: center;
+        line-height: 1.5;
+        color: var(--color-on-surface);
+        background-color: var(--color-overlay);
+        text-shadow: 0px 0px 5px var(--color-surface);
+        pointer-events: initial;
+        z-index: 1000;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: background-color 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
+
+        & ~ .content[style] {
+          z-index: 2000;
+        }
+
+        * {
+          margin: 0;
+        }
+
+        @media (hover: hover) {
+          &:not(.full-text, :hover) {
+            background-color: transparent;
+
+            & > .truncate-helper {
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              line-clamp: var(--line-clamp, 2);
+              -webkit-line-clamp: var(--line-clamp, 2);
+              overflow: hidden;
+            }
+          }
+        }
+
+        @media (hover: none) {
+          &:not(.full-text) {
+            background-color: transparent;
+
+            & > .truncate-helper {
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              line-clamp: var(--line-clamp, 2);
+              -webkit-line-clamp: var(--line-clamp, 2);
+              overflow: hidden;
+            }
+          }
+        }
+
+        @media only screen and (min-width: 650px) {
+          padding-left: calc(50% - 325px + 1em);
+          padding-right: calc(50% - 325px + 1em);
+          padding-left: calc(50% - 32.5ch + 1em);
+          padding-right: calc(50% - 32.5ch + 1em);
+        }
+      }
+    }
+
+    &.swiping > .slide {
+      transition-duration: 0ms;
+
+      &.prev-slide,
+      &.next-slide {
+        opacity: 1;
+      }
+
+      img {
+        cursor: grabbing !important;
+      }
+    }
+
+    & > .c-prev,
+    & > .c-next {
+      display: flex;
+      cursor: pointer;
+      position: absolute;
+      justify-content: center;
+      align-items: center;
+      top: 50%;
+      transform: translate(0px, -50%);
+      height: 1em;
+      width: 1em;
+      border-radius: var(--radius-inline);
+      font-size: 3.125rem;
+      color: var(--color-on-surface);
+      filter: drop-shadow(0px 0px 5px var(--color-surface));
+      background-color: transparent;
+      border: 0px none;
+      pointer-events: initial;
+      transition:
+        transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s,
+        opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
+
+      &:not(:focus-visible) {
+        outline: 0px none;
+      }
+
+      &:hover,
+      &:focus {
+        opacity: 1;
+      }
+
+      &:disabled {
+        opacity: 0 !important;
+        pointer-events: none;
+      }
+    }
+
+    & > .c-prev {
+      left: 2%;
+    }
+
+    & > .c-next {
+      right: 2%;
+    }
+  }
+
+  & .lb-control {
+    z-index: 100;
+  }
+
+  &.active {
+    opacity: 1;
+    transition:
+      opacity 0ms linear 0ms,
+      background-color 350ms ease;
+
+    &:before {
+      opacity: 0.9;
+    }
+
+    & > .slides {
+      opacity: 1;
+      transition:
+        transform 500ms ease-in,
+        opacity 350ms ease-out 150ms;
+    }
+  }
+
+  &:not(.active) .slide.active {
+    transform: translate(0px, 0px) scale(0.7);
+  }
+
+  & > .progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    z-index: 110;
+    margin: 0;
+    background-color: var(--color-surface);
+    opacity: 0;
+
+    .determinate {
+      width: 0;
+      transition: none;
+      background-color: var(--color-on-surface);
+    }
+  }
+
+  &.playing > .progress-bar {
+    opacity: 1;
+  }
+
+  & > .menu.icon-bar {
+    position: absolute;
+    width: 100%;
+    margin: 0;
+    top: 0;
+    left: 0;
+    background-color: var(--color-overlay);
+    color: var(--color-on-surface);
+    text-shadow: 0px 0px 5px var(--color-surface);
+    box-shadow: none;
+    transition:
+      transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s,
+      opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
+
+    .icon {
+      filter: drop-shadow(0px 0px 5px var(--color-surface));
+    }
+  }
+
+  /* Gallery View */
+
+  & > .gallery-view {
+    display: flex;
+    position: fixed;
+    bottom: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 6rem;
+    overflow: hidden;
+    background: var(--color-overlay);
+    background: linear-gradient(
+      0deg,
+      var(--color-overlay) 0%,
+      var(--color-overlay) 80%,
+      transparent 100%
+    );
+    transform: scale(1);
+    transform-origin: center bottom;
+    transition:
+      opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s,
+      background-color 0.35s cubic-bezier(0, 0, 0.25, 1) 0s,
+      transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
+
+    & [data-thumbnails] {
+      display: inline-flex;
+      align-self: flex-start;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      justify-content: flex-start;
+      height: calc(100% + 2rem); /* the 2rem is to hide the bottom scrollbar */
+      max-width: 100%;
+      margin: 0px auto;
+      padding: 0.625rem;
+      overflow-y: hidden;
+    }
+
+    .l-scroll,
+    .r-scroll {
+      cursor: pointer;
+      width: 1.5em;
+      font-size: 1.5rem;
+      text-shadow: 0px 0px 5px var(--color-surface);
+      border: 0px none;
+      border-radius: 0px;
+      box-shadow: none;
+      transition:
+        transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s,
+        opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
+
+      &:not(:focus-visible) {
+        outline: 0px none;
+      }
+
+      &:not(.active) {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+
+    .l-scroll {
+      left: 0px;
+      background: linear-gradient(90deg, var(--color-surface) 0%, transparent 100%);
+    }
+
+    .r-scroll {
+      right: 0px;
+      background: linear-gradient(270deg, var(--color-surface) 0%, transparent 100%);
+    }
+
+    & .thumbnail {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 0.125rem;
+      width: auto;
+      height: 4.5rem;
+      margin: 0px 0.5rem;
+      flex: 0 0 auto;
+      vertical-align: middle;
+      transition:
+        transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s,
+        opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
+
+      &.active {
+        border: 2px solid var(--color-on-surface);
+        box-shadow: 0px 0px 5px 1px var(--color-surface);
+        transform: scale(1.1);
+      }
+
+      & * {
+        display: block;
+        margin: 0px;
+        width: auto;
+        height: auto;
+        max-height: 100%;
+        max-width: 100%;
+      }
+
+      &:hover,
+      &.active {
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  &:not(.active),
+  &.hide-controls {
+    & .lb-control:not(.gallery-view) {
+      opacity: 0 !important;
+    }
+
+    & > .menu.icon-bar {
+      transform: translate(0px, -100%);
+    }
+
+    & > .slides > .c-prev {
+      transform: translate(-100%, -50%);
+    }
+
+    & .slides > .c-next {
+      transform: translate(100%, -50%);
+    }
+  }
+
+  &.pic-only {
+    & > .slides .caption {
+      display: none;
+    }
+
+    & > .slides .content {
+      height: 100%;
+    }
+
+    & > .slides > .c-prev,
+    & > .slides > .c-next {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  &:not(.active),
+  &:not(.show-gallery),
+  &.pic-only {
+    & > .gallery-view {
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    & .caption {
+      padding-bottom: 2em;
+    }
+  }
+
+  &.show-gallery:not(.pic-only) > .slides {
+    max-height: calc(100% - var(--menu-height) - 6rem);
+  }
+
+  /* fix for content height with caption. */
+  &:not(.pic-only) > .slides .caption ~ .content {
+    height: calc(100% - 4.375rem);
+  }
+
+  @media screen and (max-width: 580px) {
+    .resp-down-hidden {
+      display: none !important;
+    }
+  }
+
+  @media screen and (min-width: 581px) {
+    .resp-up-hidden {
+      display: none !important;
+    }
+  }
+
+  &:not(.active),
+  &:not(.active) * {
+    pointer-events: none !important;
+  }
+}
+</style>

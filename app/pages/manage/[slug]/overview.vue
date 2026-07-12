@@ -2,13 +2,13 @@
 definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
 </script>
 <template>
-  <main class="flex-1 max-w-180 auto-contain p-4">
+  <main class="auto-contain max-w-180 flex-1 p-4">
     <header
       v-scrollPin="{ notifyStuckState: true, top: 63 }"
-      class="scrollpin z-level-1 min-h-23 mb-4 self-pointer-none [&.is-stuck_.text-h3]:text-2xl"
+      class="scrollpin z-level-1 self-pointer-none mb-4 min-h-23 [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
-        class="lined heading text-h3 transition-[font-size] duration-200 flex gap-3 justify-between items-end bg-surface pin-top-blend m-0"
+        class="lined heading text-h3 bg-surface pin-top-blend m-0 flex items-end justify-between gap-3 transition-[font-size] duration-200"
       >
         Overview
       </div>
@@ -16,9 +16,9 @@ definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
     <section class="flex flex-col gap-6">
       <section>
         <div class="heading text-sm">Progress summary</div>
-        <div class="flex gap-4 justify-around flex-wrap">
+        <div class="flex flex-wrap justify-around gap-4">
           <div class="sum-item">
-            <header class="flex gap-2 flex-nowrap">
+            <header class="flex flex-nowrap gap-2">
               <Icon name="material-symbols:person-outline-rounded" />
               Max Visitors
               <Icon name="material-symbols:info-outline-rounded" />
@@ -26,7 +26,7 @@ definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
             <div class="text-h2 content">1024</div>
           </div>
           <div class="sum-item">
-            <header class="flex gap-2 flex-nowrap">
+            <header class="flex flex-nowrap gap-2">
               <Icon name="material-symbols:groups-outline-rounded" />
               Post Engagement
               <Icon name="material-symbols:info-outline-rounded" />
@@ -34,7 +34,7 @@ definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
             <div class="text-h2 content">200</div>
           </div>
           <div class="sum-item">
-            <header class="flex gap-2 flex-nowrap">
+            <header class="flex flex-nowrap gap-2">
               <Icon name="material-symbols:reviews-outline-rounded" />
               Page Reviews
               <Icon name="material-symbols:info-outline-rounded" />
@@ -45,7 +45,7 @@ definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
       </section>
       <section>
         <div class="heading text-sm">Earned barge</div>
-        <div class="flex gap-4 justify-around flex-wrap items-center" style="margin-bottom: 1rem">
+        <div class="flex flex-wrap items-center justify-around gap-4" style="margin-bottom: 1rem">
           <div class="flex flex-col items-center gap-3">
             <Badges name="verified" style="font-size: 4rem" />
             <div class="font-semibold">Verified</div>
@@ -86,7 +86,7 @@ definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
           <div class="mb-2">See all our available market plan.</div>
           <button class="button open-modal" data-target="marketplan">Market plans</button>
           <LimbModal id="marketplan">
-            <div class="dialog self-scroll p-4">
+            <div class="dialog p-4">
               <div class="note">
                 <img
                   src="/images/premium.webp"
@@ -134,7 +134,7 @@ definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
       </section>
       <section>
         <div class="heading text-sm">Business tools</div>
-        <div class="grid menu grid-cols-2 app-items rounded">
+        <div class="menu app-items grid grid-cols-2 rounded">
           <NavMenuManagement />
         </div>
       </section>

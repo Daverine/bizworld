@@ -1,11 +1,13 @@
 <script setup>
-const mainStore = useMainStore();
-const { items: cartItems } = storeToRefs(useCartStore());
 const { loggedIn } = useAuth();
-const userStore = useUserStore();
-function toTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
+const backToTop = ref(false);
+const { items: cartItems } = storeToRefs(useCartStore());
+
+useEventListener("scroll", () => {
+  if (window.scrollY >= window.innerHeight / 2) backToTop.value = true;
+  else backToTop.value = false;
+});
+onMounted(() => window.dispatchEvent(new Event("scroll")));
 </script>
 
 <template>
@@ -25,7 +27,13 @@ function toTop() {
             />
           </NuxtLink>
         </div>
-        <NavMenuManagement v-if="$route.path.split('/').includes('manage')" />
+        <template v-if="$route.path.split('/').includes('manage')">
+          <NuxtLink to="/myshops" class="item exit-sidepanel">
+            <Icon name="material-symbols:arrow-back-rounded" class="lead" />
+            Go back to my shops
+          </NuxtLink>
+          <NavMenuManagement />
+        </template>
         <NavMenu v-else />
       </div>
       <hr />
@@ -60,11 +68,7 @@ function toTop() {
           <Icon name="material-symbols:qr-code-scanner-rounded" />
           <span class="text label">Scan QR</span>
         </div>
-        <div
-          v-if="loggedIn && userStore.userData.manageBisiness"
-          class="bar-item item open-modal exit-dd"
-          data-target="create-post"
-        >
+        <div v-if="loggedIn" class="bar-item item open-modal exit-dd" data-target="create-post">
           <Icon name="material-symbols:edit-square-outline-rounded" />
           <span class="text label">Post</span>
         </div>
@@ -72,9 +76,9 @@ function toTop() {
     </div>
     <button
       id="qaction"
-      @click="toTop"
+      @click="utils.window().scrollTo({ top: 0, behavior: 'smooth' })"
       class="outlined fab compact radius-lg secondary button"
-      :class="{ 'now-visible': mainStore.showFixedMenu }"
+      :class="{ 'now-visible': backToTop }"
     >
       <Icon name="material-symbols:vertical-align-top-rounded" />
     </button>

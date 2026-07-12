@@ -203,7 +203,6 @@
 @utility photo-box {
   position: relative;
   width: 100%;
-  object-fit: contain;
   overflow: hidden;
   display: flex;
   place-items: center;
@@ -211,6 +210,8 @@
   & > img {
     position: relative;
     width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
   &::before {
@@ -260,6 +261,7 @@
 
   --color-overlay: hsla(0, 0%, 100%, 0.5);
   --color-overlay-invert: hsla(0, 0%, 20%, 0.5);
+  --color-overlay-bg: rgba(230, 230, 230, 0.65);
 
   --color-on-surface: hsl(0deg 0% 10%);
   --color-on-surface-v1: hsl(0deg 0% 40%);
@@ -292,6 +294,7 @@
 
     --color-overlay: hsla(0, 0%, 100%, 0.5);
     --color-overlay-invert: hsla(0, 0%, 20%, 0.5);
+    --color-overlay-bg: rgba(230, 230, 230, 0.65);
 
     --color-on-surface: hsl(0deg 0% 10%);
     --color-on-surface-v1: hsl(0deg 0% 40%);
@@ -322,6 +325,7 @@
 
     --color-overlay: hsla(0, 0%, 10%, 0.5);
     --color-overlay-invert: hsla(0, 0%, 90%, 0.5);
+    --color-overlay-bg: rgba(35, 35, 35, 0.65);
 
     --color-on-surface: hsl(0deg 0% 90%);
     --color-on-surface-v1: hsl(0deg 0% 60%);
@@ -374,7 +378,7 @@ svg.icon {
 
 .products-grid {
   display: grid;
-  place-items: center;
+  place-items: start center;
   place-content: center;
   grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
   gap: 1rem;

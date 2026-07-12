@@ -27,7 +27,7 @@ export type DialogerSettings = {
   inDuration?: number;
   outDuration?: number;
   hashControl?: boolean;
-  controller?: (event: DialogEvent) => unknown;
+  controller?: (event: Dialoger) => unknown;
   caller?: HTMLElement;
 };
 
@@ -59,14 +59,18 @@ export function useDialoger(
   const bb = {
     uniqueId: undefined as string | undefined,
     openWithHash: false,
-    scrollPosBeforeLock: { top: 0, left: 0 },
+    exitedWithBrowserBack: false,
   };
   const unwatch: Record<string, WatchStopHandle> = {};
 
+  function exit() {
+    if (settings.dismissible) showDialog.value = false;
+  }
   function exitByClick(e: MouseEvent) {
     if (
-      (settings.closeOnWrapperClick && e.target === dialoger.value) ||
-      (settings.dismissible && (e.target as HTMLElement).closest(settings.dismisser!))
+      settings.dismissible &&
+      ((settings.closeOnWrapperClick && e.target === dialoger.value) ||
+        (e.target as HTMLElement).closest(settings.dismisser!))
     )
       showDialog.value = false;
   }
@@ -83,11 +87,20 @@ export function useDialoger(
   }
 
   function exitByEscKeyPress(e: KeyboardEvent) {
-    if (e.key === "Escape" && utils.checkEscStatus(bb.uniqueId!)) showDialog.value = false;
+    if (e.key === "Escape" && settings.dismissible && utils.checkEscStatus(bb.uniqueId!))
+      showDialog.value = false;
   }
 
   function backToExit() {
-    history.pushState(null, "", window.location.href);
+    if (!settings.dismissible) {
+      window.history.pushState(
+        { protected: true },
+        "",
+        `${window.location.href.split("#")[0]}#${id}`,
+      );
+      return;
+    }
+    bb.exitedWithBrowserBack = true;
     showDialog.value = false;
   }
 
@@ -109,7 +122,8 @@ export function useDialoger(
 
     dialoger.value!.addEventListener("dgconsole", ((e: CustomEvent<string>) => {
       if (e.detail === settings.commands!.open) showDialog.value = true;
-      else if (e.detail === settings.commands!.close) showDialog.value = false;
+      else if (e.detail === settings.commands!.close && settings.dismissible)
+        showDialog.value = false;
     }) as EventListener);
 
     if (settings.hashControl) {
@@ -133,17 +147,31 @@ export function useDialoger(
       dialoger.value!.style.visibility = "visible";
       await utils.afterNextRepaint();
       if (settings.hashControl) {
-        bb.scrollPosBeforeLock = {
-          top: window.scrollY,
-          left: window.scrollX,
-        };
-        if (!bb.openWithHash) await navigateTo({ hash: `#${id}` }, { replace: true });
-        window.addEventListener("popstate", backToExit);
+        if (!bb.openWithHash) {
+          window.history.pushState(null, "", `${window.location.href.split("#")[0]}#${id}`);
+          window.history.pushState(
+            { protected: true },
+            "",
+            `${window.location.href.split("#")[0]}#${id}`,
+          );
+          window.addEventListener("popstate", backToExit);
+        }
         // exit when route hash changes
         unwatch.closeOnRouteChange = watch(
           () => route.hash,
           (newHash) => {
             if (newHash !== `#${id}`) {
+              if (!settings.dismissible) {
+                navigateTo(
+                  {
+                    path: route.path,
+                    query: route.query,
+                    hash: `#${id}`,
+                  },
+                  { replace: true },
+                );
+                return;
+              }
               showDialog.value = false;
             }
           },
@@ -158,6 +186,7 @@ export function useDialoger(
         settings.controller({
           target: dialoger.value!,
           settings,
+          exit,
         });
 
       document.addEventListener("keydown", KBDControls);
@@ -193,12 +222,13 @@ export function useDialoger(
       }
 
       dialoger.value?.classList.remove("active");
+
       if (settings.hashControl) {
-        unwatch.closeOnRouteChange!();
+        unwatch.closeOnRouteChange && unwatch.closeOnRouteChange();
         window.removeEventListener("popstate", backToExit);
-        await navigateTo({ hash: "" }, { replace: true });
+        if (!bb.exitedWithBrowserBack) window.history.go(-2);
+        bb.exitedWithBrowserBack = false;
         bb.openWithHash = false;
-        utils.afterNextRepaint(() => window.scrollTo(bb.scrollPosBeforeLock));
       }
       await utils.delay(settings.outDuration!);
       dialoger.value?.style.setProperty("visibility", "hidden");
@@ -229,6 +259,6 @@ export function useDialoger(
   return {
     target: dialoger.value!,
     settings,
-    exit: () => (showDialog.value = false),
+    exit,
   };
 }

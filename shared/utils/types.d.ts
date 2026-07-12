@@ -7,17 +7,21 @@ export type product = {
   photos: string[];
   video_link?: string;
   base_price: string;
+  base_promo_price?: string;
   option_group?: {
     title: string;
     options: {
       label: string;
       price?: string;
+      promo_price?: string;
       photo?: string;
       sub_options?: {
         is_active: boolean;
         label: string;
         price?: string;
+        promo_price?: string;
         price_changed?: boolean;
+        promo_price_changed?: boolean;
       }[];
     }[];
   };
@@ -31,10 +35,19 @@ export type product = {
   }[];
   overview: string;
   details_attachment?: string;
+  location?: {
+    country: string;
+    state: string;
+    city: string;
+  };
   average_rating?: string;
   review_count?: string;
   created_at: string;
   hidden?: boolean;
+  promo?: boolean;
+  availability: string;
+  quantity?: string;
+  delivery_options?: string[];
 };
 
 export type bizData = {

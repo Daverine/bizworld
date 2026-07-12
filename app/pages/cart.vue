@@ -21,7 +21,7 @@ const allChecked = computed({
         <h3>Shopping Cart</h3>
         <table class="compact clear table">
           <thead
-            class="sticky z-level-1"
+            class="z-level-1 sticky"
             style="
               top: 72px;
               box-shadow:
@@ -50,8 +50,8 @@ const allChecked = computed({
                     <div class="heading line-clamp-2">
                       {{ item.title }}
                     </div>
-                    <div class="flex justify-between flex-wrap gap-3 items-center text-xs">
-                      <a :href="item.bizData.bizUrl" class="font-semibold truncate">{{
+                    <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+                      <a :href="item.bizData.bizUrl" class="truncate font-semibold">{{
                         item.bizData.bizName
                       }}</a>
                       <div class="flex flex-wrap gap-2" style="margin-top: 0.5em">
@@ -67,9 +67,9 @@ const allChecked = computed({
                     <div>Unit Price: ₦{{ item.price.toLocaleString() }}</div>
                     <div>Dellivery: {{ item.delivery }}</div>
                     <div>
-                      <div class="text-sm input-box" style="width: 7rem">
+                      <div class="input-box text-sm" style="width: 7rem">
                         <button
-                          class="addon icon text-xs button"
+                          class="addon icon button text-xs"
                           @click="
                             () => {
                               if (item.quantity > 1) item.quantity--;
@@ -86,8 +86,8 @@ const allChecked = computed({
                           min="1"
                           v-model="item.quantity"
                           @input="
-                            (evt) => {
-                              if (evt.target < 1) item.quantity = 1;
+                            () => {
+                              if (item.quantity < 1) item.quantity = 1;
                             }
                           "
                           @keypress="
@@ -96,16 +96,16 @@ const allChecked = computed({
                             }
                           "
                         />
-                        <button class="addon icon text-xs button" @click="item.quantity++">
+                        <button class="addon icon button text-xs" @click="item.quantity++">
                           <Icon name="material-symbols:add-rounded" />
                         </button>
                       </div>
                     </div>
                   </div>
-                  <div class="flex flex-wrap justify-between gap-3 items-center">
+                  <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       Amount:
-                      <span class="font-bold text-h6 text-primary"
+                      <span class="text-h6 text-primary font-bold"
                         >₦{{ (item.price * item.quantity).toLocaleString() }}</span
                       >
                     </div>
@@ -157,7 +157,7 @@ const allChecked = computed({
             <div>Tax</div>
             <div>₦0</div>
           </div>
-          <div class="flex justify-between gap-2 text-h6 font-bold">
+          <div class="text-h6 flex justify-between gap-2 font-bold">
             <div>Total</div>
             <div>
               ₦{{
@@ -169,17 +169,17 @@ const allChecked = computed({
             </div>
           </div>
           <div>
-            <button class="primary w-full button">Checkout</button>
+            <button class="primary button w-full">Checkout</button>
           </div>
         </div>
       </section>
 
       <!-- checkout details mobile -->
       <div
-        class="mobile-screen-only sticky bg-surface w-full z-level-2 pin-bottom-blend"
+        class="mobile-screen-only bg-surface z-level-2 pin-bottom-blend sticky w-full"
         style="bottom: 0px"
       >
-        <div class="max-w-6xl auto-contain flex items-center gap-3" style="padding: 0.5rem 0rem">
+        <div class="auto-contain flex max-w-6xl items-center gap-3" style="padding: 0.5rem 0rem">
           <div class="flex flex-col">
             <div
               class="flat as-text mute-interaction button open-modal"
@@ -210,7 +210,7 @@ const allChecked = computed({
                     <div>Tax</div>
                     <div>₦0</div>
                   </div>
-                  <div class="flex justify-between gap-2 text-h6 font-bold">
+                  <div class="text-h6 flex justify-between gap-2 font-bold">
                     <div>Total</div>
                     <div>
                       ₦{{
@@ -222,12 +222,12 @@ const allChecked = computed({
                     </div>
                   </div>
                   <div>
-                    <button class="primary w-full button">Checkout</button>
+                    <button class="primary button w-full">Checkout</button>
                   </div>
                 </div>
               </div>
             </LimbModal>
-            <div class="flex justify-between gap-2 text-h6 font-bold">
+            <div class="text-h6 flex justify-between gap-2 font-bold">
               <div>Total</div>
               <div>
                 ₦{{

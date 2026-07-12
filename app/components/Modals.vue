@@ -10,14 +10,14 @@ function popupSubmitSearch(e) {
 </script>
 <template>
   <LimbModal id="search-modal">
-    <div class="dialog self-scroll">
-      <header class="header flex gap-3">
-        <div class="font-bold truncate">COMMAND A SEARCH</div>
+    <div class="dialog">
+      <header class="flex gap-3 px-6 py-4">
+        <div class="truncate font-bold">COMMAND A SEARCH</div>
         <button class="circular flat button as-text exit-modal" style="margin-left: auto">
           <Icon name="material-symbols:close-rounded" />
         </button>
       </header>
-      <div class="content">
+      <div class="px-6 py-4">
         <form @submit.prevent="popupSubmitSearch">
           <label class="input w-full" style="font-size: 1.125rem">
             <Icon name="material-symbols:search-rounded" class="xhover" />
@@ -40,16 +40,16 @@ function popupSubmitSearch(e) {
             </button>
           </label>
           <div
-            class="flex *:flex-1 gap-4"
+            class="flex gap-4 *:flex-1"
             style="gap: 1rem; margin: 1rem auto 0px; max-width: 300px"
           >
-            <button type="submit" class="w-full button exit-modal">
+            <button type="submit" class="button exit-modal w-full">
               <Icon name="material-symbols:search-rounded" class="lead" />
               SEARCH
             </button>
             <button
               type="button"
-              class="w-full button open-modal exit-modal"
+              class="button open-modal exit-modal w-full"
               data-target="explore-modal"
             >
               EXPLORE
@@ -59,7 +59,7 @@ function popupSubmitSearch(e) {
         <table class="clear table">
           <thead>
             <tr>
-              <th colspan="2" class="text-center bg-transparent">SEARCH CONFIGURATION</th>
+              <th colspan="2" class="bg-transparent text-center">SEARCH CONFIGURATION</th>
             </tr>
           </thead>
           <tbody>
@@ -95,16 +95,16 @@ function popupSubmitSearch(e) {
     </div>
   </LimbModal>
   <LimbModal id="scanqr-modal">
-    <div class="dialog self-scroll">
-      <div class="header flex gap-3">
-        <div class="font-bold truncate">Scan Business QR</div>
+    <div class="dialog">
+      <header class="flex gap-3 px-6 py-4">
+        <div class="truncate font-bold">Scan Business QR</div>
         <button class="circular flat button as-text exit-modal" style="margin-left: auto">
           <Icon name="material-symbols:close-rounded" />
         </button>
-      </div>
-      <div class="content">
+      </header>
+      <div class="px-6 py-4">
         <div
-          class="text-center flex justify-center items-center"
+          class="flex items-center justify-center text-center"
           style="flex-flow: row wrap; min-height: 150px"
         >
           <svg
@@ -153,7 +153,7 @@ function popupSubmitSearch(e) {
               fill="#E8F0FE"
             ></path>
           </svg>
-          <div class="w-full text-center opacity-65 font-semibold">
+          <div class="w-full text-center font-semibold opacity-65">
             Drag a business QR image here.
           </div>
         </div>
@@ -169,13 +169,13 @@ function popupSubmitSearch(e) {
   </LimbModal>
   <LimbModal id="create-post">
     <div class="dialog">
-      <div class="header flex gap-3">
-        <div class="font-bold truncate">Create post</div>
+      <header class="flex gap-3 px-6 py-4">
+        <div class="truncate font-bold">Create post</div>
         <button class="circular flat button as-text exit-modal" style="margin-left: auto">
           <Icon name="material-symbols:close-rounded" />
         </button>
-      </div>
-      <div class="content">
+      </header>
+      <div class="px-6 py-4">
         <div class="field">
           <label>Post as:</label>
           <LimbDropdown type="selection" style="display: flex; align-items: center">
@@ -218,7 +218,7 @@ function popupSubmitSearch(e) {
           <div class="field">
             <textarea
               placeholder="What did you want to post?"
-              class="form-item text-xl transparent"
+              class="form-item transparent text-xl"
             ></textarea>
           </div>
           <div class="field">

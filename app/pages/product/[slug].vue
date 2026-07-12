@@ -113,40 +113,55 @@ const reviews = ref([
 ]);
 const toCart = reactive<{
   spec: (string | undefined)[];
-  price: ComputedRef<number>;
-  photos: ComputedRef<string[]>;
   quantity: number;
   delivery: string;
   note: string;
 }>({
   spec: [],
-  price: computed(() => {
-    let option_price = product.value!.option_group?.options.find(
-      (option) => option.label === toCart.spec[0],
-    )?.price as string;
-    let sub_option_price = product
-      .value!.option_group?.options.find((option) => option.label === toCart.spec[0])
-      ?.sub_options?.find((sub_option) => sub_option.label === toCart.spec[1])?.price as string;
-
-    return parseFloat(sub_option_price || option_price || product.value!.base_price);
-  }),
-  photos: computed(() => {
-    let photos = [...product.value!.photos];
-    if (product.value!.option_group) {
-      product.value!.option_group.options.forEach((item) => {
-        if (item.photo) photos.push(item.photo);
-      });
-      if (product.value!.sub_option_group) {
-        product.value!.sub_option_group.options.forEach((item) => {
-          if (item.photo) photos.push(item.photo);
-        });
-      }
-    }
-    return photos;
-  }),
   quantity: 1,
   delivery: "self-pickup",
   note: "",
+});
+
+const photos = computed(() => {
+  let photos = [...product.value!.photos];
+  if (product.value!.option_group) {
+    product.value!.option_group.options.forEach((item) => {
+      if (item.photo) photos.push(item.photo);
+    });
+    if (product.value!.sub_option_group) {
+      product.value!.sub_option_group.options.forEach((item) => {
+        if (item.photo) photos.push(item.photo);
+      });
+    }
+  }
+  return photos;
+});
+const price = computed(() => {
+  if (!product.value) return NaN;
+  let option_price = product.value.option_group?.options.find(
+    (option) => option.label === toCart.spec[0],
+  )?.price;
+  let sub_option_price = product.value.option_group?.options
+    .find((option) => option.label === toCart.spec[0])
+    ?.sub_options?.find((sub_option) => sub_option.label === toCart.spec[1])?.price;
+
+  return parseFloat(sub_option_price || option_price || product.value!.base_price);
+});
+const promo_price = computed(() => {
+  if (!product.value) return undefined;
+  let option = product.value.option_group?.options.find(
+    (option) => option.label === toCart.spec[0],
+  );
+  let sub_option = product.value.option_group?.options
+    .find((option) => option.label === toCart.spec[0])
+    ?.sub_options?.find((sub_option) => sub_option.label === toCart.spec[1]);
+
+  if (sub_option?.promo_price) return parseFloat(sub_option.promo_price);
+  else if (option?.promo_price && !sub_option?.price) return parseFloat(option.promo_price);
+  else if (product.value?.base_promo_price && !sub_option?.price && !option?.price)
+    return parseFloat(product.value.base_promo_price);
+  return undefined;
 });
 
 const isSmallScreen = ref(true);
@@ -193,15 +208,11 @@ onMounted(() => {
 
 function getItemForCart() {
   return {
-    type: "product",
-    id: product.value!.id,
-    title: product.value!.title,
-    price: toCart.price,
-    media: toCart.photos[0],
-    productOptions: toCart.spec,
+    product: product.value,
+    selectedOptions: toCart.spec,
+    price: price.value,
     quantity: toCart.quantity,
     delivery: toCart.delivery,
-    bizData: bizData,
     checked: true,
   };
 }
@@ -281,9 +292,9 @@ function getItemForCart() {
             Quantity:
             <div class="trailing">{{ toCart.quantity }}</div>
           </div>
-          <div class="w-full text-sm input-box">
+          <div class="input-box w-full text-sm">
             <button
-              class="addon icon text-xs button"
+              class="addon icon button text-xs"
               @click="
                 () => {
                   if (toCart.quantity > 1) toCart.quantity--;
@@ -310,7 +321,7 @@ function getItemForCart() {
                 }
               "
             />
-            <button class="addon icon text-xs button" @click="toCart.quantity++">
+            <button class="addon icon button text-xs" @click="toCart.quantity++">
               <Icon name="material-symbols:add-rounded" />
             </button>
           </div>
@@ -328,7 +339,7 @@ function getItemForCart() {
               class="item as-icon disabled"
               :class="{ active: toCart.delivery === 'bizworld' }"
             >
-              <div class="flex flex-col gap-2 items-center">
+              <div class="flex flex-col items-center gap-2">
                 <input type="radio" value="bizworld" v-model="toCart.delivery" class="form-item" />
                 <Icon
                   name="material-symbols:delivery-truck-speed-outline-rounded"
@@ -336,15 +347,15 @@ function getItemForCart() {
                 />
               </div>
               <div class="content" style="font-weight: normal">
-                <div class="flex gap-3 justify-between">
+                <div class="flex justify-between gap-3">
                   <div class="text-sm font-bold">BizWorld Delivery Management</div>
                   <a href="#">Details</a>
                 </div>
-                <div class="flex gap-3 justify-between">
+                <div class="flex justify-between gap-3">
                   <div>Delivery fee:</div>
                   <div>NA</div>
                 </div>
-                <div class="flex gap-3 justify-between">
+                <div class="flex justify-between gap-3">
                   <div>Delivery time:</div>
                   <div>NA</div>
                 </div>
@@ -352,7 +363,7 @@ function getItemForCart() {
             </label>
             <!-- Self pickup option -->
             <label class="item as-icon" :class="{ active: toCart.delivery === 'self-pickup' }">
-              <div class="flex flex-col gap-2 items-center">
+              <div class="flex flex-col items-center gap-2">
                 <input
                   type="radio"
                   value="self-pickup"
@@ -362,7 +373,7 @@ function getItemForCart() {
                 <Icon name="material-symbols:package-outline-rounded" style="font-size: 1.5em" />
               </div>
               <div class="content" style="font-weight: normal">
-                <div class="flex gap-3 justify-between">
+                <div class="flex justify-between gap-3">
                   <div class="text-sm font-bold">Self Pickup</div>
                   <a href="javascript:void(0)" class="open-modal" data-target="sp-details"
                     >Details</a
@@ -380,7 +391,7 @@ function getItemForCart() {
       <Title>{{ `${product.title} | Bizworld` }}</Title>
 
       <div
-        class="fluid layout-grid border-b p-2 mb-4 bg-surface sticky top-15.75 z-level-1 pin-top-blend"
+        class="fluid layout-grid bg-surface z-level-1 pin-top-blend sticky top-15.75 mb-4 border-b p-2"
       >
         <div class="px-4">
           Products <Icon name="material-symbols:chevron-right-rounded" /> {{ product.category }}
@@ -397,7 +408,7 @@ function getItemForCart() {
           }"
         >
           <LimbCarousel :options="{ continuous: false }">
-            <div v-for="slide in toCart.photos" class="cs-slide">
+            <div v-for="slide in photos" class="cs-slide">
               <NuxtImg
                 format="webp"
                 sizes="960px"
@@ -408,7 +419,7 @@ function getItemForCart() {
               />
             </div>
             <template v-if="!isSmallScreen" #trackers>
-              <div v-for="slide in toCart.photos" class="thumbnail cs-tracker">
+              <div v-for="slide in photos" class="thumbnail cs-tracker">
                 <NuxtImg sizes="150px" format="webp" densities="1x" :src="slide" />
               </div>
             </template>
@@ -431,12 +442,25 @@ function getItemForCart() {
             </span>
           </div>
           <!-- Product Options -->
-          <section class="min-[960px]:hidden config">
+          <section class="config min-[960px]:hidden">
             <div class="text-sm font-semibold">Unit price</div>
-            <div class="text-h3 m-0 text-primary font-bold">
-              ₦{{ toCart.price.toLocaleString() }}
+            <template v-if="product.promo && promo_price">
+              <div class="mt-1 -mb-2 flex items-center gap-1 text-xl font-semibold">
+                <div class="text-on-surface-v1 line-through">
+                  ₦{{ Number(price).toLocaleString() }}
+                </div>
+                <div class="label compact bg-secondary-cont px-2 py-0.5 text-xs">
+                  -{{ Math.round(100 - (Number(promo_price) / Number(price)) * 100) }}%
+                </div>
+              </div>
+              <div class="text-h3 text-primary m-0 font-bold">
+                ₦{{ Number(promo_price).toLocaleString() }}
+              </div>
+            </template>
+            <div v-else class="text-h3 text-primary m-0 font-bold">
+              ₦{{ price.toLocaleString() }}
             </div>
-            <div class="alt-ribbon label bg-red-600 text-white ml-auto mr-[-2em]">
+            <div class="alt-ribbon label mr-[-2em] ml-auto bg-red-600 text-white">
               Configure purchase
             </div>
 
@@ -512,7 +536,7 @@ function getItemForCart() {
                     name="verified_sp"
                     v-tooltip:aria.unblocking
                     aria-label="Verified"
-                    class="text-sm green-text"
+                    class="green-text text-sm"
                     style="position: absolute; bottom: 0px; right: 0px"
                   />
                 </div>
@@ -520,12 +544,12 @@ function getItemForCart() {
                   <NuxtLink
                     :to="{ name: 'biz-home', params: { slug: bizData?.slug } }"
                     target="_blank"
-                    class="font-bold text-h6 line-clamp-2 uppercase"
+                    class="text-h6 line-clamp-2 font-bold uppercase"
                   >
                     {{ bizData?.business_name }}
                   </NuxtLink>
                   <div
-                    class="flex justify-between flex-wrap font-semibold"
+                    class="flex flex-wrap justify-between font-semibold"
                     style="gap: 0.25em 0.75em"
                   >
                     <span>
@@ -543,7 +567,7 @@ function getItemForCart() {
                   </div>
                 </div>
               </div>
-              <div class="flex *:flex-1 gap-3" style="margin-top: 0.5em">
+              <div class="flex gap-3 *:flex-1" style="margin-top: 0.5em">
                 <button class="secondary compact button">
                   <Icon name="material-symbols:add-to-queue-outline-rounded" class="lead" />
                   Follow
@@ -568,7 +592,7 @@ function getItemForCart() {
               </i>
             </div>
             <div class="collapsible">
-              <div class="flex *:flex-1 items-center">
+              <div class="flex items-center *:flex-1">
                 <div
                   class="text-center"
                   v-for="rating in [
@@ -603,12 +627,12 @@ function getItemForCart() {
               </div>
               <hr />
               <div>
-                <div class="flex justify-between gap-3 items-center" style="margin-bottom: 1rem">
+                <div class="flex items-center justify-between gap-3" style="margin-bottom: 1rem">
                   <div class="font-semibold">Reviews</div>
                   <LimbDropdown
                     type="selection"
                     :options="{ directionPriority: { x: 'left' } }"
-                    class="outlined text-sm button"
+                    class="outlined button text-sm"
                   >
                     <Icon name="material-symbols:sort-rounded" class="lead" />
                     Sort:
@@ -626,8 +650,8 @@ function getItemForCart() {
                     style="padding: 0.5em"
                   >
                     <template v-for="review in [reviews[index - 1]]">
-                      <header class="flex justify-between items-center gap-3">
-                        <div class="text-sm rounded-full avatar">
+                      <header class="flex items-center justify-between gap-3">
+                        <div class="avatar rounded-full text-sm">
                           <NuxtImg
                             preset="logo"
                             src="/Images/profilepic.jpg"
@@ -668,7 +692,7 @@ function getItemForCart() {
                       </header>
                       <article>{{ review?.review }}</article>
                       <footer>
-                        <span class="opacity-65 text-smsm font-semibold">12-01-2034</span>
+                        <span class="text-smsm font-semibold opacity-65">12-01-2034</span>
                       </footer>
                     </template>
                   </div>
@@ -685,7 +709,7 @@ function getItemForCart() {
 
         <!-- Product Options -->
         <section
-          class="max-[959px]:hidden config"
+          class="config max-[959px]:hidden"
           v-scrollPin="{
             top: 118,
             bottom: 64,
@@ -693,17 +717,30 @@ function getItemForCart() {
           }"
         >
           <div class="text-sm font-semibold">Unit price</div>
-          <div class="text-h3 m-0 text-primary font-bold">₦{{ toCart.price.toLocaleString() }}</div>
-          <div class="alt-ribbon label bg-red-600 text-white ml-auto mr-[-2em]">
+          <template v-if="product.promo && promo_price">
+            <div class="mt-1 -mb-2 flex items-center gap-1 text-xl font-semibold">
+              <div class="text-on-surface-v1 line-through">
+                ₦{{ Number(price).toLocaleString() }}
+              </div>
+              <div class="label compact bg-secondary-cont px-2 py-0.5 text-xs">
+                -{{ Math.round(100 - (Number(promo_price) / Number(price)) * 100) }}%
+              </div>
+            </div>
+            <div class="text-h3 text-primary m-0 font-bold">
+              ₦{{ Number(promo_price).toLocaleString() }}
+            </div>
+          </template>
+          <div v-else class="text-h3 text-primary m-0 font-bold">₦{{ price.toLocaleString() }}</div>
+          <div class="alt-ribbon label mr-[-2em] ml-auto bg-red-600 text-white">
             Configure purchase
           </div>
 
           <useTemplate />
           <div
-            class="flex gap-3 sticky bg-surface pin-bottom-blend z-level-1"
+            class="bg-surface pin-bottom-blend z-level-1 sticky flex gap-3"
             style="bottom: 0px; padding: 0.5rem 0rem; margin-top: 0.5rem"
           >
-            <button class="primary w-full button open-modal" data-target="pre-cart">
+            <button class="primary button open-modal w-full" data-target="pre-cart">
               <Icon name="material-symbols:add-shopping-cart" class="lead" />
               Add to cart
             </button>
@@ -738,7 +775,7 @@ function getItemForCart() {
               </div>
             </div>
           </div>
-          <div class="text-sm compact success note" style="margin-top: 0.5rem">
+          <div class="compact success note text-sm" style="margin-top: 0.5rem">
             <Icon
               name="material-symbols:verified-user-outline-rounded"
               style="font-size: 1.875em"
@@ -756,11 +793,11 @@ function getItemForCart() {
       </div>
       <!-- Call to Action Section -->
       <div
-        class="min-[960px]:hidden sticky bg-surface fluid z-level-2 pin-bottom-blend"
+        class="bg-surface fluid z-level-2 pin-bottom-blend sticky min-[960px]:hidden"
         style="bottom: 0px"
       >
-        <div class="max-w-6xl auto-contain flex gap-3" style="padding: 0.5rem 0rem">
-          <button class="flex-1 primary button open-modal" data-target="pre-cart">
+        <div class="auto-contain flex max-w-6xl gap-3" style="padding: 0.5rem 0rem">
+          <button class="primary button open-modal flex-1" data-target="pre-cart">
             <Icon name="material-symbols:add-shopping-cart" class="lead" />
             Add to cart
           </button>
@@ -798,18 +835,18 @@ function getItemForCart() {
       </div>
       <LimbModal id="sp-details">
         <div class="dialog">
-          <div class="header pin-top-blend flex gap-3">
-            <div class="font-bold truncate">Self Pickup Details</div>
+          <header class="pin-top-blend flex gap-3 px-6 py-4">
+            <div class="truncate font-bold">Self Pickup Details</div>
             <button class="circular flat button as-text exit-modal" style="margin-left: auto">
               <Icon name="material-symbols:close" />
             </button>
-          </div>
-          <div class="content">
+          </header>
+          <div class="px-6 pt-4">
             <p class="mt-0">
               Self-pickup is a delivery option that lets you control how your item is collected. A
               token is generated to verify your pickup from the specified location.
             </p>
-            <table class="table striped">
+            <table class="striped table">
               <tbody>
                 <tr>
                   <td>Location</td>
@@ -840,14 +877,14 @@ function getItemForCart() {
         </div>
       </LimbModal>
       <LimbModal id="pre-cart">
-        <div class="self-scroll dialog">
-          <div class="header pin-top-blend flex gap-3">
-            <div class="font-bold truncate">Confirm options</div>
+        <div class="dialog">
+          <header class="pin-top-blend flex gap-3 px-6 py-4">
+            <div class="truncate font-bold">Confirm options</div>
             <button class="circular flat button as-text exit-modal" style="margin-left: auto">
               <Icon name="material-symbols:close" />
             </button>
-          </div>
-          <div class="content" style="padding-bottom: 0em">
+          </header>
+          <div class="px-6 pt-4">
             <useTemplate />
             <div class="field mt-2">
               <label>Additional Notes</label>
@@ -859,27 +896,42 @@ function getItemForCart() {
               ></textarea>
             </div>
             <div
-              class="footer flex-col flex gap-3 bg-surface sticky pin-bottom-blend"
+              class="footer bg-surface pin-bottom-blend sticky flex flex-col gap-3"
               style="bottom: 0px; padding: 1rem 0rem; margin-top: 0.5rem"
             >
               <div class="flex flex-col" style="gap: 0.25rem">
-                <div class="flex gap-3 justify-between">
-                  <div>Unit price</div>
-                  <div>₦{{ toCart.price.toLocaleString() }}</div>
+                <div class="flex items-center justify-between gap-3">
+                  <div class="font-semibold">Unit price</div>
+                  <div v-if="product.promo && promo_price" class="flex gap-2">
+                    <div class="flex items-center gap-1">
+                      <div class="text-on-surface-v1 line-through">
+                        ₦{{ Number(price).toLocaleString() }}
+                      </div>
+                      <div class="label compact px-2 py-0.5 text-xs">
+                        -{{ Math.round(100 - (Number(promo_price) / Number(price)) * 100) }}%
+                      </div>
+                    </div>
+                    <div class="font-bold">₦{{ Number(promo_price).toLocaleString() }}</div>
+                  </div>
+                  <div v-else class="font-bold">₦{{ price.toLocaleString() }}</div>
                 </div>
                 <hr class="m-0" />
-                <div class="flex gap-3 justify-between">
+                <div class="flex justify-between gap-3">
                   <div class="font-bold">Total:</div>
                   <div class="text-h5 font-bold">
-                    ₦{{ (toCart.price * toCart.quantity).toLocaleString() }}
+                    ₦{{
+                      (
+                        (product.promo && promo_price ? promo_price : price) * toCart.quantity
+                      ).toLocaleString()
+                    }}
                   </div>
                 </div>
               </div>
-              <div class="flex flex-wrap gap-3 justify-between items-start">
+              <div class="flex flex-wrap items-start justify-between gap-3">
                 <NuxtLink
                   @click="cartStore.addToCart(getItemForCart())"
                   to="/cart"
-                  class="flex-1 primary exit-modal button"
+                  class="primary exit-modal button flex-1"
                 >
                   Add and Go to cart
                 </NuxtLink>
@@ -889,7 +941,7 @@ function getItemForCart() {
                     params: { slug: bizData?.slug },
                   }"
                   @click="cartStore.addToCart(getItemForCart())"
-                  class="flex-1 primary flat button exit-modal"
+                  class="primary flat button exit-modal flex-1"
                 >
                   Add and Continue Shopping
                 </NuxtLink>

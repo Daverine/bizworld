@@ -6,13 +6,13 @@ const signup = useSignUp(callbackURL);
 <template>
   <LimbModal id="register-modal">
     <div class="dialog">
-      <div class="header flex gap-3">
-        <div class="font-bold truncate">Join BizWorld</div>
+      <header class="flex gap-3 px-6 py-4">
+        <div class="truncate font-bold">Join BizWorld</div>
         <button class="circular flat button as-text exit-modal" style="margin-left: auto">
           <Icon name="material-symbols:close-rounded" />
         </button>
-      </div>
-      <div class="content">
+      </header>
+      <div class="px-6 py-4">
         <div class="field">
           <button
             class="outlined button"
@@ -52,7 +52,7 @@ const signup = useSignUp(callbackURL);
                 <div
                   v-for="error of signup.validation.r$.firstname.$errors"
                   :key="error"
-                  class="text-sm text-error"
+                  class="text-error text-sm"
                 >
                   <Icon name="material-symbols:error-rounded" />
                   {{ error }}
@@ -69,7 +69,7 @@ const signup = useSignUp(callbackURL);
                 <div
                   v-for="error of signup.validation.r$.lastname.$errors"
                   :key="error"
-                  class="text-sm text-error"
+                  class="text-error text-sm"
                 >
                   <Icon name="material-symbols:error-rounded" />
                   {{ error }}
@@ -89,7 +89,7 @@ const signup = useSignUp(callbackURL);
             <div
               v-for="error of signup.validation.r$.email.$errors"
               :key="error"
-              class="text-sm text-error"
+              class="text-error text-sm"
             >
               <Icon name="material-symbols:error-rounded" />
               {{ error }}
@@ -107,7 +107,7 @@ const signup = useSignUp(callbackURL);
             <div
               v-for="error of signup.validation.r$.password.$errors"
               :key="error"
-              class="text-sm text-error"
+              class="text-error text-sm"
             >
               <Icon name="material-symbols:error-rounded" />
               {{ error }}
@@ -132,13 +132,13 @@ const signup = useSignUp(callbackURL);
   </LimbModal>
   <LimbModal id="login-modal">
     <div class="dialog max-w-125">
-      <div class="header flex gap-3">
-        <div class="font-bold truncate">Login to BizWorld</div>
+      <header class="flex gap-3 px-6 py-4">
+        <div class="truncate font-bold">Login to BizWorld</div>
         <button class="circular flat button as-text exit-modal" style="margin-left: auto">
           <Icon name="material-symbols:close-rounded" />
         </button>
-      </div>
-      <div class="content">
+      </header>
+      <div class="px-6 py-4">
         <div class="field">
           <button
             class="outlined button"
@@ -173,7 +173,7 @@ const signup = useSignUp(callbackURL);
               placeholder="Email address"
             />
             <div
-              class="text-sm text-error"
+              class="text-error text-sm"
               v-for="error of login.validation.r$.email.$errors"
               :key="error"
             >
@@ -191,7 +191,7 @@ const signup = useSignUp(callbackURL);
               placeholder="Password"
             />
             <div
-              class="text-sm text-error"
+              class="text-error text-sm"
               v-for="error of login.validation.r$.password.$errors"
               :key="error"
             >

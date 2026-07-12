@@ -1,41 +1,66 @@
+import { product } from "~~/shared/utils/types";
+
 export default defineEventHandler(async (event) => {
-  const { id, slug } = getQuery(event);
+  const { id, slug, action } = getQuery(event);
+  const actions = ["visibility", "edit", "config"];
   let {
-    set,
+    hidden,
     category,
     new_category,
     photos,
     video_link,
     base_price,
+    base_promo_price,
     option_group,
     sub_option_group,
     specifications,
     overview,
     details_attachment,
+    availability,
+    quantity,
+    delivery_options,
+    promo,
+    location,
   } = await readBody(event);
 
   category = category === "others" && new_category ? `others:${new_category}` : category;
 
-  if (!id && !slug) return;
+  if ((!id && !slug) || typeof action !== "string" || !actions.includes(action)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Bad request.",
+      message: "Request query is invalid.",
+    });
+  }
 
-  await db
+  return (await db
     .updateTable("product")
     .set(
-      set
-        ? { hidden: set.hidden }
-        : {
-            base_price,
-            category,
-            details_attachment,
-            is_active: true,
-            option_group: JSON.stringify(option_group),
-            overview,
-            photos,
-            specifications: JSON.stringify(specifications),
-            sub_option_group: JSON.stringify(sub_option_group),
-            video_link,
-          },
+      action === "visibility"
+        ? { hidden }
+        : action === "edit"
+          ? {
+              base_price,
+              base_promo_price,
+              category,
+              details_attachment,
+              is_active: true,
+              location,
+              option_group: JSON.stringify(option_group),
+              overview,
+              photos,
+              specifications: JSON.stringify(specifications),
+              sub_option_group: JSON.stringify(sub_option_group),
+              video_link,
+            }
+          : {
+              availability,
+              quantity,
+              delivery_options,
+              promo,
+            },
     )
     .where(id ? "id" : "slug", "=", (id ? id : slug) as string)
-    .executeTakeFirst();
+    .returningAll()
+    .executeTakeFirst()) as product | undefined;
 });
