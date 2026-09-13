@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const props = defineProps<{
   id: string;
-  options?: DialogerSettings;
+  options?: Partial<DialogerOptions>;
 }>();
 const sidepanel = useTemplateRef("panel");
-const options: DialogerSettings = {
+const options: Partial<DialogerOptions> = {
   namespace: "sidepanel",
   toggler: ".open-sidepanel",
   closeOnEsc: true,
@@ -65,12 +65,7 @@ const control = useDialoger(sidepanel, props.id, options);
   }
 
   & > .panel {
-    display: flex;
-    flex-flow: column nowrap;
-    gap: 1em;
     position: absolute;
-    overflow-y: auto;
-    border-radius: 0em;
     margin: 0;
     width: var(--sidepanel-width);
     height: 100%;
@@ -80,6 +75,7 @@ const control = useDialoger(sidepanel, props.id, options);
     color: var(--color-on-surface);
     background-color: var(--color-surface);
     box-shadow: var(--z-depth-5);
+    border-radius: 0em;
     z-index: 100;
     backface-visibility: hidden;
     transition: transform 500ms ease;

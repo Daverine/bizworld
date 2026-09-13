@@ -7,10 +7,8 @@ onMounted(() => feedStore.getUpdate());
 <template>
   <header class="hm-header">
     <HomeHeader />
-    <div
-      role="button"
-      class="text-center"
-      style="margin-bottom: 2rem"
+    <button
+      class="mb-8 text-center"
       @click="
         $event.currentTarget.parentElement.nextElementSibling.scrollIntoView({
           behavior: 'smooth',
@@ -19,31 +17,17 @@ onMounted(() => feedStore.getUpdate());
         })
       "
     >
-      <Icon name="material-symbols:keyboard-double-arrow-down-rounded" style="font-size: 2em" />
-      <div style="font-size: 1.2em; line-height: 1; font-weight: 500">FEEDS</div>
-    </div>
+      <Icon name="material-symbols:keyboard-double-arrow-down-rounded" class="text-3xl" />
+      <div class="text-xl font-bold">FEEDS</div>
+    </button>
   </header>
   <Common>
-    <main class="max-w-180 auto-contain" style="padding: 1rem 1rem">
-      <LimbIScroller
-        v-scrollPin="{ top: 63 }"
-        class="pin-top-blend z-level-1"
-        style="margin-bottom: 1rem"
-      >
-        <div class="rail fillable menu scroll-items">
-          <div class="items" style="margin: 0px auto">
-            <div class="active item">For you</div>
-            <div class="item">Following</div>
-          </div>
-        </div>
-        <div class="l-scroll">
-          <Icon name="material-symbols:keyboard-double-arrow-left" />
-        </div>
-        <div class="r-scroll">
-          <Icon name="material-symbols:keyboard-double-arrow-right" />
-        </div>
-      </LimbIScroller>
-      <section style="display: flex; flex-direction: column; align-items: center">
+    <main class="auto-contain max-w-180 p-4">
+      <div class="rail fillable menu scroll-items pin-top-blend z-level-1 sticky top-16 mb-4">
+        <div class="active item">For you</div>
+        <div class="item">Following</div>
+      </div>
+      <section class="flex flex-col items-center">
         <FeedCard v-for="feed in feedStore.feeds" :details="feed" />
         <div class="divider">
           <button class="button">

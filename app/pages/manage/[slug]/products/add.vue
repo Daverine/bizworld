@@ -2,6 +2,7 @@
 import type { Maybe } from "@regle/core";
 import { url, required, requiredIf } from "@regle/rules";
 import { useSortable } from "@vueuse/integrations/useSortable";
+import { utils } from "~/utils/utils";
 
 definePageMeta({
   name: "add-product",
@@ -10,10 +11,14 @@ definePageMeta({
   noCart: true,
 });
 
+const { data: productCategories } = await useFetch("/api/product-categories", {
+  key: "product-categories",
+});
+
 const route = useRoute();
 const newProduct = reactive<{
   tab1: {
-    category?: string;
+    category_id?: string;
     new_category?: string;
     title?: string;
     photos: (File | string)[];
@@ -105,12 +110,12 @@ const placeholder = reactive<{
 });
 const validation = {
   tab1: useRegle(newProduct.tab1, {
-    category: {
+    category_id: {
       required: withMessage(required, "Product category is required."),
     },
     new_category: {
       required: withMessage(
-        requiredIf(() => newProduct.tab1.category === "others"),
+        requiredIf(() => newProduct.tab1.category_id === "-1"),
         "New category name is required.",
       ),
     },
@@ -118,17 +123,12 @@ const validation = {
     photos: {
       $rewardEarly: true,
       minLength: withMessage(
-        (value) => (value as []).length > 1,
+        (value: Maybe<(File | string)[]>) => !!value?.length,
         "At least two product photos are required.",
       ),
       size: withMessage(
-        (value) =>
-          !(
-            value &&
-            (value as (File | string)[]).some(
-              (el) => typeof el !== "string" && el.size >= 5 * 1024 * 1024,
-            )
-          ),
+        (value: Maybe<(File | string)[]>) =>
+          !(value && value.some((el) => typeof el !== "string" && el.size >= 5 * 1024 * 1024)),
         "Each photo must be less than 5MB in size.",
       ),
     },
@@ -217,53 +217,59 @@ const validation = {
       ),
     },
   }),
-  option: useRegle(placeholder.option, {
-    label: {
-      required: withMessage(required, "A unique label must be specified for this option."),
-      unique: withMessage((value) => {
-        let existsInMain =
-          newProduct.tab2.option_group?.options.some((option) => option.label === value) ?? false;
-        let existsInSub =
-          newProduct.tab2.sub_option_group?.options.some((option) => option.label === value) ??
-          false;
-        return (!existsInMain && !existsInSub) || placeholder.modifyingOption;
-      }, "An option with this label already exists."),
+  option: useRegle(
+    computed(() => placeholder.option),
+    {
+      label: {
+        required: withMessage(required, "A unique label must be specified for this option."),
+        unique: withMessage((value) => {
+          let existsInMain =
+            newProduct.tab2.option_group?.options.some((option) => option.label === value) ?? false;
+          let existsInSub =
+            newProduct.tab2.sub_option_group?.options.some((option) => option.label === value) ??
+            false;
+          return (!existsInMain && !existsInSub) || placeholder.modifyingOption;
+        }, "An option with this label already exists."),
+      },
+      promo_price: {
+        lessThanPrice: withMessage((value: Maybe<string>) => {
+          if (value === undefined || value === null) return true;
+          if (Number(value) <= 0) return false;
+          if (placeholder.option.price === undefined) return true;
+          return Number(value) < Number(placeholder.option.price);
+        }, "Promotional price must be less than the base price."),
+      },
+      photo: {
+        maxSize: withMessage(
+          maxFileSize(5 * 1024 * 1024),
+          "Selected photo must be less than 5MB in size.",
+        ),
+      },
+      sub_options: {
+        $each: (sub_option) => ({
+          promo_price: {
+            lessThanPrice: withMessage((value: Maybe<string>) => {
+              if (value === undefined || value === null) return true;
+              if (!sub_option.value.is_active) return true;
+              if (Number(value) <= 0) return false;
+              if (sub_option.value.price === undefined) return true;
+              return Number(value) < Number(sub_option.value.price);
+            }, "Promotional price must be less than the base price."),
+          },
+        }),
+      },
     },
-    promo_price: {
-      lessThanPrice: withMessage((value: Maybe<string>) => {
-        if (value === undefined || value === null) return true;
-        if (Number(value) <= 0) return false;
-        if (placeholder.option.price === undefined) return true;
-        return Number(value) < Number(placeholder.option.price);
-      }, "Promotional price must be less than the base price."),
+  ),
+  location: useRegle(
+    computed(() => placeholder.location),
+    {
+      country: { required },
+      state: { required },
+      city: { required },
     },
-    photo: {
-      maxSize: withMessage(
-        maxFileSize(5 * 1024 * 1024),
-        "Selected photo must be less than 5MB in size.",
-      ),
-    },
-    sub_options: {
-      $each: (sub_option) => ({
-        promo_price: {
-          lessThanPrice: withMessage((value: Maybe<string>) => {
-            if (value === undefined || value === null) return true;
-            if (!sub_option.value.is_active) return true;
-            if (Number(value) <= 0) return false;
-            if (sub_option.value.price === undefined) return true;
-            return Number(value) < Number(sub_option.value.price);
-          }, "Promotional price must be less than the base price."),
-        },
-      }),
-    },
-  }),
-  location: useRegle(placeholder.location, {
-    country: { required },
-    state: { required },
-    city: { required },
-  }),
+  ),
 };
-const productCategories = {
+const specPresets = {
   "Computers & Accessories": [
     "Brand",
     "Model",
@@ -403,8 +409,8 @@ async function configProductOption({ settings }: DialogEvent) {
   await nextTick();
   validation.option.r$.$reset();
 }
-function processProductOption({ settings, exit }: Dialoger) {
-  validation.option.r$.$validate();
+async function processProductOption({ settings, exit }: Dialoger) {
+  await validation.option.r$.$validate();
   if (validation.option.r$.$invalid) return;
 
   let caller = settings.caller!;
@@ -690,32 +696,54 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
             can also select “Others” from the dropdown to make a new one.
           </p>
           <LimbDropdown
-            v-model="newProduct.tab1.category"
+            v-model="newProduct.tab1.category_id"
             type="search select"
-            :class="{ error: validation.tab1.r$.category.$error }"
+            :class="{ error: validation.tab1.r$.category_id.$error }"
             @change="
               $event !== 'others' ||
-              nextTick(() => utils.document().getElementById('prod-category-new')?.focus())
+              $nextTick(() => utils.document().getElementById('prod-category-new')?.focus())
             "
             id="prod-category"
             placeholder="Select category"
           >
             <div class="drop menu">
-              <div class="item" v-for="category in Object.keys(productCategories)">
-                {{ category }}
-              </div>
-              <div data-value="others" class="item">Others</div>
+              <template
+                v-for="cat in productCategories?.filter((category) => category.parent_id === null)"
+                Key="cat.id"
+              >
+                <div class="item xhover font-semibold">
+                  {{ cat.name }}
+                  <Icon name="material-symbols:keyboard-arrow-down-rounded" class="trailing" />
+                </div>
+                <div
+                  v-if="productCategories?.find((sub_cat) => sub_cat.parent_id === cat.id)"
+                  class="sub items"
+                >
+                  <div
+                    v-for="sub_cat in productCategories.filter(
+                      (sub_cat) => sub_cat.parent_id === cat.id,
+                    )"
+                    class="item"
+                    :data-value="sub_cat.id"
+                    :key="sub_cat.id"
+                  >
+                    {{ sub_cat.name }}
+                  </div>
+                  <div class="item" :data-value="cat.id">{{ cat.name }} (Others)</div>
+                </div>
+              </template>
+              <div data-value="-1" class="item">Others</div>
             </div>
           </LimbDropdown>
           <div
             class="text-error text-sm"
-            v-for="error of validation.tab1.r$.category.$errors"
+            v-for="error of validation.tab1.r$.category_id.$errors"
             :key="error"
           >
             <Icon name="material-symbols:error-rounded" />
             {{ error }}
           </div>
-          <div v-if="newProduct.tab1.category === 'others'" class="field">
+          <div v-if="newProduct.tab1.category_id === '-1'" class="field">
             <label for="prod-category-new">New category name</label>
             <div class="text-sm opacity-65">
               Note: Your product will remain in the “Others” category in Explore until the new
@@ -798,7 +826,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
             <Icon name="material-symbols:error-rounded" />
             {{ error }}
           </div>
-          <label class="icon button design-takeover">
+          <label class="button design-takeover">
             <Icon name="material-symbols:add-a-photo-outline-rounded" />{{
               newProduct.tab1.photos.length ? "Add more photos" : "Add photos"
             }}
@@ -860,7 +888,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
             @click="
               () => {
                 placeholder.priceOption = true;
-                nextTick(() => {
+                $nextTick(() => {
                   utils.document().getElementById('base-promo-price')?.focus();
                 });
               }
@@ -978,7 +1006,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
                     </button>
                   </div>
                   <button type="button" class="button as-app open-modal" data-target="app-option">
-                    <Icon class="text-xl" name="material-symbols:add" />
+                    <Icon class="text-xl" name="material-symbols:add-rounded" />
                     Add option
                   </button>
                 </div>
@@ -1085,7 +1113,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
                       data-sub-category
                       data-target="app-option"
                     >
-                      <Icon class="text-xl" name="material-symbols:add" />
+                      <Icon class="text-xl" name="material-symbols:add-rounded" />
                       Add option
                     </button>
                   </div>
@@ -1130,7 +1158,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
               <div class="drop menu">
                 <div
                   class="item"
-                  v-for="(template, templateName) in productCategories"
+                  v-for="(template, templateName) in specPresets"
                   @click="addSpecification(template)"
                 >
                   {{ templateName }}
@@ -1250,7 +1278,10 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
             v-if="newProduct.tab3.details_attachment"
             class="relative mb-3 flex w-max flex-col items-center"
           >
-            <Icon name="mdi:file-pdf-box" class="text-6xl text-red-500" />
+            <Icon
+              name="material-symbols:picture-as-pdf-outline-rounded"
+              class="text-6xl text-red-500"
+            />
             <button
               type="button"
               @click="newProduct.tab3.details_attachment = undefined"
@@ -1259,7 +1290,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
               <Icon name="material-symbols:close-rounded" />
             </button>
             <div v-if="typeof newProduct.tab3.details_attachment === 'string'" class="text-sm">
-              {{ newProduct.tab3.details_attachment.split("/").slice(-1)[0] }}
+              {{ newProduct.tab3.details_attachment.split("/").at(-1) }}
             </div>
             <template v-else>
               <div class="text-sm">{{ newProduct.tab3.details_attachment.name }}</div>
@@ -1268,7 +1299,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
               </div>
             </template>
           </div>
-          <label class="icon button design-takeover">
+          <label class="button design-takeover">
             <Icon name="material-symbols:picture-as-pdf-outline-rounded" />{{
               `${newProduct.tab3.details_attachment ? "Change attachment" : "Add attachment"}`
             }}
@@ -1342,7 +1373,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
       <div class="dialog">
         <header class="flex gap-3 px-6 py-4">
           <div class="truncate font-bold">
-            {{ placeholder.modifyingOption ? "Modify" : "Add" }} an option
+            {{ placeholder.modifyingOption ? "Modify an option" : "Add an option" }}
           </div>
           <button type="button" class="circular flat button as-text exit-modal ml-auto">
             <Icon name="material-symbols:close-rounded" />
@@ -1386,7 +1417,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
               @click="
                 () => {
                   placeholder.optionPriceOption = true;
-                  nextTick(() => {
+                  $nextTick(() => {
                     utils.document().getElementById('option-promo-price')?.focus();
                   });
                 }
@@ -1445,7 +1476,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
               <Icon name="material-symbols:error-rounded" />
               {{ error }}
             </div>
-            <label class="icon button design-takeover">
+            <label class="button design-takeover">
               <Icon name="material-symbols:add-a-photo-outline-rounded" />{{
                 `${placeholder.option.photo ? "Change photo" : "Add photo"}`
               }}
@@ -1462,7 +1493,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
               class="primary button"
               @click.prevent="processProductOption(control)"
             >
-              {{ placeholder.modifyingOption ? "Modify" : "Add" }} option
+              {{ placeholder.modifyingOption ? "Modify option" : "Add option" }}
             </button>
           </div>
           <div v-if="placeholder.option.sub_options" class="field">

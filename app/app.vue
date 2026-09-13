@@ -4,13 +4,14 @@ const { isLoading } = useLoadingIndicator();
 <template>
   <Html lang="en" />
   <Title>BizWorld | The Web World of Business</Title>
-  <Menus />
-  <AuthModals />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <Modals />
+  <AuthModals />
+  <Explore />
   <PreCart />
+  <Menus />
+  <Modals />
   <div
     class="z-level-5 bg-overlay fixed inset-0 grid place-items-center backdrop-blur-xs"
     :class="{ hidden: !isLoading }"

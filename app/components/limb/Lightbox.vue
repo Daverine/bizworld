@@ -7,7 +7,6 @@ declare global {
     YT: any;
   }
 }
-declare var YT: any;
 
 type LightboxSettings = {
   namespace: string;
@@ -95,7 +94,6 @@ type slideContent = {
 };
 
 const route = useRoute();
-const router = useRouter();
 const props = defineProps({
   id: {
     type: String,
@@ -204,7 +202,7 @@ async function init() {
             (elem) => elem.getAttribute("data-cont-id") === slide.contentId,
           );
           if (slideElement) {
-            slide.youtubeRef = new YT.Player(
+            slide.youtubeRef = new window.YT.Player(
               slideElement.querySelector(`:scope > .content > iframe`),
             );
           }
@@ -212,7 +210,7 @@ async function init() {
     }
   }
 }
-function setInteractionRange(e: KeyboardEvent) {
+function KBDControls(e: KeyboardEvent) {
   // tab function in panel
   if (e.key === "Tab") utils.focusRangeOnTab(lightbox.value!, e);
   // Control + A function in panel
@@ -221,13 +219,13 @@ function setInteractionRange(e: KeyboardEvent) {
     e.preventDefault();
     utils.setHighlightRange(lightbox.value!);
   }
+  // Esc function in dialog
+  else if (settings.closeOnEsc && e.key === "Escape" && utils.checkEscStatus(bb.uniqueId!))
+    vbb.showLightbox = false;
 }
 function backToExit() {
   bb.exitedWithBrowserBack = true;
   vbb.showLightbox = false;
-}
-function exitWithEscKey(e: KeyboardEvent) {
-  if (e.key === "Escape" && utils.checkEscStatus(bb.uniqueId!)) vbb.showLightbox = false;
 }
 function resizeIframe() {
   if (!currPic || currPic.nodeName !== "IFRAME") return;
@@ -441,14 +439,10 @@ onMounted(async () => {
   // click on lightbox toggler to open lightbox event
   document.addEventListener("click", clickToOpenLightbox);
 
-  lightbox.value!.addEventListener("lbconsole", ((
-    e: CustomEvent<string | { command: string; el: HTMLElement }>,
-  ) => {
+  lightbox.value!.addEventListener("lbconsole", ((e: CustomEvent) => {
     if (
-      typeof e.detail === "object" &&
       e.detail.command === "view in lightbox" &&
-      e.detail.el &&
-      e.detail.el.matches(`[data-target="${props.id}"]`)
+      e.detail.el?.matches(`[data-target="${props.id}"]`)
     )
       triggerViewOf(e.detail.el);
     else if (e.detail === "close lightbox") vbb.showLightbox = false;
@@ -498,9 +492,8 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", clickToOpenLightbox);
   if (document.fullscreenElement === lightbox.value!) document.exitFullscreen();
   if (settings.hashControl) window.removeEventListener("popstate", backToExit);
-  document.removeEventListener("keydown", setInteractionRange);
+  document.removeEventListener("keydown", KBDControls);
   utils.checkEscStatus(bb.uniqueId!, true);
-  document.removeEventListener("keyup", exitWithEscKey);
   document.removeEventListener("fullscreenchange", fullscreenOutFunc);
   window.removeEventListener("resize", resizeFunc);
   document.removeEventListener("touchmove", gestureMove);
@@ -561,14 +554,10 @@ watch(
           settings,
           caller: settings.caller,
         });
-      // set focus and text-highlight range to only lightbox;
-      document.addEventListener("keydown", setInteractionRange);
 
-      if (settings.closeOnEsc) {
-        utils.trackEscOn(bb.uniqueId!);
-        document.addEventListener("keyup", exitWithEscKey);
-      }
+      if (settings.closeOnEsc) utils.trackEscOn(bb.uniqueId!);
 
+      document.addEventListener("keydown", KBDControls);
       lightbox.value!.classList.add("active");
       clearTimeout(bb.inOutTimeout);
       bb.inOutTimeout = setTimeout(() => {
@@ -605,15 +594,12 @@ watch(
           ?.find((el) => el.contentId === currSlide.getAttribute("data-cont-id"))
           ?.youtubeRef?.pauseVideo();
 
-      document.removeEventListener("keydown", setInteractionRange);
+      // safely get out of escape track
+      if (settings.closeOnEsc) utils.checkEscStatus(bb.uniqueId!, true);
+
+      document.removeEventListener("keydown", KBDControls);
       stopSlideshow();
       lightbox.value!.removeEventListener("click", exitOnWrapperClick);
-      if (settings.closeOnEsc) {
-        // safely get out of escape track
-        utils.checkEscStatus(bb.uniqueId!, true);
-        document.removeEventListener("keyup", exitWithEscKey);
-      }
-
       toolbar.removeEventListener("click", toolbarControls);
       if (document.fullscreenElement === lightbox.value!) document.exitFullscreen();
       [...toolbar.querySelectorAll(":scope .item.fullscreen-switch")].forEach((el) =>
@@ -782,11 +768,12 @@ async function update(newSlideNo: number = vbb.currSlideNo) {
   nextSlide = currSlide?.nextElementSibling?.matches(".slide")
     ? (currSlide.nextElementSibling as HTMLElement)
     : null;
-  currSlide?.classList.add("active");
   prevSlide?.classList.add("prev-slide");
   nextSlide?.classList.add("next-slide");
+  currSlide?.classList.add("active");
   currContent = currSlide.querySelector(":scope > .content") as HTMLElement;
   currPic = [...currContent.children][0] as HTMLElement;
+  if (refresh) slider.classList.remove("swiping"); // when slide did not change it allows the slide to animate back to its original position after swiping.
   slides.value!.forEach((el) => {
     el.removeAttribute("style");
     el.querySelector(":scope > .content")?.removeAttribute("style");
@@ -872,12 +859,13 @@ function gestureStart(e: TouchEvent | MouseEvent) {
     // allow doubleTap to zoom only on image content.
     if (currSlide.getAttribute("data-cont-type") === "image") {
       // DoubleTab Function Luncher
+      let tapLength: undefined | number;
       if (e.type === "touchstart") {
         bb.touchGT = bb.gestureTime;
-        var tapLength = bb.touchGT - bb.doubleTap;
+        tapLength = bb.touchGT - bb.doubleTap;
       } else {
         bb.mouseGT = bb.gestureTime;
-        var tapLength = bb.mouseGT - bb.doubleTap;
+        tapLength = bb.mouseGT - bb.doubleTap;
       }
 
       if (tapLength < 300 && tapLength > 100 && !("touches" in e && e.touches.length > 1)) {
@@ -1021,7 +1009,6 @@ function gestureEnd(e: TouchEvent | MouseEvent) {
     stopSlideshow();
     reAdjustSlide();
   } else if (slider.classList.contains("swiping")) {
-    slider.classList.remove("swiping");
     if (bb.maybeCaption) currSlide.querySelector(":scope .caption")?.classList.toggle("full-text");
     else currSlide.querySelector(":scope .caption")?.classList.remove("full-text");
 
@@ -1239,7 +1226,7 @@ function stopSlideshow() {
           <template v-else-if="slide.markup" v-html="slide.markup"></template>
         </div>
       </figure>
-      <figure v-else class="lb-placeholder" style="text-align: center">
+      <figure v-else class="lb-placeholder flex place-items-center">
         <svg
           style="fill: currentColor; width: 200px; height: auto"
           xmlns="http://www.w3.org/2000/svg"

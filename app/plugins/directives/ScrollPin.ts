@@ -15,6 +15,7 @@ interface Settings {
   pinnable: boolean;
   pinPriority: "top" | "bottom";
   sticky: boolean;
+  followScroll: boolean | "reverse";
   top: number;
   bottom: number;
   breakpoints: Breakpoint[];
@@ -54,6 +55,7 @@ export default {
       streamHeightToWrapper: true,
       notifyStuckState: false,
       breakpoints: [],
+      followScroll: false,
       ...(typeof binding.value === "object" ? binding.value : {}),
     };
     let tmp: Tmp = {
@@ -318,6 +320,7 @@ export default {
           tmp.eBox.height + tmp.bottom! >= tmp.clipBoxHeight;
 
         if (tmp.overflow) {
+          el.classList.add("will-change-[top]");
           el.style.top = `${Math.min(
             Math.max(
               parseFloat(getComputedStyle(el).top) - tmp.scrollAmt,
@@ -325,6 +328,22 @@ export default {
             ),
             tmp.top,
           )}px`;
+          el.style.bottom = "auto";
+        } else if (settings.followScroll) {
+          el.classList.add("will-change-[top]");
+          if (settings.followScroll === "reverse")
+            el.style.top = `${Math.min(
+              Math.max(
+                parseFloat(getComputedStyle(el).top) + tmp.scrollAmt,
+                tmp.windowHeight - tmp.eBox.height - tmp.bottom!,
+              ),
+              tmp.top,
+            )}px`;
+          else
+            el.style.top = `${Math.max(
+              Math.min(parseFloat(getComputedStyle(el).top) - tmp.scrollAmt, tmp.top),
+              tmp.bottom - tmp.eBox.height,
+            )}px`;
           el.style.bottom = "auto";
         } else if (settings.sticky) {
           if (

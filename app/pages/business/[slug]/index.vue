@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-definePageMeta({ layout: "biz-pages", name: "biz-home" });
+definePageMeta({ name: "biz-home" });
 const route = useRoute();
-const bizData = inject("bizData") as Ref<bizData>;
+const { bizData } = defineProps<{
+  bizData: bizData;
+}>();
 const { data: products } = useFetch("/api/business/products", {
   query: { slug: route.params.slug },
 });
-const { today, isClosed, willOpenToday, closesSoon, nextOpenDay } = useAvailability(
-  bizData.value.hours,
-);
+const { today, isClosed, willOpenToday, closesSoon, nextOpenDay } = useAvailability(bizData.hours);
 const data = useBizStore();
 </script>
 
@@ -16,7 +16,7 @@ const data = useBizStore();
     <div class="grid-stacker items-end">
       <NuxtImg
         format="webp"
-        sizes="1280px"
+        width="1280"
         class="open-lightbox aspect-5/2 object-cover"
         data-target="lightbox1"
         :data-lightbox="bizData.cover_photo"
@@ -24,19 +24,19 @@ const data = useBizStore();
         alt="Business page cover picture"
       />
       <div
-        class="bg-linear-to-t from-black to-transparent text-white flex gap-3 flex-wrap items-center p-4"
+        class="flex flex-wrap items-center gap-3 bg-linear-to-t from-black to-transparent p-4 text-white"
       >
         <Icon name="material-symbols:domain-rounded" class="flex-none" />
-        <div class="flex-1 min-w-[65%]">
+        <div class="min-w-[65%] flex-1">
           {{ bizData.description }}
         </div>
-        <button class="flex-none ml-auto primary compact button">Contact Us</button>
+        <button class="primary compact button ml-auto flex-none">Contact Us</button>
       </div>
     </div>
     <div class="fluid layout-grid bg-surface-v2 p-4">
-      <div class="flex gap-3 flex-wrap items-center px-4">
+      <div class="flex flex-wrap items-center gap-3 px-4">
         <Icon name="material-symbols:today-outline-rounded" class="flex-none" />
-        <div class="flex-1 min-w-[65%]">
+        <div class="min-w-[65%] flex-1">
           <span v-if="today?.avail === 'always'">Available throughout today.</span>
           <span v-else-if="today?.avail === 'appointment'"
             >Available by appointment only today.</span
@@ -70,7 +70,7 @@ const data = useBizStore();
             </template>
             <Icon
               name="material-symbols:info-outline-rounded"
-              class="text-xs ml-2 opacity-65"
+              class="ml-2 text-xs opacity-65"
               v-tooltip:aria.unblocking
               aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
             /> </span
@@ -90,7 +90,7 @@ const data = useBizStore();
             params: { slug: $route.params.slug },
             hash: '#biz-hours',
           }"
-          class="flex-none ml-auto compact button"
+          class="compact button ml-auto flex-none"
         >
           Schedule Visit
         </NuxtLink>
@@ -135,7 +135,7 @@ const data = useBizStore();
           <NuxtLink
             :to="{ name: 'biz-services', params: { slug: $route.params.slug } }"
             v-if="data.projects.length > 6"
-            class="button flat as-app self-stretch w-50"
+            class="button flat as-app w-50 self-stretch"
           >
             <Icon name="material-symbols:arrow-forward-rounded" />
             Show All
@@ -162,7 +162,7 @@ const data = useBizStore();
         }"
         class="page-aside text-center"
       >
-        <div class="flex-none relative w-max leading-0">
+        <div class="relative w-max flex-none leading-0">
           <NuxtImg
             preset="logo"
             class="size-20 object-contain"
@@ -174,7 +174,7 @@ const data = useBizStore();
             name="verified_sp"
             v-tooltip:aria.unblocking
             aria-label="Verified"
-            class="absolute bottom-2 right-2"
+            class="absolute right-2 bottom-2"
           />
         </div>
         <div>
@@ -215,7 +215,7 @@ const data = useBizStore();
             </template>
             <Icon
               name="material-symbols:info-outline-rounded"
-              class="text-xs ml-2 opacity-65"
+              class="ml-2 text-xs opacity-65"
               v-tooltip:aria.unblocking
               aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
             /> </span
@@ -241,15 +241,15 @@ const data = useBizStore();
         </template>
         <NuxtLink
           :to="{ name: 'biz-feeds', params: { slug: $route.params.slug } }"
-          class="w-full button max-w-125"
+          class="button w-full max-w-125"
         >
           View more posts
         </NuxtLink>
       </div>
     </section>
-    <section class="auto-contain text-center p-25">
+    <section class="auto-contain p-25 text-center">
       <h3>Thanks for visiting our website.</h3>
-      <p class="max-w-[65ch] auto-contain text-xl font-semibold">
+      <p class="auto-contain max-w-[65ch] text-xl font-semibold">
         We hope you got what you’re looking for. You can make inquiries if not. We hope to see you
         soon.
       </p>

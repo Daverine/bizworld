@@ -240,7 +240,7 @@ onMounted(() => {
   <main class="layout-grid" style="padding-top: 1rem">
     <div class="page-cont">
       <section class="page-sec1">
-        <div class="flex gap-3 items-start">
+        <div class="flex items-start gap-3">
           <h4 class="font-semiboldm-0 page-title">{{ details.title }}</h4>
           <button
             class="outlined icon button"
@@ -259,12 +259,12 @@ onMounted(() => {
                 name="verified_sp"
                 v-tooltip:aria.unblocking
                 aria-label="Verified"
-                class="text-sm green-text"
+                class="green-text text-sm"
                 style="position: absolute; bottom: 0px; right: 0px"
               />
             </div>
             <div class="content">
-              <NuxtLink :to="`/business/${details.bizData.bizId}`" class="font-bold truncate m-0">
+              <NuxtLink :to="`/business/${details.bizData.bizId}`" class="m-0 truncate font-bold">
                 {{ details.bizData.bizName }}
               </NuxtLink>
               <div class="flex flex-wrap text-sm font-semibold" style="gap: 0.25em 0.75em">
@@ -326,7 +326,7 @@ onMounted(() => {
           <div v-for="slide in details.media" class="cs-slide">
             <NuxtImg
               format="webp"
-              sizes="960px"
+              width="960"
               densities="1x"
               :src="slide.url"
               :data-lightbox="slide.url"
@@ -352,11 +352,11 @@ onMounted(() => {
           <div class="fillable-eq menu">
             <label
               v-for="(option, index) in details.serviceOptions"
-              class="flex-col item"
+              class="item flex-col"
               :class="{ active: option.type === choice.spec }"
             >
               <input
-                class="text-lg form-item"
+                class="form-item text-lg"
                 type="radio"
                 :value="option.type"
                 v-model="choice.spec"
@@ -409,7 +409,7 @@ onMounted(() => {
           <div v-html="details.desc"></div>
           <div class="sub heading">Our Package(s)</div>
           <div class="table-scroll">
-            <table class="table striped">
+            <table class="striped table">
               <thead>
                 <tr>
                   <th>Packages</th>
@@ -455,7 +455,7 @@ onMounted(() => {
             </i>
           </div>
           <div class="collapsible">
-            <div class="flex *:flex-1 items-center">
+            <div class="flex items-center *:flex-1">
               <div
                 class="text-center"
                 :set="
@@ -494,12 +494,12 @@ onMounted(() => {
             </div>
             <hr />
             <div>
-              <div class="flex justify-between gap-3 items-center" style="margin-bottom: 1rem">
+              <div class="flex items-center justify-between gap-3" style="margin-bottom: 1rem">
                 <div class="font-semibold">Reviews</div>
                 <LimbDropdown
                   type="selection"
                   :options="{ directionPriority: { x: 'left' } }"
-                  class="outlined text-sm button"
+                  class="outlined button text-sm"
                 >
                   <Icon name="material-symbols:sort-rounded" class="lead" />
                   Sort:
@@ -517,8 +517,8 @@ onMounted(() => {
                   style="padding: 0.5em"
                   :set="review = details.reviews[a - 1]"
                 >
-                  <header class="flex justify-between items-center gap-3">
-                    <div class="text-sm rounded-full avatar">
+                  <header class="flex items-center justify-between gap-3">
+                    <div class="avatar rounded-full text-sm">
                       <NuxtImg preset="logo" src="/Images/profilepic.jpg" alt="profile picture" />
                     </div>
                     <div class="content flex-1">
@@ -552,7 +552,7 @@ onMounted(() => {
                   </header>
                   <article>{{ review.review }}</article>
                   <footer>
-                    <span class="opacity-65 text-sm font-semibold">12-01-2034</span>
+                    <span class="text-sm font-semibold opacity-65">12-01-2034</span>
                   </footer>
                 </div>
                 <div v-if="details.reviews.length > 5" class="text-center">
@@ -579,11 +579,11 @@ onMounted(() => {
           <div class="fillable-eq menu">
             <label
               v-for="(option, index) in details.serviceOptions"
-              class="flex-col item"
+              class="item flex-col"
               :class="{ active: option.type === choice.spec }"
             >
               <input
-                class="text-lg form-item"
+                class="form-item text-lg"
                 type="radio"
                 :value="option.type"
                 v-model="choice.spec"
@@ -618,7 +618,7 @@ onMounted(() => {
         </div>
         <!-- Call to Action Section -->
         <div class="flex flex-col gap-3">
-          <button class="w-full primary button">
+          <button class="primary button w-full">
             Continue (₦{{
               details.serviceOptions
                 .filter((el) => el.type === choice.spec)[0]
@@ -627,7 +627,7 @@ onMounted(() => {
             <Icon name="material-symbols:chevron-right-rounded" class="trailing" />
           </button>
           <div class="flex gap-3">
-            <button class="w-full outlined button">
+            <button class="outlined button w-full">
               <Icon name="material-symbols:chat-outline-rounded" class="lead" />
               Chat Contractor
             </button>
@@ -679,11 +679,11 @@ onMounted(() => {
     </div>
     <!-- Call to Action Section -->
     <div
-      class="mobile-screen-only sticky bg-surface fluid z-level-2 pin-bottom-blend"
+      class="mobile-screen-only bg-surface fluid z-level-2 pin-bottom-blend sticky"
       style="bottom: 0px"
     >
-      <div class="max-w-6xl auto-contain flex gap-3" style="padding: 0.5rem 0rem">
-        <button class="flex-1 primary button">
+      <div class="auto-contain flex max-w-6xl gap-3" style="padding: 0.5rem 0rem">
+        <button class="primary button flex-1">
           Continue (₦{{
             details.serviceOptions
               .filter((el) => el.type === choice.spec)[0]
@@ -691,7 +691,7 @@ onMounted(() => {
           }})
           <Icon name="material-symbols:chevron-right-rounded" class="trailing" />
         </button>
-        <button class="flex-1 outlined button max-md:hidden">
+        <button class="outlined button flex-1 max-md:hidden">
           <Icon name="material-symbols:chat-outline-rounded" class="lead" />
           Chat Contractor
         </button>

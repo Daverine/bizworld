@@ -32,7 +32,7 @@ export const utils = {
       return;
     }
 
-    if (window.lui_EscTracker.slice(-1)[0] === trackId || byForce) {
+    if (window.lui_EscTracker.at(-1) === trackId || byForce) {
       window.lui_EscTracker = window.lui_EscTracker.filter((el: string) => el !== trackId);
       return true;
     }
@@ -208,7 +208,7 @@ export const utils = {
       return;
     }
     let first = focusableElements[0];
-    let last = focusableElements.slice(-1)[0];
+    let last = focusableElements.at(-1);
     if (
       document.activeElement &&
       focusableElements.includes(document.activeElement as HTMLElement) &&

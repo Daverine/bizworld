@@ -3,7 +3,7 @@
 import type { ShallowRef, WatchStopHandle } from "vue";
 
 export type DialogEvent = {
-  target: HTMLElement | null;
+  target: HTMLElement;
   settings: DialogerSettings;
 };
 export type Dialoger = {
@@ -11,30 +11,33 @@ export type Dialoger = {
   settings: DialogerSettings;
   exit: () => void;
 };
-export type DialogerSettings = {
-  namespace?: string;
-  toggler?: string;
-  toExcuseToggler?: string;
-  closeOnEsc?: boolean;
-  closeOnWrapperClick?: boolean;
-  dismissible?: boolean;
-  dismisser?: string;
-  autoFocusEl?: string;
+export type DialogerOptions = {
+  namespace: string;
+  toggler: string | false;
+  toExcuseToggler: string | false;
+  closeOnEsc: boolean;
+  closeOnWrapperClick: boolean;
+  dismissible: boolean;
+  dismisser: string | false;
+  autoFocusEl: string | false;
   commands?: {
     open: string;
     close: string;
   };
-  inDuration?: number;
-  outDuration?: number;
-  hashControl?: boolean;
+  inDuration: number;
+  outDuration: number;
+  hashControl: boolean;
   controller?: (event: Dialoger) => unknown;
+};
+
+export type DialogerSettings = DialogerOptions & {
   caller?: HTMLElement;
 };
 
 export function useDialoger(
   dialoger: ShallowRef<HTMLDivElement | null>,
   id: string,
-  options?: DialogerSettings,
+  options?: Partial<DialogerOptions>,
 ): Dialoger {
   const route = useRoute();
   const showDialog = ref(false);
@@ -70,7 +73,7 @@ export function useDialoger(
     if (
       settings.dismissible &&
       ((settings.closeOnWrapperClick && e.target === dialoger.value) ||
-        (e.target as HTMLElement).closest(settings.dismisser!))
+        (settings.dismisser && (e.target as HTMLElement).closest(settings.dismisser)))
     )
       showDialog.value = false;
   }
@@ -84,10 +87,13 @@ export function useDialoger(
       e.preventDefault();
       utils.setHighlightRange(dialoger.value!);
     }
-  }
-
-  function exitByEscKeyPress(e: KeyboardEvent) {
-    if (e.key === "Escape" && settings.dismissible && utils.checkEscStatus(bb.uniqueId!))
+    // Esc function in dialog
+    else if (
+      settings.closeOnEsc &&
+      settings.dismissible &&
+      e.key === "Escape" &&
+      utils.checkEscStatus(bb.uniqueId!)
+    )
       showDialog.value = false;
   }
 
@@ -109,18 +115,18 @@ export function useDialoger(
     let toggler =
       target.closest(`${settings.toggler}[href="#${id}"]`) ||
       target.closest(`${settings.toggler}[data-target="${id}"]`);
-    if (!toggler || target.closest(settings.toExcuseToggler!)) return;
+    if (!toggler || (settings.toExcuseToggler && target.closest(settings.toExcuseToggler))) return;
     settings.caller = toggler as HTMLElement;
     showDialog.value = !showDialog.value;
   }
 
   onMounted(() => {
-    bb.uniqueId = utils.getUniqueId(settings.namespace!);
+    bb.uniqueId = utils.getUniqueId(settings.namespace);
 
     // click on dialoger toggler to open dialog
-    document.addEventListener("click", toOpenDialog);
+    if (settings.toggler) document.addEventListener("click", toOpenDialog);
 
-    dialoger.value!.addEventListener("dgconsole", ((e: CustomEvent<string>) => {
+    dialoger.value!.addEventListener("dgconsole", ((e: CustomEvent) => {
       if (e.detail === settings.commands!.open) showDialog.value = true;
       else if (e.detail === settings.commands!.close && settings.dismissible)
         showDialog.value = false;
@@ -180,8 +186,8 @@ export function useDialoger(
 
       utils.lockWindowScroll(bb.uniqueId!);
 
-      // If a controller function is provided in the settings, call it with the lightbox element and settings.
-      // The controller function can be used to perform additional setup or customization of the lightbox.
+      // If a controller function is provided in the settings, call it with the dialog element and settings.
+      // The controller function can be used to perform additional setup or customization of the dialog.
       if (typeof settings.controller === "function")
         settings.controller({
           target: dialoger.value!,
@@ -189,14 +195,12 @@ export function useDialoger(
           exit,
         });
 
+      if (settings.closeOnEsc) utils.trackEscOn(bb.uniqueId!);
+
       document.addEventListener("keydown", KBDControls);
       dialoger.value!.addEventListener("click", exitByClick);
-      if (settings.closeOnEsc) {
-        utils.trackEscOn(bb.uniqueId!);
-        document.addEventListener("keyup", exitByEscKeyPress);
-      }
       dialoger.value!.classList.add("active");
-      await utils.delay(settings.inDuration!);
+      await utils.delay(settings.inDuration);
       if (dialoger.value) {
         dialoger.value.scrollTop = 0;
 
@@ -206,20 +210,20 @@ export function useDialoger(
           settings,
         });
 
-        let autoFocusEl = [
-          ...dialoger.value.querySelectorAll(`:scope ${settings.autoFocusEl}`),
-        ][0] as HTMLElement;
-        if (autoFocusEl) autoFocusEl.focus();
-        else utils.focusRangeOnTab(dialoger.value!);
+        if (settings.autoFocusEl) {
+          let autoFocusEl = [
+            ...dialoger.value.querySelectorAll(`:scope ${settings.autoFocusEl}`),
+          ][0] as HTMLElement;
+          if (autoFocusEl) autoFocusEl.focus();
+          else utils.focusRangeOnTab(dialoger.value!); // select the first focusable element
+        }
       }
     } else {
       document.removeEventListener("keydown", KBDControls);
       dialoger.value!.removeEventListener("click", exitByClick);
-      if (settings.closeOnEsc) {
-        // safely get out of escape track
-        utils.checkEscStatus(bb.uniqueId!, true);
-        document.removeEventListener("keyup", exitByEscKeyPress);
-      }
+
+      // safely get out of escape track
+      if (settings.closeOnEsc) utils.checkEscStatus(bb.uniqueId!, true);
 
       dialoger.value?.classList.remove("active");
 
@@ -230,7 +234,7 @@ export function useDialoger(
         bb.exitedWithBrowserBack = false;
         bb.openWithHash = false;
       }
-      await utils.delay(settings.outDuration!);
+      await utils.delay(settings.outDuration);
       dialoger.value?.style.setProperty("visibility", "hidden");
       // Trigger a custom event 'isComplete' on the dialog element to indicate that the dialog has completed its closing process.
       if (dialoger.value)
@@ -244,12 +248,13 @@ export function useDialoger(
     }
   });
 
-  onBeforeUnmount(() => {
+  onBeforeUnmount(async () => {
     // stop all asynchronous watcher
     Object.keys(unwatch).forEach((el) => {
       if (typeof unwatch[el] === "function") unwatch[el]!();
     });
     showDialog.value = false;
+    await nextTick();
     document.removeEventListener("keydown", KBDControls);
     document.removeEventListener("click", toOpenDialog);
     utils.checkEscStatus(bb.uniqueId!, true);

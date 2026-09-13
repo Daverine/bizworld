@@ -1,5 +1,4 @@
 <script setup>
-definePageMeta({ layout: "account", auth: { only: "user" } });
 const userStore = useUserStore();
 onMounted(() => userStore.getReviews());
 </script>

@@ -70,7 +70,7 @@ const { loggedIn, signOut } = useAuth();
       </div>
       <div class="transparent compact divider"></div>
       <div class="xhover item p-0">
-        <NuxtLink :to="{ name: 'new-shop' }" class="w-full exit-sidepanel button">
+        <NuxtLink :to="{ name: 'new-shop' }" class="exit-sidepanel button w-full">
           Open a shop online
         </NuxtLink>
       </div>
@@ -101,7 +101,7 @@ const { loggedIn, signOut } = useAuth();
       <div class="transparent compact divider"></div>
       <div class="xhover item p-0">
         <button
-          class="w-full primary button open-modal exit-sidepanel"
+          class="primary button open-modal exit-sidepanel w-full"
           data-target="register-modal"
         >
           Sign Up

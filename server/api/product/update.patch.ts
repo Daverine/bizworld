@@ -1,5 +1,3 @@
-import { product } from "~~/shared/utils/types";
-
 export default defineEventHandler(async (event) => {
   const { id, slug, action } = getQuery(event);
   const actions = ["visibility", "edit", "config"];

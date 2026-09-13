@@ -12,7 +12,7 @@ function popupSubmitSearch(e) {
   <LimbModal id="search-modal">
     <div class="dialog">
       <header class="flex gap-3 px-6 py-4">
-        <div class="truncate font-bold">COMMAND A SEARCH</div>
+        <div class="truncate font-bold">Command a Search</div>
         <button class="circular flat button as-text exit-modal" style="margin-left: auto">
           <Icon name="material-symbols:close-rounded" />
         </button>
@@ -43,23 +43,17 @@ function popupSubmitSearch(e) {
             class="flex gap-4 *:flex-1"
             style="gap: 1rem; margin: 1rem auto 0px; max-width: 300px"
           >
-            <button type="submit" class="button exit-modal w-full">
-              <Icon name="material-symbols:search-rounded" class="lead" />
-              SEARCH
-            </button>
-            <button
-              type="button"
-              class="button open-modal exit-modal w-full"
-              data-target="explore-modal"
-            >
-              EXPLORE
+            <button type="submit" class="button exit-modal">Search</button>
+            <button type="button" class="button open-modal exit-modal" data-target="explore-modal">
+              <Icon name="material-symbols:manage-search-rounded" class="lead" />
+              Categories
             </button>
           </div>
         </form>
         <table class="clear table">
           <thead>
             <tr>
-              <th colspan="2" class="bg-transparent text-center">SEARCH CONFIGURATION</th>
+              <th colspan="2" class="bg-transparent text-right">Search Configuration</th>
             </tr>
           </thead>
           <tbody>
@@ -163,9 +157,6 @@ function popupSubmitSearch(e) {
         </div>
       </div>
     </div>
-  </LimbModal>
-  <LimbModal id="explore-modal">
-    <Explore />
   </LimbModal>
   <LimbModal id="create-post">
     <div class="dialog">

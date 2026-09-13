@@ -284,9 +284,19 @@ hr.vertical:empty,
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
 }
-.menu > .item:not(:focus-visible),
-.menu .items > .item:not(:focus-visible) {
-  outline: 0px none;
+.menu > .item:hover, .menu > .item:focus, .menu > .item:active, .menu > .item.active,
+.menu .items > .item:hover,
+.menu .items > .item:focus,
+.menu .items > .item:active,
+.menu .items > .item.active {
+  outline: none;
+  text-decoration: none;
+}
+.menu > .item:focus-visible, .menu > .item.design-takeover:focus-within,
+.menu .items > .item:focus-visible,
+.menu .items > .item.design-takeover:focus-within {
+  outline: 2px solid var(--color-on-surface);
+  outline-offset: 1px;
 }
 .menu > .item.free-me,
 .menu .items > .item.free-me {
@@ -1787,8 +1797,6 @@ table.table tbody tr.i-selectable td:hover:before {
   display: inline-flex;
   align-items: center;
   position: relative;
-  min-width: -moz-fit-content;
-  min-width: fit-content;
 }
 .select.dropdown > .content {
   min-width: 4.5em;
@@ -2052,11 +2060,12 @@ fieldset {
   height: auto;
   min-height: auto;
   min-width: 2em;
+  padding: 0em;
+  margin: 0em;
   background: transparent;
   border: 0px none;
-  padding: 0em;
+  border-radius: 0px;
   box-shadow: none;
-  margin: 0em;
 }
 
 /* --- BUTTONS --- */
@@ -2133,10 +2142,10 @@ fieldset {
   border: 2px solid var(--bd-color);
   padding: calc(var(--button-padding-tb) - 2px) calc(var(--button-padding-lr) - 1px);
 }
-.button > .lead.icon {
+.button > .lead {
   margin-left: -0.5em;
 }
-.button > .trailing.icon {
+.button > .trailing {
   margin-right: -0.5em;
 }
 .button.as-app {
@@ -2289,19 +2298,22 @@ html.scroll-locked .fab-group.respect-lock .fab {
 
 /* --- LABEL ---*/
 .label {
+  --bg-color: var(--color-surface-v2);
+  --text-color: var(--color-on-surface);
   display: inline-flex;
   flex-flow: row nowrap;
+  position: relative;
   font-size: 1rem;
-  gap: 0.75em;
+  gap: 0.5em;
   justify-content: center;
   align-items: center;
-  line-height: 1.25;
+  line-height: 1.5;
   text-align: center;
-  padding: 0.25em 0.5em;
-  margin: 0;
-  background-color: var(--color-surface-v2);
+  padding: 0.25em 1em;
+  color: var(--text-color);
+  background-color: var(--bg-color);
   font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-inline);
+  border-radius: calc(infinity * 1px);
   min-width: -moz-fit-content;
   min-width: fit-content;
   -webkit-user-select: none;
@@ -2309,8 +2321,38 @@ html.scroll-locked .fab-group.respect-lock .fab {
           user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
-.label.loose {
-  padding: 0.5em 1em;
+.label:focus-visible {
+  outline: 2px solid var(--color-on-surface);
+  outline-offset: 1px;
+}
+.label:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background-color: var(--text-color);
+  border: 0px none;
+  border-radius: inherit;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+}
+.label:hover:before, .label:focus:before {
+  opacity: 0.08;
+}
+.label:active:before, .label.active:before {
+  opacity: 0.2;
+}
+.label > .lead {
+  margin-left: -0.5em;
+}
+.label > .trailing {
+  margin-right: -0.5em;
 }
 .label > img {
   max-height: 1.5em;
@@ -2318,85 +2360,9 @@ html.scroll-locked .fab-group.respect-lock .fab {
   line-height: 1;
   vertical-align: bottom;
 }
-.label > a, .label > .link {
-  color: inherit;
-}
-.label.basic {
+.label.outlined {
   background-color: var(--color-surface);
   border: 1px solid var(--color-on-surface);
-}
-.label.text.label {
-  background-color: transparent;
-  border: 0px none;
-}
-
-.label.circular {
-  line-height: 2em;
-  padding: 0em;
-  width: 2em;
-  height: 2em;
-  flex: 0 0 auto;
-  border-radius: calc(infinity * 1px);
-}
-.label.circular.loose {
-  line-height: 2.5em;
-  width: 2.5em;
-  height: 2.5em;
-}
-
-.label[class*=tag] {
-  position: relative;
-}
-.label[class*=tag]::before {
-  content: "";
-  position: absolute;
-  top: 0px;
-  background-color: inherit;
-  background-image: none;
-  width: 1.75em;
-  height: 1.75em;
-  border: inherit;
-}
-.label[class*=tag]::after {
-  content: "";
-  position: absolute;
-  top: calc(50% - 0.23em);
-  background-color: var(--color-surface);
-  width: 0.45em;
-  height: 0.45em;
-  box-shadow: 0 -1px 1px 0 rgba(0, 0, 0, 0.3);
-  border-radius: calc(infinity * 1px);
-  border: inherit;
-}
-
-.label.tag {
-  margin-left: 1em;
-  border-top-left-radius: 0em;
-  border-bottom-left-radius: 0em;
-}
-.label.tag::before {
-  left: calc(-1.75em + 1px);
-  clip-path: polygon(50% 50%, 100% 100%, 100% 0);
-  border-bottom: 0px none;
-  border-right: 0px none;
-}
-.label.tag::after {
-  left: -0.2em;
-}
-
-.label.alt-tag {
-  margin-right: 1em;
-  border-top-right-radius: 0em;
-  border-bottom-right-radius: 0em;
-}
-.label.alt-tag::before {
-  right: calc(-1.75em + 1px);
-  clip-path: polygon(50% 50%, 0 100%, 0 0);
-  border-bottom: 0px none transparent;
-  border-left: 0px none transparent;
-}
-.label.alt-tag::after {
-  right: -0.2em;
 }
 
 .label[class*=ribbon] {
@@ -2514,11 +2480,11 @@ html.scroll-locked .fab-group.respect-lock .fab {
   top: 0;
   left: 0;
   bottom: 0;
-  background-color: var(--color-primary-color);
+  background-color: var(--color-primary);
   transition: width 0.3s linear;
 }
 .progress-bar .indeterminate {
-  background-color: var(--color-primary-color);
+  background-color: var(--color-primary);
 }
 .progress-bar .indeterminate:before {
   content: "";
@@ -2592,7 +2558,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
   aspect-ratio: 1;
   position: relative;
   /* Create the progress ring using a mask and conic-gradient */
-  background: conic-gradient(var(--color-primary-color) calc(var(--progress) * 1%), var(--track-color) 0);
+  background: conic-gradient(var(--color-primary) calc(var(--progress) * 1%), var(--track-color) 0);
   /* Mask out the center to create a ring */
   mask: radial-gradient(farthest-side, transparent calc(100% - var(--thickness)), black calc(100% - var(--thickness) + 0.5px));
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--thickness)), black calc(100% - var(--thickness) + 0.5px));
@@ -2600,7 +2566,7 @@ html.scroll-locked .fab-group.respect-lock .fab {
 .m3-progress.indeterminate {
   /* Layer 1: The 'chasing' primary arc */
   /* Layer 2: The static track color */
-  background: conic-gradient(from var(--start), var(--color-primary-color) var(--end), rgba(0, 0, 0, 0) 0deg), var(--track-color);
+  background: conic-gradient(from var(--start), var(--color-primary) var(--end), rgba(0, 0, 0, 0) 0deg), var(--track-color);
   /* Masks the center to create the 4dp ring */
   mask: radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - var(--thickness)), #000 0);
   -webkit-mask: radial-gradient(farthest-side, rgba(0, 0, 0, 0) calc(100% - var(--thickness)), #000 0);
@@ -2727,9 +2693,8 @@ html.scroll-locked .fab-group.respect-lock .fab {
   transition: transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s, opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s !important;
 }
 .thumbnail.active {
-  border: 0.125em solid var(--color-on-surface);
+  outline: 0.125em solid var(--color-on-surface);
   box-shadow: 0px 0px 5px 1px var(--color-surface);
-  transform: scale(1.1);
 }
 .thumbnail > img {
   display: block;
@@ -2743,55 +2708,32 @@ html.scroll-locked .fab-group.respect-lock .fab {
   border-radius: calc(var(--radius-block) - 0.125em);
 }
 
-.i-scroller {
-  position: relative;
-}
-.i-scroller > .scroll-items {
-  display: flex;
-  max-width: 100%;
-  flex-flow: row nowrap;
-  overflow: auto hidden;
-  scrollbar-width: none;
-}
-.i-scroller > .scroll-items::-webkit-scrollbar {
-  display: none;
-}
-.i-scroller > .scroll-items > * {
-  flex: 0 0 auto;
-}
-.i-scroller > .l-scroll, .i-scroller > .r-scroll {
-  display: flex;
-  position: absolute;
-  height: 100%;
-  width: 2em;
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--color-surface);
-  color: var(--color-on-surface);
-  align-items: center;
-  justify-content: center;
-  z-index: 300;
-}
-.i-scroller > .l-scroll:not(.active), .i-scroller > .r-scroll:not(.active) {
-  display: none;
-}
-.i-scroller > .l-scroll {
-  left: 0px;
-  padding-right: 0.5em;
-  background: linear-gradient(90deg, var(--color-surface) 50%, transparent 100%);
-}
-.i-scroller > .r-scroll {
-  right: 0px;
-  padding-left: 0.5em;
-  background: linear-gradient(90deg, transparent 0%, var(--color-surface) 50%);
-}
-
 .collapsible {
   overflow: hidden !important;
   height: 0px;
 }
 .collapsible:not(.no-motion) {
   transition: height 0.5s ease-in-out;
+}
+
+.can-collapse {
+  height: 0px;
+  overflow: hidden;
+  interpolate-size: allow-keywords;
+  transition: display 0.5s, height 0.5s ease-in-out;
+  transition-behavior: allow-discrete;
+}
+.can-collapse:not(.active) {
+  display: none;
+}
+.can-collapse.active {
+  height: auto;
+}
+@starting-style {
+  .can-collapse.active {
+    height: 0px;
+    overflow: hidden;
+  }
 }
 
 .tab-page:not(.active) {

@@ -161,7 +161,7 @@ onMounted(async () => {
         : null;
   // check if dropdown Menu exist
   if (!ddm) {
-    console.error("A dropMenu menu is missing for the following dropdown", ddElem);
+    console.error(ddElem, "A selection menu is missing for the dropdown");
     return;
   }
 
@@ -188,7 +188,7 @@ onMounted(async () => {
 
     // configure search box and cache concurrent element for searchable dropdown
     if (bb.searchable) {
-      searchBox = ddElem.querySelector(":scope input.ssbox") as HTMLInputElement;
+      searchBox = ddElem.querySelector(":scope .ssbox") as HTMLInputElement;
       searchBoxSizer = ddElem.querySelector(":scope .ddss") as HTMLElement;
 
       // add the message to show when no search result is found.
@@ -260,28 +260,12 @@ onMounted(async () => {
 
     unwatch.model = watch(
       model,
-      (newModel, oldModel) => {
-        if (isEqual(oldModel, newModel)) return;
+      async (newModel) => {
+        await nextTick();
 
         let items = [...dropMenu.querySelectorAll(selectors.items)] as HTMLElement[];
 
         if (bb.multipleSelect) {
-          if (!Array.isArray(model.value)) model.value = [];
-
-          let modelItems: HTMLElement[] = [];
-
-          model.value.forEach((val) => {
-            // avoid selecting an item more than once.
-            let pendingItems = items.filter((el) => !modelItems.includes(el));
-            for (let i = 0; i < pendingItems.length; i++) {
-              let pendingItem = pendingItems[i] as HTMLElement;
-              if (val === (pendingItem.getAttribute("data-value") ?? pendingItem.textContent)) {
-                modelItems.push(pendingItem);
-                break;
-              }
-            }
-          });
-
           // deselect all items in the multiple selectable drop menu
           items.forEach((item) => {
             item.classList.remove("selected");
@@ -291,40 +275,51 @@ onMounted(async () => {
           rbb.selectionContent = [];
           selectableContentBox.classList.add("no-content");
 
-          // select all items that exist in the modelItems
-          if (modelItems[0]) {
-            modelItems.forEach((item) => {
-              let ddid = utils.getUniqueId("ddid");
-              let itemValue = item.getAttribute("data-value") ?? (item.textContent as string);
-
-              item.classList.add("selected");
-              bb.selectionValue[ddid] = itemValue;
-              item.setAttribute("data-ddid", ddid);
-              rbb.selectionContent.push({
-                html: item.innerHTML,
-                index: ddid,
-              });
-            });
-            selectableContentBox.classList.remove("no-content");
-            // check if all items in the dropdown is selected.
-            if (!items.some((el) => !el.matches(".selected"))) rbb.allItemSelected = true;
+          if (!Array.isArray(newModel)) {
+            console.error(
+              "Model value for multiple selectable dropdown must be an array. Please provide an array as model value.",
+            );
+            return;
           }
 
-          model.value = Object.values(bb.selectionValue);
+          newModel.forEach((val) => {
+            let ddid = utils.getUniqueId("ddid");
+            let selectedItems = items.filter(
+              (item) => (item.getAttribute("data-value") ?? item.textContent.trim()) === val,
+            );
+
+            if (selectedItems.length) {
+              rbb.selectionContent.push({
+                html: selectedItems[0]!.innerHTML,
+                index: ddid,
+              });
+              if (selectedItems.length > 1)
+                console.warn(ddElem, "There are items with same value in the selection dropdown.");
+            } else console.warn(ddElem, "There's no item that match the selection dropdown value.");
+
+            selectedItems.forEach((item) => {
+              item.classList.add("selected");
+              item.setAttribute("data-ddid", ddid);
+            });
+            bb.selectionValue[ddid] = val;
+          });
+
+          selectableContentBox.classList.remove("no-content");
+          // check if all items in the dropdown is selected.
+          if (!items.some((el) => !el.matches(".selected"))) rbb.allItemSelected = true;
         } else {
           items.forEach((item) => item.classList.remove("active"));
           rbb.selectionContent = [];
 
           let item = items.find(
-            (item) => model.value === (item.getAttribute("data-value") ?? item.textContent),
+            (el) => (el.getAttribute("data-value") ?? el.textContent.trim()) === newModel,
           );
 
           if (item) {
             item.classList.add("active");
             rbb.selectionContent = [item.innerHTML];
-          } else model.value = "";
+          } else console.warn(ddElem, "There's no item that match the selection dropdown value.");
         }
-        emit("change", model.value);
       },
       { immediate: true },
     );
@@ -351,8 +346,7 @@ onMounted(async () => {
   else ddElem.addEventListener("click", dd_toggleHandler);
 
   // configure dropdown to be controlled using ddconsole-custom-event. controls include opening and closing dropdown and sub dropdowns
-  ddElem.addEventListener("ddconsole", (event) => {
-    let e = event as CustomEvent;
+  ddElem.addEventListener("ddconsole", ((e: CustomEvent) => {
     if (e.detail === "close") showDropdown.value = false;
     else if (e.detail === "close all ancestor dropdown") dd_closeWithAncestor();
     else if (e.detail === "open") showDropdown.value = true;
@@ -365,7 +359,7 @@ onMounted(async () => {
       );
       utils.afterNextRepaint(() => e.detail.el.classList.add("hovered"));
     }
-  });
+  }) as EventListener);
 
   if (bb.constrainWidth || bb.stretchWidth)
     sizeStream = new ResizeObserver(() => {
@@ -413,7 +407,6 @@ watch(showDropdown, async (show) => {
     }
 
     document.addEventListener("click", dd_clickOnDomEvt);
-    document.addEventListener("keyup", dd_escAndTabEvt);
     document.addEventListener("keydown", dd_KBControlEvt);
     window.addEventListener("resize", dd_CalcPosition);
     window.addEventListener("scroll", dd_CalcPosition, true);
@@ -450,7 +443,6 @@ watch(showDropdown, async (show) => {
     }
 
     document.removeEventListener("click", dd_clickOnDomEvt);
-    document.removeEventListener("keyup", dd_escAndTabEvt);
     document.removeEventListener("keydown", dd_KBControlEvt);
     document.removeEventListener("mousemove", dd_mouseMover);
     window.removeEventListener("resize", dd_CalcPosition);
@@ -493,7 +485,6 @@ onBeforeUnmount(() => {
   document.removeEventListener("keydown", ms_keyEvt);
   document.removeEventListener("keydown", dd_keyEvt);
   document.removeEventListener("click", dd_clickOnDomEvt);
-  document.removeEventListener("keyup", dd_escAndTabEvt);
   document.removeEventListener("keydown", dd_KBControlEvt);
   document.removeEventListener("mousemove", dd_mouseMover);
   document.removeEventListener("mousemove", dd_toggleHandler);
@@ -538,7 +529,7 @@ function ms_keyEvt(e: KeyboardEvent) {
     let prevSibling = activeSItems[0].previousElementSibling?.matches(".msitem")
       ? activeSItems[0].previousElementSibling
       : null;
-    let nextSibling = [...activeSItems].slice(-1)[0]!.nextElementSibling;
+    let nextSibling = [...activeSItems].at(-1)!.nextElementSibling;
 
     // deselect items with keyboard when they are selected
     if (e.key === "Backspace" || e.key === "Delete") {
@@ -582,7 +573,7 @@ function ms_keyEvt(e: KeyboardEvent) {
     e.key == "Backspace" &&
     sItems[0]
   )
-    dd_setDeselect(sItems.slice(-1)[0]!);
+    dd_setDeselect(sItems.at(-1)!);
   // navigation in multiple selectable dropdown continues at the following.
   else if (ddRef.value!.matches(":focus-within")) {
     if (e.key == "ArrowRight") sItems[0]?.classList.add("active");
@@ -781,7 +772,7 @@ function dd_KBControlEvt(e: KeyboardEvent) {
     The Enter key triggers the click action on an item
     Enter and right arrow key open a sub dropdown that is hovered.
   */
-  if (e.key == "Enter" || e.key == "ArrowRight") {
+  if (e.key === "Enter" || e.key === "ArrowRight") {
     let item = items.find((el) => el.matches(".hovered")) as HTMLElement;
     if (!item) return;
     if (item.matches(".dropdown:not(.active)")) {
@@ -791,6 +782,26 @@ function dd_KBControlEvt(e: KeyboardEvent) {
       e.preventDefault();
       item.click();
     }
+  }
+  // The Escape key closes the dropdown if it is the dropdown turn to respond to Esc key press.
+  else if (e.key === "Escape" && utils.checkEscStatus(uniqueId)) {
+    e.preventDefault();
+    showDropdown.value = false;
+    // set sub dropdown to current hovered item in it parent dropdown.
+    nextTick(() => {
+      ddRef.value!.focus();
+      if (props.sub) ddRef.value!.classList.add("hovered");
+    });
+  }
+  // The Tab key closes the dropdown with all ancestor dropdowns if the dropdown or any of its relating elements loses focus.
+  else if (
+    e.key === "Tab" &&
+    ![...ddRef.value!.querySelectorAll(":scope :focus")][0] &&
+    ![...dropMenu.querySelectorAll(":scope :focus")][0] &&
+    ![...dropMenu.querySelectorAll(":scope .dropdown.active")][0]
+  ) {
+    e.preventDefault();
+    dd_closeWithAncestor();
   }
   // Arrow left key (Use to close a sub dropdown) support
   else if (
@@ -841,27 +852,6 @@ function dd_KBControlEvt(e: KeyboardEvent) {
   // manage tab key navigation within dropdown menu and out of it.
   else if (e.key === "Tab" && dropMenu.querySelector(utils.focusableElementsSelector))
     utils.focusRangeOnTab(dropMenu, e);
-}
-
-function dd_escAndTabEvt(e: KeyboardEvent) {
-  // check if it is this dropdown turn to respond to Esc press.
-  if (e.key === "Escape" && utils.checkEscStatus(uniqueId)) {
-    e.preventDefault();
-    showDropdown.value = false;
-    // set sub dropdown to current hovered item in it parent dropdown.
-    nextTick(() => {
-      ddRef.value!.focus();
-      if (props.sub) ddRef.value!.classList.add("hovered");
-    });
-  } else if (
-    e.key === "Tab" &&
-    ![...ddRef.value!.querySelectorAll(":scope :focus")][0] &&
-    ![...dropMenu.querySelectorAll(":scope :focus")][0] &&
-    ![...dropMenu.querySelectorAll(":scope .dropdown.active")][0]
-  ) {
-    e.preventDefault();
-    dd_closeWithAncestor();
-  }
 }
 
 function dd_CalcPosition() {
@@ -1090,25 +1080,14 @@ async function dd_setSelect(item: Element, xClose?: boolean) {
   let items = [...dropMenu.querySelectorAll(selectors.items)];
 
   if (bb.multipleSelect) {
-    let ddid = utils.getUniqueId("ddid");
-    let itemValue = item.getAttribute("data-value") || item.textContent || "";
+    let itemValue = item.getAttribute("data-value") ?? item.textContent.trim();
 
-    if (!Object.values(bb.selectionValue).includes(itemValue)) {
-      bb.selectionValue[ddid] = itemValue;
-      model.value = Object.values(bb.selectionValue);
-      rbb.selectionContent.push({
-        html: item.innerHTML,
-        index: ddid,
-      });
-      selectableContentBox.classList.remove("no-content");
+    if (Object.values(bb.selectionValue).some((v) => v !== itemValue)) {
+      if (Array.isArray(model.value)) model.value.push(itemValue);
+      else model.value = [itemValue];
     } else {
-      ddid = Object.keys(bb.selectionValue).find(
-        (key) => bb.selectionValue[key] === itemValue,
-      ) as string;
       console.warn("The selected item has a value that already exist in the dropdown selection.");
     }
-    item.classList.add("selected");
-    item.setAttribute("data-ddid", ddid);
 
     if (bb.searchable && showDropdown.value) {
       searchBox.value = "";
@@ -1118,8 +1097,6 @@ async function dd_setSelect(item: Element, xClose?: boolean) {
 
     await nextTick();
     items = [...dropMenu.querySelectorAll(selectors.items)];
-
-    if (!items.some((el) => !el.matches(".selected"))) rbb.allItemSelected = true;
 
     if (!showDropdown.value || ddRef.value!.matches(".indicating")) return;
 
@@ -1140,14 +1117,12 @@ async function dd_setSelect(item: Element, xClose?: boolean) {
 
     utils.afterNextRepaint(() => dd_CalcPosition());
   } else {
-    item.classList.add("active");
     if (!showDropdown.value && items.some((el) => el !== item && el.matches(".active")))
       console.warn(
         "A selection-dropdown on this page has multiple preselected value which is not suppose to be except it is a multiple-selection-dropdown. Only the first preselected value will be preselected.",
       );
 
-    items.filter((el) => el !== item).forEach((el) => el.classList.remove("active"));
-    model.value = item.getAttribute("data-value") || item.textContent || "";
+    model.value = item.getAttribute("data-value") ?? item.textContent.trim();
     rbb.selectionContent = [item.innerHTML];
   }
 
@@ -1209,7 +1184,7 @@ function dd_setDeselect(sItem: Element) {
           v-for="item in rbb.selectionContent as MultipleSelectContent[]"
           :key="item.index"
           :data-ddid="item.index"
-          class="msitem compact button text-sm"
+          class="msitem label"
         >
           <span v-html="item.html"></span>
           <Icon name="material-symbols:close-rounded" class="close trailing" />
@@ -1218,7 +1193,7 @@ function dd_setDeselect(sItem: Element) {
           <input class="ssbox" autocomplete="off" />
           <span class="ddss"></span>
         </template>
-        <div ref="sPlaceholder" class="placeholder">{{ placeholder }}</div>
+        <div class="placeholder">{{ placeholder }}</div>
       </div>
       <template v-else>
         <template v-if="bb.searchable">
@@ -1241,8 +1216,6 @@ function dd_setDeselect(sItem: Element) {
   </a>
 </template>
 <style>
-/* --- DROPDOWN --- */
-
 .dropdown {
   cursor: pointer;
   position: relative;
@@ -1317,29 +1290,27 @@ function dd_setDeselect(sItem: Element) {
           display: none;
         }
       }
+    }
 
-      /* search box */
-      & > input.ssbox,
-      & > .content > input.ssbox {
-        position: relative;
-        width: 1em;
-        max-width: 100%;
-        display: inline-block;
-        outline: 0px none;
-        color: inherit;
-        font-size: 1em;
-        min-height: auto;
-        background: transparent;
-        border: 0px none;
-        padding: 0em;
-        box-shadow: none;
-        margin: 0em;
-      }
+    .ssbox {
+      display: inline-flex;
+      position: relative;
+      color: inherit;
+      font-size: 1em;
+      width: 1em;
+      max-width: 100%;
+      padding: 0em;
+      margin: 0em;
+      background: transparent;
+      border: 0px none;
+      border-radius: 0px;
+      outline: 0px none;
+      box-shadow: none;
     }
 
     /* fix to clearout search box space */
-    &:not(.multiple) > input.ssbox,
-    &.multiple > .content.no-content > input.ssbox {
+    &:not(.multiple) > .ssbox,
+    &.multiple > .no-content > .ssbox {
       width: 1em;
       margin-left: -1em;
       left: 1em;

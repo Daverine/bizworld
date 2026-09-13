@@ -8,9 +8,18 @@ export default defineEventHandler(async (event) => {
       message: "Request query is invalid.",
     });
 
-  return (await db
+  const business = (await db
     .selectFrom("business")
     .selectAll()
     .where(id ? "id" : "slug", "=", (id ? id : slug) as string)
     .executeTakeFirst()) as bizData | undefined;
+
+  if (!business)
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Not found.",
+      message: "Business not found.",
+    });
+
+  return business;
 });

@@ -59,10 +59,10 @@ onMounted(() => window.dispatchEvent(new Event("scroll")));
       <Icon name="material-symbols:apps" />
     </LimbDropdown>
     <div class="pointing drop menu">
-      <div class="compact grid menu grid-cols-2 app-items">
+      <div class="compact menu app-items grid grid-cols-2">
         <div class="bar-item item open-modal exit-dd" data-target="explore-modal">
           <Icon name="material-symbols:manage-search-rounded" />
-          <span class="text label">Explore</span>
+          <span class="text label">Categories</span>
         </div>
         <div class="bar-item item open-modal exit-dd" data-target="scanqr-modal">
           <Icon name="material-symbols:qr-code-scanner-rounded" />

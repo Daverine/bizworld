@@ -1,7 +1,5 @@
 <script setup>
-definePageMeta({ layout: "account", auth: { only: "user" } });
 const userStore = useUserStore();
-defineOptions({ title: "Following | BizWorld" });
 onMounted(() => userStore.getFollowedCards());
 </script>
 

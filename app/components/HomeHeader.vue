@@ -4,7 +4,7 @@ const { loggedIn, user } = useAuth();
 </script>
 <template>
   <div class="menu h-16">
-    <div class="max-w-340 auto-contain items" style="border-radius: var(--default-radius)">
+    <div class="auto-contain items max-w-breakout" style="border-radius: var(--default-radius)">
       <button
         class="item as-icon open-sidepanel"
         v-tooltip:aria.unblocking
@@ -19,7 +19,7 @@ const { loggedIn, user } = useAuth();
       <div class="items r-aligned">
         <div class="item open-modal" data-target="explore-modal">
           <Icon name="material-symbols:manage-search-rounded" class="lead" />
-          Explore
+          Categories
         </div>
         <template v-if="loggedIn">
           <LimbDropdown
@@ -44,7 +44,7 @@ const { loggedIn, user } = useAuth();
               preset="logo"
               :src="user?.image || '/images/profilepic.jpg'"
               alt="profile"
-              class="rounded-full logo"
+              class="logo rounded-full"
             />
           </LimbDropdown>
           <Shareables name="profile_menu" />
@@ -75,11 +75,11 @@ const { loggedIn, user } = useAuth();
     <div class="mb-4">
       <NuxtImg
         format="webp"
-        sizes="900px"
+        width="900"
         densities="1x"
         src="/images/logo_full.png"
         alt="site logo"
-        class="site-logo w-full image mx-auto"
+        class="site-logo image mx-auto w-full"
         style="max-width: 450px; background-color: rgba(128, 128, 128, 0.025)"
       />
     </div>
@@ -89,15 +89,15 @@ const { loggedIn, user } = useAuth();
         <div class="fillable pills menu compact flex-1">
           <label
             v-for="category in searchStore.categories"
-            class="capitalize item"
+            class="item design-takeover capitalize"
             :class="{ active: searchStore.searchIn === category }"
           >
             {{ category }}
-            <input v-model="searchStore.searchIn" type="radio" :value="category" class="hidden"
+            <input v-model="searchStore.searchIn" type="radio" :value="category"
           /></label>
         </div>
       </div>
-      <label class="input text-lg w-full">
+      <label class="input w-full text-lg">
         <Icon name="material-symbols:search-rounded" class="xhover" />
         <input
           v-model="searchStore.searchBox"
@@ -127,7 +127,7 @@ const { loggedIn, user } = useAuth();
           <Icon name="material-symbols:settings-applications-outline-rounded" />
         </button>
       </label>
-      <div class="flex *:flex-1 gap-4 w-full max-w-[16rem]" style="margin: 1.5rem auto 0px">
+      <div class="flex w-full max-w-[16rem] gap-4 *:flex-1" style="margin: 1.5rem auto 0px">
         <button class="button">SEARCH</button>
         <button type="button" class="button open-modal" data-target="explore-modal">EXPLORE</button>
       </div>

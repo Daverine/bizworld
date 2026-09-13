@@ -15,8 +15,7 @@ export const useSearchStore = defineStore("search", {
       if (!this.searchBox) return;
 
       await navigateTo({
-        name: "search",
-        params: { searchIn: this.searchIn },
+        name: `search-in-${this.searchIn}`,
         query: { q: this.searchBox },
       });
       this.resultIn = this.searchIn;

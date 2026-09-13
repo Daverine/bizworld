@@ -1,14 +1,19 @@
 <script setup lang="ts">
-interface Settings {
+type BrainBox = {
   namespace: string;
   autoSetup: boolean;
-  continuous: boolean | string;
+  continuous: boolean | "rewind";
+  sliderMove: "slide" | "view";
   slidesPerView: number;
-  sliderMove: string;
   spaceBetween: string;
-  breakpoints: Array<any>;
+  breakpoints: {
+    minWidth?: number;
+    maxWidth?: number;
+    slidesPerView?: number;
+    spaceBetween?: string;
+  }[];
   animation: string;
-  direction: string;
+  direction: "horizontal" | "vertical";
   transitionDuration: number;
   autoslide: boolean;
   autoslideInterval: number;
@@ -17,9 +22,9 @@ interface Settings {
   videoAutoPlay: boolean;
   videoMute: boolean;
   controllable: boolean;
-}
+};
 
-interface Tmp {
+type reactiveBrainBox = {
   newCoord: number;
   startCoord: number;
   endCoord: number;
@@ -43,11 +48,14 @@ interface Tmp {
   autoslider?: ReturnType<typeof setInterval>;
   spaceBetween: string;
   slidesPerView: number;
-}
+};
 
 const carousel = useTemplateRef("carousel");
-const props = defineProps<{ options?: Partial<Settings> }>();
-const settings: Settings = {
+const props = defineProps<{
+  options?: Partial<BrainBox>;
+  trackerPosition?: "left" | "right" | "bottom" | "top";
+}>();
+const bb: BrainBox = {
   namespace: "carousel",
   autoSetup: true,
   continuous: true,
@@ -68,7 +76,7 @@ const settings: Settings = {
   ...props.options,
 };
 
-const tmp = reactive<Tmp>({
+const rbb = reactive<reactiveBrainBox>({
   newCoord: 0,
   startCoord: 0,
   endCoord: 0,
@@ -83,13 +91,14 @@ const tmp = reactive<Tmp>({
   autosliding: false,
   slidesNo: 0,
   currSlideNo: 0,
-  slidesPerView: settings.slidesPerView,
-  spaceBetween: settings.spaceBetween,
+  slidesPerView: bb.slidesPerView,
+  spaceBetween: bb.spaceBetween,
   uniqueId: "",
-  continuous: settings.continuous && settings.continuous !== "rewind",
+  continuous: bb.continuous && bb.continuous !== "rewind",
 });
 
 let changeInSlides: MutationObserver,
+  sizeObserver: ResizeObserver,
   viewbox: HTMLElement | null,
   slider: HTMLElement | null,
   slides: HTMLElement[],
@@ -101,7 +110,7 @@ let changeInSlides: MutationObserver,
   initialized: boolean;
 
 onMounted(() => {
-  tmp.uniqueId = utils.getUniqueId(settings.namespace);
+  rbb.uniqueId = utils.getUniqueId(bb.namespace);
   viewbox = carousel.value?.querySelector(":scope > .cs-viewbox") || null;
 
   if (!viewbox) {
@@ -119,13 +128,13 @@ onMounted(() => {
   prevBtn = carousel.value?.querySelector(":scope .cs-prev") || null;
   nextBtn = carousel.value?.querySelector(":scope .cs-next") || null;
   trackerCont = carousel.value?.querySelector(":scope .cs-trackers") || null;
-  slider.style.transitionDuration = `${settings.transitionDuration}ms`;
-  slider.setAttribute("data-anim", settings.animation);
+  slider.style.transitionDuration = `${bb.transitionDuration}ms`;
+  slider.setAttribute("data-anim", bb.animation);
   slider.ondragstart = () => false;
   slider.addEventListener("mousedown", gestureStart);
   slider.addEventListener("touchstart", gestureStart);
 
-  if (settings.autoslide && settings.pauseOnHover) {
+  if (bb.autoslide && bb.pauseOnHover) {
     slider.addEventListener("mouseenter", stopAutoslider);
     slider.addEventListener("mouseleave", startAutoslider);
   }
@@ -135,36 +144,37 @@ onMounted(() => {
   trackerCont?.addEventListener("click", trackControl);
 
   changeInSlides = new MutationObserver(sizeResponse);
-  window.addEventListener("resize", sizeResponse);
+  sizeObserver = new ResizeObserver(sizeResponse);
+  sizeObserver.observe(viewbox);
   sizeResponse();
 });
 
 onBeforeUnmount(() => {
-  clearInterval(tmp.autoslider);
-  clearTimeout(tmp.updateSet);
+  clearInterval(rbb.autoslider);
+  clearTimeout(rbb.updateSet);
   stopAutoslider();
-  window.removeEventListener("resize", sizeResponse);
+  sizeObserver?.disconnect();
 });
 
 function sizeResponse() {
-  clearTimeout(tmp.resizeTimeout);
-  tmp.resizeTimeout = setTimeout(() => {
+  clearTimeout(rbb.resizeTimeout);
+  rbb.resizeTimeout = setTimeout(() => {
     changeInSlides.disconnect();
     stopAutoslider();
     let mediaWidth = window.innerWidth;
-    let matchedBreakpoints = settings.breakpoints.filter(
+    let matchedBreakpoints = bb.breakpoints.filter(
       (el) =>
         (el.minWidth || el.maxWidth) &&
         (!el.minWidth || el.minWidth <= mediaWidth) &&
         (!el.maxWidth || el.maxWidth >= mediaWidth),
     );
     let breakpoint =
-      matchedBreakpoints.filter((el) => el.maxWidth).sort((a, b) => a.maxWidth - b.maxWidth)[0] ||
-      matchedBreakpoints.filter((el) => el.minWidth).sort((a, b) => b.minWidth - a.minWidth)[0];
+      matchedBreakpoints.filter((el) => el.maxWidth).sort((a, b) => a.maxWidth! - b.maxWidth!)[0] ||
+      matchedBreakpoints.filter((el) => el.minWidth).sort((a, b) => b.minWidth! - a.minWidth!)[0];
 
-    tmp.breakpoint = {
-      slidesPerView: settings.slidesPerView,
-      spaceBetween: settings.spaceBetween,
+    rbb.breakpoint = {
+      slidesPerView: bb.slidesPerView,
+      spaceBetween: bb.spaceBetween,
       ...(breakpoint || {}),
     };
     init();
@@ -175,22 +185,22 @@ function sizeResponse() {
 
 function init() {
   slides = [...(slider?.querySelectorAll(`:scope > .cs-slide`) || [])].filter(
-    (el) => !el.matches(`[data-creator='${tmp.uniqueId}']`),
+    (el) => !el.matches(`[data-creator='${rbb.uniqueId}']`),
   ) as HTMLElement[];
   if (!slides[0]) return;
   slider?.classList.add("ghost-walk");
 
-  if (!initialized || tmp.slidesNo !== slides.length) {
-    [...(slider?.querySelectorAll(`:scope [data-creator='${tmp.uniqueId}']`) || [])].forEach((el) =>
+  if (!initialized || rbb.slidesNo !== slides.length) {
+    [...(slider?.querySelectorAll(`:scope [data-creator='${rbb.uniqueId}']`) || [])].forEach((el) =>
       el.remove(),
     );
-    tmp.continuous = settings.continuous && settings.continuous !== "rewind" && slides.length > 1;
+    rbb.continuous = bb.continuous && bb.continuous !== "rewind" && slides.length > 1;
     slides.forEach((slide, index) => {
       slide.setAttribute("data-csid", `${index + 1}`);
 
-      if (tmp.continuous) {
+      if (rbb.continuous) {
         let slideClone = slide.cloneNode(true) as HTMLElement;
-        slideClone.setAttribute("data-creator", tmp.uniqueId);
+        slideClone.setAttribute("data-creator", rbb.uniqueId);
         [...slideClone.querySelectorAll(":scope *")].forEach((el) => {
           el.removeAttribute("data-lightbox");
           el.removeAttribute("data-find-lightbox-content");
@@ -204,75 +214,75 @@ function init() {
     initialized = true;
   }
 
-  tmp.slidesNo = slides.length;
-  tmp.currSlideNo = Number(
+  rbb.slidesNo = slides.length;
+  rbb.currSlideNo = Number(
     slides.find((el) => el.classList.contains("active"))?.getAttribute("data-csid") || 1,
   );
-  currSlide = slides[tmp.currSlideNo - 1] as HTMLElement;
-  tmp.spaceBetween =
-    typeof tmp.breakpoint.spaceBetween === "number"
-      ? `${tmp.breakpoint.spaceBetween}px`
-      : tmp.breakpoint.spaceBetween;
-  tmp.slidesPerView =
-    tmp.continuous && tmp.breakpoint.slidesPerView > tmp.slidesNo
-      ? tmp.slidesNo
-      : tmp.breakpoint.slidesPerView;
+  currSlide = slides[rbb.currSlideNo - 1] as HTMLElement;
+  rbb.spaceBetween =
+    typeof rbb.breakpoint.spaceBetween === "number"
+      ? `${rbb.breakpoint.spaceBetween}px`
+      : rbb.breakpoint.spaceBetween;
+  rbb.slidesPerView =
+    rbb.continuous && rbb.breakpoint.slidesPerView > rbb.slidesNo
+      ? rbb.slidesNo
+      : rbb.breakpoint.slidesPerView;
 
   let rawSlides = [...(slider?.querySelectorAll(`:scope > .cs-slide`) || [])] as HTMLElement[];
   rawSlides.forEach((el) => {
-    el.style.width = `calc(((100% + ${tmp.spaceBetween}) / ${tmp.slidesPerView}) - ${tmp.spaceBetween})`;
-    el.style.marginRight = tmp.spaceBetween;
+    el.style.width = `calc(((100% + ${rbb.spaceBetween}) / ${rbb.slidesPerView}) - ${rbb.spaceBetween})`;
+    el.style.marginRight = rbb.spaceBetween;
   });
 
-  tmp.slideSize =
+  rbb.slideSize =
     currSlide.getBoundingClientRect().width +
     parseFloat(utils.getCssVal(currSlide, "margin-right"));
-  tmp.minExt = tmp.continuous ? -(tmp.slideSize * tmp.slidesNo) : 0;
-  tmp.maxExt = tmp.minExt - tmp.slideSize * (tmp.slidesNo - tmp.slidesPerView);
+  rbb.minExt = rbb.continuous ? -(rbb.slideSize * rbb.slidesNo) : 0;
+  rbb.maxExt = rbb.minExt - rbb.slideSize * (rbb.slidesNo - rbb.slidesPerView);
 
   update();
   utils.afterNextRepaint(() => slider?.classList.remove("ghost-walk"));
-  if (settings.autoslide) startAutoslider();
+  if (bb.autoslide) startAutoslider();
 }
 
-function update(newSlideNo: number = tmp.currSlideNo || 1) {
-  clearTimeout(tmp.updateSet);
+function update(newSlideNo: number = rbb.currSlideNo || 1) {
+  clearTimeout(rbb.updateSet);
 
-  newSlideNo = !tmp.continuous
+  newSlideNo = !rbb.continuous
     ? newSlideNo < 1
       ? 1
-      : newSlideNo > tmp.slidesNo
-        ? tmp.slidesNo
+      : newSlideNo > rbb.slidesNo
+        ? rbb.slidesNo
         : newSlideNo
     : newSlideNo < 1
-      ? tmp.slidesNo + newSlideNo
-      : newSlideNo > tmp.slidesNo
-        ? newSlideNo - tmp.slidesNo
+      ? rbb.slidesNo + newSlideNo
+      : newSlideNo > rbb.slidesNo
+        ? newSlideNo - rbb.slidesNo
         : newSlideNo;
 
   prevSlide = currSlide;
-  tmp.currSlideNo = newSlideNo;
-  currSlide = slides[tmp.currSlideNo - 1] as HTMLElement;
+  rbb.currSlideNo = newSlideNo;
+  currSlide = slides[rbb.currSlideNo - 1] as HTMLElement;
 
-  tmp.newCoord = Math.min(
-    tmp.minExt,
-    Math.max(tmp.minExt - (newSlideNo - 1) * tmp.slideSize, tmp.maxExt),
+  rbb.newCoord = Math.min(
+    rbb.minExt,
+    Math.max(rbb.minExt - (newSlideNo - 1) * rbb.slideSize, rbb.maxExt),
   );
-  if (slider) slider.style.transform = `translateX(${tmp.newCoord}px)`;
-  tmp.updateSet = setTimeout(() => {
+  if (slider) slider.style.transform = `translateX(${rbb.newCoord}px)`;
+  rbb.updateSet = setTimeout(() => {
     [...(slider?.querySelectorAll(`:scope > .cs-slide`) || [])].forEach((el) =>
       el.classList.remove("active"),
     );
     [...(slider?.querySelectorAll(`:scope > .cs-slide[data-csid='${newSlideNo}']`) || [])].forEach(
       (el) => el.classList.add("active"),
     );
-  }, settings.transitionDuration);
+  }, bb.transitionDuration);
 
-  if (!settings.continuous && tmp.slidesNo > 1) {
-    if (tmp.currSlideNo === 1) {
+  if (!bb.continuous && rbb.slidesNo > 1) {
+    if (rbb.currSlideNo === 1) {
       prevBtn?.classList.add("disabled");
       nextBtn?.classList.remove("disabled");
-    } else if (tmp.currSlideNo === tmp.slidesNo) {
+    } else if (rbb.currSlideNo === rbb.slidesNo) {
       nextBtn?.classList.add("disabled");
       prevBtn?.classList.remove("disabled");
     } else {
@@ -281,7 +291,7 @@ function update(newSlideNo: number = tmp.currSlideNo || 1) {
     }
   }
 
-  if (tmp.slidesNo === 1) {
+  if (rbb.slidesNo === 1) {
     prevBtn?.classList.add("disabled");
     nextBtn?.classList.add("disabled");
   }
@@ -296,25 +306,24 @@ function update(newSlideNo: number = tmp.currSlideNo || 1) {
       utils.triggerEvent(trackerCont.parentElement!, "activeView", tracker);
     }
   }
-  tmp.coordChange = false;
+  rbb.coordChange = false;
 }
 
 function dist(e: MouseEvent | TouchEvent) {
-  if (settings.direction === "vertical")
-    return "touches" in e ? e.touches[0]?.clientY || 0 : e.clientY;
+  if (bb.direction === "vertical") return "touches" in e ? e.touches[0]?.clientY || 0 : e.clientY;
   return "touches" in e ? e.touches[0]?.clientX || 0 : e.clientX;
 }
 
 function gestureStart(e: MouseEvent | TouchEvent) {
   if (e.type === "mousedown" && (e as MouseEvent).button != 0) return;
 
-  if (settings.autoslide) stopAutoslider();
-  tmp.gestureTarget = e.target;
-  tmp.gT = new Date().getTime();
-  tmp.initCoord = tmp.newCoord;
-  tmp.startCoord = dist(e);
-  tmp.coordChange = false;
-  tmp.endCoord = tmp.startCoord;
+  if (bb.autoslide) stopAutoslider();
+  rbb.gestureTarget = e.target;
+  rbb.gT = new Date().getTime();
+  rbb.initCoord = rbb.newCoord;
+  rbb.startCoord = dist(e);
+  rbb.coordChange = false;
+  rbb.endCoord = rbb.startCoord;
 
   slider?.classList.add("swiping");
 
@@ -328,22 +337,22 @@ function gestureStart(e: MouseEvent | TouchEvent) {
 }
 
 function gestureMove(e: MouseEvent | TouchEvent) {
-  tmp.moveDir = tmp.endCoord > dist(e) ? 1 : tmp.endCoord < dist(e) ? -1 : tmp.moveDir;
-  tmp.endCoord = dist(e);
-  if (Math.abs(tmp.endCoord - tmp.startCoord) > 5) tmp.coordChange = true;
+  rbb.moveDir = rbb.endCoord > dist(e) ? 1 : rbb.endCoord < dist(e) ? -1 : rbb.moveDir;
+  rbb.endCoord = dist(e);
+  if (Math.abs(rbb.endCoord - rbb.startCoord) > 5) rbb.coordChange = true;
 
-  if (tmp.coordChange) {
-    tmp.newCoord =
-      tmp.initCoord + tmp.endCoord - tmp.startCoord + tmp.movePastSlides * Math.abs(tmp.minExt);
+  if (rbb.coordChange) {
+    rbb.newCoord =
+      rbb.initCoord + rbb.endCoord - rbb.startCoord + rbb.movePastSlides * Math.abs(rbb.minExt);
 
-    if (tmp.continuous) {
-      if (tmp.moveDir === 1 && tmp.newCoord < tmp.maxExt) tmp.movePastSlides += 1;
-      else if (tmp.moveDir === -1 && tmp.newCoord > tmp.minExt) tmp.movePastSlides -= 1;
-      tmp.newCoord =
-        tmp.initCoord + tmp.endCoord - tmp.startCoord + tmp.movePastSlides * Math.abs(tmp.minExt);
+    if (rbb.continuous) {
+      if (rbb.moveDir === 1 && rbb.newCoord < rbb.maxExt) rbb.movePastSlides += 1;
+      else if (rbb.moveDir === -1 && rbb.newCoord > rbb.minExt) rbb.movePastSlides -= 1;
+      rbb.newCoord =
+        rbb.initCoord + rbb.endCoord - rbb.startCoord + rbb.movePastSlides * Math.abs(rbb.minExt);
     }
 
-    if (slider) slider.style.transform = `translateX(${tmp.newCoord}px)`;
+    if (slider) slider.style.transform = `translateX(${rbb.newCoord}px)`;
   }
 }
 
@@ -356,38 +365,38 @@ function gestureEnd(e: MouseEvent | TouchEvent) {
     document.removeEventListener("mouseup", gestureEnd);
   }
 
-  tmp.moveDir = 0;
-  tmp.movePastSlides = 0;
+  rbb.moveDir = 0;
+  rbb.movePastSlides = 0;
 
-  if (slider?.classList.contains("swiping") && tmp.coordChange) {
-    let changeExt = tmp.endCoord - tmp.startCoord;
-    let movedSlidesCount = Math.ceil(Math.abs(changeExt / tmp.slideSize));
+  if (slider?.classList.contains("swiping") && rbb.coordChange) {
+    let changeExt = rbb.endCoord - rbb.startCoord;
+    let movedSlidesCount = Math.ceil(Math.abs(changeExt / rbb.slideSize));
 
     if (
-      Math.abs(changeExt) > tmp.slideSize / 3 ||
-      (Math.abs(changeExt) > tmp.slideSize / 20 && new Date().getTime() - tmp.gT < 300)
+      Math.abs(changeExt) > rbb.slideSize / 3 ||
+      (Math.abs(changeExt) > rbb.slideSize / 20 && new Date().getTime() - rbb.gT < 300)
     ) {
       slider.classList.remove("swiping");
-      movedSlidesCount = settings.continuous
-        ? movedSlidesCount > tmp.slidesNo
-          ? movedSlidesCount % tmp.slidesNo
+      movedSlidesCount = bb.continuous
+        ? movedSlidesCount > rbb.slidesNo
+          ? movedSlidesCount % rbb.slidesNo
           : movedSlidesCount
         : movedSlidesCount;
-      update(tmp.currSlideNo + (changeExt > 0 ? -movedSlidesCount : movedSlidesCount));
+      update(rbb.currSlideNo + (changeExt > 0 ? -movedSlidesCount : movedSlidesCount));
     } else {
-      tmp.newCoord = tmp.initCoord + changeExt;
-      if (slider) slider.style.transform = `translateX(${tmp.newCoord}px)`;
+      rbb.newCoord = rbb.initCoord + changeExt;
+      if (slider) slider.style.transform = `translateX(${rbb.newCoord}px)`;
       utils.afterNextRepaint(() => {
         slider?.classList.remove("swiping");
-        update(tmp.currSlideNo);
+        update(rbb.currSlideNo);
       });
     }
   } else {
     if (
-      tmp.gestureTarget instanceof HTMLElement &&
-      tmp.gestureTarget.closest("[data-lightbox], [data-find-lightbox-content]")
+      rbb.gestureTarget instanceof HTMLElement &&
+      rbb.gestureTarget.closest("[data-lightbox], [data-find-lightbox-content]")
     ) {
-      let toggler = tmp.gestureTarget.closest(
+      let toggler = rbb.gestureTarget.closest(
         "[data-lightbox], [data-find-lightbox-content]",
       ) as HTMLElement;
       let lightboxElem = document.querySelector(
@@ -400,45 +409,45 @@ function gestureEnd(e: MouseEvent | TouchEvent) {
         });
     }
     slider?.classList.remove("swiping");
-    update(tmp.currSlideNo);
+    update(rbb.currSlideNo);
   }
 
-  if (settings.pauseOnHover && slider?.contains(e.target as Node) && e.type !== "touchend") return;
-  if (settings.autoslide) startAutoslider();
+  if (bb.pauseOnHover && slider?.contains(e.target as Node) && e.type !== "touchend") return;
+  if (bb.autoslide) startAutoslider();
 }
 
 function prevSlides() {
-  let newSlideNo = tmp.currSlideNo - (settings.sliderMove === "page" ? tmp.slidesPerView : 1);
+  let newSlideNo = rbb.currSlideNo - (bb.sliderMove === "view" ? rbb.slidesPerView : 1);
 
-  if (tmp.continuous && newSlideNo < 1) {
+  if (rbb.continuous && newSlideNo < 1) {
     slider?.classList.add("ghost-walk");
-    if (slider) slider.style.transform = `translateX(${tmp.newCoord + tmp.minExt}px)`;
+    if (slider) slider.style.transform = `translateX(${rbb.newCoord + rbb.minExt}px)`;
     utils.afterNextRepaint(() => {
       slider?.classList.remove("ghost-walk");
       utils.afterNextRepaint(() => update(newSlideNo));
     });
   } else {
-    if (settings.continuous && newSlideNo < 1) newSlideNo = tmp.slidesNo;
+    if (bb.continuous && newSlideNo < 1) newSlideNo = rbb.slidesNo;
     update(newSlideNo);
   }
-  if (tmp.autosliding) startAutoslider();
+  if (rbb.autosliding) startAutoslider();
 }
 
 function nextSlides() {
-  let newSlideNo = tmp.currSlideNo + (settings.sliderMove === "page" ? tmp.slidesPerView : 1);
+  let newSlideNo = rbb.currSlideNo + (bb.sliderMove === "view" ? rbb.slidesPerView : 1);
 
-  if (tmp.continuous && newSlideNo > tmp.slidesNo) {
+  if (rbb.continuous && newSlideNo > rbb.slidesNo) {
     slider?.classList.add("ghost-walk");
-    if (slider) slider.style.transform = `translateX(${tmp.newCoord - tmp.minExt}px)`;
+    if (slider) slider.style.transform = `translateX(${rbb.newCoord - rbb.minExt}px)`;
     utils.afterNextRepaint(() => {
       slider?.classList.remove("ghost-walk");
       utils.afterNextRepaint(() => update(newSlideNo));
     });
   } else {
-    if (settings.continuous && newSlideNo > tmp.slidesNo) newSlideNo = 1;
+    if (bb.continuous && newSlideNo > rbb.slidesNo) newSlideNo = 1;
     update(newSlideNo);
   }
-  if (tmp.autosliding) startAutoslider();
+  if (rbb.autosliding) startAutoslider();
 }
 
 function trackControl(e: MouseEvent) {
@@ -446,34 +455,41 @@ function trackControl(e: MouseEvent) {
 
   if (tracker) {
     update([...(trackerCont?.querySelectorAll(`:scope > .cs-tracker`) || [])].indexOf(tracker) + 1);
-    if (tmp.autosliding) startAutoslider();
+    if (rbb.autosliding) startAutoslider();
   }
 }
 
 function startAutoslider() {
   if (slider?.classList.contains("swiping")) return;
   stopAutoslider();
-  tmp.autoslider = setInterval(() => {
-    let newSlideNo = tmp.currSlideNo + (settings.sliderMove === "page" ? tmp.slidesPerView : 1);
+  rbb.autoslider = setInterval(() => {
+    let newSlideNo = rbb.currSlideNo + (bb.sliderMove === "view" ? rbb.slidesPerView : 1);
 
-    if (tmp.continuous && newSlideNo > tmp.slidesNo) {
+    if (rbb.continuous && newSlideNo > rbb.slidesNo) {
       slider?.classList.add("ghost-walk");
-      if (slider) slider.style.transform = `translateX(${tmp.newCoord - tmp.minExt}px)`;
+      if (slider) slider.style.transform = `translateX(${rbb.newCoord - rbb.minExt}px)`;
       utils.afterNextRepaint(() => slider?.classList.remove("ghost-walk"));
-    } else if (!tmp.continuous && newSlideNo > tmp.slidesNo) newSlideNo = 1;
+    } else if (!rbb.continuous && newSlideNo > rbb.slidesNo) newSlideNo = 1;
     utils.afterNextRepaint(() => update(newSlideNo));
-  }, settings.autoslideInterval);
-  tmp.autosliding = true;
+  }, bb.autoslideInterval);
+  rbb.autosliding = true;
 }
 
 function stopAutoslider() {
-  clearInterval(tmp.autoslider);
-  tmp.autosliding = false;
+  clearInterval(rbb.autoslider);
+  rbb.autosliding = false;
 }
 </script>
 <template>
-  <div ref="carousel" class="carousel" :class="{ lui: settings.autoSetup }">
-    <template v-if="settings.autoSetup">
+  <div
+    ref="carousel"
+    class="carousel"
+    :class="{
+      lui: bb.autoSetup,
+    }"
+    :tracker-position
+  >
+    <template v-if="bb.autoSetup">
       <div class="cs-viewbox">
         <div class="cs-slider">
           <slot></slot>
@@ -493,23 +509,31 @@ function stopAutoslider() {
           scrollBody: '.cs-trackers',
           scrollChildren: '.cs-tracker',
         }"
-        style="display: flex"
+        :vertical="trackerPosition === 'left' || trackerPosition === 'right'"
       >
-        <div class="cs-trackers">
+        <div class="scroll-items cs-trackers mx-auto gap-1 p-1">
           <slot name="trackers">
             <button
               class="cs-tracker"
-              v-for="n in tmp.slidesNo"
+              v-for="n in rbb.slidesNo"
               :data-csid="n"
-              :data-creator="tmp.uniqueId"
+              :data-creator="rbb.uniqueId"
             ></button>
           </slot>
         </div>
         <div class="l-scroll">
-          <Icon name="material-symbols:keyboard-double-arrow-left" />
+          <Icon
+            v-if="trackerPosition === 'left' || trackerPosition === 'right'"
+            name="material-symbols:arrow-upward-alt"
+          />
+          <Icon v-else name="material-symbols:arrow-left-alt" />
         </div>
         <div class="r-scroll">
-          <Icon name="material-symbols:keyboard-double-arrow-right" />
+          <Icon
+            v-if="trackerPosition === 'left' || trackerPosition === 'right'"
+            name="material-symbols:arrow-downward-alt"
+          />
+          <Icon v-else name="material-symbols:arrow-right-alt" />
         </div>
       </LimbIScroller>
     </template>
@@ -518,7 +542,6 @@ function stopAutoslider() {
 </template>
 <style>
 .carousel {
-  display: block;
   position: relative;
   max-width: 100%;
 
@@ -578,22 +601,33 @@ function stopAutoslider() {
 
 /* apply default style on cs-tracker, cs-prev, and cs-next. */
 .carousel.lui {
-  .cs-trackers {
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    flex-flow: row nowrap;
-    max-width: 100%;
-    gap: 0.5rem;
-    margin: 0.5rem auto 0rem;
-    padding: 0.5em;
-    overflow: hidden;
-    scroll-behavior: auto;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: var(--spacing);
 
-    & > * {
+  &[tracker-position="left"],
+  &[tracker-position="right"] {
+    .cs-viewbox {
+      flex: 1 1 0;
+    }
+    .cs-tracker {
       flex: 0 0 auto;
     }
+  }
 
+  &[tracker-position="top"] {
+    flex-direction: column-reverse;
+  }
+
+  &[tracker-position="right"] {
+    flex-direction: row;
+  }
+
+  &[tracker-position="left"] {
+    flex-direction: row-reverse;
+  }
+
+  .cs-trackers {
     & .cs-tracker:not(.thumbnail) {
       display: inline-block;
       position: relative;

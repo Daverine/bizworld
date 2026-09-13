@@ -1,10 +1,8 @@
 <script setup>
-definePageMeta({ layout: "account", auth: { only: "user" } });
 const userStore = useUserStore();
-defineOptions({ title: "Profile | BizWorld" });
 </script>
 <template>
-  <table class="simple rounded loose table profileTab">
+  <table class="simple loose profileTab table rounded">
     <thead>
       <tr>
         <th>
@@ -22,7 +20,7 @@ defineOptions({ title: "Profile | BizWorld" });
           <NuxtImg
             preset="thumbnail"
             :src="userStore.userData.profileImg"
-            class="rounded-full image"
+            class="image rounded-full"
             style="max-width: 7rem"
             alt="profile picture"
           />
@@ -50,7 +48,7 @@ defineOptions({ title: "Profile | BizWorld" });
       </tr>
     </tbody>
   </table>
-  <div class="text-center max-w-6xl auto-contain">
+  <div class="auto-contain max-w-6xl text-center">
     <h4>Are you looking for employment?</h4>
     <p>
       You can create a work profile for yourself on Bizworld. Employers can easily search for

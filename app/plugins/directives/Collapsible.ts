@@ -1,5 +1,7 @@
 export default {
   mounted(el: HTMLElement) {
+    let inOutTimeout: ReturnType<typeof setTimeout>;
+
     function collapser() {
       if (!el) {
         observer.disconnect();
@@ -12,9 +14,10 @@ export default {
           ? (el.nextElementSibling as HTMLElement)
           : null;
       const accordion = el.getAttribute("data-collapsible");
-
+      clearTimeout(inOutTimeout);
       if (collapsible) {
         if (el.classList.contains("active")) {
+          collapsible.style.removeProperty("display");
           collapsible.style.height = collapsible.scrollHeight + "px";
 
           if (accordion) {
@@ -29,7 +32,7 @@ export default {
               activeElems.forEach((el) => el.dispatchEvent(new Event("click")));
             }
           }
-          setTimeout(
+          inOutTimeout = setTimeout(
             () => {
               collapsible.style.height = "auto";
               utils.triggerEvent(window, "resize");
@@ -39,8 +42,11 @@ export default {
         } else {
           collapsible.style.height = collapsible.scrollHeight + "px";
           utils.afterNextRepaint(() => collapsible.style.removeProperty("height"));
-          setTimeout(
-            () => utils.triggerEvent(window, "resize"),
+          inOutTimeout = setTimeout(
+            () => {
+              collapsible.style.display = "none";
+              utils.triggerEvent(window, "resize");
+            },
             utils.durationInMilliseconds(utils.getCssVal(collapsible, "transition-duration")),
           );
         }

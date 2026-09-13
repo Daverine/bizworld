@@ -70,11 +70,7 @@ const allChecked = computed({
                       <div class="input-box text-sm" style="width: 7rem">
                         <button
                           class="addon icon button text-xs"
-                          @click="
-                            () => {
-                              if (item.quantity > 1) item.quantity--;
-                            }
-                          "
+                          @click="if (item.quantity > 1) item.quantity--;"
                         >
                           <Icon name="material-symbols:remove-rounded" />
                         </button>
@@ -85,16 +81,8 @@ const allChecked = computed({
                           style="appearance: none !important"
                           min="1"
                           v-model="item.quantity"
-                          @input="
-                            () => {
-                              if (item.quantity < 1) item.quantity = 1;
-                            }
-                          "
-                          @keypress="
-                            (evt) => {
-                              if (evt.key === '-') evt.preventDefault();
-                            }
-                          "
+                          @input="if (item.quantity < 1) item.quantity = 1;"
+                          @keypress="if ($event.key === '-') $event.preventDefault();"
                         />
                         <button class="addon icon button text-xs" @click="item.quantity++">
                           <Icon name="material-symbols:add-rounded" />

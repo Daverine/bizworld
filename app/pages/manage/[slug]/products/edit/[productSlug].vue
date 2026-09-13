@@ -759,7 +759,7 @@ useSortable("#prodPhotos > .scroll-items", editable.photos);
           <Icon name="material-symbols:error-rounded" />
           {{ error }}
         </div>
-        <label class="icon button design-takeover">
+        <label class="button design-takeover">
           <Icon name="material-symbols:add-a-photo-outline-rounded" />{{
             editable.photos.length ? "Add more photos" : "Add photos"
           }}
@@ -1190,7 +1190,10 @@ useSortable("#prodPhotos > .scroll-items", editable.photos);
           v-if="editable.details_attachment"
           class="relative mb-3 flex w-max flex-col items-center"
         >
-          <Icon name="mdi:file-pdf-box" class="text-6xl text-red-500" />
+          <Icon
+            name="material-symbols:picture-as-pdf-outline-rounded"
+            class="text-6xl text-red-500"
+          />
           <button
             type="button"
             @click="editable.details_attachment = undefined"
@@ -1199,7 +1202,7 @@ useSortable("#prodPhotos > .scroll-items", editable.photos);
             <Icon name="material-symbols:close-rounded" />
           </button>
           <div v-if="typeof editable.details_attachment === 'string'" class="text-sm">
-            {{ editable.details_attachment.split("/").slice(-1)[0] }}
+            {{ editable.details_attachment.split("/").at(-1) }}
           </div>
           <template v-else>
             <div class="text-sm">{{ editable.details_attachment.name }}</div>
@@ -1208,7 +1211,7 @@ useSortable("#prodPhotos > .scroll-items", editable.photos);
             </div>
           </template>
         </div>
-        <label class="icon button design-takeover">
+        <label class="button design-takeover">
           <Icon name="material-symbols:picture-as-pdf-outline-rounded" />{{
             `${editable.details_attachment ? "Change attachment" : "Add attachment"}`
           }}
@@ -1364,7 +1367,7 @@ useSortable("#prodPhotos > .scroll-items", editable.photos);
               <Icon name="material-symbols:error-rounded" />
               {{ error }}
             </div>
-            <label class="icon button design-takeover">
+            <label class="button design-takeover">
               <Icon name="material-symbols:add-a-photo-outline-rounded" />{{
                 `${placeholder.option.photo ? "Change photo" : "Add photo"}`
               }}

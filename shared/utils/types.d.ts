@@ -110,4 +110,11 @@ export type bizData = {
   is_active: boolean;
   logo?: string;
   review_count?: number;
+  local_groups?: {
+    id: string;
+    name: string;
+    description?: string;
+    icon?: string;
+    parent_id?: string;
+  }[];
 };

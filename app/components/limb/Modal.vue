@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const props = defineProps<{
   id: string;
-  options?: DialogerSettings;
+  options?: Partial<DialogerOptions>;
 }>();
 const modal = useTemplateRef("modal");
-const options: DialogerSettings = {
+const options: Partial<DialogerOptions> = {
   namespace: "modal",
   toggler: ".open-modal",
   toExcuseToggler: ".ex-open-modal",

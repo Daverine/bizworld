@@ -51,10 +51,11 @@ export function useAuth() {
     signIn: client.signIn,
     signUp: client.signUp,
     async signOut({ redirectTo }: { redirectTo?: RouteLocationRaw } = { redirectTo: "/" }) {
+      const route = useRoute();
       const res = await client.signOut();
       session.value = null;
       user.value = null;
-      if (redirectTo) {
+      if (route.meta.auth && redirectTo) {
         await navigateTo(redirectTo);
       }
       return res;
@@ -64,7 +65,7 @@ export function useAuth() {
   };
 }
 
-export const useSignIn = (callbackURL: string) => {
+export const useSignIn = () => {
   const data = reactive({
     email: "",
     password: "",
@@ -79,67 +80,32 @@ export const useSignIn = (callbackURL: string) => {
       minLength: minLength(8),
     },
   });
-  const status = reactive<{ isLoading: boolean; error: any; success: boolean }>({
-    isLoading: false,
-    error: null,
-    success: false,
-  });
 
-  async function submit() {
-    await validation.r$.$validate();
-    if (validation.r$.$invalid) {
-      await nextTick();
-      (document.querySelector(".error") as HTMLElement)?.focus();
-      document
-        .querySelector(".error")
-        ?.closest(".field")
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
-    }
-
-    await useAuth().signIn.email(
-      {
-        email: data.email,
-        password: data.password,
-        callbackURL,
-      },
-      {
-        onRequest() {
-          status.isLoading = true;
-          status.error = null;
-        },
-        onSuccess() {
-          status.isLoading = false;
-          status.success = true;
-        },
-        onError(context) {
-          status.isLoading = false;
-          status.error = context.error;
-        },
-      },
-    );
+  function reset() {
+    data.email = "";
+    data.password = "";
+    validation.r$.$reset();
   }
 
   return {
     data,
     validation,
-    submit,
-    status,
+    reset,
   };
 };
 
 export const useSignUp = (callbackURL: string = "/home") => {
   const data = reactive({
-    firstname: "",
-    lastname: "",
+    first_name: "",
+    last_name: "",
     email: "",
     password: "",
   });
   const validation = useRegle(data, {
-    firstname: {
+    first_name: {
       required,
     },
-    lastname: {
+    last_name: {
       required,
     },
     email: {
@@ -151,6 +117,14 @@ export const useSignUp = (callbackURL: string = "/home") => {
       minLength: minLength(8),
     },
   });
+
+  function reset() {
+    data.first_name = "";
+    data.last_name = "";
+    data.email = "";
+    data.password = "";
+    validation.r$.$reset();
+  }
   const status = reactive<{ isLoading: boolean; error: any; success: boolean }>({
     isLoading: false,
     error: null,
@@ -171,9 +145,9 @@ export const useSignUp = (callbackURL: string = "/home") => {
 
     await useAuth().signUp.email(
       {
-        name: data.firstname,
-        first_name: data.firstname,
-        last_name: data.lastname,
+        name: data.first_name,
+        first_name: data.first_name,
+        last_name: data.last_name,
         email: data.email,
         password: data.password,
         callbackURL,
@@ -199,6 +173,7 @@ export const useSignUp = (callbackURL: string = "/home") => {
     data,
     validation,
     submit,
+    reset,
     status,
   };
 };

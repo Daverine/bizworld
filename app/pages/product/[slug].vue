@@ -2,6 +2,7 @@
 definePageMeta({ layout: "details", name: "product-page" });
 const cartStore = useCartStore();
 const route = useRoute();
+const img = useImage();
 const { data: product } = await useFetch("/api/product/query", {
   query: { slug: route.params.slug },
 });
@@ -295,11 +296,7 @@ function getItemForCart() {
           <div class="input-box w-full text-sm">
             <button
               class="addon icon button text-xs"
-              @click="
-                () => {
-                  if (toCart.quantity > 1) toCart.quantity--;
-                }
-              "
+              @click="if (toCart.quantity > 1) toCart.quantity--;"
             >
               <Icon name="material-symbols:remove-rounded" />
             </button>
@@ -309,17 +306,8 @@ function getItemForCart() {
               class="subject form-item compact text-center"
               min="1"
               v-model="toCart.quantity"
-              @input="
-                (evt) => {
-                  const input = evt.currentTarget as HTMLInputElement;
-                  if (parseInt(input.value) < 1) toCart.quantity = 1;
-                }
-              "
-              @keypress="
-                (evt) => {
-                  if (evt.key === '-') evt.preventDefault();
-                }
-              "
+              @input="if (toCart.quantity < 1) toCart.quantity = 1;"
+              @keypress="if ($event.key === '-') $event.preventDefault();"
             />
             <button class="addon icon button text-xs" @click="toCart.quantity++">
               <Icon name="material-symbols:add-rounded" />
@@ -407,11 +395,15 @@ function getItemForCart() {
             breakpoints: [{ maxWidth: 959, pinnable: false }],
           }"
         >
-          <LimbCarousel :options="{ continuous: false }">
-            <div v-for="slide in photos" class="cs-slide">
+          <LimbCarousel :tracker-position="isSmallScreen ? undefined : 'left'">
+            <div
+              v-for="slide in photos"
+              class="cs-slide photo-box aspect-square"
+              :style="`--box-photo: url(${img(slide, { format: 'webp', width: 960 })})`"
+            >
               <NuxtImg
                 format="webp"
-                sizes="960px"
+                width="960px"
                 densities="1x"
                 :src="slide"
                 :data-lightbox="slide"
@@ -419,8 +411,12 @@ function getItemForCart() {
               />
             </div>
             <template v-if="!isSmallScreen" #trackers>
-              <div v-for="slide in photos" class="thumbnail cs-tracker">
-                <NuxtImg sizes="150px" format="webp" densities="1x" :src="slide" />
+              <div
+                v-for="slide in photos"
+                class="thumbnail cs-tracker"
+                style="--thumbnail-size: 3rem"
+              >
+                <NuxtImg width="150" format="webp" densities="1x" :src="slide" />
               </div>
             </template>
           </LimbCarousel>
@@ -441,6 +437,11 @@ function getItemForCart() {
               {{ bizData.state }}
             </span>
           </div>
+          <!-- Overview Section -->
+          <section>
+            <div class="heading">Overview</div>
+            <p>{{ product.overview }}</p>
+          </section>
           <!-- Product Options -->
           <section class="config min-[960px]:hidden">
             <div class="text-sm font-semibold">Unit price</div>
@@ -480,11 +481,6 @@ function getItemForCart() {
               </div>
             </div>
           </section>
-          <!-- Overview Section -->
-          <section>
-            <div class="heading">Overview</div>
-            <p>{{ product.overview }}</p>
-          </section>
           <!-- Specifications Section -->
           <section class="spec">
             <div v-collapser class="ac-viewbox-ref active lined heading a-block">
@@ -506,7 +502,10 @@ function getItemForCart() {
               </table>
 
               <div v-if="product.details_attachment" class="mt-2">
-                <Icon name="mdi:file-pdf-box" class="text-xl text-red-500" />
+                <Icon
+                  name="material-symbols:picture-as-pdf-outline-rounded"
+                  class="text-xl text-red-500"
+                />
                 For more details
                 <a :href="product.details_attachment" target="_blank">view attachment</a>
               </div>
@@ -935,16 +934,12 @@ function getItemForCart() {
                 >
                   Add and Go to cart
                 </NuxtLink>
-                <NuxtLink
-                  :to="{
-                    name: 'biz-products',
-                    params: { slug: bizData?.slug },
-                  }"
+                <button
                   @click="cartStore.addToCart(getItemForCart())"
                   class="primary flat button exit-modal flex-1"
                 >
                   Add and Continue Shopping
-                </NuxtLink>
+                </button>
               </div>
             </div>
           </div>

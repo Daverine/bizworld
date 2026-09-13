@@ -1,8 +1,7 @@
 export default defineEventHandler(async (event) => {
   let {
     business_slug,
-    category,
-    new_category,
+    category_id,
     title,
     photos,
     video_link,
@@ -19,7 +18,10 @@ export default defineEventHandler(async (event) => {
   // Generate unique ID and slug
   const slug = await uniqueSlugFrom(title, "product");
   const business_id = await getIdFromSlug(business_slug, "business");
-  category = category === "others" && new_category ? `others:${new_category}` : category;
+  console.log(category_id);
+  category_id = parseInt(category_id);
+  console.log(category_id);
+  // category = category === "others" && new_category ? `others:${new_category}` : category;
 
   const newProduct = await db
     .insertInto("product")
@@ -28,7 +30,7 @@ export default defineEventHandler(async (event) => {
       base_price,
       base_promo_price,
       business_id: business_id!,
-      category,
+      category_id,
       details_attachment,
       is_active: true,
       location,

@@ -33,6 +33,17 @@
     Services
   </NuxtLink>
   <NuxtLink
+    :to="{ name: 'manage-biz-item-groups', params: { slug: $route.params.slug } }"
+    exact-active-class="active"
+    class="item exit-sidepanel ac-viewbox-ref"
+  >
+    <i class="icon ac-viewbox">
+      <Icon name="material-symbols:category-outline-rounded" />
+      <Icon name="material-symbols:category-rounded" />
+    </i>
+    Item Groups
+  </NuxtLink>
+  <NuxtLink
     :to="{ name: 'manage-biz-posts', params: { slug: $route.params.slug } }"
     exact-active-class="active"
     class="item exit-sidepanel ac-viewbox-ref"

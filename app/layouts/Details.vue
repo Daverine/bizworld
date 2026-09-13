@@ -1,7 +1,7 @@
 <template>
   <div class="as-page">
-    <div class="menu sticky top-0 z-level-2 bg-surface border-b">
-      <Shareables name="main_menu" />
+    <div class="menu z-level-2 bg-surface sticky top-0 border-b">
+      <MainMenu />
     </div>
     <slot />
   </div>

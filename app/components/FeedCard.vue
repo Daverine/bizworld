@@ -32,15 +32,15 @@ defineProps(["details"]);
         </svg>
       </div>
       <div style="flex: 1 1 auto">
-        <NuxtLink :to="details.bizDetails.url" external class="font-bold text-on-surface">{{
+        <NuxtLink :to="details.bizDetails.url" external class="text-on-surface font-bold">{{
           details.bizDetails.name
         }}</NuxtLink>
         <div
-          class="opacity-65 text-sm font-semibold"
+          class="text-sm font-semibold opacity-65"
           style="display: flex; gap: 10px; flex: 1 1 auto"
         >
           <div>
-            <Icon name="material-symbols:schedule-outline-rounded" class="text-xs mr-2" />
+            <Icon name="material-symbols:schedule-outline-rounded" class="mr-2 text-xs" />
             <NuxtTime :datetime="details.date" relative />
           </div>
         </div>
@@ -66,7 +66,7 @@ defineProps(["details"]);
       <NuxtImg
         v-for="media in details.media"
         format="webp"
-        sizes="600px"
+        width="600"
         densities="1x"
         class="open-lightbox"
         :src="details.media[0].url"
@@ -78,7 +78,7 @@ defineProps(["details"]);
     </div>
     <hr class="m-0" />
     <div
-      class="icon-bar transparent text-sm compact menu fillable"
+      class="icon-bar transparent compact menu fillable text-sm"
       style="padding: 0em 0.5em; border-radius: var(--default-radius)"
     >
       <div class="as-icon item" v-tooltip:aria.unblocking aria-label="Thumb up">

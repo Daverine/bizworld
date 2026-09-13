@@ -8,9 +8,18 @@ export default defineEventHandler(async (event) => {
       message: "Request query is invalid.",
     });
 
-  return (await db
+  const product = (await db
     .selectFrom("product")
     .selectAll()
     .where(id ? "id" : "slug", "=", (id ? id : slug) as string)
     .executeTakeFirst()) as product | undefined;
+
+  if (!product)
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Not found.",
+      message: "Product not found.",
+    });
+
+  return product;
 });

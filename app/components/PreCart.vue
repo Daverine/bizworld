@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+const img = useImage();
 const product: Ref<product | undefined> = ref(undefined);
 const bizData: Ref<bizData | undefined> = ref(undefined);
 const cartStore = useCartStore();
@@ -12,6 +13,15 @@ async function preCartController({ target, settings, exit }: Dialoger) {
     });
     bizData.value = await $fetch("/api/business/query", {
       query: { id: product.value?.business_id },
+    });
+
+    target.addEventListener("isComplete", () => {
+      product.value = undefined;
+      bizData.value = undefined;
+      toCart.spec = [];
+      toCart.quantity = 1;
+      toCart.delivery = "self-pickup";
+      toCart.note = "";
     });
   } catch (error) {
     console.error("Error occured", error);
@@ -88,30 +98,82 @@ const promo_price = computed(() => {
 </script>
 <template>
   <LimbModal id="general-pre-cart" :options="{ controller: preCartController }">
-    <div class="dialog">
+    <div class="dialog flex flex-col">
+      <header class="pin-top-blend flex gap-3 px-6 py-4">
+        <div class="truncate font-bold">Add product to cart</div>
+        <button class="circular flat button as-text exit-modal" style="margin-left: auto">
+          <Icon name="material-symbols:close" />
+        </button>
+      </header>
       <template v-if="product && bizData">
-        <header class="pin-top-blend flex gap-3 px-6 py-4">
-          <div class="truncate font-bold">Add product to cart</div>
-          <button class="circular flat button as-text exit-modal" style="margin-left: auto">
-            <Icon name="material-symbols:close" />
-          </button>
-        </header>
-        <div class="px-6 pt-4">
+        <div class="flex-1 overflow-y-auto px-6 pt-4">
           <div class="grid grid-cols-2 gap-3">
             <LimbCarousel :options="{ continuous: false }">
-              <div v-for="slide in photos" class="cs-slide">
-                <NuxtImg
-                  format="webp"
-                  sizes="960px"
-                  densities="1x"
-                  :src="slide"
-                  :data-lightbox="slide"
-                  data-target="lightbox1"
-                />
+              <div
+                v-for="slide in photos"
+                class="cs-slide photo-box aspect-square"
+                :style="`--box-photo: url(${img(slide, { format: 'webp', width: 960 })})`"
+              >
+                <NuxtImg format="webp" width="960" densities="1x" :src="slide" />
               </div>
             </LimbCarousel>
-            <div>
+            <div class="flex flex-col items-end">
               <h5 class="font-semiboldm-0 page-title">{{ product.title }}</h5>
+              <p>{{ product.overview }}</p>
+              <div class="flex justify-between gap-3 text-sm font-semibold">
+                <div v-if="product.average_rating" class="text-center leading-4">
+                  <i
+                    v-tooltip:aria.unblocking
+                    :aria-label="`Rated ${product.average_rating}`"
+                    class="icon text-sm"
+                  >
+                    <Icon
+                      name="material-symbols:star-rounded"
+                      class="text-yellow-500"
+                      v-for="i in Math.floor(Number(product.average_rating))"
+                    />
+                    <Icon
+                      name="material-symbols:star-half-rounded"
+                      class="text-yellow-500"
+                      v-if="
+                        Number(product.average_rating) -
+                          Math.floor(Number(product.average_rating)) >=
+                        0.5
+                      "
+                    />
+                    <Icon
+                      name="material-symbols:star-rounded"
+                      class="text-surface-v4"
+                      v-for="i in 5 - Math.round(Number(product.average_rating))"
+                    />
+                  </i>
+                  <div class="-mt-1 text-sm opacity-65">
+                    {{
+                      Number(product.review_count)
+                        ? `${Number(product.review_count).toLocaleString()} review(s)`
+                        : "No reviews yet"
+                    }}
+                  </div>
+                </div>
+                <span
+                  v-if="bizData?.physical_location"
+                  v-tooltip:aria.unblocking
+                  :aria-label="bizData.address!"
+                >
+                  <Icon name="material-symbols:location-on-outline-rounded" />
+                  {{ bizData.city }},
+                  {{ bizData.state }}
+                </span>
+              </div>
+              <NuxtLink
+                :to="{
+                  name: 'product-page',
+                  params: { slug: product.slug },
+                }"
+                class="outlined primary button exit-modal mt-auto mb-6"
+              >
+                More details
+              </NuxtLink>
             </div>
           </div>
 
@@ -194,11 +256,7 @@ const promo_price = computed(() => {
             <div class="input-box w-full text-sm">
               <button
                 class="addon icon button text-xs"
-                @click="
-                  () => {
-                    if (toCart.quantity > 1) toCart.quantity--;
-                  }
-                "
+                @click="if (toCart.quantity > 1) toCart.quantity--;"
               >
                 <Icon name="material-symbols:remove-rounded" />
               </button>
@@ -208,17 +266,8 @@ const promo_price = computed(() => {
                 class="subject form-item compact text-center"
                 min="1"
                 v-model="toCart.quantity"
-                @input="
-                  (evt) => {
-                    const input = evt.currentTarget as HTMLInputElement;
-                    if (parseInt(input.value) < 1) toCart.quantity = 1;
-                  }
-                "
-                @keypress="
-                  (evt) => {
-                    if (evt.key === '-') evt.preventDefault();
-                  }
-                "
+                @input="if (toCart.quantity < 1) toCart.quantity = 1;"
+                @keypress="if ($event.key === '-') $event.preventDefault();"
               />
               <button class="addon icon button text-xs" @click="toCart.quantity++">
                 <Icon name="material-symbols:add-rounded" />
@@ -340,20 +389,20 @@ const promo_price = computed(() => {
               >
                 Add and Go to cart
               </NuxtLink>
-              <NuxtLink
-                :to="{
-                  name: 'biz-products',
-                  params: { slug: bizData?.slug },
-                }"
+              <button
                 @click="cartStore.addToCart(getItemForCart())"
                 class="primary flat button exit-modal flex-1"
               >
                 Add and Continue Shopping
-              </NuxtLink>
+              </button>
             </div>
           </div>
         </div>
       </template>
+      <div v-else class="flex flex-col items-center gap-4 p-4">
+        <div class="m3-progress indeterminate"></div>
+        <p>Fetching Product data...</p>
+      </div>
     </div>
   </LimbModal>
 </template>

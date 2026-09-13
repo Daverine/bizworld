@@ -59,6 +59,15 @@ export default defineNuxtConfig({
       },
     },
   },
+  icon: {
+    serverBundle: "local",
+    provider: "none",
+    clientBundle: {
+      scan: true,
+    },
+    class: "icon",
+    mode: "svg",
+  },
   css: ["~/assets/lui.css", "~/assets/main.css"],
   app: {
     head: {

@@ -5,8 +5,7 @@ const { loggedIn } = useAuth();
 <template>
   <header class="hm-header">
     <HomeHeader />
-    <div
-      role="button"
+    <button
       class="mouse_scroll"
       @click="
         ($event.currentTarget as HTMLElement)?.parentElement?.nextElementSibling?.scrollIntoView({
@@ -24,17 +23,17 @@ const { loggedIn } = useAuth();
         <span class="m_scroll_arrows doi"></span>
         <span class="m_scroll_arrows trei"></span>
       </div>
-    </div>
+    </button>
   </header>
   <div
-    class="menu sticky z-level-2 bg-surface"
+    class="menu z-level-2 bg-surface sticky"
     style="top: 0px; border-bottom: 1px solid var(--outline)"
   >
-    <Shareables name="main_menu" />
+    <MainMenu />
   </div>
   <article id="firstSec">
     <section class="sec-block">
-      <div class="text-lg text-center max-w-[65ch] auto-contain">
+      <div class="auto-contain max-w-[65ch] text-center text-lg">
         <h1>
           Do <span class="text-primary">business</span> at your
           <span class="text-primary">conveniency</span>
@@ -53,18 +52,18 @@ const { loggedIn } = useAuth();
       </div>
     </section>
     <section class="sec-block">
-      <div class="max-w-6xl auto-contain grid grid-cols-1 md:grid-cols-2">
+      <div class="auto-contain grid max-w-6xl grid-cols-1 md:grid-cols-2">
         <div class="col">
           <NuxtImg
             format="webp"
-            sizes="800px"
+            width="800"
             densities="1x"
             src="/images/explore.jpg"
             alt="picture depicting explore"
             class="rounded-sm"
           />
         </div>
-        <div class="col max-w-[65ch] auto-contain text-lg">
+        <div class="col auto-contain max-w-[65ch] text-lg">
           <div>
             <h2>
               <span class="text-primary">Explore</span> businesses around you without leaving
@@ -95,18 +94,18 @@ const { loggedIn } = useAuth();
       </div>
     </section>
     <section class="sec-block">
-      <div class="max-w-6xl auto-contain grid grid-cols-1 md:grid-cols-2" style="direction: rtl">
+      <div class="auto-contain grid max-w-6xl grid-cols-1 md:grid-cols-2" style="direction: rtl">
         <div class="col">
           <NuxtImg
             format="webp"
-            sizes="800px"
+            width="800"
             densities="1x"
             src="/images/qr.jpg"
             alt="picture depicting qr"
             class="rounded-sm"
           />
         </div>
-        <div class="col max-w-[65ch] auto-contain text-lg" style="direction: ltr">
+        <div class="col auto-contain max-w-[65ch] text-lg" style="direction: ltr">
           <div>
             <h2>
               <span class="text-primary">Know</span> their products and services
@@ -127,7 +126,7 @@ const { loggedIn } = useAuth();
       </div>
     </section>
     <section class="sec-block">
-      <div class="text-lg text-center max-w-[65ch] auto-contain">
+      <div class="auto-contain max-w-[65ch] text-center text-lg">
         <h2>Take <span class="text-primary">your business online</span> with ease</h2>
         <p>
           Are you a business owner? Do you want people to connect with your business with ease
@@ -142,7 +141,7 @@ const { loggedIn } = useAuth();
   </article>
   <footer style="background-color: rgba(128, 128, 128, 0.1)">
     <div
-      class="max-w-6xl auto-contain flex gap-6 flex-wrap justify-between"
+      class="auto-contain flex max-w-6xl flex-wrap justify-between gap-6"
       style="padding: 2.75rem 1.25rem 1.25rem"
     >
       <div class="col">
@@ -197,7 +196,7 @@ const { loggedIn } = useAuth();
       class="wrappable text menu"
       style="padding: 10px 0px; background-color: rgba(128, 128, 128, 0.1)"
     >
-      <div class="max-w-6xl auto-contain items">
+      <div class="auto-contain items max-w-6xl">
         <div class="item">Terms of use</div>
         <div class="item">About us</div>
         <div class="item">Help</div>
@@ -254,8 +253,8 @@ const { loggedIn } = useAuth();
   height: 0.3125rem;
   transform: rotate(45deg);
 
-  border-right: 2px solid var(--on-surface);
-  border-bottom: 2px solid var(--on-surface);
+  border-right: 2px solid var(--color-on-surface);
+  border-bottom: 2px solid var(--color-on-surface);
   margin: 0 0 0.1875rem 0.25rem;
 
   width: 1rem;
@@ -294,7 +293,7 @@ const { loggedIn } = useAuth();
   width: 1.5rem;
   border-radius: 0.875rem;
   transform: none;
-  border: 2px solid var(--on-surface);
+  border: 2px solid var(--color-on-surface);
   top: 10.625rem;
 }
 
@@ -303,11 +302,11 @@ const { loggedIn } = useAuth();
   width: 0.125rem;
   display: block;
   margin: 0.3125rem auto;
-  background-color: var(--on-surface);
+  background-color: var(--color-on-surface);
   position: relative;
   height: 0.25rem;
   width: 0.25rem;
-  border: 2px solid var(--on-surface);
+  border: 2px solid var(--color-on-surface);
   border-radius: 0.5rem;
 }
 

@@ -49,38 +49,38 @@ function configController({ target, settings, exit }: Dialoger) {
     configData.delivery_options = [];
   });
 }
-async function saveConfig({ settings }: Dialoger) {
-  try {
-    settings.dismissible = false;
-    configData.state = "loading";
-    const updatedProduct = await $fetch("/api/product/update", {
-      method: "patch",
-      query: {
-        id: configData.product?.id,
-        action: "config",
-      },
-      body: {
-        promo: configData.promo,
-        availability: configData.availability,
-        quantity: configData.quantity,
-        delivery_options: configData.delivery_options,
-      },
-    });
+function saveConfig({ settings }: Dialoger) {
+  settings.dismissible = false;
+  configData.state = "loading";
 
-    settings.dismissible = true;
-    configData.state = "done";
+  $fetch("/api/product/update", {
+    method: "patch",
+    query: {
+      id: configData.product?.id,
+      action: "config",
+    },
+    body: {
+      promo: configData.promo,
+      availability: configData.availability,
+      quantity: configData.quantity,
+      delivery_options: configData.delivery_options,
+    },
+  })
+    .then((updatedProduct) => {
+      configData.state = "done";
 
-    if (updatedProduct === undefined) return;
+      if (updatedProduct === undefined) return;
 
-    const index = products.value?.findIndex((el) => el.id === updatedProduct.id);
+      const index = products.value?.findIndex((el) => el.id === updatedProduct.id);
 
-    if (index !== undefined && index > -1) products.value?.splice(index, 1, updatedProduct);
-    triggerRef(products);
-  } catch (error) {
-    settings.dismissible = true;
-    configData.state = "error";
-    console.error("Product failed to update.", error);
-  }
+      if (index !== undefined && index > -1) products.value?.splice(index, 1, updatedProduct);
+      triggerRef(products);
+    })
+    .catch((error) => {
+      configData.state = "error";
+      console.error("Product failed to update.", error);
+    })
+    .finally(() => (settings.dismissible = true));
 }
 function productsUpdate(config?: { action: "delete" | "toggle-visibility"; productId: string }) {
   if (!config) refresh();
@@ -196,7 +196,7 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
 
             <p class="text-sm opacity-65">
               Toggling the switch above on will offer customers the ability to purchase the product
-              at it set promotional price. If not yet set, you can edit the product to se the
+              at it set promotional price. If not yet set, you can edit the product to set the
               promotion price.
             </p>
           </div>
@@ -216,9 +216,8 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
               <div class="item" data-value="quantity">Set quantity</div>
             </div>
             <div v-if="configData.availability === 'quantity'" class="field">
-              <label>Product quantity</label>
-              <p class="text-sm opacity-65">
-                Enter the quantity of this product that is available for sale.
+              <p class="text-sm">
+                Enter the quantity of this product that is available for sale below 👇.
               </p>
               <input
                 type="number"

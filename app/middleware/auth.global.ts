@@ -18,6 +18,11 @@ type MiddlewareOptions =
       redirectGuestTo?: RouteLocationRaw;
     };
 
+declare module "#app" {
+  interface PageMeta {
+    auth?: MiddlewareOptions;
+  }
+}
 declare module "vue-router" {
   interface RouteMeta {
     auth?: MiddlewareOptions;
@@ -31,7 +36,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   await fetchSession();
 
   // If auth is disabled, return
-  if (!to.meta?.auth) return;
+  if (!to.meta.auth) return;
 
   const redirectOptions = {
     redirectUserTo: "/",

@@ -1,6 +1,21 @@
 @import "tailwindcss" important;
 
 @layer base {
+  /* Set the color scheme based on the user's preference or the presence of light-mode or dark-mode classes. */
+
+  :root,
+  :host {
+    color-scheme: light dark;
+
+    &:where(.light-mode, .light-mode *) {
+      color-scheme: light;
+    }
+
+    &:where(.dark-mode, .dark-mode *) {
+      color-scheme: dark;
+    }
+  }
+
   /* Remove all minimum width and height constraints. */
 
   *,
@@ -159,30 +174,19 @@
   }
 }
 
-@custom-variant light-mode {
-  :root,
-  :host {
-    &:is(.light-mode, .light-mode *) {
-      color-scheme: light;
-      @slot;
-    }
+@custom-variant light (&:where(.light-mode, .light-mode *));
+@custom-variant dark (&:where(.dark-mode, .dark-mode *));
+
+@utility link {
+  color: var(--color-primary);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
   }
 }
-
-@custom-variant dark-mode {
-  :root,
-  :host {
-    @media (prefers-color-scheme: dark) {
-      @slot;
-    }
-
-    &:where(.dark-mode, .dark-mode *) {
-      color-scheme: dark;
-      @slot;
-    }
-  }
-}
-
 @utility self-pointer-none {
   pointer-events: none;
 
@@ -203,6 +207,7 @@
 @utility photo-box {
   position: relative;
   width: 100%;
+  object-fit: contain;
   overflow: hidden;
   display: flex;
   place-items: center;
@@ -252,99 +257,35 @@
   --text-h6: 1.25rem;
   --text-h6--line-height: line-height: calc(1em + 0.5rem);
 
-  --color-surface: hsl(0deg 0% 100%);
-  --color-surface-v1: hsl(0deg 0% 98%);
-  --color-surface-v2: hsl(0deg 0% 94%);
-  --color-surface-v3: hsl(0deg 0% 90%);
-  --color-surface-v4: hsl(0deg 0% 86%);
-  --color-surface-invert: hsl(0deg 0% 20%);
+  --color-surface: light-dark(hsl(0deg 0% 100%), hsl(0deg 0% 10%));
+  --color-surface-v1: light-dark(hsl(0deg 0% 98%), hsl(0deg 0% 12%));
+  --color-surface-v2: light-dark(hsl(0deg 0% 94%), hsl(0deg 0% 16%));
+  --color-surface-v3: light-dark(hsl(0deg 0% 90%), hsl(0deg 0% 20%));
+  --color-surface-v4: light-dark(hsl(0deg 0% 86%), hsl(0deg 0% 24%));
+  --color-surface-invert: light-dark(hsl(0deg 0% 20%), hsl(0deg 0% 90%));
 
-  --color-overlay: hsla(0, 0%, 100%, 0.5);
-  --color-overlay-invert: hsla(0, 0%, 20%, 0.5);
-  --color-overlay-bg: rgba(230, 230, 230, 0.65);
+  --color-overlay: light-dark(hsla(0, 0%, 100%, 0.5), hsla(0, 0%, 10%, 0.5));
+  --color-overlay-invert: light-dark(hsla(0, 0%, 20%, 0.5), hsla(0, 0%, 90%, 0.5));
+  --color-overlay-bg: light-dark(rgba(230, 230, 230, 0.65), rgba(35, 35, 35, 0.65));
 
-  --color-on-surface: hsl(0deg 0% 10%);
-  --color-on-surface-v1: hsl(0deg 0% 40%);
-  --color-on-surface-v2: hsl(0deg 0% 60%);
-  --color-on-surface-invert: hsl(0deg 0% 96%);
+  --color-on-surface: light-dark(hsl(0deg 0% 10%), hsl(0deg 0% 90%));
+  --color-on-surface-v1: light-dark(hsl(0deg 0% 40%), hsl(0deg 0% 60%));
+  --color-on-surface-v2: light-dark(hsl(0deg 0% 60%), hsl(0deg 0% 40%));
+  --color-on-surface-invert: light-dark(hsl(0deg 0% 96%), hsl(0deg 0% 4%));
 
-  --color-primary: hsl(217deg 90% 40%);
-  --color-secondary: hsl(217deg 20% 40%);
+  --color-primary: light-dark(hsl(217deg 90% 40%), hsl(217deg 90% 80%));
+  --color-secondary: light-dark(hsl(217deg 20% 40%), hsl(217deg 20% 80%));
 
-  --color-primary-cont: hsl(219deg 90% 94%);
-  --color-secondary-cont: hsl(217deg 20% 94%);
+  --color-primary-cont: light-dark(hsl(219deg 90% 94%), hsl(219deg 90% 10%));
+  --color-secondary-cont: light-dark(hsl(217deg 20% 94%), hsl(217deg 20% 10%));
 
-  --color-success: hsl(134deg 70% 40%);
-  --color-warning: hsl(39deg 100% 40%);
-  --color-error: hsl(2deg 72% 40%);
+  --color-success: light-dark(hsl(134deg 70% 40%), hsl(134deg 70% 80%));
+  --color-warning: light-dark(hsl(39deg 100% 40%), hsl(39deg 100% 80%));
+  --color-error: light-dark(hsl(2deg 72% 40%), hsl(2deg 72% 80%));
 
-  --color-success-cont: hsl(134deg 70% 94%);
-  --color-warning-cont: hsl(39deg 100% 94%);
-  --color-error-cont: hsl(2deg 72% 94%);
-}
-
-@layer theme {
-  @variant light-mode {
-    --color-surface: hsl(0deg 0% 100%);
-    --color-surface-v1: hsl(0deg 0% 98%);
-    --color-surface-v2: hsl(0deg 0% 94%);
-    --color-surface-v3: hsl(0deg 0% 90%);
-    --color-surface-v4: hsl(0deg 0% 86%);
-    --color-surface-invert: hsl(0deg 0% 20%);
-
-    --color-overlay: hsla(0, 0%, 100%, 0.5);
-    --color-overlay-invert: hsla(0, 0%, 20%, 0.5);
-    --color-overlay-bg: rgba(230, 230, 230, 0.65);
-
-    --color-on-surface: hsl(0deg 0% 10%);
-    --color-on-surface-v1: hsl(0deg 0% 40%);
-    --color-on-surface-v2: hsl(0deg 0% 60%);
-    --color-on-surface-invert: hsl(0deg 0% 96%);
-
-    --color-primary: hsl(217deg 90% 40%);
-    --color-secondary: hsl(217deg 20% 40%);
-
-    --color-primary-cont: hsl(219deg 90% 94%);
-    --color-secondary-cont: hsl(217deg 20% 94%);
-
-    --color-success: hsl(134deg 70% 40%);
-    --color-warning: hsl(39deg 100% 40%);
-    --color-error: hsl(2deg 72% 40%);
-
-    --color-success-cont: hsl(134deg 70% 94%);
-    --color-warning-cont: hsl(39deg 100% 94%);
-    --color-error-cont: hsl(2deg 72% 94%);
-  }
-
-  @variant dark-mode {
-    --color-surface: hsl(0deg 0% 10%);
-    --color-surface-v1: hsl(0deg 0% 12%);
-    --color-surface-v2: hsl(0deg 0% 16%);
-    --color-surface-v3: hsl(0deg 0% 20%);
-    --color-surface-v4: hsl(0deg 0% 24%);
-
-    --color-overlay: hsla(0, 0%, 10%, 0.5);
-    --color-overlay-invert: hsla(0, 0%, 90%, 0.5);
-    --color-overlay-bg: rgba(35, 35, 35, 0.65);
-
-    --color-on-surface: hsl(0deg 0% 90%);
-    --color-on-surface-v1: hsl(0deg 0% 60%);
-    --color-on-surface-v2: hsl(0deg 0% 40%);
-
-    --color-primary: hsl(217deg 90% 80%);
-    --color-secondary: hsl(217deg 20% 80%);
-
-    --color-primary-cont: hsl(219deg 90% 16%);
-    --color-secondary-cont: hsl(217deg 20% 16%);
-
-    --color-success: hsl(134deg 70% 80%);
-    --color-warning: hsl(39deg 100% 80%);
-    --color-error: hsl(2deg 72% 80%);
-
-    --color-success-cont: hsl(134deg 70% 16%);
-    --color-warning-cont: hsl(39deg 100% 16%);
-    --color-error-cont: hsl(2deg 72% 16%);
-  }
+  --color-success-cont: light-dark(hsl(134deg 70% 94%), hsl(134deg 70% 16%));
+  --color-warning-cont: light-dark(hsl(39deg 100% 94%), hsl(39deg 100% 16%));
+  --color-error-cont: light-dark(hsl(2deg 72% 94%), hsl(2deg 72% 16%));
 }
 
 svg.icon {

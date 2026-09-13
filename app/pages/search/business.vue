@@ -1,10 +1,13 @@
 <script lang="ts" setup>
 definePageMeta({
-  name: "search",
+  name: "search-in-businesses",
   layout: "common",
 });
 const searchStore = useSearchStore();
 const route = useRoute();
+const { data: result } = useFetch(`/api/${searchStore.searchIn}` as "/api/:searchIn", {
+  query: { q: searchStore.searchBox },
+});
 
 onBeforeRouteLeave(() => {
   searchStore.searchBox = "";
@@ -24,13 +27,9 @@ function updateResult() {
 
 <template>
   <Title>BizWorld | Search: {{ $route.query.q }}</Title>
-  <main class="max-w-180 auto-contain">
-    <LimbIScroller
-      v-scrollPin="{ top: 63 }"
-      class="pin-top-blend z-level-1"
-      style="margin: 1rem 0rem"
-    >
-      <div class="rail text-sm menu scroll-items">
+  <main class="auto-contain max-w-180">
+    <div class="pin-top-blend z-level-1 sticky top-16 mt-4">
+      <div class="rail menu text-sm">
         <div class="compact item xhover">
           Result in:
           <LimbDropdown
@@ -48,7 +47,7 @@ function updateResult() {
             <div
               v-for="category in searchStore.categories"
               :data-value="category"
-              class="capitalize item"
+              class="item capitalize"
             >
               {{ category.charAt(0).toUpperCase() + category.slice(1) }}
             </div>
@@ -60,14 +59,7 @@ function updateResult() {
           <Icon name="material-symbols:view-list-outline-rounded" />
         </div>
       </div>
-      <div class="l-scroll">
-        <Icon name="material-symbols:keyboard-double-arrow-left" />
-      </div>
-      <div class="r-scroll">
-        <Icon name="material-symbols:keyboard-double-arrow-right" />
-      </div>
-    </LimbIScroller>
-
+    </div>
     <div v-if="searchStore.resultIn === 'businesses'" class="biz-cards-grid">
       <BusinessCard v-for="item in searchStore.searchResult" :details="item" />
     </div>

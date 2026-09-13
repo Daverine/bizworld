@@ -58,6 +58,7 @@ export default betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    autoSignIn: false,
   },
   socialProviders: {
     google: {
@@ -65,8 +66,8 @@ export default betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       mapProfileToUser: (profile) => {
         return {
-          firstName: profile.given_name,
-          lastName: profile.family_name,
+          first_name: profile.given_name,
+          last_name: profile.family_name,
         };
       },
     },

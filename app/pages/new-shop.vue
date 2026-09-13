@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { url, email, required, requiredIf } from "@regle/rules";
+import { nextTick, utils, smartCategorySearch } from "#imports";
 
 definePageMeta({
   name: "new-shop",

@@ -5,7 +5,7 @@ import Details from "./Details.vue";
 <template>
   <Details>
     <div v-if="!$route.path.split('/').includes('manage')" class="border-b py-2">
-      <div class="maxo-md:hidden auto-contain flex max-w-340 gap-2">
+      <div class="auto-contain max-w-breakout flex gap-2 max-md:hidden">
         <button class="compact transparent button open-modal font-bold" data-target="explore-modal">
           <Icon name="material-symbols:manage-search-rounded" class="lead" />
           Explore:
