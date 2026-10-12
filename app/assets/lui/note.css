@@ -1,0 +1,150 @@
+/* --- NOTE --- */
+@layer components {
+  .note {
+    --bg-color: var(--color-surface-v1);
+    --text-color: var(--color-on-surface);
+    --bd-color: var(--color-surface-v3);
+
+    &.primary {
+      --text-color: var(--color-primary);
+      --bg-color: var(--color-primary-cont);
+      --bd-color: var(--color-primary);
+    }
+
+    &.success {
+      --text-color: var(--color-success);
+      --bg-color: var(--color-success-cont);
+      --bd-color: var(--color-success);
+    }
+
+    &.warning {
+      --text-color: var(--color-warning);
+      --bg-color: var(--color-warning-cont);
+      --bd-color: var(--color-warning);
+    }
+
+    &.error {
+      --text-color: var(--color-error);
+      --bg-color: var(--color-error-cont);
+      --bd-color: var(--color-error);
+    }
+  }
+
+  .note {
+    position: relative;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 1em;
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 1em;
+    color: var(--text-color);
+    border: 2px solid var(--bd-color);
+    background-color: var(--bg-color);
+    border-radius: var(--radius-block);
+    text-decoration: none;
+    transition: opacity 0.1s ease;
+
+    &:hover,
+    &:focus {
+      text-decoration: none;
+      outline-color: transparent;
+    }
+
+    &.action {
+      cursor: pointer;
+
+      &:before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0px;
+        left: 0px;
+        background-color: var(--text-color);
+        border: 0px none;
+        border-radius: inherit;
+        user-select: none;
+        pointer-events: none;
+        -webkit-tap-highlight-color: transparent;
+        opacity: 0;
+      }
+
+      &:hover:before,
+      &:focus:before {
+        opacity: 0.08;
+      }
+
+      &:active:before,
+      &.active:before {
+        opacity: 0.2;
+      }
+    }
+
+    &.handled {
+      border-width: 0px 0px 0px 4px;
+      box-shadow: var(--shadow-d1);
+    }
+
+    & > .trailing {
+      margin-left: auto;
+    }
+
+    & > .badge {
+      font-size: 0.75em;
+      margin-left: auto;
+
+      &.floating {
+        position: absolute;
+        top: 0.25em;
+        right: 0.25em;
+        left: auto;
+        bottom: auto;
+        margin: 0;
+
+        &:empty {
+          top: 0.5em;
+          right: 1em;
+        }
+      }
+    }
+
+    & > .content {
+      flex: 1 1 0;
+    }
+
+    & .heading {
+      font-size: 1em;
+      font-weight: var(--font-weight-semibold);
+      margin: 0;
+    }
+
+    & p {
+      margin: 0;
+    }
+
+    /* Close Icon */
+    & > .exit-note {
+      cursor: pointer;
+      position: absolute;
+      margin: 0em;
+      top: 0.5em;
+      right: 0.25em;
+      opacity: 0.7;
+      transition: opacity 0.1s ease;
+    }
+
+    & > .close.icon:hover {
+      opacity: 1;
+    }
+
+    /* Floating Note */
+
+    &.floating {
+      box-shadow:
+        0px 2px 4px 0px rgba(34, 36, 38, 0.12),
+        0px 2px 10px 0px rgba(34, 36, 38, 0.15);
+    }
+  }
+}

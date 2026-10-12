@@ -17,7 +17,7 @@ searchStore.searchBox = route.query.q as string;
   <main>
     <div
       v-scrollPin="{ top: 64, bottom: 114, followScroll: true }"
-      class="pin-top-blend z-level-1 bg-surface"
+      class="shadow-t-blend z-level-1 bg-surface"
     >
       <div class="border-b py-2">
         <div class="auto-contain max-w-breakout flex gap-2">

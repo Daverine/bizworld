@@ -296,7 +296,7 @@ const data = useBizStore();
   flex-direction: column;
   gap: 0.5rem;
   border-radius: var(--radius-block);
-  border: 1px solid var(--outline);
+  border: 1px solid var(--color-outline);
   margin-left: auto;
   margin-right: auto;
   width: 20rem;

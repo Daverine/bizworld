@@ -1,0 +1,48 @@
+/* --- LIST AND SET --- */
+@layer components {
+  .tree-list,
+  .tree-list .sub-list {
+    &::before {
+      content: "";
+      position: absolute;
+      height: 100%;
+      border-left: 1.5px dotted var(--color-outline);
+    }
+
+    & > li {
+      padding-left: 1.2em;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0.7em;
+        left: 0;
+        width: 1em;
+        border-top: 1.5px dotted var(--color-outline);
+      }
+    }
+  }
+
+  .ordered-list,
+  .ordered-list .sub-list {
+    counter-reset: ordered;
+    list-style-type: none;
+
+    & > li {
+      list-style-type: none;
+
+      &::before {
+        position: absolute;
+        top: auto;
+        left: auto;
+        right: calc(100% + 0.55em);
+        user-select: none;
+        pointer-events: none;
+        counter-increment: ordered;
+        content: counters(ordered, ".") " ";
+        text-align: right;
+        vertical-align: middle;
+      }
+    }
+  }
+}

@@ -29,26 +29,26 @@ async function clickAction(e: Event) {
 <template>
   <article @click="clickAction" class="business-card">
     <header>
-      <div class="flex gap-3 items-center">
-        <div class="flex-none relative leading-0 w-max">
+      <div class="flex items-center gap-3">
+        <div class="relative w-max flex-none leading-0">
           <NuxtImg preset="logo" class="logo image" :src="details.logo" alt="Business Logo" />
           <SvgIcon
             v-if="details.verified"
             name="verified_sp"
             v-tooltip:aria.unblocking
             aria-label="Verified"
-            class="absolute bottom-0.5 right-0.5"
+            class="absolute right-0.5 bottom-0.5"
           />
         </div>
         <div class="flex-auto">
           <NuxtLink
             :to="{ name: 'biz-home', params: { slug: details.id } }"
             target="_blank"
-            class="text-h6 font-bold 0-margined line-clamp-2"
+            class="text-h6 0-margined line-clamp-2 font-bold"
           >
             {{ details.bizName }}
           </NuxtLink>
-          <span class="opacity-65 font-semibold">{{ details.mainCategory }}</span>
+          <span class="font-semibold opacity-65">{{ details.mainCategory }}</span>
         </div>
       </div>
       <div class="flex flex-wrap items-center justify-center gap-y-1 text-sm font-semibold">
@@ -70,7 +70,7 @@ async function clickAction(e: Event) {
         <span>
           <Icon
             name="material-symbols:event-outline-rounded"
-            class="text-sm mr-2"
+            class="mr-2 text-sm"
             v-tooltip:aria.unblocking
             aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
           />
@@ -123,16 +123,16 @@ async function clickAction(e: Event) {
       <p class="line-clamp-3 text-justify">
         {{ details.description }}
       </p>
-      <LimbIScroller :options="{ scrollChildren: '.label' }">
+      <LimbIScroller :options="{ scrollChildren: '.chip' }">
         <div class="scroll-items items-center gap-y-2">
-          <span class="label" v-for="service in details.services">
+          <span class="chip" v-for="service in details.services">
             {{ service }}
           </span>
         </div>
-        <button class="text-xs l-scroll">
+        <button class="l-scroll text-xs">
           <Icon name="material-symbols:arrow-back-ios-new-rounded" />
         </button>
-        <button class="text-xs r-scroll">
+        <button class="r-scroll text-xs">
           <Icon name="material-symbols:arrow-forward-ios-rounded" />
         </button>
       </LimbIScroller>
@@ -169,7 +169,7 @@ async function clickAction(e: Event) {
   padding: 1rem;
   cursor: pointer;
   border-radius: var(--radius-block);
-  box-shadow: inset 0px 0px 0px 1px var(--outline);
+  box-shadow: inset 0px 0px 0px 1px var(--color-outline);
 
   @media screen and (max-width: 600px) {
     padding: 0.75rem;

@@ -1,0 +1,26 @@
+@layer components {
+  .badge {
+    background-color: var(--color-error);
+    color: var(--color-surface);
+    border-radius: calc(infinity * 1px);
+    font-size: 0.75em;
+    line-height: 1.375;
+    white-space: nowrap;
+    padding: 0em 0.375em;
+    min-width: 1.375em;
+    flex: 0 0 auto;
+
+    &:empty {
+      padding: 0em;
+      height: 0.5em;
+      width: 0.5em;
+      flex: 0 0 auto;
+      min-width: 0em;
+    }
+
+    &.text:not(:empty) {
+      background-color: transparent;
+      color: inherit;
+    }
+  }
+}

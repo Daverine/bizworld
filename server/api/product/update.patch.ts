@@ -3,8 +3,7 @@ export default defineEventHandler(async (event) => {
   const actions = ["visibility", "edit", "config"];
   let {
     hidden,
-    category,
-    new_category,
+    category_id,
     photos,
     video_link,
     base_price,
@@ -14,14 +13,14 @@ export default defineEventHandler(async (event) => {
     specifications,
     overview,
     details_attachment,
+    shipping,
+    meta,
     availability,
     quantity,
     delivery_options,
     promo,
-    location,
+    local_group_id,
   } = await readBody(event);
-
-  category = category === "others" && new_category ? `others:${new_category}` : category;
 
   if ((!id && !slug) || typeof action !== "string" || !actions.includes(action)) {
     throw createError({
@@ -40,13 +39,14 @@ export default defineEventHandler(async (event) => {
           ? {
               base_price,
               base_promo_price,
-              category,
+              category_id,
               details_attachment,
               is_active: true,
-              location,
+              meta: JSON.stringify(meta),
               option_group: JSON.stringify(option_group),
               overview,
               photos,
+              shipping: JSON.stringify(shipping),
               specifications: JSON.stringify(specifications),
               sub_option_group: JSON.stringify(sub_option_group),
               video_link,
@@ -56,6 +56,7 @@ export default defineEventHandler(async (event) => {
               quantity,
               delivery_options,
               promo,
+              local_group_id,
             },
     )
     .where(id ? "id" : "slug", "=", (id ? id : slug) as string)

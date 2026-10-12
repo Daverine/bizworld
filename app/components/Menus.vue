@@ -12,7 +12,7 @@ onMounted(() => window.dispatchEvent(new Event("scroll")));
 
 <template>
   <LimbSidePanel class="left" id="msidepanel">
-    <div class="panel p-4">
+    <div class="panel overflow-y-auto p-4">
       <div class="vertical transparent menu">
         <div class="items" style="border-radius: var(--default-radius)">
           <button class="centered item exit-sidepanel">
@@ -87,7 +87,7 @@ onMounted(() => window.dispatchEvent(new Event("scroll")));
 
 <style>
 #qaction {
-  box-shadow: var(--z-depth-3);
+  box-shadow: var(--shadow-d3);
 
   &:not(.now-visible) {
     pointer-events: none;

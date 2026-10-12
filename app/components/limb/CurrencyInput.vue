@@ -11,7 +11,7 @@ const [model, modifiers] = defineModel({
     return value;
   },
   get(value: number | string | undefined | null) {
-    if (value === undefined || value === null) return "";
+    if (value === undefined || value === null || value === "") return "";
     return Number(value).toLocaleString();
   },
 });

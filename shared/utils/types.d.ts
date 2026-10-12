@@ -2,7 +2,7 @@ export type product = {
   id: string;
   slug: string;
   business_id: string;
-  category: string;
+  category_id: string;
   title: string;
   photos: string[];
   video_link?: string;
@@ -35,16 +35,26 @@ export type product = {
   }[];
   overview: string;
   details_attachment?: string;
-  location?: {
-    country: string;
-    state: string;
-    city: string;
+  shipping?: {
+    measurements: {
+      weight?: string;
+      length?: string;
+      width?: string;
+      height?: string;
+    };
+    location: {
+      country: string;
+      state: string;
+      city: string;
+      address: string;
+    };
   };
   average_rating?: string;
   review_count?: string;
   created_at: string;
   hidden?: boolean;
   promo?: boolean;
+  local_group_id?: string;
   availability: string;
   quantity?: string;
   delivery_options?: string[];

@@ -29,7 +29,7 @@ async function clickAction(e: Event) {
 <template>
   <article @click="clickAction" class="business-card">
     <header>
-      <div class="flex gap-3 items-center">
+      <div class="flex items-center gap-3">
         <div
           class="flex-none"
           style="position: relative; width: 65px; height: 65px; line-height: 0"
@@ -47,11 +47,11 @@ async function clickAction(e: Event) {
           <NuxtLink
             :to="{ name: 'biz-home', params: { slug: details.id } }"
             target="_blank"
-            class="text-h6 font-bold m-0 line-clamp-2"
+            class="text-h6 m-0 line-clamp-2 font-bold"
           >
             {{ details.bizName }}
           </NuxtLink>
-          <span class="opacity-65 font-semibold">{{ details.mainCategory }}</span>
+          <span class="font-semibold opacity-65">{{ details.mainCategory }}</span>
         </div>
       </div>
       <div
@@ -76,7 +76,7 @@ async function clickAction(e: Event) {
         <span>
           <Icon
             name="material-symbols:event-outline-rounded"
-            class="text-sm mr-2"
+            class="mr-2 text-sm"
             v-tooltip:aria.unblocking
             aria-label="Note that the given detail is generated using your device time relative to the Business location timezone."
           />
@@ -135,10 +135,10 @@ async function clickAction(e: Event) {
             {{ service }}
           </span>
         </div>
-        <button class="text-xs l-scroll">
+        <button class="l-scroll text-xs">
           <Icon name="material-symbols:arrow-back-ios-new-rounded" />
         </button>
-        <button class="text-xs r-scroll">
+        <button class="r-scroll text-xs">
           <Icon name="material-symbols:arrow-forward-ios-rounded" />
         </button>
       </LimbIScroller>
@@ -175,7 +175,7 @@ async function clickAction(e: Event) {
   padding: 1rem;
   cursor: pointer;
   border-radius: var(--radius-block);
-  box-shadow: inset 0px 0px 0px 1px var(--outline);
+  box-shadow: inset 0px 0px 0px 1px var(--color-outline);
 
   @media screen and (max-width: 600px) {
     padding: 0.75rem;

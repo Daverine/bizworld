@@ -1,3 +1,4 @@
+export type Maybe<T = any> = T | null | undefined;
 type styleValue = string | [string, "important" | ""];
 
 declare global {
@@ -11,6 +12,23 @@ declare global {
 
 export const utils = {
   focusableElementsSelector: `a, area, button, [role="button"], input, select, summary, textarea, details, object, [tabindex]:not([tabindex="-1"]), [contenteditable]:not([contenteditable="false"])`,
+  getFocusableElementsFrom(container: Maybe<Element | Document>) {
+    return container
+      ? ([...container.querySelectorAll(this.focusableElementsSelector)] as HTMLElement[]).filter(
+          (el) => {
+            const style = window.getComputedStyle(el);
+            return (
+              style.display !== "none" &&
+              style.visibility !== "hidden" &&
+              el.getAttribute("aria-hidden") !== "true" &&
+              el.offsetWidth > 0 &&
+              el.offsetHeight > 0
+            );
+          },
+        )
+      : [];
+  },
+
   trackEscOn(trackId: string): void {
     if (!window.lui_EscTracker) window.lui_EscTracker = [];
 

@@ -27,7 +27,7 @@ const { loggedIn } = useAuth();
   </header>
   <div
     class="menu z-level-2 bg-surface sticky"
-    style="top: 0px; border-bottom: 1px solid var(--outline)"
+    style="top: 0px; border-bottom: 1px solid var(--color-outline)"
   >
     <MainMenu />
   </div>

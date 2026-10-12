@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { url, email, required, requiredIf } from "@regle/rules";
-import { nextTick, utils, smartCategorySearch } from "#imports";
 
 definePageMeta({
   name: "new-shop",
@@ -535,13 +534,14 @@ async function nextTab() {
 
   if (validation[key]?.r$.$invalid) {
     await nextTick();
-    (
-      document.querySelector(".tab-page.active .error, .tab-page.active .text-error") as HTMLElement
-    )?.focus();
-    document
-      .querySelector(".tab-page.active .error, .tab-page.active .text-error")
-      ?.closest(".field")
-      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const errorInput = document.querySelector(
+      ".tab-page.active .error, .tab-page.active .text-error",
+    ) as Maybe<HTMLElement>;
+    const errorField = errorInput?.closest(".field");
+
+    if (errorInput?.matches(".text-error")) utils.getFocusableElementsFrom(errorField)[0]?.focus();
+    else errorInput?.focus();
+    errorField?.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
 
@@ -550,11 +550,7 @@ async function nextTab() {
     currentTab.value = Object.keys(formData)[currentIndex + 1] || "";
     await nextTick();
     window.scrollTo({ top: 0, behavior: "smooth" });
-    (
-      document
-        .querySelector(".tab-page.active")
-        ?.querySelector(utils.focusableElementsSelector) as HTMLElement
-    )?.focus();
+    utils.getFocusableElementsFrom(document.querySelector(".tab-page.active"))[0]?.focus();
     return;
   }
 
@@ -566,7 +562,7 @@ async function nextTab() {
 
   progress.value.loaded = null;
   progress.value.message = "Processing...";
-  await utils.notifyOnEvent(uploader!, "isReady");
+  await utils.notifyOnEvent(uploader!, "dialogIsOpened");
 
   progress.value.loaded = null;
   progress.value.message = "Finalizing...";
@@ -1137,7 +1133,7 @@ function prevTab() {
       </form>
     </div>
     <footer
-      class="bg-surface pin-bottom-blend z-level-1 sticky bottom-0 mt-12 p-4"
+      class="bg-surface shadow-b-blend z-level-1 sticky bottom-0 mt-12 p-4"
       style="bottom: 0px; margin-top: 0.5rem"
     >
       <div v-if="currentTab === 'tab1'" class="flex flex-col">

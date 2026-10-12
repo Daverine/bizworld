@@ -1,17 +1,5 @@
 <script lang="ts" setup>
-type items = Record<string, any>;
-defineModel({
-  set(value: items) {
-    return Object.values(value);
-  },
-  get(value: string[]) {
-    return value.reduce((acc, item, index) => {
-      acc[index] = item;
-      return acc;
-    }, {} as items);
-  },
-});
-
+const items = ref<Record<string, any>>({});
 const props = withDefaults(
   defineProps<{
     placeholder?: string;
@@ -19,7 +7,21 @@ const props = withDefaults(
   }>(),
   { placeholder: "Add text...", rootElement: "div" },
 );
-const items = ref<items>({});
+
+defineModel({
+  set(value: typeof items.value) {
+    return Object.values(value);
+  },
+  get(value: string[]) {
+    return value.reduce(
+      (acc, item, index) => {
+        acc[index] = item;
+        return acc;
+      },
+      {} as typeof items.value,
+    );
+  },
+});
 
 function addItem(item: {}) {
   if (!Object.values(items.value).includes(item)) {
@@ -46,7 +48,7 @@ function inputHandler(e: KeyboardEvent) {
 <template>
   <component :is="rootElement" tabindex="0" :class="{ 'form-item list-box': !$slots.default }">
     <slot :items :addItem :removeItem :clearItems :inputHandler>
-      <div v-for="(data, index) in items" :key="index" :data-ddid="index" class="label text-sm">
+      <div v-for="(data, index) in items" :key="index" :data-ddid="index" class="chip">
         {{ data }}
         <Icon @click="removeItem(index)" class="trailing" name="material-symbols:close-rounded" />
       </div>

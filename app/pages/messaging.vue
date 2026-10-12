@@ -5,7 +5,7 @@ definePageMeta({ layout: "details", auth: { only: "user" }, noFab: true });
   <div class="messaging-view">
     <div class="history-view">
       <header
-        class="pin-top-blend bg-surface"
+        class="shadow-t-blend bg-surface"
         style="display: flex; flex-flow: column nowrap; gap: 0.5em; padding: 0.5em"
       >
         <LimbDropdown type="selection" style="display: flex; align-items: center">
@@ -49,7 +49,7 @@ definePageMeta({ layout: "details", auth: { only: "user" }, noFab: true });
         </label>
       </header>
       <div style="flex: 1 1 auto"></div>
-      <footer class="pin-bottom-blend" style="padding: 0.5em">
+      <footer class="shadow-b-blend" style="padding: 0.5em">
         <button class="button primary w-full">
           <Icon name="material-symbols:chat-add-on-outline-rounded" class="lead" />
           New chat
@@ -57,7 +57,7 @@ definePageMeta({ layout: "details", auth: { only: "user" }, noFab: true });
       </footer>
     </div>
     <div class="chat-view">
-      <header style="padding: 0em 0.5em; border-bottom: 1px solid var(--outline)">
+      <header style="padding: 0em 0.5em; border-bottom: 1px solid var(--color-outline)">
         <div class="icon-bar compact menu" style="border-radius: var(--default-radius)">
           <div class="adaptable xhover item">
             <div
@@ -120,7 +120,7 @@ definePageMeta({ layout: "details", auth: { only: "user" }, noFab: true });
     flex-direction: column;
     gap: 0.5em;
     overflow: hidden;
-    border-right: 1px solid var(--outline);
+    border-right: 1px solid var(--color-outline);
   }
 
   .chat-view {
@@ -137,7 +137,7 @@ definePageMeta({ layout: "details", auth: { only: "user" }, noFab: true });
 
     .messaging-box {
       padding: 0.5em;
-      border-top: 1px solid var(--outline);
+      border-top: 1px solid var(--color-outline);
     }
   }
 }

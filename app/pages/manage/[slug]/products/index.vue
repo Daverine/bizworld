@@ -1,7 +1,12 @@
 <script setup lang="ts">
 definePageMeta({ name: "manage-biz-products", layout: "common", auth: { only: "user" } });
 const route = useRoute();
+const { data: bizData } = await useFetch("/api/business/query", {
+  key: `biz-${route.params.slug}`,
+  query: { slug: route.params.slug },
+});
 const { data: products, refresh } = await useFetch("/api/business/products", {
+  key: `biz-${route.params.slug}-products`,
   method: "post",
   query: {
     slug: route.params.slug,
@@ -10,17 +15,13 @@ const { data: products, refresh } = await useFetch("/api/business/products", {
 const productListVersion = ref(0);
 const configData = reactive<{
   product?: product;
-  availability: string; // "available" | "nil" | "quantity"
-  quantity: string;
-  delivery_options: string[];
+  availability?: string; // "available" | "nil" | "quantity"
+  quantity?: string;
+  delivery_options?: string[];
   promo?: boolean;
-  state: string;
-}>({
-  availability: "available",
-  quantity: "0",
-  delivery_options: [],
-  state: "",
-});
+  local_group_id?: string;
+  state?: string;
+}>({});
 
 function configController({ target, settings, exit }: Dialoger) {
   const productId = settings.caller?.dataset.ref;
@@ -38,15 +39,18 @@ function configController({ target, settings, exit }: Dialoger) {
   configData.promo = product.promo;
   configData.availability = product.availability;
   configData.quantity = product.quantity || "0";
+  configData.local_group_id = product.local_group_id;
   configData.delivery_options = product.delivery_options || [];
 
-  useEventListener(target, "isComplete", () => {
+  const cleanupIsClosedEvent = useEventListener(target, "dialogIsClosed", () => {
     configData.state = "";
     configData.product = undefined;
     configData.promo = undefined;
     configData.availability = "available";
     configData.quantity = "0";
     configData.delivery_options = [];
+    configData.local_group_id = undefined;
+    cleanupIsClosedEvent();
   });
 }
 function saveConfig({ settings }: Dialoger) {
@@ -63,6 +67,7 @@ function saveConfig({ settings }: Dialoger) {
       promo: configData.promo,
       availability: configData.availability,
       quantity: configData.quantity,
+      local_group_id: configData.local_group_id,
       delivery_options: configData.delivery_options,
     },
   })
@@ -73,7 +78,12 @@ function saveConfig({ settings }: Dialoger) {
 
       const index = products.value?.findIndex((el) => el.id === updatedProduct.id);
 
-      if (index !== undefined && index > -1) products.value?.splice(index, 1, updatedProduct);
+      if (index !== undefined && index > -1)
+        useNuxtData(`biz-${route.params.slug}-products`).data.value?.splice(
+          index,
+          1,
+          updatedProduct,
+        );
       triggerRef(products);
     })
     .catch((error) => {
@@ -103,7 +113,7 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
       class="scrollpin z-level-1 self-pointer-none mb-4 min-h-23 [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
-        class="lined heading text-h3 bg-surface pin-top-blend m-0 flex items-end justify-between gap-3 transition-[font-size] duration-200"
+        class="lined heading text-h3 bg-surface shadow-t-blend m-0 flex items-end justify-between gap-3 transition-[font-size] duration-200"
       >
         Products
         <NuxtLink
@@ -196,7 +206,7 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
 
             <p class="text-sm opacity-65">
               Toggling the switch above on will offer customers the ability to purchase the product
-              at it set promotional price. If not yet set, you can edit the product to set the
+              at it set (promo)tional price. If not yet set, you can edit the product to set the
               promotion price.
             </p>
           </div>
@@ -238,10 +248,45 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
               type="multiple select"
               placeholder="Delivery options"
             />
-            <div class="indicating drop menu">
+            <div class="drop menu">
               <div class="item" data-value="bizworld delivery">Bizworld delivery</div>
               <div class="item" data-value="free delivery">Free delivery</div>
               <div class="item" data-value="self-pickup">Self Pickup</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Product group</label>
+            <p class="text-sm opacity-65">
+              Specify a local group for this product. This enables product organization.
+            </p>
+            <LimbDropdown
+              v-model="configData.local_group_id"
+              type="select"
+              placeholder="Specify a local group..."
+            />
+            <div class="drop menu">
+              <div data-value="" class="item">No group</div>
+              <template
+                v-for="p_item in bizData?.local_groups?.filter((g) =>
+                  bizData?.local_groups?.every((pg) => pg.id !== g.parent_id),
+                )"
+              >
+                <div :data-value="p_item.id" class="item">{{ p_item.name }}</div>
+                <div
+                  v-if="bizData?.local_groups?.find((sub_g) => sub_g.parent_id === p_item.id)"
+                  class="sub items"
+                >
+                  <div
+                    v-for="item in bizData?.local_groups?.filter(
+                      (sub_g) => sub_g.parent_id === p_item.id,
+                    )"
+                    :data-value="item.id"
+                    class="item"
+                  >
+                    {{ item.name }}
+                  </div>
+                </div>
+              </template>
             </div>
           </div>
           <div class="field">

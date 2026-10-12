@@ -631,7 +631,7 @@ function stopAutoslider() {
     & .cs-tracker:not(.thumbnail) {
       display: inline-block;
       position: relative;
-      background-color: var(--outline);
+      background-color: var(--color-outline);
       border: 0;
       border-radius: 50%;
       height: 0.625em;

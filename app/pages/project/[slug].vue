@@ -209,15 +209,14 @@ const details = ref({
   },
 });
 const cartStore = useCartStore();
-const avail = useAvailability(details.value.bizData.hours);
-const servicesOffer = computed(() => [
+const servicesOffer = [
   ...new Set(
     details.value.serviceOptions.reduce(
       (keys, obj) => keys.concat(Object.keys(obj.specifications)),
       [],
     ),
   ),
-]);
+];
 const choice = ref({
   id: details.value.id,
   spec: undefined,
@@ -267,43 +266,7 @@ onMounted(() => {
               <NuxtLink :to="`/business/${details.bizData.bizId}`" class="m-0 truncate font-bold">
                 {{ details.bizData.bizName }}
               </NuxtLink>
-              <div class="flex flex-wrap text-sm font-semibold" style="gap: 0.25em 0.75em">
-                <span
-                  v-tooltip:aria.unblocking
-                  :aria-label="
-                    !avail.openTime
-                      ? 'Did not open today at all.'
-                      : `Open today by ${avail.openTime[0]}:${avail.openTime[1]} and closes by ${avail.closeTime[0]}:${avail.closeTime[1]}.`
-                  "
-                >
-                  <Icon name="material-symbols:recent-patient-outline-rounded" />
-                  <template v-if="avail.isClosed">
-                    <span class="text-error">Closed.</span>
-                    Opens
-                    {{
-                      avail.willOpenToday
-                        ? `${avail.openTime[0]}:${avail.openTime[1]}`
-                        : details.bizData.hours[
-                              avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
-                            ]
-                          ? `${
-                              details.bizData.hours[
-                                avail.now.getDay() === 6 ? 0 : avail.now.getDay() + 1
-                              ][0]
-                            } Tomorrow`
-                          : `${
-                              details.bizData.hours[avail.nextOpenDay][0]
-                            } on ${avail.whatDay(avail.nextOpenDay)}`
-                    }}
-                  </template>
-                  <template v-else>
-                    <span v-if="avail.closesSoon" class="text-warning"> Closes soon. </span>
-                    <span v-else class="text-success">Open.</span>
-                    Closes
-                    {{ `${avail.closeTime[0]}:${avail.closeTime[1]}` }}
-                  </template>
-                </span>
-              </div>
+
               <div class="flex flex-wrap text-sm font-semibold" style="gap: 0.25em 0.75em">
                 <span v-tooltip:aria.unblocking aria-label="Average Rate (Number of raters)">
                   <Icon name="material-symbols:star-rounded" class="text-yellow-500" />
@@ -343,7 +306,7 @@ onMounted(() => {
         <section
           class="specs mobile-screen-only"
           style="
-            border: 1px solid var(--outline);
+            border: 1px solid var(--color-outline);
             border-radius: var(--radius-inline);
             padding: 1rem;
           "
@@ -679,7 +642,7 @@ onMounted(() => {
     </div>
     <!-- Call to Action Section -->
     <div
-      class="mobile-screen-only bg-surface fluid z-level-2 pin-bottom-blend sticky"
+      class="mobile-screen-only bg-surface fluid z-level-2 shadow-b-blend sticky"
       style="bottom: 0px"
     >
       <div class="auto-contain flex max-w-6xl gap-3" style="padding: 0.5rem 0rem">
@@ -749,7 +712,7 @@ onMounted(() => {
 }
 
 .specs {
-  border: 1px solid var(--outline);
+  border: 1px solid var(--color-outline);
   border-radius: var(--radius-inline);
   padding: 1rem;
 }

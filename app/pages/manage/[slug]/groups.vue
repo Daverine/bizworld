@@ -88,12 +88,12 @@ async function processGroup({ settings }: Dialoger) {
     .finally(() => (settings.dismissible = true));
 }
 
-function deleteGroup(groudId: string) {
+function deleteGroup(Ids: string[]) {
   $fetch("/api/business/categories/delete", {
     method: "delete",
     query: {
       business_slug: route.params.slug,
-      group_id: groudId,
+      groups_ids: Ids,
     },
   })
     .then((updatedBizData) => {
@@ -105,6 +105,23 @@ function deleteGroup(groudId: string) {
 }
 
 const categories = ref<string[]>([]);
+const allChecked = computed({
+  get() {
+    return bizData.value?.local_groups?.every((group) => categories.value.includes(group.id));
+  },
+  set(val) {
+    bizData.value?.local_groups?.forEach((group) => {
+      if (val) {
+        categories.value.push(group.id);
+      } else {
+        const index = categories.value.indexOf(group.id);
+        if (index > -1) {
+          categories.value.splice(index, 1);
+        }
+      }
+    });
+  },
+});
 </script>
 <template>
   <main class="auto-contain max-w-180">
@@ -113,26 +130,44 @@ const categories = ref<string[]>([]);
       class="scrollpin z-level-1 self-pointer-none mb-4 min-h-23 [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
-        class="lined heading text-h3 bg-surface pin-top-blend m-0 flex items-end justify-between gap-3 transition-[font-size] duration-200"
+        class="lined heading text-h3 bg-surface shadow-t-blend m-0 flex items-end justify-between gap-3 transition-[font-size] duration-200"
       >
-        Item groups
+        <div>
+          Item groups
+          <LimbDropdown
+            ><Icon name="material-symbols:info-outline-rounded" class="text-primary text-md"
+          /></LimbDropdown>
+          <div class="drop menu board">
+            <p>
+              Organize your products and services into logical categories of your own for easier
+              management. We call category here group to diffrentiate it from global categories
+              provided by Bizworld. Customers can browse your offerings by group, making it easier
+              for them to find what they need on your page.
+            </p>
+          </div>
+        </div>
         <button class="open-modal compact button" data-target="setup-group-modal">
           Add a group
         </button>
       </div>
     </header>
     <section>
-      <p>
-        Organize your products and services into logical categories of your own for easier
-        management. We call category here group to diffrentiate it from global categories provided
-        by Bizworld. Customers can browse your offerings by group, making it easier for them to find
-        what they need on your page.
-      </p>
-      <div v-if="bizData?.local_groups?.length" class="categories-grid">
+      <div v-if="bizData?.local_groups?.length">
+        <div class="bordered menu">
+          <div class="r-aligned items">
+            <button
+              :disabled="!categories.length"
+              @click="deleteGroup(categories)"
+              class="as-icon item"
+            >
+              <Icon name="material-symbols:delete-outline-rounded" />
+            </button>
+          </div>
+        </div>
         <table class="simple selectable table">
           <thead>
             <tr>
-              <th><input type="checkbox" class="form-item" /></th>
+              <th><input type="checkbox" v-model="allChecked" class="form-item" /></th>
               <th>Name</th>
               <th>Description</th>
               <th>Parent</th>
@@ -158,11 +193,7 @@ const categories = ref<string[]>([]);
               <td>{{ group.name }}</td>
               <td>{{ group.description || "—" }}</td>
               <td>
-                {{
-                  group.parent_id
-                    ? bizData.local_groups.find((g) => g.id === group.parent_id)?.name
-                    : "—"
-                }}
+                {{ bizData.local_groups.find((g) => g.id === group.parent_id)?.name || "—" }}
               </td>
               <td class="actions">
                 <LimbDropdown class="circular compact transparent button">
@@ -177,7 +208,7 @@ const categories = ref<string[]>([]);
                     <Icon name="material-symbols:edit-square-outline-rounded" class="lead" />
                     Edit
                   </button>
-                  <button class="item" @click="deleteGroup(group.id)">
+                  <button class="item" @click="deleteGroup([group.id])">
                     <Icon name="material-symbols:delete-outline-rounded" class="lead" /> Delete
                   </button>
                 </div>
@@ -294,12 +325,22 @@ const categories = ref<string[]>([]);
               v-model="placeholder.group.parent_id"
               id="parent_group"
               type="select"
+              placeholder="Select a parent group..."
               class="form-item"
             />
             <div class="drop menu">
-              <div class="item" data-value>None</div>
+              <div class="item" data-value="">No parent group</div>
               <div
-                v-for="item in bizData?.local_groups?.filter((g) => g.id !== placeholder.group.id)"
+                v-if="
+                  bizData?.local_groups?.every(
+                    (group) => !placeholder.group.id || group.parent_id !== placeholder.group.id,
+                  )
+                "
+                v-for="item in bizData?.local_groups?.filter(
+                  (g) =>
+                    g.id !== placeholder.group.id &&
+                    bizData?.local_groups?.every((pg) => pg.id !== g.parent_id),
+                )"
                 :key="item.id"
                 :data-value="item.id"
                 class="item"

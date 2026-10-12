@@ -164,7 +164,7 @@ const allChecked = computed({
 
       <!-- checkout details mobile -->
       <div
-        class="mobile-screen-only bg-surface z-level-2 pin-bottom-blend sticky w-full"
+        class="mobile-screen-only bg-surface z-level-2 shadow-b-blend sticky w-full"
         style="bottom: 0px"
       >
         <div class="auto-contain flex max-w-6xl items-center gap-3" style="padding: 0.5rem 0rem">
@@ -248,7 +248,7 @@ const allChecked = computed({
   }
 
   .page-sec2 {
-    border: 1px solid var(--outline);
+    border: 1px solid var(--color-outline);
     border-radius: var(--radius-inline);
     padding: 1rem;
   }

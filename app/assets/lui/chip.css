@@ -1,0 +1,81 @@
+.chip {
+  --bg-color: var(--color-surface-v3);
+  --text-color: var(--color-on-surface);
+
+  display: inline-flex;
+  flex-flow: row nowrap;
+  position: relative;
+  gap: 0.75em;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.875em;
+  line-height: 1.5;
+  text-align: center;
+  min-width: fit-content;
+  padding: 0.25em 1em;
+  width: max-content;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  border: 0px none;
+  border-radius: calc(infinity * 1px);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  & > .lead {
+    margin-left: -0.5em;
+  }
+
+  & > .trailing {
+    margin-right: -0.5em;
+  }
+
+  & > img {
+    max-height: 1.5em;
+    width: auto;
+    line-height: 1;
+    vertical-align: bottom;
+  }
+
+  &:before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    background-color: var(--text-color);
+    border: 0px none;
+    border-radius: inherit;
+    user-select: none;
+    pointer-events: none;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0;
+  }
+
+  &:hover:before,
+  &:focus:before {
+    opacity: 0.08;
+  }
+
+  &:active:before,
+  &.active:before {
+    opacity: 0.2;
+  }
+
+  &.outlined,
+  &.flat {
+    background-color: transparent;
+
+    &.use-surface {
+      background-color: var(--color-surface);
+    }
+  }
+
+  &.outlined {
+    border: 1px solid var(--bg-color);
+  }
+
+  &.flat {
+    border: 0px none;
+  }
+}

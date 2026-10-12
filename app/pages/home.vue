@@ -23,7 +23,7 @@ onMounted(() => feedStore.getUpdate());
   </header>
   <Common>
     <main class="auto-contain max-w-180 p-4">
-      <div class="rail fillable menu scroll-items pin-top-blend z-level-1 sticky top-16 mb-4">
+      <div class="rail fillable menu scroll-items shadow-t-blend z-level-1 sticky top-16 mb-4">
         <div class="active item">For you</div>
         <div class="item">Following</div>
       </div>
@@ -42,7 +42,7 @@ onMounted(() => feedStore.getUpdate());
 <style scoped>
 .mp-menu {
   top: 0px;
-  border-bottom: 1px solid var(--outline);
+  border-bottom: 1px solid var(--color-outline);
   background-color: var(--color-surface);
 }
 

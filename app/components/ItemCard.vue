@@ -8,7 +8,7 @@ defineProps(["details", "isSaved"]);
   <NuxtLink
     v-else
     :to="`/${details.type}/${details.id}`"
-    class="w-full item-card card"
+    class="item-card card w-full"
     :data-type="details.type"
   >
     <LimbDropdown
@@ -89,7 +89,7 @@ defineProps(["details", "isSaved"]);
   }
 
   &:not(:last-child) {
-    border-bottom: 1px solid var(--outline);
+    border-bottom: 1px solid var(--color-outline);
   }
 
   .itm-tag {

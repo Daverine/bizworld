@@ -1,3 +1,4 @@
+import "~/assets/lui/tooltip.css";
 import type { DirectiveBinding } from "vue";
 
 type TooltiperElement = HTMLElement & {
@@ -11,7 +12,7 @@ export default {
   mounted(el: TooltiperElement, binding: DirectiveBinding<string>) {
     const offset = 10;
     const delay = 150;
-    const unblocking = binding.modifiers.hasOwnProperty("unblocking");
+    const unblocking = Object.prototype.hasOwnProperty.call(binding.modifiers, "unblocking");
     const useAriaLabel = binding.arg === "aria";
     const uniqueId = utils.getUniqueId("tooltip");
 

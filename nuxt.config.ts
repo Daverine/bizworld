@@ -15,11 +15,9 @@ export default defineNuxtConfig({
     strict: true,
   },
   modules: [
-    "@hypernym/nuxt-anime",
     "@vueuse/nuxt",
     "@pinia/nuxt",
     "@nuxt/icon",
-    "@nuxt/fonts",
     "@regle/nuxt",
     "@nuxt/eslint",
     "@nuxt/image",
@@ -68,7 +66,7 @@ export default defineNuxtConfig({
     class: "icon",
     mode: "svg",
   },
-  css: ["~/assets/lui.css", "~/assets/main.css"],
+  css: ["~/assets/main.css"],
   app: {
     head: {
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.png" }],

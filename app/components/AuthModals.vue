@@ -77,14 +77,14 @@ async function submitSignup({ settings, exit }: Dialoger) {
 }
 onMounted(() => {
   const loginModal = document.getElementById("login-modal");
-  loginModal?.addEventListener("isComplete", () => {
+  loginModal?.addEventListener("dialogIsClosed", () => {
     status.value = "";
     errorMessage.value = "";
     signIn.reset();
   });
 
   const registerModal = document.getElementById("register-modal");
-  registerModal?.addEventListener("isComplete", () => {
+  registerModal?.addEventListener("dialogIsClosed", () => {
     status.value = "";
     errorMessage.value = "";
     signUp.reset();
@@ -127,7 +127,7 @@ onMounted(() => {
             </button>
           </div>
           <div class="field m-0">
-            <label>Names</label>
+            <div class="field-label">Names</div>
             <div class="2-fields">
               <div class="field">
                 <input
@@ -168,10 +168,10 @@ onMounted(() => {
             </div>
           </div>
           <div class="field">
-            <label>Email</label>
+            <label for="modal-signup-email">Email</label>
             <input
               v-model="signUp.data.email"
-              name="signup-email"
+              id="modal-signup-email"
               class="form-item"
               :class="{ error: signUp.validation.r$.email.$error }"
               type="text"
@@ -187,10 +187,10 @@ onMounted(() => {
             </div>
           </div>
           <div class="field">
-            <label>Password</label>
+            <label for="modal-signup-password">Password</label>
             <input
               v-model="signUp.data.password"
-              name="signup-password"
+              id="modal-signup-password"
               class="form-item"
               :class="{ error: signUp.validation.r$.password.$error }"
               type="password"
@@ -267,10 +267,10 @@ onMounted(() => {
             </button>
           </div>
           <div class="field">
-            <label>Email</label>
+            <label for="modal-login-email">Email</label>
             <input
               v-model="signIn.data.email"
-              name="login-email"
+              id="modal-login-email"
               class="form-item"
               :class="{ error: signIn.validation.r$.email.$error }"
               type="text"
@@ -286,10 +286,10 @@ onMounted(() => {
             </div>
           </div>
           <div class="field">
-            <label>Password</label>
+            <label for="modal-login-password">Password</label>
             <input
               v-model="signIn.data.password"
-              name="login-password"
+              id="modal-login-password"
               class="form-item"
               :class="{ error: signIn.validation.r$.password.$error }"
               type="password"

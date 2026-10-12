@@ -15,13 +15,14 @@ async function preCartController({ target, settings, exit }: Dialoger) {
       query: { id: product.value?.business_id },
     });
 
-    target.addEventListener("isComplete", () => {
+    const cleanupIsClosedEvent = useEventListener(target, "dialogIsClosed", () => {
       product.value = undefined;
       bizData.value = undefined;
       toCart.spec = [];
       toCart.quantity = 1;
       toCart.delivery = "self-pickup";
       toCart.note = "";
+      cleanupIsClosedEvent();
     });
   } catch (error) {
     console.error("Error occured", error);
@@ -99,7 +100,7 @@ const promo_price = computed(() => {
 <template>
   <LimbModal id="general-pre-cart" :options="{ controller: preCartController }">
     <div class="dialog flex flex-col">
-      <header class="pin-top-blend flex gap-3 px-6 py-4">
+      <header class="shadow-t-blend flex gap-3 px-6 py-4">
         <div class="truncate font-bold">Add product to cart</div>
         <button class="circular flat button as-text exit-modal" style="margin-left: auto">
           <Icon name="material-symbols:close" />
@@ -350,7 +351,7 @@ const promo_price = computed(() => {
             ></textarea>
           </div>
           <div
-            class="footer bg-surface pin-bottom-blend sticky flex flex-col gap-3"
+            class="footer bg-surface shadow-b-blend sticky flex flex-col gap-3"
             style="bottom: 0px; padding: 1rem 0rem; margin-top: 0.5rem"
           >
             <div class="flex flex-col" style="gap: 0.25rem">

@@ -28,7 +28,7 @@ type LightboxSettings = {
   controller?: (event: {
     target: HTMLElement;
     settings: LightboxSettings;
-    caller?: HTMLElement;
+    exit: () => void;
   }) => void;
   slidePlayer?: ReturnType<typeof setInterval>;
   caller?: HTMLElement;
@@ -170,10 +170,13 @@ let currContent: HTMLElement;
 let currPic: HTMLElement | HTMLIFrameElement | HTMLVideoElement;
 let sizeStream: ResizeObserver;
 
+function exit() {
+  if (settings.dismissible) vbb.showLightbox = false;
+}
 function clickToOpenLightbox(e: MouseEvent) {
   let target = e.target as HTMLElement;
   let toggler = target.closest(`${settings.toggler}[data-target="${props.id}"]`) as HTMLElement;
-  if (!toggler || target.closest(settings.toExcuseToggler)) return;
+  if (!toggler || (settings.toExcuseToggler && target.closest(settings.toExcuseToggler))) return;
   triggerViewOf(toggler);
 }
 async function init() {
@@ -220,13 +223,27 @@ function KBDControls(e: KeyboardEvent) {
     utils.setHighlightRange(lightbox.value!);
   }
   // Esc function in dialog
-  else if (settings.closeOnEsc && e.key === "Escape" && utils.checkEscStatus(bb.uniqueId!))
+  else if (
+    settings.closeOnEsc &&
+    settings.dismissible &&
+    e.key === "Escape" &&
+    utils.checkEscStatus(bb.uniqueId!)
+  )
     vbb.showLightbox = false;
 }
 function backToExit() {
+  if (!settings.dismissible) {
+    window.history.pushState(
+      { protected: true },
+      "",
+      `${window.location.href.split("#")[0]}#${props.id}`,
+    );
+    return;
+  }
   bb.exitedWithBrowserBack = true;
   vbb.showLightbox = false;
 }
+
 function resizeIframe() {
   if (!currPic || currPic.nodeName !== "IFRAME") return;
   let srcWidth = currPic.clientWidth;
@@ -381,8 +398,9 @@ function gallerySwitch(e: MouseEvent) {
 function exitOnWrapperClick(e: MouseEvent) {
   let target = e.target as HTMLElement;
   if (
-    (settings.closeOnWrapperClick && !target.closest(settings.toBeConsidered)) ||
-    (settings.dismissible && target.closest(settings.dismisser))
+    settings.dismissible &&
+    ((settings.closeOnWrapperClick && !target.closest(settings.toBeConsidered)) ||
+      (settings.dismisser && target.closest(settings.dismisser)))
   )
     vbb.showLightbox = false;
 }
@@ -425,18 +443,164 @@ function reAdjustSlide() {
   resizeIframe();
 }
 
-onMounted(async () => {
-  bb.uniqueId = utils.getUniqueId(settings.namespace);
-  progressBar = lightbox.value!.querySelector(
-    ":scope > .progress-bar > .determinate",
-  ) as HTMLElement;
-  toolbar = lightbox.value!.querySelector(":scope > .icon-bar.lb-control") as HTMLElement;
-  gallery = lightbox.value!.querySelector(":scope > .gallery-view") as HTMLElement;
-  slider = lightbox.value!.querySelector(":scope > .slides") as HTMLElement;
-  prevBtn = slider.querySelector(":scope > .lb-control.c-prev") as HTMLElement;
-  nextBtn = slider.querySelector(":scope > .lb-control.c-next") as HTMLElement;
+async function openLightbox() {
+  document.body.append(lightbox.value!);
+  await utils.afterNextRepaint();
+  lightbox.value!.style.visibility = "visible";
 
-  // click on lightbox toggler to open lightbox event
+  if (vbb.slidesNo) update();
+
+  if (settings.hashControl) {
+    if (!bb.openWithHash) {
+      window.history.pushState(null, "", `${window.location.href.split("#")[0]}#${props.id}`);
+      window.history.pushState(
+        { protected: true },
+        "",
+        `${window.location.href.split("#")[0]}#${props.id}`,
+      );
+      window.addEventListener("popstate", backToExit);
+    }
+    // exit when route hash changes
+    unwatch.closeOnRouteChange = watchEffect(() => {
+      if (route.hash !== `#${props.id}`) {
+        if (!settings.dismissible) {
+          navigateTo(
+            {
+              path: route.path,
+              query: route.query,
+              hash: `#${props.id}`,
+            },
+            { replace: true },
+          );
+          return;
+        }
+        vbb.showLightbox = false;
+      }
+    });
+  }
+
+  utils.lockWindowScroll(bb.uniqueId!);
+
+  // configure viewport meta to let lightbox function well
+  let viewportMeta = document.head.querySelector("meta[name=viewport]");
+
+  if (viewportMeta) bb.viewportMeta = viewportMeta.getAttribute("content") ?? "";
+  else {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
+  );
+
+  // If a controller function is provided in the settings, call it with the lightbox element and settings.
+  // The controller function can be used to perform additional setup or customization of the lightbox.
+  if (typeof settings.controller === "function")
+    settings.controller({
+      target: lightbox.value!,
+      settings,
+      exit,
+    });
+
+  if (settings.closeOnEsc) utils.trackEscOn(bb.uniqueId!);
+
+  document.addEventListener("keydown", KBDControls);
+  lightbox.value!.classList.add("active");
+  clearTimeout(bb.inOutTimeout);
+  bb.inOutTimeout = setTimeout(() => {
+    lightbox.value?.focus();
+    if (vbb.slidesNo) resizeIframe();
+
+    // // Caption is truncated to contain a line. Click on it to show full text and click out for otherwise.
+    // slider.addEventListener('click', captionControl);
+
+    toolbar.addEventListener("click", toolbarControls);
+    // Remove the active class from fullscreen-switch when fullscreen is off
+    document.addEventListener("fullscreenchange", fullscreenOutFunc);
+    // Trigger responsiveness
+    window.addEventListener("resize", resizeFunc);
+    // Use mouse wheel to zoom image
+    slider.addEventListener("wheel", wheelToZoom);
+    // Gallery-view controls
+    gallery.addEventListener("click", gallerySwitch);
+
+    // Gesture on Lightbox
+    lightbox.value!.addEventListener("mousedown", gestureStart);
+    lightbox.value!.addEventListener("touchstart", gestureStart);
+    // click to exit event
+    lightbox.value!.addEventListener("click", exitOnWrapperClick);
+    if (vbb.slidesNo) update();
+
+    utils.triggerEvent(lightbox.value!, "lightboxReady", settings);
+  }, settings.inDuration);
+}
+
+function closeLightbox() {
+  stopSlideshow();
+  // pause youtube and html5 video when exiting lightbox
+  if (currSlide?.getAttribute("data-cont-type") === "video") (currPic as HTMLVideoElement).pause();
+  else if (currSlide?.getAttribute("data-cont-type") === "youtube")
+    vbb.slidesData
+      ?.find((el) => el.contentId === currSlide.getAttribute("data-cont-id"))
+      ?.youtubeRef?.pauseVideo();
+
+  // safely get out of escape track
+  if (settings.closeOnEsc) utils.checkEscStatus(bb.uniqueId!, true);
+
+  if (document.fullscreenElement === lightbox.value!) document.exitFullscreen();
+  [...toolbar.querySelectorAll(":scope .item.fullscreen-switch")].forEach((el) =>
+    el.classList.remove("active"),
+  );
+  document.removeEventListener("fullscreenchange", fullscreenOutFunc);
+
+  gallery.removeEventListener("click", gallerySwitch);
+  toolbar.removeEventListener("click", toolbarControls);
+  slider.removeEventListener("wheel", wheelToZoom);
+  lightbox.value!.removeEventListener("mousedown", gestureStart);
+  lightbox.value!.removeEventListener("click", exitOnWrapperClick);
+  lightbox.value!.removeEventListener("touchstart", gestureStart);
+  document.removeEventListener("touchmove", gestureMove);
+  document.removeEventListener("touchend", gestureEnd);
+  document.removeEventListener("mousemove", gestureMove);
+  document.removeEventListener("mouseup", gestureEnd);
+  document.removeEventListener("keydown", KBDControls);
+  window.removeEventListener("resize", resizeFunc);
+
+  if (settings.hashControl) {
+    unwatch.closeOnRouteChange && unwatch.closeOnRouteChange();
+    window.removeEventListener("popstate", backToExit);
+    if (!bb.exitedWithBrowserBack) window.history.back();
+    bb.exitedWithBrowserBack = false;
+    bb.openWithHash = false;
+  }
+
+  lightbox.value!.classList.remove("active");
+  clearTimeout(bb.inOutTimeout);
+  bb.inOutTimeout = setTimeout(() => {
+    slides.value?.forEach((el) => el.classList.remove("active", "prev-slide", "next-slide"));
+    // reset viewport meta to what it was before
+    document.head.querySelector("meta[name=viewport]")?.setAttribute("content", bb.viewportMeta);
+    utils.unlockWindowScroll(bb.uniqueId!);
+    settings.caller?.focus();
+    settings.caller = undefined;
+
+    if (lightbox.value) {
+      lightbox.value?.style.setProperty("visibility", "hidden");
+      utils.triggerEvent(lightbox.value, "lightboxCompleted", {
+        target: lightbox.value,
+        settings,
+      });
+    }
+  }, settings.outDuration);
+}
+
+onMounted(() => {
+  bb.uniqueId = utils.getUniqueId(settings.namespace);
+
+  // click on lightbox toggler to open lightbox
   document.addEventListener("click", clickToOpenLightbox);
 
   lightbox.value!.addEventListener("lbconsole", ((e: CustomEvent) => {
@@ -445,8 +609,33 @@ onMounted(async () => {
       e.detail.el?.matches(`[data-target="${props.id}"]`)
     )
       triggerViewOf(e.detail.el);
-    else if (e.detail === "close lightbox") vbb.showLightbox = false;
+    else if (e.detail === "close lightbox" && settings.dismissible) vbb.showLightbox = false;
   }) as EventListener);
+
+  if (settings.hashControl) {
+    // open lightbox from hash
+    unwatch.openLightboxFromRoute = watch(
+      () => route.hash,
+      (newHash) => {
+        if (newHash === `#${props.id}` && !vbb.showLightbox) {
+          bb.openWithHash = true;
+          init();
+          vbb.currSlideNo = vbb.slidesNo ? 1 : 0;
+          vbb.showLightbox = true;
+        }
+      },
+      { immediate: true },
+    );
+  }
+
+  progressBar = lightbox.value!.querySelector(
+    ":scope > .progress-bar > .determinate",
+  ) as HTMLElement;
+  toolbar = lightbox.value!.querySelector(":scope > .icon-bar.lb-control") as HTMLElement;
+  gallery = lightbox.value!.querySelector(":scope > .gallery-view") as HTMLElement;
+  slider = lightbox.value!.querySelector(":scope > .slides") as HTMLElement;
+  prevBtn = slider.querySelector(":scope > .lb-control.c-prev") as HTMLElement;
+  nextBtn = slider.querySelector(":scope > .lb-control.c-next") as HTMLElement;
 
   prevBtn.addEventListener("click", () => {
     update(vbb.currSlideNo - 1);
@@ -466,182 +655,20 @@ onMounted(async () => {
 
   init();
   vbb.currSlideNo = vbb.slidesNo ? 1 : 0;
-
-  if (settings.hashControl) {
-    unwatch.openLightboxFromRoute = watch(
-      () => route.hash,
-      async (newHash) => {
-        if (newHash === `#${props.id}` && !vbb.showLightbox) {
-          init();
-          vbb.currSlideNo = vbb.slidesNo ? 1 : 0;
-          bb.openWithHash = true;
-          await nextTick();
-          vbb.showLightbox = true;
-        }
-        // else if (vbb.showLightbox) vbb.showLightbox = false;
-      },
-      { immediate: true },
-    );
-  }
 });
 onBeforeUnmount(() => {
   // stop all asynchronous watcher
   Object.keys(unwatch).forEach((el) => {
     if (typeof unwatch[el] === "function") unwatch[el]();
   });
+  closeLightbox();
   document.removeEventListener("click", clickToOpenLightbox);
-  if (document.fullscreenElement === lightbox.value!) document.exitFullscreen();
-  if (settings.hashControl) window.removeEventListener("popstate", backToExit);
-  document.removeEventListener("keydown", KBDControls);
-  utils.checkEscStatus(bb.uniqueId!, true);
-  document.removeEventListener("fullscreenchange", fullscreenOutFunc);
-  window.removeEventListener("resize", resizeFunc);
-  document.removeEventListener("touchmove", gestureMove);
-  document.removeEventListener("touchend", gestureEnd);
-  document.removeEventListener("mousemove", gestureMove);
-  document.removeEventListener("mouseup", gestureEnd);
   sizeStream?.disconnect();
-  utils.unlockWindowScroll(bb.uniqueId!);
 });
 
 watch(
   () => vbb.showLightbox,
-  async (value) => {
-    if (value) {
-      document.body.append(lightbox.value!);
-      await utils.afterNextRepaint();
-      lightbox.value!.style.visibility = "visible";
-      if (vbb.slidesNo) update();
-      if (settings.hashControl) {
-        if (!bb.openWithHash) {
-          window.history.pushState(null, "", `${window.location.href.split("#")[0]}#${props.id}`);
-          window.addEventListener("popstate", backToExit);
-        }
-        // exit when route hash changes
-        unwatch.closeOnRouteChange = watch(
-          () => route.hash,
-          (newHash) => {
-            if (newHash !== `#${props.id}`) vbb.showLightbox = false;
-          },
-        );
-      }
-
-      utils.lockWindowScroll(bb.uniqueId!);
-
-      // configure viewport meta to let lightbox function well
-      let viewportMeta = document.head.querySelector("meta[name=viewport]");
-      if (viewportMeta) {
-        bb.viewportMeta = viewportMeta.getAttribute("content") ?? "";
-        viewportMeta.setAttribute(
-          "content",
-          "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
-        );
-      } else {
-        viewportMeta = document.createElement("meta");
-        viewportMeta.setAttribute("name", "viewport");
-        viewportMeta.setAttribute(
-          "content",
-          "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
-        );
-        document.head.appendChild(viewportMeta);
-      }
-
-      // If a controller function is provided in the settings, call it with the lightbox element and settings.
-      // The controller function can be used to perform additional setup or customization of the lightbox.
-      if (typeof settings.controller === "function")
-        settings.controller({
-          target: lightbox.value!,
-          settings,
-          caller: settings.caller,
-        });
-
-      if (settings.closeOnEsc) utils.trackEscOn(bb.uniqueId!);
-
-      document.addEventListener("keydown", KBDControls);
-      lightbox.value!.classList.add("active");
-      clearTimeout(bb.inOutTimeout);
-      bb.inOutTimeout = setTimeout(() => {
-        utils.triggerEvent(lightbox.value!, "lightboxReady", settings);
-        lightbox.value?.focus();
-        if (vbb.slidesNo) resizeIframe();
-
-        // // Caption is truncated to contain a line. Click on it to show full text and click out for otherwise.
-        // slider.addEventListener('click', captionControl);
-
-        toolbar.addEventListener("click", toolbarControls);
-        // Remove the active class from fullscreen-switch when fullscreen is off
-        document.addEventListener("fullscreenchange", fullscreenOutFunc);
-        // Trigger responsiveness
-        window.addEventListener("resize", resizeFunc);
-        // Use mouse wheel to zoom image
-        slider.addEventListener("wheel", wheelToZoom);
-        // Gallery-view controls
-        gallery.addEventListener("click", gallerySwitch);
-
-        // Gesture on Lightbox
-        lightbox.value!.addEventListener("mousedown", gestureStart);
-        lightbox.value!.addEventListener("touchstart", gestureStart);
-        // click to exit event
-        lightbox.value!.addEventListener("click", exitOnWrapperClick);
-        if (vbb.slidesNo) update();
-      }, settings.inDuration);
-    } else {
-      // pause youtube and html5 video when exiting lightbox
-      if (currSlide?.getAttribute("data-cont-type") === "video")
-        (currPic as HTMLVideoElement).pause();
-      else if (currSlide?.getAttribute("data-cont-type") === "youtube")
-        vbb.slidesData
-          ?.find((el) => el.contentId === currSlide.getAttribute("data-cont-id"))
-          ?.youtubeRef?.pauseVideo();
-
-      // safely get out of escape track
-      if (settings.closeOnEsc) utils.checkEscStatus(bb.uniqueId!, true);
-
-      document.removeEventListener("keydown", KBDControls);
-      stopSlideshow();
-      lightbox.value!.removeEventListener("click", exitOnWrapperClick);
-      toolbar.removeEventListener("click", toolbarControls);
-      if (document.fullscreenElement === lightbox.value!) document.exitFullscreen();
-      [...toolbar.querySelectorAll(":scope .item.fullscreen-switch")].forEach((el) =>
-        el.classList.remove("active"),
-      );
-      document.removeEventListener("fullscreenchange", fullscreenOutFunc);
-      window.removeEventListener("resize", resizeFunc);
-      slider.removeEventListener("wheel", wheelToZoom);
-      gallery.removeEventListener("click", gallerySwitch);
-      lightbox.value!.removeEventListener("mousedown", gestureStart);
-      lightbox.value!.removeEventListener("touchstart", gestureStart);
-      document.removeEventListener("touchmove", gestureMove);
-      document.removeEventListener("touchend", gestureEnd);
-      document.removeEventListener("mousemove", gestureMove);
-      document.removeEventListener("mouseup", gestureEnd);
-
-      lightbox.value!.classList.remove("active");
-
-      if (settings.hashControl) {
-        unwatch.closeOnRouteChange && unwatch.closeOnRouteChange();
-        window.removeEventListener("popstate", backToExit);
-        if (!bb.exitedWithBrowserBack) window.history.back();
-        bb.exitedWithBrowserBack = false;
-        bb.openWithHash = false;
-      }
-      clearTimeout(bb.inOutTimeout);
-      bb.inOutTimeout = setTimeout(() => {
-        if (lightbox.value) {
-          lightbox.value?.style.setProperty("visibility", "hidden");
-          utils.triggerEvent(lightbox.value, "lightboxCompleted", settings);
-        }
-        slides.value?.forEach((el) => el.classList.remove("active", "prev-slide", "next-slide"));
-        // reset viewport meta to what it was before
-        document.head
-          .querySelector("meta[name=viewport]")
-          ?.setAttribute("content", bb.viewportMeta);
-        if (settings.caller) settings.caller.focus();
-        settings.caller = undefined;
-        utils.unlockWindowScroll(bb.uniqueId!);
-      }, settings.outDuration);
-    }
-  },
+  (show) => (show ? openLightbox() : closeLightbox()),
 );
 
 function triggerViewOf(toggler: HTMLElement) {
@@ -1298,7 +1325,7 @@ function stopSlideshow() {
   top: 0px;
   left: 0px;
   border: 0px none;
-  outline: 0px none;
+  outline-color: transparent;
   margin: 0px;
   padding: 0px;
   z-index: var(--z-level-5);
@@ -1525,7 +1552,7 @@ function stopSlideshow() {
         opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
 
       &:not(:focus-visible) {
-        outline: 0px none;
+        outline-color: transparent;
       }
 
       &:hover,
@@ -1666,7 +1693,7 @@ function stopSlideshow() {
         opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
 
       &:not(:focus-visible) {
-        outline: 0px none;
+        outline-color: transparent;
       }
 
       &:not(.active) {
@@ -1701,9 +1728,8 @@ function stopSlideshow() {
         opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s;
 
       &.active {
-        border: 2px solid var(--color-on-surface);
+        outline: 2px solid var(--color-on-surface);
         box-shadow: 0px 0px 5px 1px var(--color-surface);
-        transform: scale(1.1);
       }
 
       & * {

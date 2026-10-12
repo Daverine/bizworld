@@ -8,7 +8,7 @@ definePageMeta({ name: "manage-biz-overview", layout: "common", auth: false });
       class="scrollpin z-level-1 self-pointer-none mb-4 min-h-23 [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
-        class="lined heading text-h3 bg-surface pin-top-blend m-0 flex items-end justify-between gap-3 transition-[font-size] duration-200"
+        class="lined heading text-h3 bg-surface shadow-t-blend m-0 flex items-end justify-between gap-3 transition-[font-size] duration-200"
       >
         Overview
       </div>

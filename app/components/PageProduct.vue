@@ -62,7 +62,7 @@ async function clickAction(e: Event) {
           <div class="text-on-surface-v1 line-through">
             ₦{{ Number(details.base_price).toLocaleString() }}
           </div>
-          <div class="label compact px-2 py-0.5 text-xs">
+          <div class="chip px-2 py-0.5">
             -{{
               Math.round(
                 100 - (Number(details.base_promo_price) / Number(details.base_price)) * 100,
@@ -200,7 +200,7 @@ async function clickAction(e: Event) {
   outline: none !important;
 
   &:hover {
-    border-color: var(--outline);
+    border-color: var(--color-outline);
   }
 }
 </style>

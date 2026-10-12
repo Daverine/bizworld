@@ -1,3 +1,5 @@
+import "~/assets/lui/collapsible.css";
+
 export default {
   mounted(el: HTMLElement) {
     let inOutTimeout: ReturnType<typeof setTimeout>;

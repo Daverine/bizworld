@@ -12,15 +12,16 @@ export default defineEventHandler(async (event) => {
     specifications,
     overview,
     details_attachment,
-    location,
+    shipping,
+    meta,
   } = await readBody(event);
 
   // Generate unique ID and slug
   const slug = await uniqueSlugFrom(title, "product");
   const business_id = await getIdFromSlug(business_slug, "business");
-  console.log(category_id);
-  category_id = parseInt(category_id);
-  console.log(category_id);
+  // create a meta object for product and store new_category value in it
+  // also push the new_category with this product Id to a categoryReview Table
+  // for bizworld review of the suggested new_category.
   // category = category === "others" && new_category ? `others:${new_category}` : category;
 
   const newProduct = await db
@@ -30,13 +31,14 @@ export default defineEventHandler(async (event) => {
       base_price,
       base_promo_price,
       business_id: business_id!,
-      category_id,
+      category_id: parseInt(category_id),
       details_attachment,
       is_active: true,
-      location,
+      meta: JSON.stringify(meta),
       option_group: JSON.stringify(option_group),
       overview,
       photos,
+      shipping: JSON.stringify(shipping),
       slug,
       specifications: JSON.stringify(specifications),
       sub_option_group: JSON.stringify(sub_option_group),

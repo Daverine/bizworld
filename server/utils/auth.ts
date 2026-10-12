@@ -76,10 +76,5 @@ export default betterAuth({
   database: new Pool({
     connectionString: process.env.DATABASE_URL,
   }),
-  advanced: {
-    database: {
-      generateId: false,
-    },
-  },
   secret: process.env.BETTER_AUTH_SECRET,
 });

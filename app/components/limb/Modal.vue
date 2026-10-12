@@ -32,7 +32,7 @@ const control = useDialoger(modal, props.id, options);
   margin: 0px;
   padding: 0px;
   border: 0px none;
-  outline: 0px none;
+  outline-color: transparent;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -76,7 +76,7 @@ const control = useDialoger(modal, props.id, options);
     margin: 7vh auto 3vh;
     backface-visibility: hidden;
     border-radius: var(--radius-block);
-    box-shadow: var(--z-depth-5);
+    box-shadow: var(--shadow-d5);
     opacity: 0;
     transition:
       transform 500ms ease-out,

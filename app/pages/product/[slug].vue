@@ -379,7 +379,7 @@ function getItemForCart() {
       <Title>{{ `${product.title} | Bizworld` }}</Title>
 
       <div
-        class="fluid layout-grid bg-surface z-level-1 pin-top-blend sticky top-15.75 mb-4 border-b p-2"
+        class="fluid layout-grid bg-surface z-level-1 shadow-t-blend sticky top-15.75 mb-4 border-b p-2"
       >
         <div class="px-4">
           Products <Icon name="material-symbols:chevron-right-rounded" /> {{ product.category }}
@@ -736,7 +736,7 @@ function getItemForCart() {
 
           <useTemplate />
           <div
-            class="bg-surface pin-bottom-blend z-level-1 sticky flex gap-3"
+            class="bg-surface shadow-b-blend z-level-1 sticky flex gap-3"
             style="bottom: 0px; padding: 0.5rem 0rem; margin-top: 0.5rem"
           >
             <button class="primary button open-modal w-full" data-target="pre-cart">
@@ -792,7 +792,7 @@ function getItemForCart() {
       </div>
       <!-- Call to Action Section -->
       <div
-        class="bg-surface fluid z-level-2 pin-bottom-blend sticky min-[960px]:hidden"
+        class="bg-surface fluid z-level-2 shadow-b-blend sticky min-[960px]:hidden"
         style="bottom: 0px"
       >
         <div class="auto-contain flex max-w-6xl gap-3" style="padding: 0.5rem 0rem">
@@ -834,7 +834,7 @@ function getItemForCart() {
       </div>
       <LimbModal id="sp-details">
         <div class="dialog">
-          <header class="pin-top-blend flex gap-3 px-6 py-4">
+          <header class="shadow-t-blend flex gap-3 px-6 py-4">
             <div class="truncate font-bold">Self Pickup Details</div>
             <button class="circular flat button as-text exit-modal" style="margin-left: auto">
               <Icon name="material-symbols:close" />
@@ -877,7 +877,7 @@ function getItemForCart() {
       </LimbModal>
       <LimbModal id="pre-cart">
         <div class="dialog">
-          <header class="pin-top-blend flex gap-3 px-6 py-4">
+          <header class="shadow-t-blend flex gap-3 px-6 py-4">
             <div class="truncate font-bold">Confirm options</div>
             <button class="circular flat button as-text exit-modal" style="margin-left: auto">
               <Icon name="material-symbols:close" />
@@ -895,7 +895,7 @@ function getItemForCart() {
               ></textarea>
             </div>
             <div
-              class="footer bg-surface pin-bottom-blend sticky flex flex-col gap-3"
+              class="footer bg-surface shadow-b-blend sticky flex flex-col gap-3"
               style="bottom: 0px; padding: 1rem 0rem; margin-top: 0.5rem"
             >
               <div class="flex flex-col" style="gap: 0.25rem">
@@ -969,7 +969,7 @@ function getItemForCart() {
 }
 
 .config {
-  border: 1px solid var(--outline);
+  border: 1px solid var(--color-outline);
   border-radius: var(--radius-inline);
   padding: 1rem;
 

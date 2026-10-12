@@ -1,0 +1,29 @@
+.collapsible {
+  overflow: hidden !important;
+  height: 0px;
+
+  &:not(.no-motion) {
+    transition: height 0.5s ease-in-out;
+  }
+}
+
+.can-collapse {
+  height: 0px;
+  overflow: hidden;
+  interpolate-size: allow-keywords;
+  transition: display 0.5s, height 0.5s ease-in-out;
+  transition-behavior: allow-discrete;
+
+  &:not(.active) {
+    display: none;
+  }
+
+  &.active {
+    height: auto;
+
+    @starting-style {
+      height: 0px;
+      overflow: hidden;
+    }
+  }
+}

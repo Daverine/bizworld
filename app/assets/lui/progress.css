@@ -1,0 +1,177 @@
+@layer components {
+  .progress-bar {
+    position: relative;
+    height: 0.5em;
+    display: block;
+    width: 100%;
+    background-color: var(--color-surface-v3);
+    border-radius: 0px;
+    overflow: hidden;
+
+    &.compact {
+      height: 0.25em;
+    }
+
+    &.loose {
+      height: 1em;
+    }
+
+    .determinate {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      background-color: var(--color-primary);
+      transition: width 0.3s linear;
+    }
+
+    .indeterminate {
+      background-color: var(--color-primary);
+
+      &:before {
+        content: "";
+        position: absolute;
+        background-color: inherit;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        will-change: left, right;
+        animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+      }
+
+      &:after {
+        content: "";
+        position: absolute;
+        background-color: inherit;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        will-change: left, right;
+        animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+        animation-delay: 1.15s;
+      }
+    }
+  }
+
+  @keyframes indeterminate {
+    0% {
+      left: -35%;
+      right: 100%;
+    }
+
+    60% {
+      left: 100%;
+      right: -90%;
+    }
+
+    100% {
+      left: 100%;
+      right: -90%;
+    }
+  }
+
+  @keyframes indeterminate-short {
+    0% {
+      left: -200%;
+      right: 100%;
+    }
+
+    60% {
+      left: 107%;
+      right: -8%;
+    }
+
+    100% {
+      left: 107%;
+      right: -8%;
+    }
+  }
+
+  /* Custom properties allow CSS to animate numerical gradient values */
+  @property --start {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  @property --end {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  .m3-progress {
+    --size: 48px;
+    --thickness: 4px;
+    --color-primary-color: var(--color-primary);
+    --track-color: var(--color-surface-v3);
+
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    aspect-ratio: 1;
+    position: relative;
+
+    /* Create the progress ring using a mask and conic-gradient */
+    background: conic-gradient(
+      var(--color-primary) calc(var(--progress) * 1%),
+      var(--track-color) 0
+    );
+
+    /* Mask out the center to create a ring */
+    mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - var(--thickness)),
+      black calc(100% - var(--thickness) + 0.5px)
+    );
+    -webkit-mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - var(--thickness)),
+      black calc(100% - var(--thickness) + 0.5px)
+    );
+
+    &.indeterminate {
+      /* Layer 1: The 'chasing' primary arc */
+      /* Layer 2: The static track color */
+      background:
+        conic-gradient(from var(--start), var(--color-primary) var(--end), #0000 0deg),
+        var(--track-color);
+
+      /* Masks the center to create the 4dp ring */
+      mask: radial-gradient(farthest-side, #0000 calc(100% - var(--thickness)), #000 0);
+      -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - var(--thickness)), #000 0);
+
+      /* Dual Animation: Continuous spin + the 'chase' expansion logic */
+      animation:
+        m3-spin 2s linear infinite,
+        m3-chase 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+  }
+
+  /* 1. Constant 360-degree rotation of the entire element */
+  @keyframes m3-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* 2. The 'Chase': Head surges forward, then tail catches up */
+  @keyframes m3-chase {
+    0% {
+      --start: -90deg;
+      --end: 30deg;
+    }
+
+    50% {
+      --start: -45deg;
+      --end: 270deg;
+      /* The arc expands significantly */
+    }
+
+    100% {
+      --start: 270deg;
+      /* The tail moves to the head's position */
+      --end: 30deg;
+    }
+  }
+}

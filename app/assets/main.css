@@ -1,19 +1,21 @@
 @import "tailwindcss" important;
+@import "~/assets/lui/table.css";
+@import "~/assets/lui/form.css";
+@import "~/assets/lui/menu.css";
+@import "~/assets/lui/button.css";
+@import "~/assets/lui/chip.css";
+@import "~/assets/lui/label.css";
+@import "~/assets/lui/badge.css";
+@import "~/assets/lui/divider.css";
+@import "~/assets/lui/note.css";
+@import "~/assets/lui/progress.css";
 
 @layer base {
-  /* Set the color scheme based on the user's preference or the presence of light-mode or dark-mode classes. */
+  /* Set the color scheme based on the user's preference. */
 
   :root,
   :host {
     color-scheme: light dark;
-
-    &:where(.light-mode, .light-mode *) {
-      color-scheme: light;
-    }
-
-    &:where(.dark-mode, .dark-mode *) {
-      color-scheme: dark;
-    }
   }
 
   /* Remove all minimum width and height constraints. */
@@ -24,7 +26,7 @@
   ::backdrop,
   ::file-selector-button {
     min-width: 0;
-    border-color: var(--outline, currentColor);
+    border-color: var(--color-outline, currentColor);
   }
 
   /* Balance text wrapping in headings when supported. */
@@ -75,6 +77,11 @@
     vertical-align: inherit;
   }
 
+  :focus-visible {
+    outline: 2px solid var(--color-on-surface);
+    outline-offset: 1px;
+  }
+
   /* Clearfix for body by default. */
 
   body {
@@ -96,6 +103,10 @@
 
   html {
     background-color: var(--color-surface-v2);
+
+    &.scroll-locked {
+      background-color: var(--color-surface-v4);
+    }
   }
 
   body {
@@ -172,10 +183,21 @@
     margin: 0;
     margin-bottom: 1rem;
   }
+
+  fieldset {
+    border: 1px solid var(--color-outline);
+    border-radius: var(--radius-block);
+    padding: 0.5em 1em;
+  }
 }
 
-@custom-variant light (&:where(.light-mode, .light-mode *));
-@custom-variant dark (&:where(.dark-mode, .dark-mode *));
+@utility light-mode {
+  color-scheme: light;
+}
+
+@utility dark-mode {
+  color-scheme: dark;
+}
 
 @utility link {
   color: var(--color-primary);
@@ -204,33 +226,116 @@
   margin-inline: auto;
   width: calc(100% - (--value(integer) * var(--spacing) * 2));
 }
-@utility photo-box {
-  position: relative;
-  width: 100%;
-  object-fit: contain;
-  overflow: hidden;
+@utility a-block {
   display: flex;
-  place-items: center;
+  flex-flow: row wrap;
+  gap: 0.75em;
 
-  & > img {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+  & > .lead {
+    flex: 0 0 auto;
   }
 
+  & > .trailing {
+    margin-left: auto;
+    flex: 0 0 auto;
+  }
+
+  & > .content {
+    flex: 1 1 0;
+  }
+}
+@utility z-level-* {
+  z-index: calc(5000 + (--value(integer) * 1000));
+}
+
+/* clearfix: this let a parent contain all child's margin; */
+
+@utility clearfix {
   &::before {
     content: "";
-    position: absolute;
-    inset: 0;
-    background-image: var(--box-photo);
-    background-size: cover;
-    filter: blur(8px);
-    transform: scale(1.1);
+    display: table-cell;
+  }
+
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
   }
 }
 
-@theme {
+/* parent active view (aview element can only be visible when its parent has active class and the nview element is visble when its parent does not have active class.)
+ use a-view and n-view in viewbox case senerio. */
+@utility aview {
+  *:not(.active) > & {
+    display: none !important;
+  }
+}
+@utility nview {
+  *.active > & {
+    display: none !important;
+  }
+}
+@utility ac-viewbox-ref {
+  &.active .ac-viewbox > :first-child {
+    display: none !important;
+  }
+
+  &:not(.active) .ac-viewbox > :last-child {
+    display: none !important;
+  }
+}
+
+/* can be used in place of container and breakout sections */
+@utility layout-grid {
+  --edge: 1.5rem;
+
+  @media screen and (max-width: 600px) {
+    --edge: 1rem;
+  }
+
+  @media screen and (max-width: 350px) {
+    --edge: 0.5rem;
+  }
+
+  .no-edge {
+    --edge: 0rem;
+  }
+
+  --breakout-pad: calc((var(--container-breakout) - var(--container-content)) / 2);
+  --fluid-pad: calc(var(--edge) + var(--breakout-pad));
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: [fluid-start] minmax(var(--edge), 1fr) [breakout-start] minmax(
+      0,
+      var(--breakout-pad)
+    ) [content-start] min(100% - (var(--edge) * 2), var(--container-content)) [content-end] minmax(
+      0,
+      var(--breakout-pad)
+    ) [breakout-end] minmax(var(--edge), 1fr) [fluid-end];
+
+  & > * {
+    grid-column: content;
+  }
+
+  & > .breakout {
+    grid-column: breakout;
+  }
+
+  & > .fluid {
+    grid-column: fluid;
+  }
+}
+/* stack content respecting all content size */
+@utility grid-stacker {
+  display: grid;
+  grid-template-areas: "stack";
+
+  & > * {
+    grid-area: stack;
+  }
+}
+
+@theme inline {
   --radius-inline: 0.5rem;
   --radius-block: 0.5rem;
 
@@ -286,17 +391,176 @@
   --color-success-cont: light-dark(hsl(134deg 70% 94%), hsl(134deg 70% 16%));
   --color-warning-cont: light-dark(hsl(39deg 100% 94%), hsl(39deg 100% 16%));
   --color-error-cont: light-dark(hsl(2deg 72% 94%), hsl(2deg 72% 16%));
+
+  --color-outline: light-dark(hsl(0deg 0% 90%), hsl(0deg 0% 20%));
+  --color-outline-burnt: light-dark(hsl(0deg 0% 86%), hsl(0deg 0% 24%));
+
+  --shadow-t-blend: 0px 5px 10px 5px var(--color-surface);
+  --shadow-b-blend: 0px -5px 10px var(--color-surface);
+  --shadow-d0:
+    0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14),
+    0px 0px 0px 0px rgba(0, 0, 0, 0.12);
+  --shadow-d1:
+    0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  --shadow-d2:
+    0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+  --shadow-d3:
+    0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+  --shadow-d4:
+    0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+  --shadow-d5:
+    0px 7px 8px -4px rgba(0, 0, 0, 0.2), 0px 12px 17px 2px rgba(0, 0, 0, 0.14),
+    0px 5px 22px 4px rgba(0, 0, 0, 0.12);
 }
 
-svg.icon {
-  width: 1.375em /* 1.5em */;
-  height: 1.375em /* 1.5em */;
-  vertical-align: -0.35em /* -0.35em */;
+@layer components {
+  .icon {
+    display: inline-block;
+    font-style: normal;
+    font-size: 1em;
+    flex: 0 0 auto;
+
+    &.fixed-width {
+      width: 2em;
+      text-align: center;
+    }
+
+    & > svg,
+    &:is(svg) {
+      width: 1.375em /* 1.5em */;
+      height: 1.375em /* 1.5em */;
+      vertical-align: -0.35em /* -0.35em */;
+      fill: currentColor;
+    }
+  }
+
+  .heading {
+    display: block;
+    font-weight: bold;
+    margin: 0.5em 0em 0.5em;
+
+    & + * {
+      margin-top: 0 !important;
+    }
+
+    &.block {
+      padding: 0.5em 0.75em;
+      border: 1px solid var(--color-outline);
+      background-color: var(--color-surface);
+      border-radius: var(--radius-block);
+      margin: 0.25em 0em 0.5em;
+    }
+
+    &.lined {
+      padding: 0.5em 0.25em;
+      border-bottom: 1px solid var(--color-outline);
+      margin: 0.25em 0em 0.5em;
+    }
+  }
+
+  .avatar {
+    height: 3em;
+    width: 3em;
+    object-fit: cover;
+
+    &.compact {
+      height: 2em;
+      width: 2em;
+    }
+
+    &.loose {
+      height: 4em;
+      width: 4em;
+    }
+  }
+
+  .thumbnail {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    object-fit: contain;
+    padding: 0.125em;
+    width: var(--thumbnail-size, 6.25rem);
+    height: var(--thumbnail-size, 6.25rem);
+    max-height: 100%;
+    border-radius: var(--radius-block);
+    transition:
+      transform 0.35s cubic-bezier(0, 0, 0.25, 1) 0s,
+      opacity 0.35s cubic-bezier(0, 0, 0.25, 1) 0s !important;
+
+    &.active {
+      outline: 0.125em solid var(--color-on-surface);
+      box-shadow: 0px 0px 5px 1px var(--color-surface);
+    }
+
+    & > img {
+      display: block;
+      margin: 0px;
+      object-fit: contain;
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      max-width: 100%;
+      border-radius: calc(var(--radius-block) - 0.125em);
+    }
+  }
+
+  .tab-page:not(.active) {
+    display: none !important;
+  }
+
+  .photo-box {
+    position: relative;
+    width: 100%;
+    object-fit: contain;
+    overflow: hidden;
+    display: flex;
+    place-items: center;
+
+    & > img {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: var(--box-photo);
+      background-size: cover;
+      filter: blur(8px);
+      transform: scale(1.1);
+    }
+  }
 }
+
 :root {
+  /* z-indexes */
+  --z-level-5: 9999;
+  --z-level-4: 9000;
+  --z-level-3: 8000;
+  --z-level-2: 7000;
+  --z-level-1: 6000;
+
+  /* state opacity */
+  --hover-state: 0.08;
+  --focus-state: 0.08;
+  --press-state: 0.125;
+  --drag-state: 0.2;
+
+  --scrim-color: var(--color-on-surface-v2);
+  --scrim-opacity: 0.7;
+
   --default-radius: 0.5em;
   --site-logo-filter: invert(0);
-  --blend-bg: var(--color-surface);
 }
 
 .site-logo {
@@ -308,13 +572,6 @@ svg.icon {
 .sidemenu {
   width: var(--sidepanel-width);
   padding: 0.625rem;
-}
-
-.pin-top-blend {
-  box-shadow: 0px 5px 10px 5px var(--blend-bg);
-}
-.pin-bottom-blend {
-  box-shadow: 0px -5px 10px var(--blend-bg);
 }
 
 .products-grid {

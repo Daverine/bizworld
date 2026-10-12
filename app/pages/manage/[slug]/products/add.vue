@@ -1,8 +1,6 @@
 <script lang="ts" setup>
-import type { Maybe } from "@regle/core";
-import { url, required, requiredIf } from "@regle/rules";
+import { isEmpty, isFilled, url, required, requiredIf } from "@regle/rules";
 import { useSortable } from "@vueuse/integrations/useSortable";
-import { utils } from "~/utils/utils";
 
 definePageMeta({
   name: "add-product",
@@ -11,141 +9,160 @@ definePageMeta({
   noCart: true,
 });
 
+const route = useRoute();
 const { data: productCategories } = await useFetch("/api/product-categories", {
   key: "product-categories",
 });
 
-const route = useRoute();
-const newProduct = reactive<{
-  tab1: {
-    category_id?: string;
-    new_category?: string;
-    title?: string;
-    photos: (File | string)[];
-    video_link?: string;
-  };
-  tab2: {
-    base_price?: string;
-    base_promo_price?: string;
-    option_group?: {
-      title: string;
-      options: {
+const productForm = reactive<{
+  category_id?: string;
+  title?: string;
+  photos: (File | string)[];
+  video_link?: string;
+
+  base_price?: string;
+  base_promo_price?: string;
+  option_group?: {
+    title: string;
+    options: {
+      label: string;
+      price: string;
+      promo_price: string;
+      photo?: File | string;
+      sub_options?: {
+        is_active: boolean;
         label: string;
-        price?: string;
-        promo_price?: string;
-        photo?: File | string;
-        sub_options?: {
-          is_active: boolean;
-          label: string;
-          price?: string;
-          promo_price?: string;
-          price_changed?: boolean;
-          promo_price_changed?: boolean;
-        }[];
+        price: string;
+        promo_price: string;
+        price_changed?: boolean;
+        promo_price_changed?: boolean;
       }[];
-    };
-    sub_option_group?: {
-      title: string;
-      options: { label: string; price?: string; promo_price?: string; photo?: File | string }[];
-    };
-  };
-  tab3: {
-    specifications: {
-      name: string;
-      value: string;
     }[];
-    overview?: string;
-    details_attachment?: File | string;
+  };
+  sub_option_group?: {
+    title: string;
+    options: { label: string; price: string; promo_price: string; photo?: File | string }[];
+  };
+
+  specifications: {
+    name: string;
+    value: string;
+  }[];
+  overview?: string;
+  details_attachment?: File | string;
+  shipping?: {
+    measurements?: {
+      weight?: string;
+      length?: string;
+      width?: string;
+      height?: string;
+    };
     location?: {
-      country?: string;
-      state?: string;
-      city?: string;
+      country: string;
+      state: string;
+      city: string;
+      address: string;
     };
   };
+  meta: Record<string, any>;
 }>({
-  tab1: {
-    photos: [],
-  },
-  tab2: {},
-  tab3: {
-    specifications: [],
-  },
+  photos: [],
+  specifications: [],
+  meta: {},
 });
-const currentTab = ref("tab1");
 const placeholder = reactive<{
   option: {
     label: string;
-    price?: string;
-    promo_price?: string;
+    price: string;
+    promo_price: string;
     photo?: File | string;
     sub_options?: {
       is_active: boolean;
       label: string;
-      price?: string;
-      promo_price?: string;
+      price: string;
+      promo_price: string;
       price_changed?: boolean;
       promo_price_changed?: boolean;
     }[];
   };
-  modifyingOption: boolean;
-  location: {
-    country: string;
-    state: string;
-    city: string;
+  modifyingOption?: {
+    group: string;
+    index: number;
+  };
+  shipping: {
+    measurements: {
+      weight?: string;
+      length?: string;
+      width?: string;
+      height?: string;
+    };
+    location: {
+      country: string;
+      state: string;
+      city: string;
+      address: string;
+    };
   };
   priceOption: boolean;
   optionPriceOption: boolean;
+  upload: {
+    status: "initial" | "completed" | "error";
+    message: string;
+  };
 }>({
   option: {
     label: "",
+    price: "",
+    promo_price: "",
   },
-  modifyingOption: false,
-  location: {
-    country: "",
-    state: "",
-    city: "",
+  shipping: {
+    measurements: {},
+    location: {
+      country: "",
+      state: "",
+      city: "",
+      address: "",
+    },
   },
   priceOption: false,
   optionPriceOption: false,
+  upload: {
+    status: "initial",
+    message: "",
+  },
 });
+const locationFilled = () => Object.values(placeholder.shipping.location).some((val) => val);
 const validation = {
-  tab1: useRegle(newProduct.tab1, {
+  product: useRegle(productForm, {
     category_id: {
       required: withMessage(required, "Product category is required."),
     },
-    new_category: {
-      required: withMessage(
-        requiredIf(() => newProduct.tab1.category_id === "-1"),
-        "New category name is required.",
-      ),
-    },
     title: { required: withMessage(required, "Product title is required.") },
     photos: {
-      $rewardEarly: true,
+      $each: {},
       minLength: withMessage(
-        (value: Maybe<(File | string)[]>) => !!value?.length,
+        (value: Maybe<(File | string)[]>) => !!value && value.length > 1,
         "At least two product photos are required.",
       ),
       size: withMessage(
         (value: Maybe<(File | string)[]>) =>
-          !(value && value.some((el) => typeof el !== "string" && el.size >= 5 * 1024 * 1024)),
+          !value || value.every((el) => typeof el === "string" || el.size <= 5 * 1024 * 1024),
         "Each photo must be less than 5MB in size.",
       ),
     },
     video_link: { url },
-  }),
-  tab2: useRegle(newProduct.tab2, {
+
     base_price: {
       required: withMessage(
-        (value: Maybe<string>) => Number(value) > 0,
-        "A base price must be specified for the product.",
+        (value: Maybe<string>) => !!value && Number(value) > 0,
+        "A base price is required for the product.",
       ),
       lowestInOptions: withMessage((value: Maybe<string>) => {
-        if (!newProduct.tab2.option_group) return true;
+        if (!productForm.option_group) return true;
         let lowestOptionPrice = Math.min(
-          ...newProduct.tab2.option_group.options.map((option) => Number(option.price) || Infinity),
-          ...(newProduct.tab2.option_group.options.some((option) => option.sub_options)
-            ? newProduct.tab2.option_group.options.flatMap(
+          ...productForm.option_group.options.map((option) => Number(option.price) || Infinity),
+          ...(productForm.option_group.options.some((option) => option.sub_options)
+            ? productForm.option_group.options.flatMap(
                 (option) =>
                   option.sub_options?.map((sub_option) => Number(sub_option.price) || Infinity) ||
                   [],
@@ -157,49 +174,48 @@ const validation = {
       }, "Base price must be less than or equal to the lowest option price."),
     },
     base_promo_price: {
-      lessThanBasePrice: withMessage((value: Maybe<string>) => {
-        if (value === undefined || value === null) return true;
-        if (Number(value) <= 0) return false;
-        if (newProduct.tab2.base_price === undefined) return true;
-        return Number(value) < Number(newProduct.tab2.base_price);
-      }, "Promotional price must be less than the base price."),
+      lessThanBasePrice: withMessage(
+        (value: Maybe<string>) =>
+          !value ||
+          (Number(value) > 0 &&
+            (!productForm.base_price || Number(value) < Number(productForm.base_price))),
+        "Promotional price must be greater than zero and less than the base price.",
+      ),
     },
     option_group: {
       title: {
         required: withMessage(
-          requiredIf(() => utils.isObject(newProduct.tab2.option_group)),
-          "A title must be specified for this option group.",
+          requiredIf(() => utils.isObject(productForm.option_group)),
+          "A title is required for this option group.",
         ),
       },
       options: {
-        $rewardEarly: true,
+        $each: {},
         minLength: withMessage(
-          (value) => !utils.isObject(newProduct.tab2.option_group) || (value as []).length > 1,
-          "At least two option must be added here.",
+          (value: Maybe<any[]>) => !value || value.length > 1,
+          "At least two options must be added here.",
         ),
       },
     },
     sub_option_group: {
       title: {
         required: withMessage(
-          requiredIf(() => utils.isObject(newProduct.tab2.sub_option_group)),
-          "A title must be specified for this option group.",
+          requiredIf(() => utils.isObject(productForm.sub_option_group)),
+          "A title is required for this option group.",
         ),
       },
       options: {
-        $rewardEarly: true,
+        $each: {},
         minLength: withMessage(
-          (value) => !utils.isObject(newProduct.tab2.sub_option_group) || (value as []).length > 1,
-          "At least two option must be added here.",
+          (value: Maybe<any[]>) => !value || value.length > 1,
+          "At least two options must be added here.",
         ),
       },
     },
-  }),
-  tab3: useRegle(newProduct.tab3, {
+
     specifications: {
-      $rewardEarly: true,
       minLength: withMessage(
-        (value) => (value as []).length > 1,
+        (value: Maybe<any[]>) => !!value && value.length > 1,
         "At least two product specifications are required.",
       ),
       $each: {
@@ -221,23 +237,37 @@ const validation = {
     computed(() => placeholder.option),
     {
       label: {
-        required: withMessage(required, "A unique label must be specified for this option."),
-        unique: withMessage((value) => {
-          let existsInMain =
-            newProduct.tab2.option_group?.options.some((option) => option.label === value) ?? false;
-          let existsInSub =
-            newProduct.tab2.sub_option_group?.options.some((option) => option.label === value) ??
-            false;
-          return (!existsInMain && !existsInSub) || placeholder.modifyingOption;
-        }, "An option with this label already exists."),
+        unique: withMessage(
+          (value: Maybe<string>) =>
+            !!value &&
+            productForm.option_group!.options.every(
+              (option, index) =>
+                option.label !== value ||
+                (placeholder.modifyingOption &&
+                  placeholder.modifyingOption.group === "main" &&
+                  placeholder.modifyingOption.index === index),
+            ) &&
+            (!productForm.sub_option_group ||
+              productForm.sub_option_group.options.every(
+                (option, index) =>
+                  option.label !== value ||
+                  (placeholder.modifyingOption &&
+                    placeholder.modifyingOption.group === "sub" &&
+                    placeholder.modifyingOption.index === index),
+              )),
+          "A unique label is required for this option.",
+        ),
       },
       promo_price: {
-        lessThanPrice: withMessage((value: Maybe<string>) => {
-          if (value === undefined || value === null) return true;
-          if (Number(value) <= 0) return false;
-          if (placeholder.option.price === undefined) return true;
-          return Number(value) < Number(placeholder.option.price);
-        }, "Promotional price must be less than the base price."),
+        lessThanOptionPriceOrBasePrice: withMessage(
+          (value: Maybe<string>) =>
+            !value ||
+            (Number(value) > 0 &&
+              (!placeholder.option.price ||
+                Number(value) < Number(placeholder.option.price) ||
+                (!placeholder.option.price && Number(value) < Number(productForm.base_price)))),
+          "Promotional price must be greater than zero and less than the option price if present or less than base price.",
+        ),
       },
       photo: {
         maxSize: withMessage(
@@ -248,27 +278,52 @@ const validation = {
       sub_options: {
         $each: (sub_option) => ({
           promo_price: {
-            lessThanPrice: withMessage((value: Maybe<string>) => {
-              if (value === undefined || value === null) return true;
-              if (!sub_option.value.is_active) return true;
-              if (Number(value) <= 0) return false;
-              if (sub_option.value.price === undefined) return true;
-              return Number(value) < Number(sub_option.value.price);
-            }, "Promotional price must be less than the base price."),
+            lessThanOptionPriceOrBasePrice: withMessage(
+              (value: Maybe<string>) =>
+                !value ||
+                !sub_option.value.is_active ||
+                (Number(value) > 0 &&
+                  (!sub_option.value.price ||
+                    Number(value) < Number(sub_option.value.price) ||
+                    (!sub_option.value.price && Number(value) < Number(productForm.base_price)))),
+              "Promotional price must be greater than zero and less than this sub-option price if present or less than base price.",
+            ),
           },
         }),
       },
     },
   ),
-  location: useRegle(
-    computed(() => placeholder.location),
+  shipping: useRegle(
+    computed(() => placeholder.shipping),
     {
-      country: { required },
-      state: { required },
-      city: { required },
+      location: {
+        $self: {
+          $rewardEarly: true,
+          inComplete: withMessage(
+            (value) =>
+              !value ||
+              Object.values(value).every((val) => isFilled(val)) ||
+              Object.values(value).every((val) => isEmpty(val)),
+            "Location boxes are incomplete; either fill them fully or clear them.",
+          ),
+        },
+        country: {
+          required: requiredIf(locationFilled),
+        },
+        state: {
+          required: requiredIf(locationFilled),
+        },
+        city: {
+          required: requiredIf(locationFilled),
+        },
+        address: {
+          required: requiredIf(locationFilled),
+        },
+      },
     },
   ),
 };
+
 const specPresets = {
   "Computers & Accessories": [
     "Brand",
@@ -344,49 +399,41 @@ const specPresets = {
     "Usage Instructions",
   ],
 };
-const progress = ref<{
-  message: string;
-  loaded?: number;
-  completed: boolean | null;
-}>({
-  message: "",
-  completed: false,
-});
 
 function handleNewPhoto(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files) {
-    [...input.files].forEach((file) => newProduct.tab1.photos.push(file));
+    [...input.files].forEach((file) => productForm.photos.push(file));
     input.value = "";
     nextTick(() => input.scrollIntoView({ behavior: "smooth", block: "center" }));
   }
 }
-async function createNewProductOption() {
-  if (newProduct.tab2.option_group) {
-    newProduct.tab2.sub_option_group = {
+async function createproductFormOption() {
+  if (productForm.option_group) {
+    productForm.sub_option_group = {
       title: "",
       options: [],
     };
     await nextTick();
-    validation.tab2.r$.sub_option_group.$reset();
+    validation.product.r$.sub_option_group.$reset();
     document.getElementById("sub-option-group-title")?.focus();
     document
       .getElementById("sub-option-group-title")
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
   } else {
-    newProduct.tab2.option_group = {
+    productForm.option_group = {
       title: "",
       options: [],
     };
     await nextTick();
-    validation.tab2.r$.option_group.$reset();
+    validation.product.r$.option_group.$reset();
     document.getElementById("option-group-title")?.focus();
     document
       .getElementById("option-group-title")
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 }
-async function configProductOption({ settings }: DialogEvent) {
+async function configProductOption({ target, settings }: Dialoger) {
   let caller = settings.caller!;
   let callergroup = caller.hasAttribute("data-sub-category") ? "sub" : "main";
 
@@ -394,20 +441,22 @@ async function configProductOption({ settings }: DialogEvent) {
     let optionId = parseInt(caller.dataset.optionId);
     const option =
       callergroup === "sub"
-        ? newProduct.tab2.sub_option_group?.options[optionId]
-        : newProduct.tab2.option_group?.options[optionId];
+        ? productForm.sub_option_group?.options[optionId]
+        : productForm.option_group?.options[optionId];
     if (option) {
-      placeholder.modifyingOption = true;
-      placeholder.option = { ...option };
+      placeholder.modifyingOption = { group: callergroup, index: optionId };
+      placeholder.option = { ...structuredClone(toRaw(option)) };
     }
-  } else {
-    placeholder.modifyingOption = false;
-    placeholder.option = {
-      label: "",
-    };
   }
+
   await nextTick();
   validation.option.r$.$reset();
+
+  const cleanupCloseEvent = useEventListener(target, "dialogIsClosed", () => {
+    placeholder.modifyingOption = undefined;
+    placeholder.option = { label: "", price: "", promo_price: "" };
+    cleanupCloseEvent();
+  });
 }
 async function processProductOption({ settings, exit }: Dialoger) {
   await validation.option.r$.$validate();
@@ -416,40 +465,40 @@ async function processProductOption({ settings, exit }: Dialoger) {
   let caller = settings.caller!;
   let callergroup = caller.hasAttribute("data-sub-category") ? "sub" : "main";
 
-  if (caller.dataset.optionId !== undefined) {
-    const optionId = parseInt(caller.dataset.optionId);
+  if (placeholder.modifyingOption) {
+    let index = placeholder.modifyingOption.index;
     if (callergroup === "sub") {
-      if (newProduct.tab2.sub_option_group?.options[optionId]) {
+      if (productForm.sub_option_group?.options[index]) {
         if (placeholder.option.label.trim())
-          newProduct.tab2.sub_option_group.options[optionId] = {
+          productForm.sub_option_group.options[index] = {
             ...placeholder.option,
           };
-        else newProduct.tab2.sub_option_group.options.splice(optionId, 1);
+        else productForm.sub_option_group.options.splice(index, 1);
       }
     } else if (callergroup === "main") {
-      if (newProduct.tab2.option_group?.options[optionId]) {
+      if (productForm.option_group?.options[index]) {
         if (placeholder.option.label.trim())
-          newProduct.tab2.option_group.options[optionId] = {
+          productForm.option_group.options[index] = {
             ...placeholder.option,
           };
-        else newProduct.tab2.option_group.options.splice(optionId, 1);
+        else productForm.option_group.options.splice(index, 1);
       }
     }
   } else if (placeholder.option.label.trim()) {
     if (callergroup === "sub")
-      newProduct.tab2.sub_option_group?.options.push({
+      productForm.sub_option_group?.options.push({
         ...placeholder.option,
       });
     else if (callergroup === "main")
-      newProduct.tab2.option_group?.options.push({ ...placeholder.option });
+      productForm.option_group?.options.push({ ...placeholder.option });
   }
 
-  validation.tab2.r$.base_price.$touch();
+  validation.product.r$.base_price.$touch();
   exit();
 }
 function addSpecification(template?: string[]) {
   if (template) {
-    newProduct.tab3.specifications = template.map((spec) => ({
+    productForm.specifications = template.map((spec) => ({
       name: spec,
       value: "",
     }));
@@ -461,7 +510,7 @@ function addSpecification(template?: string[]) {
       )?.focus(),
     );
   } else {
-    newProduct.tab3.specifications.push({ name: "", value: "" });
+    productForm.specifications.push({ name: "", value: "" });
     nextTick(() =>
       (
         document.querySelector(
@@ -471,169 +520,151 @@ function addSpecification(template?: string[]) {
     );
   }
 }
-function setLocation({ exit }: Dialoger) {
-  validation.location.r$.$validate();
-  if (validation.location.r$.$invalid) return;
+function configShippingModal({ target }: Dialoger) {
+  const cleanupCloseEvent = useEventListener(target, "dialogIsClosed", () => {
+    placeholder.shipping = {
+      measurements: {},
+      location: { country: "", state: "", city: "", address: "" },
+    };
+    cleanupCloseEvent();
+  });
+}
+async function setShippingDetails({ exit }: Dialoger) {
+  validation.shipping.r$.location.$self.$touch();
+  await validation.shipping.r$.$validate();
+  if (validation.shipping.r$.$invalid) return;
 
-  newProduct.tab3.location = placeholder.location;
+  if (
+    Object.values(placeholder.shipping.location).some((val) => val) ||
+    Object.values(placeholder.shipping.measurements).some((val) => val)
+  )
+    productForm.shipping = placeholder.shipping;
+  else productForm.shipping = undefined;
+
   exit();
 }
-function clearLocation({ exit }: Dialoger) {
-  delete newProduct.tab3.location;
-  placeholder.location = {
+function clearLocation() {
+  placeholder.shipping.location = {
     country: "",
     state: "",
     city: "",
+    address: "",
   };
-  validation.location.r$.$reset();
-  exit();
+  validation.shipping.r$.location.$reset();
 }
-async function nextTab() {
-  const key = currentTab.value as keyof typeof validation;
-  await validation[key].r$.$validate();
+async function processForm() {
+  await validation.product.r$.$validate();
 
-  if (validation[key].r$.$invalid) {
+  if (validation.product.r$.$invalid) {
     await nextTick();
-    (
-      document.querySelector(".tab-page.active .error, .tab-page.active .text-error") as HTMLElement
-    )?.focus();
-    document
-      .querySelector(".tab-page.active .error, .tab-page.active .text-error")
-      ?.closest(".field")
-      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const errorInput = document.querySelector(
+      "#product-form .error, #product-form .text-error",
+    ) as Maybe<HTMLElement>;
+    const errorField = errorInput?.closest(".field");
+
+    if (errorInput?.matches(".text-error")) utils.getFocusableElementsFrom(errorField)[0]?.focus();
+    else errorInput?.focus();
+    errorField?.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
 
-  const currentIndex = Object.keys(newProduct).indexOf(currentTab.value);
-  if (currentIndex < Object.keys(newProduct).length - 1) {
-    currentTab.value = Object.keys(newProduct)[currentIndex + 1] || "";
-    await nextTick();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    (
-      document
-        .querySelector(".tab-page.active")
-        ?.querySelector(utils.focusableElementsSelector) as HTMLElement
-    )?.focus();
-    return;
+  placeholder.upload.message = "Preparing your product for upload...";
+
+  const uploader = document.querySelector("#upload-status");
+
+  if (uploader && !uploader.classList.contains("active")) {
+    utils.triggerEvent(uploader, "dgconsole", "open dialog");
+    await utils.notifyOnEvent(uploader, "dialogIsOpened");
   }
 
-  progress.value.loaded = undefined;
-  progress.value.message = "Preparing your product for upload...";
+  if (placeholder.upload.status === "completed") return;
 
-  let uploader = document.querySelector("#upload-status");
-  if (!uploader!.classList.contains("active")) {
-    utils.triggerEvent(uploader!, "dgconsole", "open dialog");
-    await utils.notifyOnEvent(uploader!, "isReady");
-  }
-
-  if (progress.value.completed) return;
-
-  progress.value.completed = false;
+  placeholder.upload.status = "initial";
 
   try {
-    // check if files have be uploaded before
+    // check if files have be uploaded before and upload them if not
     if (
-      newProduct.tab1.photos.some((photo) => typeof photo !== "string") ||
-      (newProduct.tab2.option_group &&
-        newProduct.tab2.option_group.options.some(
+      productForm.photos.some((photo) => typeof photo !== "string") ||
+      (productForm.option_group &&
+        productForm.option_group.options.some(({ photo }) => photo && typeof photo !== "string")) ||
+      (productForm.sub_option_group &&
+        productForm.sub_option_group.options.some(
           ({ photo }) => photo && typeof photo !== "string",
         )) ||
-      (newProduct.tab2.sub_option_group &&
-        newProduct.tab2.sub_option_group.options.some(
-          ({ photo }) => photo && typeof photo !== "string",
-        )) ||
-      (newProduct.tab3.details_attachment && typeof newProduct.tab3.details_attachment !== "string")
+      (productForm.details_attachment && typeof productForm.details_attachment !== "string")
     ) {
-      const filesData = new FormData();
-      newProduct.tab1.photos.forEach((photo, index) => {
+      const formFiles = new FormData();
+      productForm.photos.forEach((photo, index) => {
         if (typeof photo === "string") return;
-        filesData.append("photos", photo, index.toString());
+        formFiles.append("photos", photo, index.toString());
       });
-      newProduct.tab2.option_group?.options.forEach((option, index) => {
+      productForm.option_group?.options.forEach((option, index) => {
         if (option.photo && typeof option.photo !== "string")
-          filesData.append("option_group", option.photo, index.toString());
+          formFiles.append("option_group", option.photo, index.toString());
       });
-      newProduct.tab2.sub_option_group?.options.forEach((option, index) => {
+      productForm.sub_option_group?.options.forEach((option, index) => {
         if (option.photo && typeof option.photo !== "string")
-          filesData.append("sub_option_group", option.photo, index.toString());
+          formFiles.append("sub_option_group", option.photo, index.toString());
       });
-      if (
-        newProduct.tab3.details_attachment &&
-        typeof newProduct.tab3.details_attachment !== "string"
-      ) {
-        filesData.append("details_attachment", newProduct.tab3.details_attachment);
+      if (productForm.details_attachment && typeof productForm.details_attachment !== "string") {
+        formFiles.append("details_attachment", productForm.details_attachment);
       }
 
-      progress.value.loaded = undefined;
-      progress.value.message = "Uploading product files...";
+      placeholder.upload.message = "Uploading product files...";
 
-      const uploads = await $fetch("/api/file-upload", {
+      const filesURL = await $fetch("/api/file-upload", {
         query: { upload_dir: route.params.slug, image_width: 900 },
-        body: filesData,
+        body: formFiles,
         method: "post",
       });
 
-      if ("photos" in uploads) {
-        uploads.photos.forEach((elem) => {
-          newProduct.tab1.photos[parseInt(elem.filename)] = elem.data;
+      if ("photos" in filesURL) {
+        filesURL.photos.forEach((elem) => {
+          productForm.photos[parseInt(elem.filename)] = elem.data;
         });
       }
-      if ("option_group" in uploads) {
-        uploads.option_group.forEach((elem) => {
-          newProduct.tab2.option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
+      if ("option_group" in filesURL) {
+        filesURL.option_group.forEach((elem) => {
+          productForm.option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
         });
       }
-      if ("sub_option_group" in uploads) {
-        uploads.sub_option_group.forEach((elem) => {
-          newProduct.tab2.sub_option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
+      if ("sub_option_group" in filesURL) {
+        filesURL.sub_option_group.forEach((elem) => {
+          productForm.sub_option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
         });
       }
-      if ("details_attachment" in uploads) {
-        newProduct.tab3.details_attachment = uploads.details_attachment[0]?.data;
+      if ("details_attachment" in filesURL) {
+        productForm.details_attachment = filesURL.details_attachment[0]?.data;
       }
     }
-    progress.value.loaded = undefined;
-    progress.value.message = "Adding product...";
 
-    const product = {
-      business_slug: route.params.slug as string,
-      ...structuredClone(toRaw(newProduct.tab1)),
-      ...structuredClone(toRaw(newProduct.tab2)),
-      ...structuredClone(toRaw(newProduct.tab3)),
-    };
-
+    placeholder.upload.message = "Adding product...";
     await $fetch("/api/product/create", {
       method: "post",
-      body: product,
+      body: {
+        business_slug: route.params.slug,
+        ...structuredClone(toRaw(productForm)),
+      },
     });
-
-    progress.value.loaded = undefined;
-    progress.value.message = "Done";
+    placeholder.upload.message = "Done";
     await nextTick();
-    progress.value.completed = true;
+    placeholder.upload.status = "completed";
   } catch (error) {
-    progress.value.completed = null;
+    placeholder.upload.status = "error";
     console.error("Product upload failed", error);
     return;
   }
 }
-function prevTab() {
-  const currentIndex = Object.keys(newProduct).indexOf(currentTab.value);
-  if (currentIndex > 0) {
-    currentTab.value = Object.keys(newProduct)[currentIndex - 1] || "";
-  }
-  nextTick(() => window.scrollTo({ top: 0, behavior: "smooth" }));
-}
 
 watchEffect(() => {
-  if (newProduct.tab2.sub_option_group?.options === undefined && newProduct.tab2.option_group) {
-    newProduct.tab2.option_group.options.forEach((option) => {
+  if (productForm.sub_option_group?.options === undefined && productForm.option_group) {
+    productForm.option_group.options.forEach((option) => {
       option.sub_options = undefined;
     });
-  } else if (newProduct.tab2.option_group) {
-    newProduct.tab2.option_group.options.forEach((option) => {
+  } else if (productForm.option_group) {
+    productForm.option_group.options.forEach((option) => {
       option.sub_options = option.sub_options || [];
-      let newMap = newProduct.tab2.sub_option_group?.options.map((el, index) => ({
+      let newMap = productForm.sub_option_group?.options.map((el, index) => ({
         is_active:
           option.sub_options![index]?.label === el.label
             ? option.sub_options![index].is_active
@@ -657,7 +688,7 @@ watchEffect(() => {
     });
   }
 });
-useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
+useSortable("#prod-photos > .scroll-items", productForm.photos);
 </script>
 
 <template>
@@ -667,7 +698,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
       class="scrollpin z-level-1 self-pointer-none mb-4 min-h-23 [&.is-stuck_.text-h3]:text-2xl"
     >
       <div
-        class="lined heading text-h3 bg-surface pin-top-blend m-0 flex items-end justify-between gap-3 transition-[font-size] duration-200"
+        class="lined heading text-h3 bg-surface shadow-t-blend m-0 flex items-end justify-between gap-3 transition-[font-size] duration-200"
       >
         Add product
         <NuxtLink
@@ -682,287 +713,375 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
         </NuxtLink>
       </div>
     </header>
-    <div id="add-product" class="auto-contain no-edge max-w-lg flex-1">
-      <form
-        class="tab-page"
-        @submit.prevent="nextTab"
-        v-for="id in ['tab1']"
-        :class="currentTab === id ? 'active' : ''"
-      >
-        <div class="field">
-          <label for="prod-category">Product category</label>
-          <p class="text-sm opacity-65">
-            Choose a category from the dropdown below that best fits the product you're adding. You
-            can also select “Others” from the dropdown to make a new one.
-          </p>
-          <LimbDropdown
-            v-model="newProduct.tab1.category_id"
-            type="search select"
-            :class="{ error: validation.tab1.r$.category_id.$error }"
-            @change="
-              $event !== 'others' ||
-              $nextTick(() => utils.document().getElementById('prod-category-new')?.focus())
-            "
-            id="prod-category"
-            placeholder="Select category"
-          >
-            <div class="drop menu">
-              <template
-                v-for="cat in productCategories?.filter((category) => category.parent_id === null)"
-                Key="cat.id"
-              >
-                <div class="item xhover font-semibold">
-                  {{ cat.name }}
-                  <Icon name="material-symbols:keyboard-arrow-down-rounded" class="trailing" />
-                </div>
-                <div
-                  v-if="productCategories?.find((sub_cat) => sub_cat.parent_id === cat.id)"
-                  class="sub items"
-                >
-                  <div
-                    v-for="sub_cat in productCategories.filter(
-                      (sub_cat) => sub_cat.parent_id === cat.id,
-                    )"
-                    class="item"
-                    :data-value="sub_cat.id"
-                    :key="sub_cat.id"
-                  >
-                    {{ sub_cat.name }}
-                  </div>
-                  <div class="item" :data-value="cat.id">{{ cat.name }} (Others)</div>
-                </div>
-              </template>
-              <div data-value="-1" class="item">Others</div>
-            </div>
-          </LimbDropdown>
-          <div
-            class="text-error text-sm"
-            v-for="error of validation.tab1.r$.category_id.$errors"
-            :key="error"
-          >
-            <Icon name="material-symbols:error-rounded" />
-            {{ error }}
-          </div>
-          <div v-if="newProduct.tab1.category_id === '-1'" class="field">
-            <label for="prod-category-new">New category name</label>
-            <div class="text-sm opacity-65">
-              Note: Your product will remain in the “Others” category in Explore until the new
-              category is reviewed and standardized.
-            </div>
-            <input
-              v-model="newProduct.tab1.new_category"
-              id="prod-category-new"
-              class="form-item"
-              :class="{ error: validation.tab1.r$.new_category.$error }"
-              type="text"
-              placeholder="Category name"
-            />
-            <div
-              class="text-error text-sm"
-              v-for="error of validation.tab1.r$.new_category.$errors"
-              :key="error"
-            >
-              <Icon name="material-symbols:error-rounded" />
-              {{ error }}
-            </div>
-          </div>
+    <form
+      id="product-form"
+      class="auto-contain no-edge max-w-lg flex-1"
+      @submit.prevent="processForm"
+    >
+      <div class="field">
+        <label for="prod-title">Product title</label>
+        <div class="text-sm opacity-65">
+          It should be as descriptive and unique as possible. Include brand name, model, and key
+          features.
         </div>
-        <div class="field">
-          <label for="prod-title">Title</label>
+        <input
+          v-model="productForm.title"
+          id="prod-title"
+          class="form-item"
+          :class="{ error: validation.product.r$.title.$error }"
+          type="text"
+          placeholder="Product title"
+        />
+        <div
+          class="text-error text-sm"
+          v-for="error of validation.product.r$.title.$errors"
+          :key="error"
+        >
+          <Icon name="material-symbols:error-rounded" />
+          {{ error }}
+        </div>
+      </div>
+      <div class="field">
+        <label for="photo-selector">Add photo</label>
+        <div class="text-sm opacity-65">
+          Photos help customers see the product. Use clear, well-lit images that showcase the
+          product from different angles. A photo can be dragged to re-order it.
+        </div>
+        <LimbIScroller
+          id="prod-photos"
+          :options="{ autoSetup: true }"
+          class="[&_.sortable-ghost]:opacity-0"
+        >
+          <div
+            v-for="(photo, index) in productForm.photos"
+            class="relative flex flex-col items-center"
+          >
+            <img :src="utils.fileToURL(photo)" alt="Product photo" class="thumbnail" />
+            <button
+              type="button"
+              @click="productForm.photos.splice(index, 1)"
+              class="compact circular outlined button bg-overlay absolute top-1 right-1 text-xs"
+            >
+              <Icon name="material-symbols:close-rounded" />
+            </button>
+            <div v-if="typeof photo !== 'string'" class="text-sm">
+              {{ (photo.size / 1024 / 1024).toFixed(1) }}MB
+            </div>
+          </div>
+        </LimbIScroller>
+        <div
+          class="text-error text-sm"
+          v-for="error in validation.product.r$.photos.$self.$errors"
+          :key="error"
+        >
+          <Icon name="material-symbols:error-rounded" />
+          {{ error }}
+        </div>
+        <label class="button design-takeover">
+          <Icon name="material-symbols:add-a-photo-outline-rounded" />{{
+            productForm.photos.length ? "Add more photos" : "Add photos"
+          }}
+          <input
+            id="photo-selector"
+            type="file"
+            multiple
+            @change="handleNewPhoto"
+            accept="image/*"
+          />
+        </label>
+      </div>
+      <div class="field">
+        <label for="prod-video">Link to YouTube or Facebook video</label>
+        <input
+          v-model="productForm.video_link"
+          id="prod-video"
+          class="form-item"
+          :class="{ error: validation.product.r$.video_link.$error }"
+          type="text"
+          placeholder="e.g. https://youtube.com/..."
+        />
+        <div
+          class="text-error text-sm"
+          v-for="error of validation.product.r$.video_link.$errors"
+          :key="error"
+        >
+          <Icon name="material-symbols:error-rounded" />
+          {{ error }}
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">Category</div>
+        <p class="text-sm opacity-65">
+          Choose a category from the dropdown below that best fits the product you're adding. You
+          can also select “Others” from the dropdown to make a new one.
+        </p>
+        <LimbDropdown
+          v-model="productForm.category_id"
+          type="search select"
+          :class="{ error: validation.product.r$.category_id.$error }"
+          @change="
+            $event !== 'others' ||
+            $nextTick(() => utils.document().getElementById('prod-category-new')?.focus())
+          "
+          id="prod-category"
+          placeholder="Select category"
+        />
+        <div class="drop menu">
+          <template
+            v-for="cat in productCategories?.filter((category) => category.parent_id === null)"
+            Key="cat.id"
+          >
+            <div class="item font-semibold">
+              {{ cat.name }}
+            </div>
+            <div
+              v-if="productCategories?.find((sub_cat) => sub_cat.parent_id === cat.id)"
+              class="sub items border-l"
+            >
+              <div
+                v-for="sub_cat in productCategories.filter(
+                  (sub_cat) => sub_cat.parent_id === cat.id,
+                )"
+                class="item"
+                :data-value="sub_cat.id"
+                :key="sub_cat.id"
+              >
+                {{ sub_cat.name }}
+              </div>
+              <div class="item" :data-value="cat.id">{{ cat.name }} (Others)</div>
+            </div>
+          </template>
+          <div data-value="-1" class="item">Others</div>
+        </div>
+        <div
+          class="text-error text-sm"
+          v-for="error of validation.product.r$.category_id.$errors"
+          :key="error"
+        >
+          <Icon name="material-symbols:error-rounded" />
+          {{ error }}
+        </div>
+        <div v-if="productForm.category_id === '-1'" class="field">
+          <label for="prod-category-new">New category name</label>
           <div class="text-sm opacity-65">
-            It should be as descriptive and unique as possible. Include brand name, model, and key
-            features.
+            Note: Your product will remain in the “Others” category in Explore until the new
+            category is reviewed and standardized.
           </div>
           <input
-            v-model="newProduct.tab1.title"
-            id="prod-title"
+            v-model="productForm.meta.new_category"
+            id="prod-category-new"
             class="form-item"
-            :class="{ error: validation.tab1.r$.title.$error }"
             type="text"
-            placeholder="Product title"
+            placeholder="Category name"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="prod-price">Price</label>
+        <div class="text-sm opacity-65">
+          If there are product options, the price here should be the lowest option price. Price can
+          also be set with product options.
+        </div>
+        <LimbCurrencyInput
+          v-model="productForm.base_price"
+          @input="validation.product.r$.base_promo_price.$touch"
+          id="prod-price"
+          class="form-item"
+          :class="{ error: validation.product.r$.base_price.$error }"
+          placeholder="Product price"
+        />
+        <div
+          class="text-error text-sm"
+          v-for="error of validation.product.r$.base_price.$errors"
+          :key="error"
+        >
+          <Icon name="material-symbols:error-rounded" />
+          {{ error }}
+        </div>
+        <button
+          v-if="!placeholder.priceOption && !productForm.base_promo_price"
+          type="button"
+          @click="
+            () => {
+              placeholder.priceOption = true;
+              $nextTick(() => {
+                utils.document().getElementById('base-promo-price')?.focus();
+              });
+            }
+          "
+          class="text-primary text-left hover:underline"
+        >
+          More pricing options
+        </button>
+        <div v-else class="field">
+          <label for="base-promo-price">Promotional price (optional)</label>
+          <p class="text-sm opacity-65">
+            You can optionally add a promo price for this product. This price is shown when promo is
+            enabled.
+          </p>
+          <LimbCurrencyInput
+            v-model="productForm.base_promo_price"
+            id="base-promo-price"
+            class="form-item"
+            :class="{ error: validation.product.r$.base_promo_price.$error }"
+            placeholder="Product promo price"
           />
           <div
             class="text-error text-sm"
-            v-for="error of validation.tab1.r$.title.$errors"
+            v-for="error of validation.product.r$.base_promo_price.$errors"
             :key="error"
           >
             <Icon name="material-symbols:error-rounded" />
             {{ error }}
           </div>
         </div>
-        <div class="field">
-          <label>Add photo</label>
-          <div class="text-sm opacity-65">
-            Photos help customers see the product. Use clear, well-lit images that showcase the
-            product from different angles. A photo can be dragged to re-order it.
-          </div>
-          <LimbIScroller
-            id="prodPhotos"
-            :options="{ autoSetup: true }"
-            class="[&_.sortable-ghost]:opacity-0"
-          >
-            <div
-              v-for="(photo, index) in newProduct.tab1.photos"
-              class="relative flex flex-col items-center"
+      </div>
+      <div class="field">
+        <div class="field-label">Product options</div>
+        <div class="text-sm opacity-65">
+          Product options are variations of the product, such as color, size, or configuration. You
+          can add a maximum of two option groups.
+        </div>
+        <button
+          type="button"
+          v-if="!productForm.option_group"
+          @click="createproductFormOption"
+          class="compact button"
+        >
+          Add an option group
+        </button>
+        <template v-else>
+          <fieldset class="flex flex-col gap-2">
+            <button
+              type="button"
+              @click="
+                ((productForm.option_group = undefined), (productForm.sub_option_group = undefined))
+              "
+              v-tooltip:aria.unblocking
+              aria-label="Remove option group"
+              class="circular icon button ml-auto bg-transparent text-sm"
             >
-              <img :src="utils.fileToURL(photo)" alt="Product photo" class="thumbnail" />
-              <button
-                type="button"
-                @click="newProduct.tab1.photos.splice(index, 1)"
-                class="compact circular outlined button bg-overlay absolute top-1 right-1 text-xs"
+              <Icon name="material-symbols:close-rounded" />
+            </button>
+            <div class="field">
+              <label for="option-group-title">Option group title</label>
+              <input
+                v-model="productForm.option_group.title"
+                class="form-item"
+                :class="{
+                  error: validation.product.r$.option_group.title.$error,
+                }"
+                id="option-group-title"
+                type="text"
+                placeholder="e.g. Color, Size, etc."
+              />
+              <div
+                class="text-error text-sm"
+                v-for="error of validation.product.r$.option_group.title.$errors"
+                :key="error"
               >
-                <Icon name="material-symbols:close-rounded" />
-              </button>
-              <div v-if="typeof photo !== 'string'" class="text-sm">
-                {{ (photo.size / 1024 / 1024).toFixed(1) }}MB
+                <Icon name="material-symbols:error-rounded" />
+                {{ error }}
+              </div>
+              <div class="lined sub heading a-block px-3">
+                Add options below for:
+                <div class="trailing">
+                  {{ productForm.option_group.title }}
+                </div>
+              </div>
+              <div class="wrappable menu">
+                <div
+                  v-for="(option, index) in productForm.option_group.options"
+                  class="item open-modal"
+                  data-target="app-option"
+                  :data-option-id="index"
+                  v-tooltip:aria.unblocking
+                  aria-label="Click to modify"
+                >
+                  <img
+                    v-if="option.photo"
+                    :src="utils.fileToURL(option.photo)"
+                    alt="Option photo"
+                  />
+                  <div class="content">
+                    <div class="font-bold">{{ option.label }}</div>
+                    <div v-if="option.price" class="text-primary font-bold">
+                      ₦{{ option.price.toLocaleString() }}
+                    </div>
+                    <div v-if="option.promo_price" class="text-success font-bold">
+                      ₦{{ option.promo_price.toLocaleString() }}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    @click="productForm.option_group.options.splice(index, 1)"
+                    class="circular trailing icon button ex-open-modal text-sm"
+                  >
+                    <Icon name="material-symbols:delete-outline-rounded" />
+                  </button>
+                </div>
+                <button type="button" class="button as-app open-modal" data-target="app-option">
+                  <Icon class="text-xl" name="material-symbols:add-rounded" />
+                  Add option
+                </button>
+              </div>
+              <div
+                class="text-error text-sm"
+                v-for="error of validation.product.r$.option_group.options.$self?.$errors"
+                :key="error"
+              >
+                <Icon name="material-symbols:error-rounded" />
+                {{ error }}
               </div>
             </div>
-          </LimbIScroller>
-          <div
-            class="text-error text-sm"
-            v-for="error in validation.tab1.r$.photos.$self.$errors"
-            :key="error"
-          >
-            <Icon name="material-symbols:error-rounded" />
-            {{ error }}
-          </div>
-          <label class="button design-takeover">
-            <Icon name="material-symbols:add-a-photo-outline-rounded" />{{
-              newProduct.tab1.photos.length ? "Add more photos" : "Add photos"
-            }}
-            <input type="file" multiple @change="handleNewPhoto" accept="image/*" />
-          </label>
-        </div>
-        <div class="field">
-          <label>Link to YouTube or Facebook video</label>
-          <input
-            v-model="newProduct.tab1.video_link"
-            id="prod-video"
-            class="form-item"
-            :class="{ error: validation.tab1.r$.video_link.$error }"
-            type="text"
-            placeholder="e.g. https://youtube.com/..."
-          />
-          <div
-            class="text-error text-sm"
-            v-for="error of validation.tab1.r$.video_link.$errors"
-            :key="error"
-          >
-            <Icon name="material-symbols:error-rounded" />
-            {{ error }}
-          </div>
-        </div>
-        <button type="submit" class="sr-only">Next</button>
-      </form>
-      <form
-        class="tab-page"
-        @submit.prevent="nextTab"
-        v-for="id in ['tab2']"
-        :class="currentTab === id ? 'active' : ''"
-      >
-        <div class="field">
-          <label for="prod-price">Price</label>
-          <div class="text-sm opacity-65">
-            If there are product options, the price here should be the lowest option price. Price
-            can also be set with product options.
-          </div>
-          <LimbCurrencyInput
-            v-model="newProduct.tab2.base_price"
-            @input="validation.tab2.r$.base_promo_price.$touch"
-            id="prod-price"
-            class="form-item"
-            :class="{ error: validation.tab2.r$.base_price.$error }"
-            placeholder="Product price"
-          />
-          <div
-            class="text-error text-sm"
-            v-for="error of validation.tab2.r$.base_price.$errors"
-            :key="error"
-          >
-            <Icon name="material-symbols:error-rounded" />
-            {{ error }}
-          </div>
-          <button
-            v-if="!placeholder.priceOption && !newProduct.tab2.base_promo_price"
-            type="button"
-            @click="
-              () => {
-                placeholder.priceOption = true;
-                $nextTick(() => {
-                  utils.document().getElementById('base-promo-price')?.focus();
-                });
-              }
-            "
-            class="text-primary text-left hover:underline"
-          >
-            More pricing options
-          </button>
-          <div v-else class="field">
-            <label>Promotional price (optional)</label>
-            <p class="text-sm opacity-65">
-              You can optionally add a promo price for this product. This price is shown when promo
-              is enabled.
-            </p>
-            <LimbCurrencyInput
-              v-model="newProduct.tab2.base_promo_price"
-              id="base-promo-price"
-              class="form-item"
-              :class="{ error: validation.tab2.r$.base_promo_price.$error }"
-              placeholder="Product promo price"
-            />
-            <div
-              class="text-error text-sm"
-              v-for="error of validation.tab2.r$.base_promo_price.$errors"
-              :key="error"
-            >
-              <Icon name="material-symbols:error-rounded" />
-              {{ error }}
+          </fieldset>
+          <div class="field">
+            <div class="field-label">Product sub-option</div>
+            <div class="text-sm opacity-65">
+              <p>
+                A sub-option group can also be added if necessary. For example, if your main option
+                group is "Size," your sub-option group could be "Colour." This enables customers to
+                select a combination of size and colour for the product.
+              </p>
+              <p>
+                Sub-options can only be added if there are options in the main option group.
+                Sub-options can also be customized for each option in the main option group.
+              </p>
             </div>
-          </div>
-        </div>
-        <div class="field">
-          <label>Product options</label>
-          <div class="text-sm opacity-65">
-            Product options are variations of the product, such as color, size, or configuration.
-            You can add a maximum of two option groups.
-          </div>
-          <button
-            type="button"
-            v-if="!newProduct.tab2.option_group"
-            @click="createNewProductOption"
-            class="compact button"
-          >
-            Add an option group
-          </button>
-          <template v-else>
-            <fieldset class="flex flex-col gap-2">
+            <button
+              type="button"
+              v-if="!productForm.sub_option_group"
+              @click="createproductFormOption"
+              class="compact button"
+            >
+              Add a sub-option group
+            </button>
+            <fieldset v-else class="flex flex-col gap-2">
               <button
                 type="button"
-                @click="
-                  ((newProduct.tab2.option_group = undefined),
-                  (newProduct.tab2.sub_option_group = undefined))
-                "
+                @click="productForm.sub_option_group = undefined"
                 v-tooltip:aria.unblocking
-                aria-label="Remove option group"
+                aria-label="Remove sub-option group"
                 class="circular icon button ml-auto bg-transparent text-sm"
               >
                 <Icon name="material-symbols:close-rounded" />
               </button>
               <div class="field">
-                <label>Option group title</label>
+                <label for="sub-option-group-title">Sub-option group title</label>
                 <input
-                  v-model="newProduct.tab2.option_group.title"
+                  v-model="productForm.sub_option_group.title"
                   class="form-item"
                   :class="{
-                    error: validation.tab2.r$.option_group.title.$error,
+                    error: validation.product.r$.sub_option_group.title.$error,
                   }"
-                  id="option-group-title"
+                  id="sub-option-group-title"
                   type="text"
                   placeholder="e.g. Color, Size, etc."
                 />
                 <div
                   class="text-error text-sm"
-                  v-for="error of validation.tab2.r$.option_group.title.$errors"
+                  v-for="error of validation.product.r$.sub_option_group.title.$errors"
                   :key="error"
                 >
                   <Icon name="material-symbols:error-rounded" />
@@ -971,22 +1090,21 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
                 <div class="lined sub heading a-block px-3">
                   Add options below for:
                   <div class="trailing">
-                    {{ newProduct.tab2.option_group.title }}
+                    {{ productForm.sub_option_group.title }}
                   </div>
                 </div>
                 <div class="wrappable menu">
                   <div
-                    v-for="(option, index) in newProduct.tab2.option_group.options"
+                    v-for="(option, index) in productForm.sub_option_group.options"
                     class="item open-modal"
                     data-target="app-option"
+                    data-sub-category
                     :data-option-id="index"
-                    v-tooltip:aria.unblocking
-                    aria-label="Click to modify"
                   >
                     <img
                       v-if="option.photo"
                       :src="utils.fileToURL(option.photo)"
-                      alt="Option photo"
+                      alt="sub-option photo"
                     />
                     <div class="content">
                       <div class="font-bold">{{ option.label }}</div>
@@ -999,20 +1117,25 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
                     </div>
                     <button
                       type="button"
-                      @click="newProduct.tab2.option_group.options.splice(index, 1)"
+                      @click="productForm.sub_option_group.options.splice(index, 1)"
                       class="circular trailing icon button ex-open-modal text-sm"
                     >
                       <Icon name="material-symbols:delete-outline-rounded" />
                     </button>
                   </div>
-                  <button type="button" class="button as-app open-modal" data-target="app-option">
+                  <button
+                    type="button"
+                    class="button as-app open-modal"
+                    data-sub-category
+                    data-target="app-option"
+                  >
                     <Icon class="text-xl" name="material-symbols:add-rounded" />
                     Add option
                   </button>
                 </div>
                 <div
                   class="text-error text-sm"
-                  v-for="error of validation.tab2.r$.option_group.options.$self?.$errors"
+                  v-for="error of validation.product.r$.sub_option_group.options.$self?.$errors"
                   :key="error"
                 >
                   <Icon name="material-symbols:error-rounded" />
@@ -1020,349 +1143,232 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
                 </div>
               </div>
             </fieldset>
-            <div class="field">
-              <label>Product sub-option</label>
-              <div class="text-sm opacity-65">
-                <p>
-                  A sub-option group can also be added if necessary. For example, if your main
-                  option group is "Size," your sub-option group could be "Colour." This enables
-                  customers to select a combination of size and colour for the product.
-                </p>
-                <p>
-                  Sub-options can only be added if there are options in the main option group.
-                  Sub-options can also be customized for each option in the main option group.
-                </p>
-              </div>
-              <button
-                type="button"
-                v-if="!newProduct.tab2.sub_option_group"
-                @click="createNewProductOption"
-                class="compact button"
+          </div>
+        </template>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Product Specifications</div>
+        <div class="text-sm opacity-65">
+          <p>
+            Product specifications provide detailed information about the product's features,
+            dimensions, materials, and other relevant details that help customers make informed
+            purchasing decisions.
+          </p>
+          <p>
+            You can add as many specifications as you want. Just click on the "Add specification"
+            button below.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <span>Or start by selecting a preset:</span>
+          <LimbDropdown class="compact button" placeholder="Select a template">
+            Choose Preset
+            <div class="drop menu">
+              <div
+                class="item"
+                v-for="(template, templateName) in specPresets"
+                @click="addSpecification(template)"
               >
-                Add a sub-option group
-              </button>
-              <fieldset v-else class="flex flex-col gap-2">
-                <button
-                  type="button"
-                  @click="newProduct.tab2.sub_option_group = undefined"
-                  v-tooltip:aria.unblocking
-                  aria-label="Remove sub-option group"
-                  class="circular icon button ml-auto bg-transparent text-sm"
-                >
-                  <Icon name="material-symbols:close-rounded" />
-                </button>
-                <div class="field">
-                  <label>Sub-option group title</label>
+                {{ templateName }}
+              </div>
+            </div>
+          </LimbDropdown>
+        </div>
+        <table id="spec-table" class="basic table align-top">
+          <thead>
+            <tr>
+              <th>Specification</th>
+              <th>Details</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(spec, index) in validation.product.r$.specifications.$each">
+              <td>
+                <div class="field m-0">
                   <input
-                    v-model="newProduct.tab2.sub_option_group.title"
-                    class="form-item"
-                    :class="{
-                      error: validation.tab2.r$.sub_option_group.title.$error,
-                    }"
-                    id="sub-option-group-title"
+                    v-model="spec.name.$value"
+                    :id="`spec-name${index}`"
+                    class="form-item w-full"
+                    :class="{ error: spec.name.$error }"
                     type="text"
-                    placeholder="e.g. Color, Size, etc."
+                    placeholder="Specification name"
                   />
-                  <div
-                    class="text-error text-sm"
-                    v-for="error of validation.tab2.r$.sub_option_group.title.$errors"
-                    :key="error"
-                  >
-                    <Icon name="material-symbols:error-rounded" />
-                    {{ error }}
-                  </div>
-                  <div class="lined sub heading a-block px-3">
-                    Add options below for:
-                    <div class="trailing">
-                      {{ newProduct.tab2.sub_option_group.title }}
-                    </div>
-                  </div>
-                  <div class="wrappable menu">
-                    <div
-                      v-for="(option, index) in newProduct.tab2.sub_option_group.options"
-                      class="item open-modal"
-                      data-target="app-option"
-                      data-sub-category
-                      :data-option-id="index"
-                    >
-                      <img
-                        v-if="option.photo"
-                        :src="utils.fileToURL(option.photo)"
-                        alt="sub-option photo"
-                      />
-                      <div class="content">
-                        <div class="font-bold">{{ option.label }}</div>
-                        <div v-if="option.price" class="text-primary font-bold">
-                          ₦{{ option.price.toLocaleString() }}
-                        </div>
-                        <div v-if="option.promo_price" class="text-success font-bold">
-                          ₦{{ option.promo_price.toLocaleString() }}
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        @click="newProduct.tab2.sub_option_group.options.splice(index, 1)"
-                        class="circular trailing icon button ex-open-modal text-sm"
-                      >
-                        <Icon name="material-symbols:delete-outline-rounded" />
-                      </button>
-                    </div>
-                    <button
-                      type="button"
-                      class="button as-app open-modal"
-                      data-sub-category
-                      data-target="app-option"
-                    >
-                      <Icon class="text-xl" name="material-symbols:add-rounded" />
-                      Add option
-                    </button>
-                  </div>
-                  <div
-                    class="text-error text-sm"
-                    v-for="error of validation.tab2.r$.sub_option_group.options.$self?.$errors"
-                    :key="error"
-                  >
+                  <div class="text-error text-sm" v-for="error of spec.name.$errors" :key="error">
                     <Icon name="material-symbols:error-rounded" />
                     {{ error }}
                   </div>
                 </div>
-              </fieldset>
+              </td>
+              <td>
+                <div class="field m-0">
+                  <input
+                    v-model="spec.value.$value"
+                    :id="`spec-value${index}`"
+                    class="form-item w-full"
+                    :class="{ error: spec.value.$error }"
+                    type="text"
+                    placeholder="Specification value"
+                  />
+                  <div class="text-error text-sm" v-for="error of spec.value.$errors" :key="error">
+                    <Icon name="material-symbols:error-rounded" />
+                    {{ error }}
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                <button
+                  type="button"
+                  @click="productForm.specifications.splice(index, 1)"
+                  v-tooltip:aria.unblocking
+                  aria-label="Remove specification"
+                  class="circular outlined icon button text-sm"
+                >
+                  <Icon name="material-symbols:delete-outline-rounded" />
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">
+                <div
+                  class="text-error mb-3 text-center text-sm font-normal"
+                  v-for="error of validation.product.r$.specifications.$self.$errors"
+                  :key="error"
+                >
+                  <Icon name="material-symbols:error-rounded" />
+                  {{ error }}
+                </div>
+                <button type="button" @click="addSpecification()" class="compact button w-full">
+                  <Icon name="material-symbols:add" /> Add specification
+                </button>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="field">
+        <div class="field-label">Product details attachment (PDF)</div>
+        <p class="text-sm opacity-65">
+          You can also add a PDF attachment that contains detailed information about the product,
+          such as a user manual, spec sheet, or brochure. This can provide customers with additional
+          insights and help them make a more informed purchasing decision.
+        </p>
+        <div
+          v-if="productForm.details_attachment"
+          class="relative mb-3 flex w-max flex-col items-center"
+        >
+          <Icon
+            name="material-symbols:picture-as-pdf-outline-rounded"
+            class="text-6xl text-red-500"
+          />
+          <button
+            type="button"
+            @click="productForm.details_attachment = undefined"
+            class="compact circular outlined button bg-overlay absolute top-1 right-1 text-xs"
+          >
+            <Icon name="material-symbols:close-rounded" />
+          </button>
+          <div v-if="typeof productForm.details_attachment === 'string'" class="text-sm">
+            {{ productForm.details_attachment.split("/").at(-1) }}
+          </div>
+          <template v-else>
+            <div class="text-sm">{{ productForm.details_attachment.name }}</div>
+            <div class="text-sm">
+              {{ (productForm.details_attachment.size / 1024 / 1024).toFixed(1) }}MB
             </div>
           </template>
         </div>
-        <button type="submit" class="sr-only">Next</button>
-      </form>
-      <form
-        class="tab-page"
-        @submit.prevent="nextTab"
-        v-for="id in ['tab3']"
-        :class="currentTab === id ? 'active' : ''"
-      >
-        <div class="field">
-          <label>Product Specifications</label>
-          <div class="text-sm opacity-65">
-            <p>
-              Product specifications provide detailed information about the product's features,
-              dimensions, materials, and other relevant details that help customers make informed
-              purchasing decisions.
-            </p>
-            <p>
-              You can add as many specifications as you want. Just click on the "Add specification"
-              button below.
-            </p>
-          </div>
-          <div class="flex flex-wrap items-center gap-3">
-            <span>Or start by selecting a preset:</span>
-            <LimbDropdown class="compact button" placeholder="Select a template">
-              Choose Preset
-              <div class="drop menu">
-                <div
-                  class="item"
-                  v-for="(template, templateName) in specPresets"
-                  @click="addSpecification(template)"
-                >
-                  {{ templateName }}
-                </div>
-              </div>
-            </LimbDropdown>
-          </div>
-          <table id="spec-table" class="basic table align-top">
-            <thead>
-              <tr>
-                <th>Specification</th>
-                <th>Details</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(spec, index) in validation.tab3.r$.specifications.$each">
-                <td>
-                  <div class="field m-0">
-                    <input
-                      v-model="spec.name.$value"
-                      :id="`spec-name${index}`"
-                      class="form-item w-full"
-                      :class="{ error: spec.name.$error }"
-                      type="text"
-                      placeholder="Specification name"
-                    />
-                    <div class="text-error text-sm" v-for="error of spec.name.$errors" :key="error">
-                      <Icon name="material-symbols:error-rounded" />
-                      {{ error }}
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="field m-0">
-                    <input
-                      v-model="spec.value.$value"
-                      :id="`spec-value${index}`"
-                      class="form-item w-full"
-                      :class="{ error: spec.value.$error }"
-                      type="text"
-                      placeholder="Specification value"
-                    />
-                    <div
-                      class="text-error text-sm"
-                      v-for="error of spec.value.$errors"
-                      :key="error"
-                    >
-                      <Icon name="material-symbols:error-rounded" />
-                      {{ error }}
-                    </div>
-                  </div>
-                </td>
-                <td class="text-center">
-                  <button
-                    type="button"
-                    @click="newProduct.tab3.specifications.splice(index, 1)"
-                    v-tooltip:aria.unblocking
-                    aria-label="Remove specification"
-                    class="circular outlined icon button text-sm"
-                  >
-                    <Icon name="material-symbols:delete-outline-rounded" />
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="3">
-                  <div
-                    class="text-error mb-3 text-center text-sm font-normal"
-                    v-for="error of validation.tab3.r$.specifications.$self.$errors"
-                    :key="error"
-                  >
-                    <Icon name="material-symbols:error-rounded" />
-                    {{ error }}
-                  </div>
-                  <button type="button" @click="addSpecification()" class="compact button w-full">
-                    <Icon name="material-symbols:add" /> Add specification
-                  </button>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+        <label for="add-attachment" class="button design-takeover">
+          <Icon name="material-symbols:picture-as-pdf-outline-rounded" />{{
+            `${productForm.details_attachment ? "Change attachment" : "Add attachment"}`
+          }}
+          <input
+            id="add-attachment"
+            type="file"
+            @change="
+              productForm.details_attachment = ($event.target as HTMLInputElement).files?.[0]
+            "
+            accept="application/pdf, .pdf"
+          />
+        </label>
+      </div>
+      <div class="field">
+        <label for="prod-overview">Your review</label>
+        <p class="text-sm opacity-65">
+          Share your personal review of the product. Highlight its key features, benefits, and what
+          makes it a great choice for customers. A compelling description can help buyers make an
+          informed decision.
+        </p>
+        <textarea
+          id="prod-overview"
+          v-model="productForm.overview"
+          class="form-item"
+          :class="{ error: validation.product.r$.overview.$error }"
+          rows="3"
+          placeholder="Write your review here..."
+        ></textarea>
+        <div
+          class="text-error text-sm"
+          v-for="error of validation.product.r$.overview.$errors"
+          :key="error"
+        >
+          <Icon name="material-symbols:error-rounded" />
+          {{ error }}
         </div>
-        <div class="field">
-          <label>Your review</label>
-          <p class="text-sm opacity-65">
-            Share your personal review of the product. Highlight its key features, benefits, and
-            what makes it a great choice for customers. A compelling description can help buyers
-            make an informed decision.
-          </p>
-          <textarea
-            v-model="newProduct.tab3.overview"
-            class="form-item"
-            :class="{ error: validation.tab3.r$.overview.$error }"
-            rows="3"
-            placeholder="Write your review here..."
-          ></textarea>
-          <div
-            class="text-error text-sm"
-            v-for="error of validation.tab3.r$.overview.$errors"
-            :key="error"
-          >
-            <Icon name="material-symbols:error-rounded" />
-            {{ error }}
+      </div>
+      <div class="field">
+        <div class="field-label">Shipping Information</div>
+        <p class="text-sm opacity-65">
+          Add shipping information for the product. This includes details about measurements and
+          pickup addresses. Providing clear shipping information helps customers understand what to
+          expect when purchasing the product.
+        </p>
+        <button
+          v-if="!productForm.shipping"
+          type="button"
+          class="compact button open-modal"
+          data-target="prod-shipping"
+        >
+          Specify shipping information
+        </button>
+        <fieldset class="flex flex-col gap-3" v-else>
+          <div v-if="productForm.shipping?.measurements">
+            <span class="font-semibold">Measurements: </span>
+            <span v-for="(value, measurement) in productForm.shipping?.measurements">
+              <span class="capitalize">{{ measurement }}: </span> {{ value }} |
+            </span>
           </div>
-        </div>
-        <div class="field">
-          <label>Product details attachment (PDF)</label>
-          <p class="text-sm opacity-65">
-            You can also add a PDF attachment that contains detailed information about the product,
-            such as a user manual, spec sheet, or brochure. This can provide customers with
-            additional insights and help them make a more informed purchasing decision.
-          </p>
           <div
-            v-if="newProduct.tab3.details_attachment"
-            class="relative mb-3 flex w-max flex-col items-center"
+            v-if="
+              productForm.shipping?.location &&
+              Object.values(productForm.shipping.location).some((el) => isFilled(el))
+            "
           >
-            <Icon
-              name="material-symbols:picture-as-pdf-outline-rounded"
-              class="text-6xl text-red-500"
-            />
-            <button
-              type="button"
-              @click="newProduct.tab3.details_attachment = undefined"
-              class="compact circular outlined button bg-overlay absolute top-1 right-1 text-xs"
-            >
-              <Icon name="material-symbols:close-rounded" />
-            </button>
-            <div v-if="typeof newProduct.tab3.details_attachment === 'string'" class="text-sm">
-              {{ newProduct.tab3.details_attachment.split("/").at(-1) }}
-            </div>
-            <template v-else>
-              <div class="text-sm">{{ newProduct.tab3.details_attachment.name }}</div>
-              <div class="text-sm">
-                {{ (newProduct.tab3.details_attachment.size / 1024 / 1024).toFixed(1) }}MB
-              </div>
-            </template>
-          </div>
-          <label class="button design-takeover">
-            <Icon name="material-symbols:picture-as-pdf-outline-rounded" />{{
-              `${newProduct.tab3.details_attachment ? "Change attachment" : "Add attachment"}`
+            <span class="font-semibold">Overide pickup location: </span>
+            {{
+              `${productForm.shipping?.location?.address}, ${productForm.shipping?.location?.city}, ${productForm.shipping?.location?.state}, ${productForm.shipping?.location?.country}`
             }}
-            <input
-              type="file"
-              @change="
-                newProduct.tab3.details_attachment = ($event.target as HTMLInputElement).files?.[0]
-              "
-              accept="application/pdf, .pdf"
-            />
-          </label>
-        </div>
-        <div class="field">
-          <label>Product location</label>
-          <p class="text-sm opacity-65">
-            Specify the location where the product is available. This information helps customers
-            find products that are conveniently located for them. If not specified, your business
-            location will be used instead.
-          </p>
-          <button
-            v-if="!newProduct.tab3.location"
-            type="button"
-            class="compact button open-modal"
-            data-target="prod-location"
-          >
-            Specify product location
+          </div>
+          <button type="button" class="compact button open-modal" data-target="prod-shipping">
+            Edit shipping information
           </button>
-          <fieldset class="flex items-center justify-between" v-else>
-            <div>
-              <Icon name="material-symbols:pin-drop-outline-rounded" />
-              {{
-                `${newProduct.tab3.location?.city}, ${newProduct.tab3.location?.state}, ${newProduct.tab3.location?.country}`
-              }}
-            </div>
-            <button type="button" class="compact button open-modal" data-target="prod-location">
-              Edit location
-            </button>
-          </fieldset>
-        </div>
-        <button type="submit" class="sr-only">Next</button>
-      </form>
-    </div>
-    <footer class="bg-surface pin-bottom-blend z-level-1 sticky bottom-0 mt-2 px-4 pt-4 pb-8">
-      <div v-if="currentTab === 'tab1'" class="flex flex-col">
+        </fieldset>
+      </div>
+      <button type="submit" class="sr-only">Continue</button>
+    </form>
+    <footer class="bg-surface shadow-b-blend z-level-1 mt-2 px-4 pt-4 pb-8">
+      <div class="flex flex-col">
         <p class="text-center">
           By continuing, you agree to our
           <a href="">Terms of Service</a> and <a href="">Privacy Policy</a>.
         </p>
-        <button @click="nextTab" class="primary button">Next</button>
-      </div>
-      <div v-else class="flex items-center justify-between gap-3">
-        <span class="text-muted">
-          {{ Object.keys(newProduct).indexOf(currentTab) + 1 }} of
-          {{ Object.keys(newProduct).length }}
-        </span>
-        <div class="flex gap-3">
-          <button @click="prevTab" class="flat button">Previous</button>
-          <button @click="nextTab" class="primary button">
-            {{ currentTab === Object.keys(newProduct).pop() ? "Finish" : "Next" }}
-          </button>
-        </div>
+        <button @click="processForm" class="primary button">Continue</button>
       </div>
     </footer>
+
     <LimbModal
       id="app-option"
       :options="{
@@ -1381,7 +1387,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
         </header>
         <form class="px-6 py-4">
           <div class="field">
-            <label>Label</label>
+            <label for="option-label">Label</label>
             <input
               v-model="placeholder.option.label"
               class="form-item"
@@ -1403,7 +1409,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
             </div>
           </div>
           <div class="field">
-            <label>Price (optional)</label>
+            <label for="option-price">Price (optional)</label>
             <LimbCurrencyInput
               v-model="placeholder.option.price"
               @input="validation.option.r$.promo_price.$touch"
@@ -1427,7 +1433,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
               More pricing options
             </button>
             <div v-else class="field">
-              <label>Promotional price (optional)</label>
+              <label for="option-promo-price">Promotional price (optional)</label>
               <p class="text-sm opacity-65">
                 You can optionally add a promo price for this option. This price is shown when promo
                 is enabled.
@@ -1450,7 +1456,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
             </div>
           </div>
           <div class="field">
-            <label>Unique option picture (optional)</label>
+            <label for="add-option-photo">Unique option picture (optional)</label>
             <div v-if="placeholder.option.photo" class="relative flex w-max flex-col items-center">
               <img
                 :src="utils.fileToURL(placeholder.option.photo)"
@@ -1481,33 +1487,25 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
                 `${placeholder.option.photo ? "Change photo" : "Add photo"}`
               }}
               <input
+                id="add-option-photo"
                 type="file"
                 @change="placeholder.option.photo = ($event.target as HTMLInputElement).files?.[0]"
                 accept="image/*"
               />
             </label>
           </div>
-          <div class="field items-end">
-            <button
-              type="submit"
-              class="primary button"
-              @click.prevent="processProductOption(control)"
-            >
-              {{ placeholder.modifyingOption ? "Modify option" : "Add option" }}
-            </button>
-          </div>
           <div v-if="placeholder.option.sub_options" class="field">
-            <label>sub-option group</label>
+            <div class="field-label">sub-option group</div>
             <div class="text-sm opacity-65">
               Toggle the sub-option you want to add to this option. You can also click on the price
               to modify it.
             </div>
-            <div v-if="newProduct.tab2.sub_option_group" class="wrappable menu">
-              <div v-for="(option, index) in newProduct.tab2.sub_option_group.options" class="item">
+            <div v-if="productForm.sub_option_group" class="wrappable menu">
+              <div v-for="(option, index) in productForm.sub_option_group.options" class="item">
                 <div
                   class="icon"
                   :class="{
-                    active: !!placeholder.option.sub_options[index]!.is_active,
+                    active: placeholder.option.sub_options[index]!.is_active,
                   }"
                   @click="
                     ((placeholder.option.sub_options[index]!.is_active =
@@ -1531,7 +1529,7 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
                       v-model="placeholder.option.sub_options[index]!.price"
                       :id="`sub-option${index}-price`"
                       @input="
-                        ((placeholder.option.sub_options![index]!.price_changed! =
+                        ((placeholder.option.sub_options[index]!.price_changed! =
                           $event.target.value !== option.price),
                         validation.option.r$.sub_options.$each[index]!.promo_price.$touch())
                       "
@@ -1545,18 +1543,18 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
                       v-model="placeholder.option.sub_options[index]!.promo_price"
                       :id="`sub-option${index}-promo-price`"
                       @input="
-                        placeholder.option.sub_options![index]!.promo_price_changed! =
+                        placeholder.option.sub_options[index]!.promo_price_changed! =
                           $event.target.value !== option.promo_price
                       "
                       class="form-item text-fit text-success"
                       :class="{
-                        error: validation.option.r$.sub_options.$each[index]!.promo_price.$error,
+                        error: validation.option.r$.sub_options.$each[index]?.promo_price.$error,
                       }"
                       placeholder="Add option promo price"
                     />
                     <div
                       class="text-error text-sm"
-                      v-for="error of validation.option.r$.sub_options.$each[index]!.promo_price
+                      v-for="error of validation.option.r$.sub_options.$each[index]?.promo_price
                         .$errors"
                       :key="error"
                     >
@@ -1568,97 +1566,166 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
               </div>
             </div>
           </div>
+          <div class="field items-end">
+            <button
+              type="submit"
+              class="primary button"
+              @click.prevent="processProductOption(control)"
+            >
+              {{ placeholder.modifyingOption ? "Modify option" : "Add option" }}
+            </button>
+          </div>
         </form>
       </div>
     </LimbModal>
-    <LimbModal id="prod-location" v-slot="{ control }">
-      <div class="dialog">
+    <LimbModal
+      id="prod-shipping"
+      :options="{ controller: configShippingModal }"
+      v-slot="{ control }"
+    >
+      <form class="dialog flex flex-col">
         <header class="flex gap-3 px-6 py-4">
-          <div class="truncate font-bold">Add Location</div>
+          <div class="truncate font-bold">Shipping Information</div>
           <button type="button" class="circular flat button as-text exit-modal ml-auto">
             <Icon name="material-symbols:close-rounded" />
           </button>
         </header>
-        <form class="px-6 py-4">
-          <div class="field">
-            <label>Country</label>
-            <input
-              v-model.trim="placeholder.location.country"
-              class="form-item"
-              :class="{ error: validation.location.r$.country.$error }"
-              id="prod-location"
-              type="text"
-              placeholder="Enter country"
-            />
+        <div class="flex-1 overflow-y-auto px-6 pt-4 pb-6">
+          <section>
+            <div class="lined heading">Measurements</div>
+            <p class="text-sm opacity-65">
+              All measurements are optional. Make sure to include units when inputting measurements.
+            </p>
+            <div class="grid grid-cols-2 gap-x-4">
+              <div class="field">
+                <label for="prod-weight">Weight</label>
+                <input
+                  id="prod-weight"
+                  type="text"
+                  class="form-item"
+                  v-model="placeholder.shipping.measurements.weight"
+                  placeholder="Enter weight"
+                />
+              </div>
+              <div class="field">
+                <label for="prod-length">Length</label>
+                <input
+                  id="prod-length"
+                  type="text"
+                  class="form-item"
+                  v-model="placeholder.shipping.measurements.length"
+                  placeholder="Enter length"
+                />
+              </div>
+              <div class="field">
+                <label for="prod-width">Width</label>
+                <input
+                  id="prod-width"
+                  type="text"
+                  class="form-item"
+                  v-model="placeholder.shipping.measurements.width"
+                  placeholder="Enter width"
+                />
+              </div>
+              <div class="field">
+                <label for="prod-height">Height</label>
+                <input
+                  id="prod-height"
+                  type="text"
+                  class="form-item"
+                  v-model="placeholder.shipping.measurements.height"
+                  placeholder="Enter height"
+                />
+              </div>
+            </div>
+          </section>
+          <section>
+            <div class="lined heading flex items-end justify-between">
+              Pickup Location Override
+              <button type="button" @click.prevent="clearLocation()" class="compact button text-sm">
+                Clear
+              </button>
+            </div>
+            <p class="text-sm opacity-65">
+              Your business specified location will be used as pickup location for this product if
+              you did not specify an override location here.
+            </p>
             <div
-              class="text-error text-sm"
-              v-for="error of validation.location.r$.country.$errors"
+              class="text-error text-center text-sm"
+              v-for="error of validation.shipping.r$.location.$self.$errors"
               :key="error"
             >
               <Icon name="material-symbols:error-rounded" />
               {{ error }}
             </div>
-          </div>
-          <div class="field">
-            <label>State</label>
-            <input
-              v-model.trim="placeholder.location.state"
-              class="form-item"
-              :class="{ error: validation.location.r$.state.$error }"
-              id="prod-state"
-              type="text"
-              placeholder="Enter state"
-            />
-            <div
-              class="text-error text-sm"
-              v-for="error of validation.location.r$.state.$errors"
-              :key="error"
-            >
-              <Icon name="material-symbols:error-rounded" />
-              {{ error }}
+            <div class="grid grid-cols-2 gap-x-4">
+              <div class="field">
+                <label for="prod-country">Country</label>
+                <input
+                  v-model.trim="placeholder.shipping.location.country"
+                  class="form-item"
+                  :class="{ error: validation.shipping.r$.location.country.$error }"
+                  id="prod-country"
+                  type="text"
+                  placeholder="Enter country"
+                />
+              </div>
+              <div class="field">
+                <label for="prod-state">State</label>
+                <input
+                  v-model.trim="placeholder.shipping.location.state"
+                  class="form-item"
+                  :class="{ error: validation.shipping.r$.location.state.$error }"
+                  id="prod-state"
+                  type="text"
+                  placeholder="Enter state"
+                />
+              </div>
+              <div class="field">
+                <label for="prod-city">City</label>
+                <input
+                  v-model.trim="placeholder.shipping.location.city"
+                  class="form-item"
+                  :class="{ error: validation.shipping.r$.location.city.$error }"
+                  id="prod-city"
+                  type="text"
+                  placeholder="Enter city"
+                />
+              </div>
+              <div class="field">
+                <label for="prod-address">Address</label>
+                <input
+                  v-model.trim="placeholder.shipping.location.address"
+                  class="form-item"
+                  :class="{ error: validation.shipping.r$.location.address.$error }"
+                  id="prod-address"
+                  type="text"
+                  placeholder="Enter address"
+                />
+              </div>
             </div>
-          </div>
-          <div class="field">
-            <label>City</label>
-            <input
-              v-model.trim="placeholder.location.city"
-              class="form-item"
-              :class="{ error: validation.location.r$.city.$error }"
-              id="prod-city"
-              type="text"
-              placeholder="Enter city"
-            />
-            <div
-              class="text-error text-sm"
-              v-for="error of validation.location.r$.city.$errors"
-              :key="error"
-            >
-              <Icon name="material-symbols:error-rounded" />
-              {{ error }}
-            </div>
-          </div>
-          <div class="flex gap-4">
-            <button
-              type="button"
-              @click.prevent="clearLocation(control)"
-              class="compact button flex-1"
-            >
-              Clear Location
-            </button>
-            <button
-              type="submit"
-              @click.prevent="setLocation(control)"
-              class="primary compact button flex-1"
-            >
-              Set Location
-            </button>
-          </div>
-        </form>
-      </div>
+          </section>
+        </div>
+        <footer class="flex justify-end px-6 py-4">
+          <button type="submit" @click.prevent="setShippingDetails(control)" class="primary button">
+            Add Info
+          </button>
+        </footer>
+      </form>
     </LimbModal>
     <LimbModal id="upload-status" :options="{ closeOnEsc: false, closeOnWrapperClick: false }">
       <div class="dialog max-w-125 p-6">
-        <div v-if="progress.completed" class="flex flex-col items-center gap-3">
+        <div
+          v-if="placeholder.upload.status === 'initial'"
+          class="flex flex-col items-center gap-4"
+        >
+          <div class="m3-progress indeterminate"></div>
+          <p>{{ placeholder.upload.message }}</p>
+        </div>
+        <div
+          v-else-if="placeholder.upload.status === 'completed'"
+          class="flex flex-col items-center gap-3"
+        >
           <Icon
             name="material-symbols:check-circle-outline-rounded"
             class="text-success text-5xl"
@@ -1677,21 +1744,16 @@ useSortable("#prodPhotos > .scroll-items", newProduct.tab1.photos);
             <button class="outlined button exit-modal">Add another product</button>
           </div>
         </div>
-        <div v-else-if="progress.completed === null" class="flex flex-col items-center gap-3">
+        <div
+          v-else-if="placeholder.upload.status === 'error'"
+          class="flex flex-col items-center gap-3"
+        >
           <Icon name="material-symbols:error-outline-rounded" class="text-error text-5xl" />
           <p class="m-0 text-center">An error occurred.</p>
           <div class="flex w-full gap-4 *:flex-1">
-            <button @click="nextTab" class="primary button">Try again</button>
+            <button @click="processForm" class="primary button">Try again</button>
             <button class="outlined button exit-modal">Exit</button>
           </div>
-        </div>
-        <div v-else class="flex flex-col items-center gap-4">
-          <div
-            class="m3-progress"
-            :class="{ indeterminate: !progress.loaded }"
-            :style="{ '--progress': progress.loaded?.toString() || '0' }"
-          ></div>
-          <p>{{ progress.message }}</p>
         </div>
       </div>
     </LimbModal>

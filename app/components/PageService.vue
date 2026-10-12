@@ -16,7 +16,7 @@ const props = defineProps<{
     <NuxtImg class="serv-pic" preset="thumbnail" :src="details.photo" alt="" />
     <div class="serv-content">
       <div
-        class="font-semibold line-clamp-2 serv-title"
+        class="serv-title line-clamp-2 font-semibold"
         v-tooltip:aria.unblocking
         :aria-label="details.title"
       >
@@ -54,7 +54,7 @@ const props = defineProps<{
   outline: none !important;
 
   &:hover {
-    border-color: var(--outline);
+    border-color: var(--color-outline);
   }
 }
 .serv-content {

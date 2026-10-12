@@ -38,7 +38,7 @@ const { store: colorMode } = useColorMode({
     </div>
   </template>
 
-  <footer v-else-if="name === 'common_footer'" style="align-self: flex-end">
+  <footer v-else-if="name === 'common_footer'" class="self-end">
     <rc-shareables name="copyright" />
   </footer>
   <div v-else-if="name === 'copyright'" class="transparent text wrappable menu justify-center">
@@ -49,8 +49,8 @@ const { store: colorMode } = useColorMode({
     <div class="item">@ Copyright 2023</div>
     <div class="item">Emmadave Inc.</div>
   </div>
-  <div v-else-if="name === 'color_scheme'" class="field" style="align-self: flex-end">
-    <label>Color scheme settings</label>
+  <div v-else-if="name === 'color_scheme'" class="field self-end">
+    <div class="field-label">Color scheme settings</div>
     <div class="fillable compact pills menu w-full">
       <ClientOnly>
         <label
@@ -70,14 +70,13 @@ const { store: colorMode } = useColorMode({
   </div>
   <div
     v-else-if="name === 'notifications_menu'"
-    class="pointing drop menu"
-    style="width: 300px; height: calc(100vh - 84px); max-height: 600px"
+    class="pointing drop menu h-[calc(100vh-84px)] max-h-150 w-75"
   >
-    <div class="flex flex-col p-4" style="height: 100%">
+    <div class="flex h-full flex-col p-4">
       <div class="flex flex-1 flex-col items-center justify-center gap-3">
         <Icon
           name="material-symbols:notifications-off-outline-rounded"
-          style="font-size: 6rem; color: var(--on-surface-v2)"
+          class="text-surface-v2 text-8xl"
         />
         <span class="text">You have no new notifications.</span>
       </div>

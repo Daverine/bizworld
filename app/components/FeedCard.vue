@@ -102,7 +102,7 @@ defineProps(["details"]);
   max-width: 500px;
   padding-bottom: 0.5em;
   margin-bottom: 1em;
-  border: 1px solid var(--outline);
+  border: 1px solid var(--color-outline);
 }
 
 .fcd-head {

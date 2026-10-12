@@ -28,7 +28,7 @@ function updateResult() {
 <template>
   <Title>BizWorld | Search: {{ $route.query.q }}</Title>
   <main class="auto-contain max-w-180">
-    <div class="pin-top-blend z-level-1 sticky top-16 mt-4">
+    <div class="shadow-t-blend z-level-1 sticky top-16 mt-4">
       <div class="rail menu text-sm">
         <div class="compact item xhover">
           Result in:

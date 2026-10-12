@@ -1,0 +1,75 @@
+@layer components {
+  /* --- LABEL ---*/
+
+  .label[class*='ribbon'] {
+    --bg-color: var(--color-surface-v2);
+    --text-color: var(--color-on-surface);
+
+    display: flex;
+    position: relative;
+    margin: 0em;
+    width: max-content;
+    flex-flow: row nowrap;
+    font-size: 1rem;
+    gap: 0.5em;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.5;
+    text-align: center;
+    padding: 0.25em 1em;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    font-weight: var(--font-weight-semibold);
+    border-radius: calc(infinity * 1px);
+    min-width: fit-content;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    &>.lead {
+      margin-left: -0.5em;
+    }
+
+    &>.trailing {
+      margin-right: -0.5em;
+    }
+
+    &>img {
+      max-height: 1.5em;
+      width: auto;
+      line-height: 1;
+      vertical-align: bottom;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      height: 0.875em;
+      width: 1em;
+      border: 0px none;
+      box-shadow: none;
+      background-color: inherit;
+      filter: invert(0.1);
+    }
+  }
+
+  .label.ribbon {
+    border-radius: 0em var(--radius-inline) var(--radius-inline) 0em;
+
+    &::after {
+      right: auto;
+      left: 0%;
+      clip-path: polygon(0% 0%, 100% 100%, 100% 0%);
+    }
+  }
+
+  .label.alt-ribbon {
+    border-radius: var(--radius-inline) 0em 0em var(--radius-inline);
+
+    &::after {
+      left: auto;
+      right: 0%;
+      clip-path: polygon(0% 100%, 0% 0%, 100% 0%);
+    }
+  }
+}
