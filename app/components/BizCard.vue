@@ -28,7 +28,7 @@ export default {
         v-if="details.verified"
         name="verified_sp"
         title="Verified"
-        class="text-sm green-text"
+        class="green-text text-sm"
         style="position: absolute; bottom: 0px; right: 0px"
       />
     </div>
@@ -36,7 +36,7 @@ export default {
     <div class="text-sm font-semibold">{{ details.mainCategory }}</div>
     <div class="sc-gap">
       <span v-if="details.rating" class="font-semibold" title="Average Rate (Number of raters)">
-        <SvgIcon name="star_filled" class="text-yellow-500 text-xs mr-2" />
+        <SvgIcon name="star_filled" class="mr-2 text-xs text-yellow-500" />
         <span class="text-sm">{{ `${details.rating.rate} (${details.rating.raters})` }}</span>
       </span>
     </div>
@@ -50,7 +50,7 @@ export default {
       >
         <SvgIcon name="more_horiz" class="lead" /> More
       </LimbDropdown>
-      <div class="drop menu">
+      <div class="dropdown menu">
         <div class="item"><SvgIcon name="unfollow" class="lead" /> Unfollow</div>
         <div class="item"><SvgIcon name="share" class="lead" /> Share</div>
         <div class="item"><SvgIcon name="report" class="lead" /> Report page</div>

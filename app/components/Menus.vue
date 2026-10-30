@@ -58,7 +58,7 @@ onMounted(() => window.dispatchEvent(new Event("scroll")));
     >
       <Icon name="material-symbols:apps" />
     </LimbDropdown>
-    <div class="pointing drop menu">
+    <div class="pointing dropdown menu">
       <div class="compact menu app-items grid grid-cols-2">
         <div class="bar-item item open-modal exit-dd" data-target="explore-modal">
           <Icon name="material-symbols:manage-search-rounded" />

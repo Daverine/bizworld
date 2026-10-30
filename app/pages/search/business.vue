@@ -43,14 +43,14 @@ function updateResult() {
               class="text-primary mr-2"
             />
           </LimbDropdown>
-          <div class="drop menu">
-            <div
+          <div class="dropdown menu">
+            <LimbOption
               v-for="category in searchStore.categories"
               :data-value="category"
               class="item capitalize"
             >
               {{ category.charAt(0).toUpperCase() + category.slice(1) }}
-            </div>
+            </LimbOption>
           </div>
         </div>
         <div class="xhover item r-aligned">

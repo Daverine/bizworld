@@ -88,7 +88,7 @@ async function submitLogin() {
             </button>
           </div>
           <div class="divider">or</div>
-          <form @submit.prevent="submitLogin">
+          <form @submit.prevent="submitLogin" class="flex flex-col gap-4">
             <div v-if="status === 'error'" class="error note mb-8">
               {{ errorMessage }}
               <button type="button" class="exit-note" @click="errorMessage = ''">

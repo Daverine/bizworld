@@ -12,19 +12,23 @@ declare global {
 
 export const utils = {
   focusableElementsSelector: `a, area, button, [role="button"], input, select, summary, textarea, details, object, [tabindex]:not([tabindex="-1"]), [contenteditable]:not([contenteditable="false"])`,
+  isFocusableElement(el: Maybe<HTMLElement>) {
+    if (!el) return false;
+
+    const style = window.getComputedStyle(el);
+    return (
+      style.display !== "none" &&
+      style.visibility !== "hidden" &&
+      el.getAttribute("aria-hidden") !== "true" &&
+      el.offsetWidth > 0 &&
+      el.offsetHeight > 0 &&
+      !el.closest("[inert]")
+    );
+  },
   getFocusableElementsFrom(container: Maybe<Element | Document>) {
     return container
       ? ([...container.querySelectorAll(this.focusableElementsSelector)] as HTMLElement[]).filter(
-          (el) => {
-            const style = window.getComputedStyle(el);
-            return (
-              style.display !== "none" &&
-              style.visibility !== "hidden" &&
-              el.getAttribute("aria-hidden") !== "true" &&
-              el.offsetWidth > 0 &&
-              el.offsetHeight > 0
-            );
-          },
+          (el) => this.isFocusableElement(el),
         )
       : [];
   },
@@ -209,18 +213,8 @@ export const utils = {
     return isClose;
   },
   focusRangeOnTab(range: Element, e?: KeyboardEvent): void {
-    let focusableElements = [
-      ...range.querySelectorAll(
-        ':scope [href], :scope button, :scope input:not([type="hidden"]), :scope textarea, :scope select, :scope details, :scope object, :scope [contenteditable]:not([contenteditable="false"]), :scope [tabindex]:not([tabindex="-1"])',
-      ),
-    ].filter(
-      (el) =>
-        !el.hasAttribute("disabled") &&
-        !el.getAttribute("aria-hidden") &&
-        this.getCssVal(el, "display") !== "none" &&
-        this.getCssVal(el, "visibility") !== "hidden" &&
-        !el.closest("[inert]"),
-    ) as HTMLElement[];
+    let focusableElements = this.getFocusableElementsFrom(range);
+
     if (!focusableElements[0]) {
       if (e) e.preventDefault();
       return;

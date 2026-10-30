@@ -46,9 +46,9 @@ async function clickAction(e: Event) {
   <article @click="clickAction" class="page-prod item">
     <div
       class="photo-box aspect-square rounded-[inherit]"
-      :style="`--box-photo: url(${img(details.photos[0]!, {}, { preset: 'thumbnail' })})`"
+      :style="`--box-photo: url(${img(details.pictures[0]!, {}, { preset: 'thumbnail' })})`"
     >
-      <NuxtImg preset="thumbnail" :src="details.photos[0]" alt="Product image" />
+      <NuxtImg preset="thumbnail" :src="details.pictures[0]" alt="Product image" />
       <button
         v-if="!manage"
         class="text-on-surface-v3 bg-overlay absolute right-2 bottom-2 text-lg"
@@ -154,7 +154,7 @@ async function clickAction(e: Event) {
       >
         <Icon name="material-symbols:more-vert" />
       </LimbDropdown>
-      <div class="drop menu">
+      <div class="dropdown menu">
         <div class="item open-modal" :data-ref="details.id" data-target="prod-config">
           <Icon name="material-symbols:settings-outline-rounded" class="lead" /> Configure
         </div>

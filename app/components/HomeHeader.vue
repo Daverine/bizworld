@@ -54,7 +54,7 @@ const { loggedIn, user } = useAuth();
             <Icon name="material-symbols:person-add-outline-rounded" class="lead" />
             Account
           </LimbDropdown>
-          <div class="drop menu">
+          <div class="dropdown menu">
             <div class="item open-modal" data-target="login-modal">Log in</div>
             <div class="item open-modal" data-target="register-modal">Sign Up</div>
           </div>

@@ -18,7 +18,7 @@ defineProps(["details", "isSaved"]);
     >
       <Icon name="material-symbols:more-vert" />
     </LimbDropdown>
-    <div class="drop menu">
+    <div class="dropdown menu">
       <div class="item"><Icon name="material-symbols:share-outline" class="lead" /> Share</div>
       <div class="item">
         <Icon name="material-symbols:bookmark-remove-outline-rounded" class="lead" />

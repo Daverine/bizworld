@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   let {
     hidden,
     category_id,
-    photos,
+    pictures,
     video_link,
     base_price,
     base_promo_price,
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
               meta: JSON.stringify(meta),
               option_group: JSON.stringify(option_group),
               overview,
-              photos,
+              pictures,
               shipping: JSON.stringify(shipping),
               specifications: JSON.stringify(specifications),
               sub_option_group: JSON.stringify(sub_option_group),

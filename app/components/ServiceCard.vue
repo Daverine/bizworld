@@ -155,7 +155,7 @@ async function clickAction(e: Event) {
       <LimbDropdown class="flat circular button">
         <Icon name="material-symbols:more-vert" />
       </LimbDropdown>
-      <div class="drop menu">
+      <div class="dropdown menu">
         <button class="item">
           <Icon name="material-symbols:add-to-queue-outline-rounded" class="lead" />
           Follow

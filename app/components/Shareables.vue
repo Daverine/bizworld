@@ -12,7 +12,7 @@ const { store: colorMode } = useColorMode({
 </script>
 
 <template>
-  <div class="drop menu" v-if="name === 'profile_menu'">
+  <div class="dropdown menu" v-if="name === 'profile_menu'">
     <div class="header centered xhover item flex-col">
       <NuxtImg
         preset="logo"
@@ -24,9 +24,9 @@ const { store: colorMode } = useColorMode({
       </div>
     </div>
     <AccountNavItems />
-    <div class="item" @click="signOut()">
+    <button class="item" @click="signOut()">
       <Icon name="material-symbols:logout-rounded" class="lead" /> Log out
-    </div>
+    </button>
   </div>
   <template v-else-if="name === 'supports'">
     <div class="item">
@@ -70,7 +70,7 @@ const { store: colorMode } = useColorMode({
   </div>
   <div
     v-else-if="name === 'notifications_menu'"
-    class="pointing drop menu h-[calc(100vh-84px)] max-h-150 w-75"
+    class="pointing dropdown menu h-[calc(100vh-84px)] max-h-150 w-75"
   >
     <div class="flex h-full flex-col p-4">
       <div class="flex flex-1 flex-col items-center justify-center gap-3">

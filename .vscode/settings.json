@@ -6,5 +6,6 @@
   },
   "[css]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
-  }
+  },
+  "simpleBrowser.focusLockIndicator.enabled": false
 }

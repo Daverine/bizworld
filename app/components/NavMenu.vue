@@ -65,9 +65,9 @@ const { loggedIn, signOut } = useAuth();
       <div class="collapsible sub items">
         <Shareables name="supports" />
       </div>
-      <div class="item" @click="signOut()">
+      <button class="item" @click="signOut()">
         <Icon name="material-symbols:logout-rounded" class="lead" /> Log out
-      </div>
+      </button>
       <div class="transparent compact divider"></div>
       <div class="xhover item p-0">
         <NuxtLink :to="{ name: 'new-shop' }" class="exit-sidepanel button w-full">

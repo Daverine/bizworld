@@ -85,11 +85,12 @@ searchStore.searchBox = route.query.q as string;
                 class="text-primary mr-2"
               />
             </LimbDropdown>
-            <div class="drop menu">
+            <div class="dropdown menu">
               <NuxtLink
                 v-for="category in searchStore.categories"
                 :data-value="category"
                 :to="{ name: `search-in-${category}`, query: { q: $route.query.q } }"
+                role="option"
                 class="item capitalize"
               >
                 {{ category }}

@@ -124,19 +124,19 @@ const toCart = reactive<{
   note: "",
 });
 
-const photos = computed(() => {
-  let photos = [...product.value!.photos];
+const pictures = computed(() => {
+  let pictures = [...product.value!.pictures];
   if (product.value!.option_group) {
     product.value!.option_group.options.forEach((item) => {
-      if (item.photo) photos.push(item.photo);
+      if (item.picture) pictures.push(item.picture);
     });
     if (product.value!.sub_option_group) {
       product.value!.sub_option_group.options.forEach((item) => {
-        if (item.photo) photos.push(item.photo);
+        if (item.picture) pictures.push(item.picture);
       });
     }
   }
-  return photos;
+  return pictures;
 });
 const price = computed(() => {
   if (!product.value) return NaN;
@@ -240,7 +240,12 @@ function getItemForCart() {
                   :value="option.label"
                   v-model="toCart.spec[0]"
                 />
-                <NuxtImg v-if="option.photo" preset="logo" :src="option.photo" class="thumbnail" />
+                <NuxtImg
+                  v-if="option.picture"
+                  preset="logo"
+                  :src="option.picture"
+                  class="thumbnail"
+                />
                 {{ option.label }}
               </label>
             </div>
@@ -276,9 +281,9 @@ function getItemForCart() {
                       v-model="toCart.spec[1]"
                     />
                     <NuxtImg
-                      v-if="sub_option.photo"
+                      v-if="sub_option.picture"
                       preset="logo"
-                      :src="sub_option.photo"
+                      :src="sub_option.picture"
                       class="thumbnail"
                     />
                     {{ sub_option.label }}
@@ -397,7 +402,7 @@ function getItemForCart() {
         >
           <LimbCarousel :tracker-position="isSmallScreen ? undefined : 'left'">
             <div
-              v-for="slide in photos"
+              v-for="slide in pictures"
               class="cs-slide photo-box aspect-square"
               :style="`--box-photo: url(${img(slide, { format: 'webp', width: 960 })})`"
             >
@@ -412,7 +417,7 @@ function getItemForCart() {
             </div>
             <template v-if="!isSmallScreen" #trackers>
               <div
-                v-for="slide in photos"
+                v-for="slide in pictures"
                 class="thumbnail cs-tracker"
                 style="--thumbnail-size: 3rem"
               >
@@ -636,10 +641,10 @@ function getItemForCart() {
                     <Icon name="material-symbols:sort-rounded" class="lead" />
                     Sort:
                   </LimbDropdown>
-                  <div class="drop menu">
-                    <div class="item active">Newest</div>
-                    <div class="item">Highest</div>
-                    <div class="item">Lowest</div>
+                  <div class="dropdown menu">
+                    <LimbOption class="item active">Newest</LimbOption>
+                    <LimbOption class="item">Highest</LimbOption>
+                    <LimbOption class="item">Lowest</LimbOption>
                   </div>
                 </div>
                 <div class="dm-reviews">
@@ -682,7 +687,7 @@ function getItemForCart() {
                         <LimbDropdown>
                           <Icon name="material-symbols:more-vert" />
                         </LimbDropdown>
-                        <div class="drop menu text-sm">
+                        <div class="dropdown menu text-sm">
                           <div class="item">
                             <Icon name="material-symbols:flag-outline-rounded" class="lead" />
                             Report
@@ -751,7 +756,7 @@ function getItemForCart() {
             >
               <Icon name="material-symbols:more-vert" />
             </LimbDropdown>
-            <div class="drop menu">
+            <div class="dropdown menu">
               <div class="item">
                 <Icon name="material-symbols:chat-outline-rounded" class="lead" />
                 Chat seller
@@ -808,7 +813,7 @@ function getItemForCart() {
           >
             <Icon name="material-symbols:more-vert" />
           </LimbDropdown>
-          <div class="drop menu">
+          <div class="dropdown menu">
             <div class="item">
               <Icon name="material-symbols:chat-outline-rounded" class="lead" />
               Chat seller

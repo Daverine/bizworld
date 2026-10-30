@@ -197,7 +197,7 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
             </button>
           </div>
         </div>
-        <form v-else>
+        <form v-else class="flex flex-col gap-4">
           <div class="field">
             <label class="flex items-center justify-between gap-4"
               >Promotion sales
@@ -220,10 +220,10 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
               type="select"
               placeholder="Product availability"
             />
-            <div class="drop menu">
-              <div class="item" data-value="available">Available</div>
-              <div class="item" data-value="nil">Not available</div>
-              <div class="item" data-value="quantity">Set quantity</div>
+            <div class="dropdown menu">
+              <LimbOption class="item" data-value="available">Available</LimbOption>
+              <LimbOption class="item" data-value="nil">Not available</LimbOption>
+              <LimbOption class="item" data-value="quantity">Set quantity</LimbOption>
             </div>
             <div v-if="configData.availability === 'quantity'" class="field">
               <p class="text-sm">
@@ -246,12 +246,13 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
             <LimbDropdown
               v-model="configData.delivery_options"
               type="multiple select"
+              boundless
               placeholder="Delivery options"
             />
-            <div class="drop menu">
-              <div class="item" data-value="bizworld delivery">Bizworld delivery</div>
-              <div class="item" data-value="free delivery">Free delivery</div>
-              <div class="item" data-value="self-pickup">Self Pickup</div>
+            <div class="dropdown menu">
+              <LimbOption class="item" data-value="bizworld delivery">Bizworld delivery</LimbOption>
+              <LimbOption class="item" data-value="free delivery">Free delivery</LimbOption>
+              <LimbOption class="item" data-value="self-pickup">Self Pickup</LimbOption>
             </div>
           </div>
           <div class="field">
@@ -264,19 +265,19 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
               type="select"
               placeholder="Specify a local group..."
             />
-            <div class="drop menu">
-              <div data-value="" class="item">No group</div>
+            <div class="dropdown menu">
+              <LimbOption data-value="" class="item">No group</LimbOption>
               <template
                 v-for="p_item in bizData?.local_groups?.filter((g) =>
                   bizData?.local_groups?.every((pg) => pg.id !== g.parent_id),
                 )"
               >
-                <div :data-value="p_item.id" class="item">{{ p_item.name }}</div>
+                <LimbOption :data-value="p_item.id" class="item">{{ p_item.name }}</LimbOption>
                 <div
                   v-if="bizData?.local_groups?.find((sub_g) => sub_g.parent_id === p_item.id)"
                   class="sub items"
                 >
-                  <div
+                  <LimbOption
                     v-for="item in bizData?.local_groups?.filter(
                       (sub_g) => sub_g.parent_id === p_item.id,
                     )"
@@ -284,7 +285,7 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
                     class="item"
                   >
                     {{ item.name }}
-                  </div>
+                  </LimbOption>
                 </div>
               </template>
             </div>

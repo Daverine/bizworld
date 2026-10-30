@@ -21,7 +21,7 @@ const { data: product } = await useFetch("/api/product/query", {
 const productForm = reactive<{
   category_id?: string;
   title?: string;
-  photos: (File | string)[];
+  pictures: (File | string)[];
   video_link?: string;
 
   base_price?: string;
@@ -32,7 +32,7 @@ const productForm = reactive<{
       label: string;
       price: string;
       promo_price: string;
-      photo?: File | string;
+      picture?: File | string;
       sub_options?: {
         is_active: boolean;
         label: string;
@@ -45,7 +45,7 @@ const productForm = reactive<{
   };
   sub_option_group?: {
     title: string;
-    options: { label: string; price: string; promo_price: string; photo?: File | string }[];
+    options: { label: string; price: string; promo_price: string; picture?: File | string }[];
   };
 
   specifications: {
@@ -70,7 +70,7 @@ const productForm = reactive<{
   };
   meta: Record<string, any>;
 }>({
-  photos: [],
+  pictures: [],
   specifications: [],
   meta: {},
 });
@@ -79,7 +79,7 @@ const placeholder = reactive<{
     label: string;
     price: string;
     promo_price: string;
-    photo?: File | string;
+    picture?: File | string;
     sub_options?: {
       is_active: boolean;
       label: string;
@@ -142,16 +142,16 @@ const validation = {
       required: withMessage(required, "Product category is required."),
     },
     title: { required: withMessage(required, "Product title is required.") },
-    photos: {
+    pictures: {
       $each: {},
       minLength: withMessage(
         (value: Maybe<(File | string)[]>) => !!value && value.length > 1,
-        "At least two product photos are required.",
+        "At least two product pictures are required.",
       ),
       size: withMessage(
         (value: Maybe<(File | string)[]>) =>
           !value || value.every((el) => typeof el === "string" || el.size <= 5 * 1024 * 1024),
-        "Each photo must be less than 5MB in size.",
+        "Each picture must be less than 5MB in size.",
       ),
     },
     video_link: { url },
@@ -273,10 +273,10 @@ const validation = {
           "Promotional price must be greater than zero and less than the option price if present or less than base price.",
         ),
       },
-      photo: {
+      picture: {
         maxSize: withMessage(
           maxFileSize(5 * 1024 * 1024),
-          "Selected photo must be less than 5MB in size.",
+          "Selected picture must be less than 5MB in size.",
         ),
       },
       sub_options: {
@@ -404,10 +404,10 @@ const specPresets = {
   ],
 };
 
-function handleNewPhoto(event: Event) {
+function handleNewPicture(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files) {
-    [...input.files].forEach((file) => productForm.photos.push(file));
+    [...input.files].forEach((file) => productForm.pictures.push(file));
     input.value = "";
     nextTick(() => input.scrollIntoView({ behavior: "smooth", block: "center" }));
   }
@@ -588,27 +588,29 @@ async function processForm() {
   try {
     // check if files have be uploaded before and upload them if not
     if (
-      productForm.photos.some((photo) => typeof photo !== "string") ||
+      productForm.pictures.some((picture) => typeof picture !== "string") ||
       (productForm.option_group &&
-        productForm.option_group.options.some(({ photo }) => photo && typeof photo !== "string")) ||
+        productForm.option_group.options.some(
+          ({ picture }) => picture && typeof picture !== "string",
+        )) ||
       (productForm.sub_option_group &&
         productForm.sub_option_group.options.some(
-          ({ photo }) => photo && typeof photo !== "string",
+          ({ picture }) => picture && typeof picture !== "string",
         )) ||
       (productForm.details_attachment && typeof productForm.details_attachment !== "string")
     ) {
       const formFiles = new FormData();
-      productForm.photos.forEach((photo, index) => {
-        if (typeof photo === "string") return;
-        formFiles.append("photos", photo, index.toString());
+      productForm.pictures.forEach((picture, index) => {
+        if (typeof picture === "string") return;
+        formFiles.append("pictures", picture, index.toString());
       });
       productForm.option_group?.options.forEach((option, index) => {
-        if (option.photo && typeof option.photo !== "string")
-          formFiles.append("option_group", option.photo, index.toString());
+        if (option.picture && typeof option.picture !== "string")
+          formFiles.append("option_group", option.picture, index.toString());
       });
       productForm.sub_option_group?.options.forEach((option, index) => {
-        if (option.photo && typeof option.photo !== "string")
-          formFiles.append("sub_option_group", option.photo, index.toString());
+        if (option.picture && typeof option.picture !== "string")
+          formFiles.append("sub_option_group", option.picture, index.toString());
       });
       if (productForm.details_attachment && typeof productForm.details_attachment !== "string") {
         formFiles.append("details_attachment", productForm.details_attachment);
@@ -622,19 +624,19 @@ async function processForm() {
         method: "post",
       });
 
-      if ("photos" in filesURL) {
-        filesURL.photos.forEach((elem) => {
-          productForm.photos[parseInt(elem.filename)] = elem.data;
+      if ("pictures" in filesURL) {
+        filesURL.pictures.forEach((elem) => {
+          productForm.pictures[parseInt(elem.filename)] = elem.data;
         });
       }
       if ("option_group" in filesURL) {
         filesURL.option_group.forEach((elem) => {
-          productForm.option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
+          productForm.option_group!.options[parseInt(elem.filename)]!.picture = elem.data;
         });
       }
       if ("sub_option_group" in filesURL) {
         filesURL.sub_option_group.forEach((elem) => {
-          productForm.sub_option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
+          productForm.sub_option_group!.options[parseInt(elem.filename)]!.picture = elem.data;
         });
       }
       if ("details_attachment" in filesURL) {
@@ -700,7 +702,7 @@ watchEffect(() => {
     });
   }
 });
-useSortable("#prod-photos > .scroll-items", productForm.photos);
+useSortable("#prod-pictures > .scroll-items", productForm.pictures);
 </script>
 
 <template>
@@ -755,36 +757,36 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
         </div>
       </div>
       <div class="field">
-        <label for="photo-selector">Add photo</label>
+        <label for="picture-selector">Add picture</label>
         <div class="text-sm opacity-65">
-          Photos help customers see the product. Use clear, well-lit images that showcase the
-          product from different angles. A photo can be dragged to re-order it.
+          Pictures help customers see the product. Use clear, well-lit images that showcase the
+          product from different angles. A picture can be dragged to re-order it.
         </div>
         <LimbIScroller
-          id="prod-photos"
+          id="prod-pictures"
           :options="{ autoSetup: true }"
           class="[&_.sortable-ghost]:opacity-0"
         >
           <div
-            v-for="(photo, index) in productForm.photos"
+            v-for="(picture, index) in productForm.pictures"
             class="relative flex flex-col items-center"
           >
-            <img :src="utils.fileToURL(photo)" alt="Product photo" class="thumbnail" />
+            <img :src="utils.fileToURL(picture)" alt="Product picture" class="thumbnail" />
             <button
               type="button"
-              @click="productForm.photos.splice(index, 1)"
+              @click="productForm.pictures.splice(index, 1)"
               class="compact circular outlined button bg-overlay absolute top-1 right-1 text-xs"
             >
               <Icon name="material-symbols:close-rounded" />
             </button>
-            <div v-if="typeof photo !== 'string'" class="text-sm">
-              {{ (photo.size / 1024 / 1024).toFixed(1) }}MB
+            <div v-if="typeof picture !== 'string'" class="text-sm">
+              {{ (picture.size / 1024 / 1024).toFixed(1) }}MB
             </div>
           </div>
         </LimbIScroller>
         <div
           class="text-error text-sm"
-          v-for="error in validation.product.r$.photos.$self.$errors"
+          v-for="error in validation.product.r$.pictures.$self.$errors"
           :key="error"
         >
           <Icon name="material-symbols:error-rounded" />
@@ -792,13 +794,13 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
         </div>
         <label class="button design-takeover">
           <Icon name="material-symbols:add-a-photo-outline-rounded" />{{
-            productForm.photos.length ? "Add more photos" : "Add photos"
+            productForm.pictures.length ? "Add more pictures" : "Add pictures"
           }}
           <input
-            id="photo-selector"
+            id="picture-selector"
             type="file"
             multiple
-            @change="handleNewPhoto"
+            @change="handleNewPicture"
             accept="image/*"
           />
         </label>
@@ -839,7 +841,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           id="prod-category"
           placeholder="Select category"
         />
-        <div class="drop menu">
+        <div class="dropdown menu">
           <template
             v-for="cat in productCategories?.filter((category) => category.parent_id === null)"
             Key="cat.id"
@@ -1013,9 +1015,9 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
                   aria-label="Click to modify"
                 >
                   <img
-                    v-if="option.photo"
-                    :src="utils.fileToURL(option.photo)"
-                    alt="Option photo"
+                    v-if="option.picture"
+                    :src="utils.fileToURL(option.picture)"
+                    alt="Option picture"
                   />
                   <div class="content">
                     <div class="font-bold">{{ option.label }}</div>
@@ -1115,9 +1117,9 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
                     :data-option-id="index"
                   >
                     <img
-                      v-if="option.photo"
-                      :src="utils.fileToURL(option.photo)"
-                      alt="sub-option photo"
+                      v-if="option.picture"
+                      :src="utils.fileToURL(option.picture)"
+                      alt="sub-option picture"
                     />
                     <div class="content">
                       <div class="font-bold">{{ option.label }}</div>
@@ -1177,7 +1179,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           <span>Or start by selecting a preset:</span>
           <LimbDropdown class="compact button" placeholder="Select a template">
             Choose Preset
-            <div class="drop menu">
+            <div class="dropdown menu">
               <div
                 class="item"
                 v-for="(template, templateName) in specPresets"
@@ -1469,27 +1471,30 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             </div>
           </div>
           <div class="field">
-            <label for="add-option-photo">Unique option picture (optional)</label>
-            <div v-if="placeholder.option.photo" class="relative flex w-max flex-col items-center">
+            <label for="add-option-picture">Unique option picture (optional)</label>
+            <div
+              v-if="placeholder.option.picture"
+              class="relative flex w-max flex-col items-center"
+            >
               <img
-                :src="utils.fileToURL(placeholder.option.photo)"
-                alt="Product photo"
+                :src="utils.fileToURL(placeholder.option.picture)"
+                alt="Product picture"
                 class="thumbnail"
               />
               <button
                 type="button"
-                @click="placeholder.option.photo = undefined"
+                @click="placeholder.option.picture = undefined"
                 class="compact circular outlined button bg-overlay absolute top-1 right-1 text-xs"
               >
                 <Icon name="material-symbols:close-rounded" />
               </button>
-              <div v-if="typeof placeholder.option.photo !== 'string'" class="text-sm">
-                {{ (placeholder.option.photo.size / 1024 / 1024).toFixed(1) }}MB
+              <div v-if="typeof placeholder.option.picture !== 'string'" class="text-sm">
+                {{ (placeholder.option.picture.size / 1024 / 1024).toFixed(1) }}MB
               </div>
             </div>
             <div
               class="text-error text-sm"
-              v-for="error of validation.option.r$.photo.$errors"
+              v-for="error of validation.option.r$.picture.$errors"
               :key="error"
             >
               <Icon name="material-symbols:error-rounded" />
@@ -1497,12 +1502,14 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             </div>
             <label class="button design-takeover">
               <Icon name="material-symbols:add-a-photo-outline-rounded" />{{
-                `${placeholder.option.photo ? "Change photo" : "Add photo"}`
+                `${placeholder.option.picture ? "Change picture" : "Add picture"}`
               }}
               <input
-                id="add-option-photo"
+                id="add-option-picture"
                 type="file"
-                @change="placeholder.option.photo = ($event.target as HTMLInputElement).files?.[0]"
+                @change="
+                  placeholder.option.picture = ($event.target as HTMLInputElement).files?.[0]
+                "
                 accept="image/*"
               />
             </label>
@@ -1530,9 +1537,9 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
                   <Icon name="material-symbols:check" class="aview" />
                 </div>
                 <img
-                  v-if="option.photo"
-                  :src="utils.fileToURL(option.photo)"
-                  alt="sub-option photo"
+                  v-if="option.picture"
+                  :src="utils.fileToURL(option.picture)"
+                  alt="sub-option picture"
                 />
                 <div class="content flex flex-col">
                   <div class="font-bold">{{ option.label }}</div>

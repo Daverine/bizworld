@@ -62,14 +62,14 @@ function popupSubmitSearch(e) {
               <td>
                 <LimbDropdown v-model="searchStore.searchIn" type="select" class="w-full">
                 </LimbDropdown>
-                <div class="drop menu">
-                  <div
+                <div class="dropdown menu">
+                  <LimbOption
                     v-for="category in searchStore.categories"
                     :data-value="category"
                     class="item"
                   >
                     {{ category.charAt(0).toUpperCase() + category.slice(1) }}
-                  </div>
+                  </LimbOption>
                 </div>
               </td>
             </tr>
@@ -78,8 +78,8 @@ function popupSubmitSearch(e) {
               <td>
                 <LimbDropdown v-model="searchStore.location" type="select" class="w-full">
                 </LimbDropdown>
-                <div class="drop menu">
-                  <div data-value="nigeria" class="item">Nigeria</div>
+                <div class="dropdown menu">
+                  <LimbOption data-value="nigeria" class="item">Nigeria</LimbOption>
                 </div>
               </td>
             </tr>
@@ -174,8 +174,8 @@ function popupSubmitSearch(e) {
               <Icon name="material-symbols:expand-more-rounded" class="trailing" />
             </template>
           </LimbDropdown>
-          <div class="drop menu">
-            <div class="active item">
+          <div class="dropdown menu">
+            <LimbOption class="active item">
               <div
                 class="lead avatar rounded-full text-xs"
                 style="flex: 0 0 auto; background-color: #999"
@@ -188,8 +188,8 @@ function popupSubmitSearch(e) {
                   <div class="text-sm opacity-65">Personal Account</div>
                 </div>
               </div>
-            </div>
-            <div class="item">
+            </LimbOption>
+            <LimbOption class="item">
               <div
                 class="lead avatar rounded-full text-xs"
                 style="flex: 0 0 auto; background-color: #999"
@@ -202,7 +202,7 @@ function popupSubmitSearch(e) {
                   <div class="text-sm opacity-65">Business Account</div>
                 </div>
               </div>
-            </div>
+            </LimbOption>
           </div>
         </div>
         <form @submit.prevent="">

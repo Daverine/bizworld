@@ -467,10 +467,10 @@ onMounted(() => {
                   <Icon name="material-symbols:sort-rounded" class="lead" />
                   Sort:
                 </LimbDropdown>
-                <div class="drop menu">
-                  <div class="item active">Newest</div>
-                  <div class="item">Highest</div>
-                  <div class="item">Lowest</div>
+                <div class="dropdown menu">
+                  <LimbOption class="item active">Newest</LimbOption>
+                  <LimbOption class="item">Highest</LimbOption>
+                  <LimbOption class="item">Lowest</LimbOption>
                 </div>
               </div>
               <div class="dm-reviews">
@@ -506,7 +506,7 @@ onMounted(() => {
                     <LimbDropdown>
                       <Icon name="material-symbols:more-vert" />
                     </LimbDropdown>
-                    <div class="drop menu text-sm">
+                    <div class="dropdown menu text-sm">
                       <div class="item">
                         <Icon name="material-symbols:flag-outline-rounded" class="lead" />
                         Report
@@ -602,7 +602,7 @@ onMounted(() => {
             >
               <Icon name="material-symbols:more-vert" />
             </LimbDropdown>
-            <div class="drop menu">
+            <div class="dropdown menu">
               <div class="item">
                 <Icon name="material-symbols:chat-outline-rounded" class="lead" />
                 Chat contractor
@@ -666,7 +666,7 @@ onMounted(() => {
         >
           <Icon name="material-symbols:more-vert" />
         </LimbDropdown>
-        <div class="drop menu">
+        <div class="dropdown menu">
           <div class="item">
             <Icon name="material-symbols:chat-outline-rounded" class="lead" />
             Chat contractor

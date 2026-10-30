@@ -1,0 +1,1612 @@
+<script setup lang="ts">
+import type { WatchStopHandle } from "vue";
+
+type MultipleSelectContent = {
+  html: string;
+  val: string;
+  ddid: string;
+};
+type Options = {
+  delay?: number;
+  closeOnItemClick: boolean;
+  teleportMenu?: boolean;
+  constrainWidth?: boolean;
+  stretchWidth?: boolean;
+  findToggler?: boolean;
+  page?: boolean;
+  view: "unset" | "vertical" | "horizontal";
+  directionPriority: {
+    x?: "left" | "right" | "center";
+    y?: "top" | "bottom" | "center";
+  };
+  focusMenuItems?: boolean;
+};
+type Brainbox = Options & {
+  namespace: string;
+  transitionDuration?: number;
+  openOnHover: boolean;
+  isSelect?: boolean;
+  selectable?: boolean;
+  multipleSelect?: boolean;
+  searchable?: boolean;
+  activateKeyboard: boolean;
+  hidingDropdown: boolean;
+  showDropdownTimeout?: ReturnType<typeof setTimeout>;
+  hideDropdownTimeout?: ReturnType<typeof setTimeout>;
+  // event data to be used for a bb.page dropdown coordinates.
+  pageEvent?: MouseEvent;
+};
+
+// get dropdown element and necessary dropdown properties
+const ddRef = useTemplateRef("dropdown");
+const model = defineModel<string[] | string>({
+  get(value) {
+    return value ?? (bb.multipleSelect ? [] : "");
+  },
+});
+const props = defineProps<{
+  name?: string;
+  placeholder?: string;
+  dataTarget?: string;
+  options?: Partial<Options>;
+  sub?: boolean;
+  openOnHover?: boolean;
+  type?:
+    | "select"
+    | "selection"
+    | "multiple select"
+    | "multiple selection"
+    | "search select"
+    | "search selection"
+    | "search multiple select"
+    | "search multiple selection";
+  searchData?: string[] | any[];
+  filterFunction?: (query: string, item: any[]) => any[];
+}>();
+const emit = defineEmits<{
+  change: [value?: string[] | string];
+}>();
+const showDropdown = ref(false);
+
+// setup dropdown brainbox
+const bb: Brainbox = {
+  namespace: "dropdown",
+  closeOnItemClick: true,
+  openOnHover: false,
+  view: "unset",
+  directionPriority: {
+    x: "right",
+    y: "bottom",
+  },
+  activateKeyboard: false,
+  hidingDropdown: false,
+  ...props.options,
+};
+const dropdownType = props.type?.split(" ");
+bb.isSelect = dropdownType?.includes("select");
+bb.selectable = bb.isSelect || dropdownType?.includes("selection");
+bb.multipleSelect = bb.selectable && dropdownType?.includes("multiple");
+bb.searchable = bb.selectable && dropdownType?.includes("search");
+bb.openOnHover = props.openOnHover || (props.sub && props.openOnHover !== false);
+bb.page = bb.page && !props.sub && !bb.openOnHover;
+// dropdown direction priority
+bb.directionPriority.x = bb.directionPriority.x ?? "right";
+bb.directionPriority.y = bb.directionPriority.y ?? "bottom";
+// contrain dropdown menu width to the width of dropdown if bb.constrainWidth is true or dropdown has class select
+bb.stretchWidth = props.options?.stretchWidth ?? bb.isSelect;
+// teleport menu if it was specified to do so, or if dropElem is not a sub-dropdown and not a select-dropdown and the dropMenu is not browsed-for.
+bb.teleportMenu = bb.teleportMenu ?? (!props.sub && !bb.isSelect && !props.dataTarget);
+
+if (bb.delay === undefined) bb.delay = bb.openOnHover ? 300 : 0;
+
+if (bb.view === "unset") bb.view = props.sub ? "horizontal" : "vertical";
+
+// create reactive brain-box
+const rbb = reactive<{
+  selectContent: string;
+  mSelectContent: MultipleSelectContent[];
+  allItemSelected: boolean;
+  allItemFiltered: boolean;
+  menuId: string;
+}>({
+  selectContent: "",
+  mSelectContent: [],
+  allItemSelected: false,
+  allItemFiltered: false,
+  menuId: "",
+});
+
+const searchQuery = ref("");
+const filteredData = ref<any[]>([]);
+let sizeStream: ResizeObserver;
+
+// set up selectors for dropdown items
+const newSelector = {
+  items: `:scope [role="option"]:not(.xhover, .disabled, [disabled])`,
+  items_of_indicating_dropdown: `\
+    :scope.indicating [role="option"]:not(.xhover, .disabled, [disabled]), \
+    :scope:not(.indicating) [role="option"]:not(.xhover, .disabled, [disabled], .selected), \
+    `,
+  items_filtered: `\
+    :scope.indicating [role="option"]:not(.xhover, .disabled, [disabled], .filtered), \
+    :scope:not(.indicating) [role="option"]:not(.xhover, .disabled, [disabled], .filtered, .selected), \
+    `,
+};
+const selectors = {
+  // select all element in dropMenu regardless of it statuses
+  items: `\
+    :scope > .item:not(.xhover, .disabled, [disabled]), \
+    :scope > .items > .item:not(.xhover, .disabled, [disabled])\
+    `,
+  // select all element in dropMenu regarding it statuses
+  items_of_indicating_dropdown: `\
+    :scope.indicating > .item:not(.xhover, .disabled, [disabled]), \
+    :scope.indicating > .items > .item:not(.xhover, .disabled, [disabled]), \
+    :scope:not(.indicating) > .item:not(.xhover, .disabled, [disabled], .selected), \
+    :scope:not(.indicating) > .items > .item:not(.xhover, .disabled, [disabled], .selected)\
+    `,
+  // select all element in dropMenu regarding it statuses
+  items_filtered: `\
+    :scope.indicating > .item:not(.xhover, .disabled, [disabled], .filtered), \
+    :scope.indicating > .items > .item:not(.xhover, .disabled, [disabled], .filtered), \
+    :scope:not(.indicating) > .item:not(.xhover, .disabled, [disabled], .filtered, .selected), \
+    :scope:not(.indicating) > .items > .item:not(.xhover, .disabled, [disabled], .filtered, .selected)\
+    `,
+  // exiter
+  dropdown_exiter: ".exit-dd",
+};
+const unwatch: Record<string, WatchStopHandle> = {};
+let uniqueId = "";
+let dropMenu: HTMLElement,
+  selectableContentBox: HTMLElement,
+  selectablePlaceholder: HTMLElement,
+  searchBox: HTMLInputElement,
+  searchBoxSizer: HTMLElement,
+  allFilteredMsgBox: HTMLElement,
+  allSelectedMsgBox: HTMLElement,
+  teleportationPlaceholder: Comment;
+let ddFamily: Element[] = [];
+
+onMounted(async () => {
+  let ddElem = ddRef.value! as HTMLElement;
+  // get dropdown menu element,set-it-up and generate uniqueId
+  let ddm = props.dataTarget
+    ? document.getElementById(props.dataTarget)
+    : ddElem.querySelector(":scope > .drop.menu")
+      ? ddElem.querySelector(":scope > .drop.menu")
+      : ddElem.nextElementSibling?.matches(".drop.menu")
+        ? ddElem.nextElementSibling
+        : null;
+  // check if dropdown Menu exist
+  if (!ddm) {
+    console.error(ddElem, "A selection menu is missing for the dropdown");
+    return;
+  }
+
+  dropMenu = ddm as HTMLElement;
+  uniqueId = utils.getUniqueId(bb.namespace);
+  rbb.menuId = dropMenu.id || uniqueId;
+  dropMenu.id = rbb.menuId;
+  if (!dropMenu.role) dropMenu.role = bb.selectable ? "listbox" : "menu";
+  if (!dropMenu.tabIndex) dropMenu.tabIndex = -1;
+  dropMenu.dataset.view = bb.view;
+  dropMenu.dataset.ddid = uniqueId;
+  if (bb.page) dropMenu.classList.add("fixed");
+  if (ddElem?.classList.contains("indicating")) dropMenu.classList.add("indicating");
+  bb.transitionDuration = utils.durationInMilliseconds(
+    utils.getCssVal(dropMenu, "transition-duration"),
+  );
+
+  // configure dropdown to be selectable and searchable if that what it is.
+
+  if (bb.selectable) {
+    // cache all concurrent elements for selectable dropdown
+    selectableContentBox = ddElem.querySelector(":scope > .content") as HTMLElement;
+    selectablePlaceholder = ddElem.querySelector(":scope .placeholder") as HTMLElement;
+
+    // configure search box and cache concurrent element for searchable dropdown
+    if (bb.searchable) {
+      searchBox = ddElem.querySelector(":scope .ssbox") as HTMLInputElement;
+      searchBoxSizer = ddElem.querySelector(":scope .ddss") as HTMLElement;
+
+      // add the message to show when no search result is found.
+      if (dropMenu.querySelector(`:scope > .ed-msg.all-filtered-msg`)) {
+        allFilteredMsgBox = dropMenu.querySelector(
+          `:scope > .ed-msg.all-filtered-msg`,
+        ) as HTMLElement;
+      } else {
+        allFilteredMsgBox = document.createElement("div");
+        allFilteredMsgBox.classList.add("ed-msg", "all-filtered-msg");
+        allFilteredMsgBox.textContent = `No result found.`;
+        dropMenu.append(allFilteredMsgBox);
+      }
+
+      unwatch.allItemFiltered = watchEffect(() => {
+        if (rbb.allItemFiltered) allFilteredMsgBox.classList.add("active");
+        else allFilteredMsgBox.classList.remove("active");
+      });
+
+      // open dropdown if user typed in the searchBox. And resize searchBox according to it content.
+      searchBox.addEventListener("input", () => {
+        if (searchBox.value) {
+          selectablePlaceholder.classList.add("filtered");
+          if (!bb.multipleSelect) selectableContentBox.classList.add("filtered");
+        } else {
+          selectablePlaceholder.classList.remove("filtered");
+          if (!bb.multipleSelect) selectableContentBox.classList.remove("filtered");
+        }
+
+        searchBoxSizer.textContent = searchBox.value;
+        utils.afterNextRepaint(() => (searchBox.style.width = searchBoxSizer.clientWidth + "px"));
+        if (!showDropdown.value) {
+          bb.activateKeyboard = true;
+          showDropdown.value = true;
+        }
+      });
+    }
+
+    if (bb.multipleSelect) {
+      // click controls for multiple selectable dropdown
+      document.addEventListener("click", ms_clickEvt);
+      // keyboard controls for multiple selectable dropdown
+      document.addEventListener("keydown", ms_keyEvt);
+      // add the message to show when all item is selected.
+      if (ddElem.querySelector(`:scope > .ed-msg.all-selected-msg`)) {
+        allSelectedMsgBox = ddElem.querySelector(
+          `:scope > .ed-msg.all-selected-msg`,
+        ) as HTMLElement;
+      } else {
+        allSelectedMsgBox = document.createElement("div");
+        allSelectedMsgBox.classList.add("ed-msg", "all-selected-msg");
+        allSelectedMsgBox.textContent = `All available items are selected.`;
+        dropMenu.append(allSelectedMsgBox);
+      }
+
+      unwatch.allItemSelected = watchEffect(() => {
+        if (rbb.allItemSelected) allSelectedMsgBox.classList.add("active");
+        else allSelectedMsgBox.classList.remove("active");
+      });
+    }
+
+    /* set select dropdown value for preselected value */
+    let items = [...dropMenu.querySelectorAll(selectors.items)];
+    if (bb.multipleSelect && items.some((el) => el.matches(".selected")))
+      items.filter((el) => el.matches(".selected")).forEach((el) => dd_setSelect(el));
+    else if (!bb.multipleSelect && items.some((el) => el.matches(".active")))
+      dd_setSelect(items.find((el) => el.matches(".active"))!);
+
+    unwatch.model = watch(model, (newModel) => modelEffect(newModel), { immediate: true });
+  }
+
+  // decide wether to teleport dropdown menu or not
+  if (bb.teleportMenu) {
+    teleportationPlaceholder = document.createComment(`teleportation placeholder for ${uniqueId}`);
+    dropMenu.parentElement?.insertBefore(teleportationPlaceholder, dropMenu);
+    document.body.append(dropMenu);
+  }
+
+  // get all dropdowns and dropdown menus that is dropdown family indirectly (ie. linked by id) in ddFamily variable
+  // the ddFamily variable is used to close all dropdowns that is linked to the current dropdown when the current dropdown is closed.
+  ddFamily.push(ddElem as HTMLElement, dropMenu);
+  checkerFill(dropMenu);
+
+  // configure how dropdown opens
+  // open dropdown if the enter key, spacebar key or arrow down key is pressed while dropdown is focused-on
+  document.addEventListener("keydown", dd_keyEvt);
+
+  // configure hoverable dropdown to open on mouse-over and touchstart
+  if (bb.openOnHover) {
+    ddElem.addEventListener("mouseenter", dd_toggleHandler);
+    ddElem.addEventListener("touchstart", dd_toggleHandler);
+  }
+  // configure clickable dropdown to open on mouse click
+  else ddElem.addEventListener("click", dd_toggleHandler);
+
+  // configure dropdown to be controlled using ddconsole-custom-event. controls include opening and closing dropdown and sub dropdowns
+  ddElem.addEventListener("ddconsole", ((e: CustomEvent) => {
+    if (e.detail === "close") showDropdown.value = false;
+    else if (e.detail === "close all ancestor dropdown") dd_closeWithAncestor();
+    else if (e.detail === "open") showDropdown.value = true;
+    else if (e.detail === "open with keyboard") {
+      bb.activateKeyboard = true;
+      showDropdown.value = true;
+    }
+  }) as EventListener);
+
+  if (bb.constrainWidth || bb.stretchWidth)
+    sizeStream = new ResizeObserver(() => {
+      let dd_width = ddElem.getBoundingClientRect().width;
+      if (bb.constrainWidth) dropMenu.style.maxWidth = `${dd_width}px`;
+      if (bb.stretchWidth) dropMenu.style.minWidth = `${dd_width}px`;
+    });
+});
+
+// checkerFill is a function that find all sub dropMenu that is linked to it dropdown by id and add it to ddFamily array.
+function checkerFill(dm: Element) {
+  if (dm.querySelectorAll(":scope .sub.dropdown[data-target]")[0]) {
+    [...dm.querySelectorAll(":scope .sub.dropdown[data-target]")].forEach((el) => {
+      let newDm = document.querySelector(`.drop.menu[data-ddid="${el.getAttribute("data-ddid")}"]`);
+      if (newDm) {
+        ddFamily.push(newDm);
+        checkerFill(newDm);
+      }
+    });
+  }
+}
+
+async function modelEffect(newModel: typeof model.value) {
+  await nextTick();
+
+  let items = [...dropMenu.querySelectorAll(selectors.items)] as HTMLElement[];
+
+  if (bb.multipleSelect) {
+    if (!Array.isArray(newModel)) {
+      console.error(
+        "Model value for multiple selectable dropdown must be an array. Please provide an array as model value.",
+      );
+    } else {
+      selectableContentBox.classList.add("no-content");
+
+      // go through all items in the multiple selectable dropdown menu to justify there selection.
+      items.forEach((item) => {
+        let itemValue = item.dataset.value || item.textContent;
+        let ddid = item.dataset.ddid ?? utils.getUniqueId("ddid");
+
+        if (newModel?.includes(itemValue)) {
+          item.classList.add("selected");
+          selectableContentBox.classList.remove("no-content");
+
+          if (rbb.mSelectContent.every((el) => el.val !== itemValue))
+            rbb.mSelectContent = [
+              ...rbb.mSelectContent,
+              {
+                html: item.innerHTML,
+                val: itemValue,
+                ddid: ddid,
+              },
+            ];
+          else {
+            let content = rbb.mSelectContent.find((el) => el.val === itemValue);
+
+            if (content && content?.ddid !== ddid) {
+              console.warn(
+                ddRef.value,
+                "There are items with same value in the selection dropdown.",
+              );
+              ddid = content.ddid;
+            }
+          }
+        } else {
+          item.classList.remove("selected");
+          rbb.mSelectContent = rbb.mSelectContent.filter((el) => el.val !== itemValue);
+        }
+
+        item.dataset.ddid = ddid;
+      });
+
+      // check if all items in the dropdown is selected.
+      if (items.every((el) => el.classList.contains("selected"))) rbb.allItemSelected = true;
+      else rbb.allItemSelected = false;
+    }
+  } else {
+    items.forEach((item) => {
+      item.classList.remove("active");
+      item.setAttribute("aria-selected", "false");
+    });
+    rbb.selectContent = "";
+
+    if (newModel) {
+      let item = items.find((el) => (el.dataset.value || el.textContent) === newModel);
+
+      if (item) {
+        item.classList.add("active");
+        item.setAttribute("aria-selected", "true");
+        rbb.selectContent = item.innerHTML;
+      } else
+        console.warn(
+          ddRef.value,
+          newModel,
+          "There's no item that match the selection dropdown value.",
+        );
+    }
+  }
+
+  if (showDropdown) {
+    await utils.afterNextRepaint();
+    dd_CalcPosition();
+  }
+}
+
+async function openDropdown() {
+  if (ddRef.value!.matches(".disabled, [disabled]")) {
+    showDropdown.value = false;
+    return;
+  }
+
+  // observe sizeStream if (bb.constrainWidth || bb.stretchWidth) is true
+  sizeStream?.observe(ddRef.value!);
+
+  // register dropdown as to when it will respond Escape key press
+  utils.trackEscOn(uniqueId);
+
+  if (bb.selectable) await modelEffect(model.value);
+
+  if (bb.searchable) {
+    searchBox.focus();
+    // what to do when searching in a dropdown box
+    searchBox.addEventListener("input", dd_searchEvt);
+    utils.triggerEvent(searchBox, "input");
+  }
+
+  document.addEventListener("click", dd_clickOnDomEvt);
+  document.addEventListener("keydown", dd_KBControlEvt);
+  window.addEventListener("resize", dd_CalcPosition);
+  window.addEventListener("scroll", dd_CalcPosition, true);
+  document.addEventListener("mousemove", dd_mouseMover);
+
+  dd_CalcPosition();
+  dropMenu.style.visibility = "visible";
+  dropMenu.classList.add("visible");
+  dropMenu.focus();
+
+  let items = [
+    ...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown),
+  ] as HTMLElement[];
+
+  let activeItem = items.find((el) => el.matches(".active"));
+
+  // highlight the right item when dropdown is opened with keyboard
+  if (bb.activateKeyboard) {
+    bb.activateKeyboard = false;
+
+    if (bb.selectable) {
+      let itemToHover = activeItem ?? items[0];
+      if (itemToHover) {
+        itemToHover.classList.add("hovered");
+        dropMenu.setAttribute("aria-activedescendant", itemToHover.textContent);
+        items.filter((el) => el != itemToHover).forEach((el) => el.classList.remove("hovered"));
+      }
+    } else utils.getFocusableElementsFrom(dropMenu)[0]?.focus();
+  }
+
+  await utils.delay(bb.transitionDuration! + 50);
+  // auto scroll dropdown-menu to active item position in selectable dropdown.
+  if (bb.selectable) activeItem?.scrollIntoView({ block: "nearest" });
+}
+async function closeDropdown() {
+  // close all sub-dropdown first
+  if (dropMenu) {
+    [...dropMenu.querySelectorAll(":scope .dropdown.active")].forEach((el) =>
+      utils.triggerEvent(el, "ddconsole", "close"),
+    );
+    [...dropMenu.querySelectorAll(selectors.items)].forEach((el) => el.classList.remove("hovered"));
+  }
+
+  document.removeEventListener("click", dd_clickOnDomEvt);
+  document.removeEventListener("keydown", dd_KBControlEvt);
+  document.removeEventListener("mousemove", dd_mouseMover);
+  window.removeEventListener("resize", dd_CalcPosition);
+  window.removeEventListener("scroll", dd_CalcPosition, true);
+
+  if (bb.searchable) {
+    searchBox.removeEventListener("input", dd_searchEvt);
+    searchBox.value = "";
+    searchBoxSizer.textContent = searchBox.value;
+    utils.afterNextRepaint(() => (searchBox.style.width = searchBoxSizer.clientWidth + "px"));
+    selectableContentBox?.classList.remove("filtered");
+    selectablePlaceholder?.classList.remove("filtered");
+
+    // return focus to rightful dropdown target
+    searchBox.focus();
+  } else ddRef.value?.focus();
+
+  if (bb.openOnHover) document.removeEventListener("mousemove", dd_toggleHandler);
+
+  // safely get out of escape track
+  utils.checkEscStatus(uniqueId, true);
+
+  dropMenu?.classList.remove("visible");
+  await utils.delay(bb.transitionDuration!);
+  dropMenu?.style.setProperty("visibility", "hidden");
+  if (ddRef.value) sizeStream?.unobserve(ddRef.value);
+}
+watch(showDropdown, (show) => (show ? openDropdown() : closeDropdown()));
+
+onBeforeUnmount(() => {
+  // stop all asynchronous watcher
+  Object.keys(unwatch).forEach((el) => {
+    if (typeof unwatch[el] === "function") unwatch[el]();
+  });
+  closeDropdown();
+  document.removeEventListener("click", ms_clickEvt);
+  document.removeEventListener("keydown", ms_keyEvt);
+  document.removeEventListener("keydown", dd_keyEvt);
+  sizeStream?.disconnect();
+
+  if (bb.openOnHover) document.removeEventListener("mousemove", dd_toggleHandler);
+
+  // return dropMenu to it appropriate location. needs review.
+  if (bb.teleportMenu && teleportationPlaceholder) {
+    teleportationPlaceholder.parentElement?.insertBefore(dropMenu, teleportationPlaceholder);
+    teleportationPlaceholder.remove();
+  }
+});
+
+function ms_clickEvt(e: MouseEvent) {
+  let target = e.target as HTMLElement;
+  let sItems = [...ddRef.value!.querySelectorAll(":scope > .content > .msitem")];
+  let sItem = sItems.find((el) => el.contains(target)) as HTMLElement;
+  let sItemClose = [...ddRef.value!.querySelectorAll(":scope > .content > .msitem > .close")].find(
+    (el) => el.contains(target),
+  );
+
+  // deselecting multiple dropdown item when user clicks on the close button of a msitem
+  if (sItemClose) utils.afterNextRepaint(() => dd_setDeselect(sItem));
+  else if (sItem) {
+    let sItemSiblings = sItems.filter((el) => el != sItem);
+
+    // select a msitem that is not selected if user clicks on them.
+    if (!sItem.matches(".active")) sItem.classList.add("active");
+    // deselect a msitem that is selected if user click on them and there is no other msitem selected
+    else if (!sItemSiblings.some((el) => el.matches(".active"))) sItem.classList.remove("active");
+
+    // if the control key is not pressed when user clicks on a msitem, deselect the siblings of the msitem
+    if (!e.ctrlKey) sItemSiblings.forEach((el) => el.classList.remove("active"));
+  }
+  // if one or more msitem(s) is selected and user clicks out, deselect the selected msitems
+  else sItems.forEach((el) => el.classList.remove("active"));
+}
+function ms_keyEvt(e: KeyboardEvent) {
+  let sItems = [...ddRef.value!.querySelectorAll(":scope > .content > .msitem")] as HTMLElement[];
+  let activeSItems = sItems.filter((el) => el.matches(".active"));
+
+  if (activeSItems[0]) {
+    let prevSibling = activeSItems[0].previousElementSibling?.matches(".msitem")
+      ? activeSItems[0].previousElementSibling
+      : null;
+    let nextSibling = [...activeSItems].at(-1)!.nextElementSibling;
+
+    // deselect items with keyboard when they are selected
+    if (e.key === "Backspace" || e.key === "Delete") {
+      if (e.key == "Backspace") {
+        if (prevSibling) prevSibling.classList.add("active");
+        else if (nextSibling?.matches(".msitem")) nextSibling.classList.add("active");
+      } else if (e.key == "Delete") {
+        if (nextSibling?.matches(".msitem")) nextSibling.classList.add("active");
+        else if (prevSibling) prevSibling.classList.add("active");
+      }
+
+      activeSItems.forEach((el) => dd_setDeselect(el));
+    }
+    // navigation within multiple selectable dropdown.
+    else if (e.key === "ArrowRight" && nextSibling) {
+      if (nextSibling === searchBox) {
+        activeSItems.forEach((el) => el.classList.remove("active"));
+        searchBox.focus();
+        return;
+      } else if (nextSibling.matches(".msitem")) {
+        if (!e.shiftKey) activeSItems.forEach((el) => el.classList.remove("active"));
+        nextSibling.classList.add("active");
+      }
+    } else if (e.key === "ArrowLeft" && prevSibling) {
+      if (!e.shiftKey) activeSItems.forEach((el) => el.classList.remove("active"));
+      prevSibling.classList.add("active");
+    } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      activeSItems.forEach((el) => el.classList.remove("active"));
+      if (e.key === "ArrowDown") {
+        bb.activateKeyboard = true;
+        showDropdown.value = true;
+      }
+    } else if (e.key === " " || e.key === "Enter" /* || e.key === 'Tab' */)
+      activeSItems.forEach((el) => el.classList.remove("active"));
+  }
+  // delete the last msitem in multiple dropdown if searchBox is focused-on and seachbox is empty and the backspace key is pressed
+  else if (
+    bb.searchable &&
+    searchBox.matches(":focus") &&
+    !searchBox.value &&
+    e.key == "Backspace" &&
+    sItems[0]
+  )
+    dd_setDeselect(sItems.at(-1)!);
+  // navigation in multiple selectable dropdown continues at the following.
+  else if (ddRef.value!.matches(":focus-within")) {
+    if (e.key == "ArrowRight") sItems[0]?.classList.add("active");
+    else if (e.key == "ArrowLeft") sItems.pop()?.classList.add("active");
+  }
+}
+function dd_keyEvt(e: KeyboardEvent) {
+  if (
+    (e.key == "Enter" || e.key == "ArrowDown" || e.key == " ") &&
+    ddRef.value!.matches(":focus-within") &&
+    !showDropdown.value
+  ) {
+    e.preventDefault();
+    bb.activateKeyboard = true;
+    showDropdown.value = true;
+  }
+}
+
+function dd_toggleHandler(e: MouseEvent | TouchEvent) {
+  let target = e.target as Element;
+  // escape all ex-dropdown classed element from toggling dropdwon also trigger only on toggler in dropdown if specified to do so.
+  if (
+    [...ddRef.value!.querySelectorAll(":scope > .content > .msitem")].some((el) =>
+      el.contains(target),
+    ) ||
+    (target && target.closest(".ex-dropdown")) ||
+    (bb.findToggler && !target.closest(".dd-toggler"))
+  )
+    return;
+
+  if (bb.openOnHover) {
+    if (e.type === "mouseenter") {
+      document.addEventListener("mousemove", dd_toggleHandler);
+      clearTimeout(bb.hideDropdownTimeout);
+      bb.showDropdownTimeout = setTimeout(() => {
+        if (bb.searchable) bb.activateKeyboard = true;
+        showDropdown.value = true;
+      }, bb.delay! / 2);
+    } else if (e.type === "mousemove") {
+      if (ddFamily.some((el) => el.contains(target))) {
+        bb.hidingDropdown = false;
+        clearTimeout(bb.hideDropdownTimeout);
+        return;
+      }
+      // prevent bb.hidingDropdown from triggering more than once.
+      if (bb.hidingDropdown) return;
+
+      bb.hidingDropdown = true;
+      clearTimeout(bb.showDropdownTimeout);
+      bb.hideDropdownTimeout = setTimeout(() => {
+        bb.hidingDropdown = false;
+        showDropdown.value = false;
+      }, bb.delay);
+    } else if (e.type === "touchstart") {
+      // prevent event from interfering with dropMenu items actions.
+      if (dropMenu.contains(target)) return;
+
+      if (showDropdown.value) {
+        clearTimeout(bb.showDropdownTimeout);
+        showDropdown.value = false;
+      } else {
+        document.addEventListener("mousemove", dd_toggleHandler);
+        clearTimeout(bb.hideDropdownTimeout);
+        if (bb.searchable) bb.activateKeyboard = true;
+        showDropdown.value = true;
+      }
+    }
+  } else {
+    // prevent event from interfering with dropMenu items actions.
+    if (dropMenu.contains(target)) return;
+
+    // I don't know why i called e.preventDefault here.
+    e.preventDefault();
+    // save event data to be used for a setting.page type dropdown dropMenu coordinate when showing it.
+    if (bb.page) bb.pageEvent = e as MouseEvent;
+
+    if (showDropdown.value) {
+      if (bb.searchable && !ddRef.value!.querySelector(":scope .ddico")?.contains(target)) {
+        searchBox.focus();
+        return;
+      }
+
+      setTimeout(() => (showDropdown.value = false), bb.delay);
+    } else {
+      setTimeout(() => {
+        if (bb.searchable) bb.activateKeyboard = true;
+        showDropdown.value = true;
+      }, bb.delay);
+    }
+  }
+}
+
+function dd_closeWithAncestor() {
+  showDropdown.value = false;
+  // get the ancestor dropdown of sub-dropdown and send it an event to close it self and it ancestors also
+  let parentDDMenu = utils.getParents(ddRef.value!, ".drop.menu")[0];
+  if (parentDDMenu && parentDDMenu.getAttribute("data-ddid")) {
+    let parentDropdown = document.querySelector(
+      `[data-ddid="${parentDDMenu.getAttribute("data-ddid")}"].dropdown`,
+    ) as Element;
+
+    if (parentDropdown)
+      utils.triggerEvent(parentDropdown, "ddconsole", "close all ancestor dropdown");
+  }
+}
+
+async function dd_searchEvt() {
+  searchQuery.value = searchBox.value.toLowerCase();
+  let items = [...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown)];
+
+  if (props.searchData) {
+    filteredData.value = props.filterFunction
+      ? props.filterFunction(searchQuery.value, props.searchData)
+      : props.searchData.filter((item) => item.toLowerCase().includes(searchQuery.value));
+  } else {
+    items.forEach((el) => {
+      if (searchQuery.value && !el.textContent?.toLowerCase().includes(searchQuery.value))
+        el.classList.add("filtered");
+      else el.classList.remove("filtered");
+    });
+  }
+  await nextTick();
+  items = [...dropMenu.querySelectorAll(selectors.items_filtered)];
+
+  if (!items[0]) {
+    [...dropMenu.querySelectorAll(selectors.items)].forEach((el) => el.classList.remove("hovered"));
+
+    if (searchQuery.value && !rbb.allItemFiltered) rbb.allItemFiltered = true;
+    else if (!searchQuery.value && rbb.allItemFiltered) rbb.allItemFiltered = false;
+  } else {
+    if (searchQuery.value && !ddRef.value!.matches(".indicating")) {
+      [...dropMenu.querySelectorAll(selectors.items)].forEach((el) =>
+        el.classList.remove("hovered"),
+      );
+    } else items.forEach((el) => el.classList.remove("hovered"));
+
+    items[0].classList.add("hovered");
+    if (bb.selectable) dropMenu.setAttribute("aria-activedescendant", items[0].textContent);
+
+    rbb.allItemFiltered = false;
+    items[0].scrollIntoView({ block: "nearest" });
+  }
+
+  if (bb.multipleSelect) {
+    if (searchQuery.value) {
+      selectableContentBox.classList.remove("no-content");
+      let sItems = [...ddRef.value!.querySelectorAll(":scope > .content > .msitem")];
+      if (sItems[0]) sItems.forEach((el) => el.classList.remove("active"));
+    } else if (!rbb.mSelectContent[0]) selectableContentBox.classList.add("no-content");
+  }
+
+  utils.afterNextRepaint(() => dd_CalcPosition());
+}
+
+function dd_clickOnDomEvt(e: MouseEvent) {
+  let target = e.target as Element;
+  let items = [...dropMenu.querySelectorAll(selectors.items)] as HTMLElement[];
+  let item = items.find((el) => el.contains(target));
+  let ignore =
+    [...ddRef.value!.querySelectorAll(":scope > .content > .msitem")].some((el) =>
+      el.contains(target),
+    ) || ddFamily.some((el) => el.contains(target));
+  let exiter = dropMenu.contains(target) && target.closest(selectors.dropdown_exiter);
+
+  // Close when an exiter is clicked or on "Click Out"
+  if (exiter || !ignore) showDropdown.value = false;
+  // respond when an item is clicked
+  else if (item) {
+    if (item.matches(".dropdown")) return;
+
+    if (bb.selectable) {
+      // deselecting items for multiple select dropdown that has the indicating class
+      if (bb.multipleSelect && item.matches(".selected")) dd_setDeselect(item);
+      // select item if dropdown is selectable
+      else dd_setSelect(item, bb.multipleSelect);
+    } else if (
+      /*
+      close all dropdown including all sub dropdowns and parent dropdowns if dropdown is
+        1. set to close on item click and click target is not on .dd-xclose item.
+        2. not set to close on item click but target is .dd-close item
+    */
+      (bb.closeOnItemClick && !item.matches(".dd-xclose")) ||
+      item.matches(".dd-close")
+    )
+      dd_closeWithAncestor();
+  }
+}
+
+function dd_KBControlEvt(e: KeyboardEvent) {
+  let items = [...dropMenu.querySelectorAll(selectors.items_filtered)] as HTMLElement[];
+  /*
+    The Enter key triggers the click action on an item
+    Enter and right arrow key open a sub dropdown that is hovered.
+  */
+  if (e.key === "Enter" || e.key === "ArrowRight") {
+    let item = items.find((el) => el.matches(".hovered")) as HTMLElement;
+    if (!item) return;
+    if (item.matches(".dropdown:not(.active)")) {
+      e.preventDefault();
+      utils.triggerEvent(item, "ddconsole", "open with keyboard");
+    } else if (e.key == "Enter") {
+      e.preventDefault();
+      item.click();
+    }
+  }
+  // The Escape key closes the dropdown if it is the dropdown turn to respond to Esc key press.
+  else if (e.key === "Escape" && utils.checkEscStatus(uniqueId)) {
+    e.preventDefault();
+    showDropdown.value = false;
+  }
+  // The Tab key closes the dropdown with all ancestor dropdowns if the dropdown or any of its relating elements loses focus.
+  else if (
+    e.key === "Tab" &&
+    ![...ddRef.value!.querySelectorAll(":scope :focus")][0] &&
+    ![...dropMenu.querySelectorAll(":scope :focus")][0] &&
+    ![...dropMenu.querySelectorAll(":scope .dropdown.active")][0]
+  ) {
+    e.preventDefault();
+    dd_closeWithAncestor();
+  }
+  // Arrow left key (Use to close a sub dropdown) support
+  else if (
+    e.key == "ArrowLeft" &&
+    props.sub &&
+    ![...dropMenu.querySelectorAll(":scope .dropdown.active")][0]
+  ) {
+    e.preventDefault();
+    showDropdown.value = false;
+  }
+  // Up and down arrrow key navigation on dropdown menu item.
+  else if (e.key == "ArrowUp" || e.key == "ArrowDown") {
+    let hvItem = items.find((el) => el.matches(".hovered"));
+    let acItem = items.find((el) => el.matches(".active"));
+
+    if (![...dropMenu.querySelectorAll(":scope .dropdown.active")][0]) {
+      e.preventDefault();
+      // cii is current-item-index
+      let cii = hvItem ? items.indexOf(hvItem) : acItem ? items.indexOf(acItem) : -1;
+      // nii is new-item-index
+      let nii =
+        e.key == "ArrowUp"
+          ? cii <= 0
+            ? items.length - 1
+            : cii - 1
+          : cii === items.length - 1 || cii < 0
+            ? 0
+            : cii + 1;
+      // ci is new-current-item
+      let ci = items[nii] as HTMLElement;
+
+      /* scroll overflow parent to make hovered-item visible in screen */
+      if (ci) {
+        ci.scrollIntoView({ behavior: "instant", block: "nearest" });
+        items.forEach((el) => {
+          el.classList.remove("hovered");
+        });
+        ci.classList.add("hovered");
+        if (bb.selectable) {
+          dropMenu.setAttribute("aria-activedescendant", ci.textContent);
+          if (!bb.multipleSelect) dd_setSelect(ci, true);
+        }
+      }
+    }
+
+    document.addEventListener("mousemove", dd_mouseMover);
+  }
+  // manage tab key navigation within dropdown menu and out of it.
+  else if (e.key === "Tab" && utils.getFocusableElementsFrom(dropMenu)[0])
+    utils.focusRangeOnTab(dropMenu, e);
+}
+
+function dd_CalcPosition() {
+  let rects = {
+    dd: ddRef.value!.getBoundingClientRect(),
+    dm: {
+      width: dropMenu.offsetWidth,
+      height: dropMenu.offsetHeight,
+    },
+    win: {
+      width: window.innerWidth - utils.winScrollbarSize().x,
+      height: window.innerHeight - utils.winScrollbarSize().y,
+    },
+    pad: {
+      x: 8,
+      y: 12,
+    },
+  };
+  // position dropdown relative to window
+  if (bb.page) {
+    let spacing = {
+      left: bb.pageEvent!.clientX - rects.pad.y,
+      top: bb.pageEvent!.clientY - rects.pad.y,
+      right: rects.win.width - bb.pageEvent!.clientX - rects.pad.x,
+      bottom: rects.win.height - bb.pageEvent!.clientY - rects.pad.x,
+    };
+
+    if (spacing.right >= Math.max(rects.dm.width, spacing.left)) {
+      dropMenu.style.left = `${Math.min(
+        spacing.left,
+        rects.win.width - rects.dm.width - rects.pad.x,
+      )}px`;
+      dropMenu.classList.add("rhs");
+    } else {
+      dropMenu.style.left = `${Math.max(spacing.left - rects.dm.width, rects.pad.x)}px`;
+      dropMenu.classList.add("lhs");
+    }
+
+    if (spacing.bottom >= Math.max(rects.dm.height, spacing.top)) {
+      dropMenu.style.top = `${Math.min(
+        spacing.top,
+        rects.win.height - rects.dm.height - rects.pad.y,
+      )}px`;
+      dropMenu.classList.add("downward");
+    } else {
+      dropMenu.style.top = `${Math.max(spacing.top - rects.dm.height, rects.pad.y)}px`;
+      dropMenu.classList.add("upward");
+    }
+  } else {
+    if (bb.view === "vertical") {
+      let spacing = {
+        top: rects.dd.top - rects.pad.y,
+        bottom: rects.win.height - rects.dd.top - rects.dd.height - rects.pad.y,
+      };
+
+      let dmY = {
+        top: rects.dd.top - rects.dm.height,
+        bottom: rects.dd.top + rects.dd.height,
+      };
+
+      if (bb.directionPriority.y === "bottom") {
+        if (
+          spacing.bottom >= Math.max(rects.dm.height, spacing.top) ||
+          rects.dm.height > spacing.top
+        ) {
+          dropMenu.style.top = `${dmY.bottom}px`;
+          if (!dropMenu.classList.contains("downward")) {
+            dropMenu.classList.add("downward");
+            dropMenu.classList.remove("upward");
+          }
+        } else {
+          dropMenu.style.top = `${dmY.top}px`;
+          if (!dropMenu.classList.contains("upward")) {
+            dropMenu.classList.add("upward");
+            dropMenu.classList.remove("downward");
+          }
+        }
+      } else {
+        if (spacing.top >= rects.dm.height) {
+          dropMenu.style.top = `${dmY.top}px`;
+          if (!dropMenu.classList.contains("upward")) {
+            dropMenu.classList.add("upward");
+            dropMenu.classList.remove("downward");
+          }
+        } else {
+          dropMenu.style.top = `${dmY.bottom}px`;
+          if (!dropMenu.classList.contains("downward")) {
+            dropMenu.classList.add("downward");
+            dropMenu.classList.remove("upward");
+          }
+        }
+      }
+
+      let dmX = 0;
+
+      if (bb.directionPriority.x === "right") {
+        dmX = rects.dd.left;
+        if (!dropMenu.classList.contains("rhs")) {
+          dropMenu.classList.add("rhs");
+          dropMenu.classList.remove("lhs");
+        }
+      } else if (bb.directionPriority.x === "center") {
+        dmX = rects.dd.left + rects.dd.width / 2 - rects.dm.width / 2;
+      } else {
+        dmX = rects.dd.left + rects.dd.width - rects.dm.width;
+        if (!dropMenu.classList.contains("lhs")) {
+          dropMenu.classList.add("lhs");
+          dropMenu.classList.remove("rhs");
+        }
+      }
+
+      dropMenu.style.left = `${Math.min(
+        Math.max(rects.pad.x, dmX),
+        rects.win.width - rects.dm.width - rects.pad.x,
+      )}px`;
+    } else {
+      let spacing = {
+        left: rects.dd.left,
+        right: rects.win.width - rects.dd.left - rects.dd.width,
+      };
+
+      let dmX = {
+        ...rects.dm,
+        left: rects.dd.left - rects.dm.width,
+        right: rects.dd.left + rects.dd.width,
+      };
+
+      if (bb.directionPriority.x === "right") {
+        if (
+          spacing.right >= Math.max(rects.dm.width, spacing.left) ||
+          rects.dm.width > spacing.left
+        ) {
+          dropMenu.style.left = `${dmX.right}px`;
+          if (!dropMenu.classList.contains("rhs")) {
+            dropMenu.classList.add("rhs");
+            dropMenu.classList.remove("lhs");
+          }
+        } else {
+          dropMenu.style.left = `${dmX.left}px`;
+          if (!dropMenu.classList.contains("lhs")) {
+            dropMenu.classList.add("lhs");
+            dropMenu.classList.remove("rhs");
+          }
+        }
+      } else {
+        if (spacing.left >= rects.dm.width) {
+          dropMenu.style.left = `${dmX.left}px`;
+          if (!dropMenu.classList.contains("lhs")) {
+            dropMenu.classList.add("lhs");
+            dropMenu.classList.remove("rhs");
+          }
+        } else {
+          dropMenu.style.left = `${dmX.right}px`;
+          if (!dropMenu.classList.contains("rhs")) {
+            dropMenu.classList.add("rhs");
+            dropMenu.classList.remove("lhs");
+          }
+        }
+      }
+
+      let dmY = 0;
+
+      if (bb.directionPriority.y === "bottom") {
+        dmY = rects.dd.top;
+        if (!dropMenu.classList.contains("downward")) {
+          dropMenu.classList.add("downward");
+          dropMenu.classList.remove("upward");
+        }
+      } else if (bb.directionPriority.y === "center")
+        dmY = rects.dd.top + rects.dd.height / 2 - rects.dm.height / 2;
+      else {
+        dmY = rects.dd.top + rects.dd.height - rects.dm.height;
+        if (!dropMenu.classList.contains("upward")) {
+          dropMenu.classList.add("upward");
+          dropMenu.classList.remove("downward");
+        }
+      }
+
+      dropMenu.style.top = `${Math.min(
+        Math.max(rects.pad.y, dmY),
+        rects.win.height - rects.dm.height - rects.pad.y,
+      )}px`;
+    }
+
+    // set arrow position variable
+    utils.afterNextRepaint(() => {
+      let arrowPos = 0;
+      // set arrow position based on the dropdown view and direction
+      if (bb.view === "vertical") {
+        if (dropMenu.classList.contains("lhs")) arrowPos = rects.dm.width - rects.dd.width / 2;
+        else if (dropMenu.classList.contains("rhs")) arrowPos = rects.dd.width / 2;
+        else arrowPos = rects.dd.left + rects.dd.width / 2 - dropMenu.getBoundingClientRect().left;
+      } else {
+        if (dropMenu.classList.contains("upward")) arrowPos = rects.dm.height - rects.dd.height / 2;
+        else if (dropMenu.classList.contains("downward")) arrowPos = rects.dd.height / 2;
+        else arrowPos = rects.dd.top + rects.dd.height / 2 - dropMenu.getBoundingClientRect().top;
+      }
+
+      dropMenu.style.setProperty("--arrow-center", `${arrowPos}px`);
+    });
+  }
+}
+
+// this function cancels active keyboard control on dropdown and enable mouse control.
+function dd_mouseMover(e: MouseEvent) {
+  let target = e.target as Element;
+  let items = [...dropMenu.querySelectorAll(selectors.items_of_indicating_dropdown)];
+
+  if (ddRef.value!.contains(target) || dropMenu.contains(target)) {
+    let item = items.find((el) => el.contains(target));
+    if (!item) {
+      items.forEach((el) => el.classList.remove("hovered"));
+      return;
+    }
+    item.classList.add("hovered");
+    if (bb.selectable) dropMenu.setAttribute("aria-activedescendant", item.textContent);
+
+    items.filter((el) => el !== item).forEach((el) => el.classList.remove("hovered"));
+  } else if (bb.openOnHover) showDropdown.value = false;
+  else items.forEach((el) => el.classList.remove("hovered"));
+}
+
+// this function set an item as selected in a selectable dropdown
+// xClose means don't close dropdown after selection.
+async function dd_setSelect(item: Element, xClose?: boolean) {
+  if (!item || !bb.selectable) return;
+
+  let items = [...dropMenu.querySelectorAll(selectors.items)];
+
+  if (bb.multipleSelect) {
+    let itemValue = (item as HTMLElement).dataset.value || item.textContent;
+
+    if (Array.isArray(model.value)) {
+      if (model.value.includes(itemValue))
+        console.warn("The selected item has a value that already exist in the dropdown selection.");
+      else model.value = [...model.value, itemValue];
+    } else model.value = [itemValue];
+
+    if (bb.searchable && showDropdown.value) {
+      searchBox.value = "";
+      utils.triggerEvent(searchBox, "input");
+      searchBox.focus();
+    }
+
+    await nextTick();
+    items = [...dropMenu.querySelectorAll(selectors.items)];
+
+    if (!showDropdown.value || ddRef.value!.matches(".indicating")) return;
+
+    item.classList.remove("hovered");
+
+    if (!bb.searchable) {
+      let nextHv =
+        utils.nextAll(item).find((el) => !el.matches(".selected")) ??
+        utils
+          .prevAll(item)
+          .filter((el) => !el.matches(".selected"))
+          .pop();
+      if (nextHv) {
+        nextHv.classList.add("hovered");
+        dropMenu.setAttribute("aria-activedescendant", nextHv.textContent);
+        nextHv.scrollIntoView({ block: "nearest" });
+      }
+    }
+
+    utils.afterNextRepaint(() => dd_CalcPosition());
+  } else {
+    if (!showDropdown.value && items.some((el) => el !== item && el.matches(".active")))
+      console.warn(
+        "A selection-dropdown on this page has multiple preselected value which is not suppose to be except it is a multiple-selection-dropdown. Only the first preselected value will be preselected.",
+      );
+
+    model.value = (item as HTMLElement).dataset.value || item.textContent;
+    rbb.selectContent = item.innerHTML;
+  }
+
+  if (!xClose) showDropdown.value = false;
+}
+
+// this function de-select an item in a selection dropdown.
+async function dd_setDeselect(sItem: HTMLElement) {
+  if (!bb.multipleSelect) return;
+
+  let ddid = sItem.dataset.ddid;
+  let content = rbb.mSelectContent.find((cont) => cont.ddid === ddid);
+  if (!content) return;
+
+  model.value = (model.value as string[]).filter((val) => val !== content.val);
+
+  if (showDropdown.value) {
+    if (bb.searchable) {
+      searchBox.value = "";
+      utils.triggerEvent(searchBox, "input");
+    }
+
+    await nextTick();
+    utils.afterNextRepaint(() => dd_CalcPosition());
+  }
+
+  if (bb.searchable) searchBox.focus();
+}
+</script>
+
+<template>
+  <a
+    ref="dropdown"
+    class="dropdown"
+    :data-ddid="uniqueId"
+    :data-target
+    :class="[type, { active: showDropdown, sub: sub }]"
+    :role="bb.selectable ? 'combobox' : 'button'"
+    :aria-haspopup="bb.selectable ? 'listbox' : 'menu'"
+    :aria-expanded="showDropdown"
+    :aria-controls="rbb.menuId"
+    :tabindex="bb.searchable ? -1 : 0"
+  >
+    <slot :query="searchQuery" :filteredData></slot>
+    <template v-if="bb.selectable">
+      <div v-if="bb.multipleSelect" class="content no-content">
+        <div
+          v-for="item in rbb.mSelectContent"
+          :key="item.ddid"
+          :data-ddid="item.ddid"
+          class="msitem chip"
+        >
+          <div v-html="item.html"></div>
+          <Icon name="material-symbols:close-rounded" class="close trailing" />
+        </div>
+        <template v-if="bb.searchable">
+          <input class="ssbox" autocomplete="off" />
+          <span class="ddss"></span>
+        </template>
+        <div class="placeholder">{{ placeholder }}</div>
+      </div>
+      <template v-else>
+        <template v-if="bb.searchable">
+          <input class="ssbox" autocomplete="off" />
+          <span class="ddss"></span>
+        </template>
+        <div ref="sContent" v-html="rbb.selectContent" class="content"></div>
+        <div class="placeholder">{{ placeholder }}</div>
+      </template>
+      <button
+        v-if="model && (!Array.isArray(model) || model.length)"
+        type="button"
+        @click.stop="model = bb.multipleSelect ? [] : ''"
+        class="ddico icon"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+          <!-- Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE -->
+          <path
+            fill="#888888"
+            d="m12 13.4l-2.917 2.925q-.277.275-.704.275t-.704-.275q-.275-.275-.275-.7t.275-.7L10.6 12L7.675 9.108Q7.4 8.831 7.4 8.404t.275-.704q.275-.275.7-.275t.7.275L12 10.625L14.892 7.7q.277-.275.704-.275t.704.275q.3.3.3.713t-.3.687L13.375 12l2.925 2.917q.275.277.275.704t-.275.704q-.3.3-.712.3t-.688-.3z"
+          />
+        </svg>
+      </button>
+      <button v-if="bb.isSelect" ref="ddIcon" type="button" tabindex="-1" class="ddico icon">
+        <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48">
+          <path
+            d="m480-222.609 108.913-108.913q13.202-12.696 30.21-12.696 17.007 0 29.138 13.299 12.13 11.734 12.13 29.552 0 17.817-11.13 29.758L509.957-132.87q-6.023 6.131-14.118 9.414-8.095 3.282-16.035 3.282-7.941 0-15.858-3.282-7.918-3.283-12.903-9.414L311.739-271.609q-12.13-12.071-12.13-29.927 0-17.855 12.233-29.769 12.234-12.913 29.834-12.63 17.6.283 29.976 12.413L480-222.609Zm0-512.651L371.087-626.348q-13.202 12.696-30.21 12.696-17.007 0-29.138-13.299-12.13-12.299-12.13-30.116 0-17.818 12.13-30.194l139.304-139.304q5.019-5.182 13.11-9.222 8.09-4.039 16.026-4.039 7.935 0 15.892 4.039 7.957 4.04 13.886 9.222l139.304 139.304q11.13 12.507 11.13 30.362 0 17.856-12.233 30.334-12.234 12.913-29.957 12.348-17.723-.565-29.853-12.696L480-735.26Z"
+          />
+        </svg>
+      </button>
+      <input ref="sInput" v-model="model" type="hidden" :name="name" />
+    </template>
+    <slot name="trailing"></slot>
+  </a>
+</template>
+<style>
+.dropdown {
+  cursor: pointer;
+  position: relative;
+  color: inherit;
+
+  &,
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: none;
+  }
+
+  &:not(:focus-visible) {
+    outline-color: transparent;
+  }
+
+  .indicator {
+    position: relative;
+    line-height: 100%;
+
+    &.alt {
+      margin: 0 0.5em 0 -0.25em;
+    }
+
+    &:not(.alt) {
+      margin: 0 -0.25em 0 0.5em;
+    }
+  }
+
+  &.select,
+  &.selection {
+    /* new in from form */
+    & .placeholder {
+      position: relative;
+      pointer-events: none;
+      flex: 1 1 auto;
+    }
+
+    & > .content {
+      display: flex;
+      align-items: center;
+      position: relative;
+      flex: 1 1 auto;
+      gap: 0.75em;
+      max-width: 100%;
+    }
+
+    &:not(.multiple) > .content:empty,
+    &:not(.multiple) > .content:not(:empty) ~ .placeholder,
+    &.multiple > .content:not(.no-content) > .placeholder {
+      display: none;
+    }
+
+    &.multiple > .content {
+      flex-flow: row wrap;
+      align-self: center;
+      gap: 0.25em;
+
+      &.content.no-content {
+        gap: 0em;
+      }
+
+      & > .msitem {
+        font-size: 0.875em;
+      }
+    }
+
+    &.search {
+      &.active:not(.multiple) > .content {
+        opacity: 0.8;
+
+        &.filtered {
+          display: none;
+        }
+      }
+    }
+
+    .ssbox {
+      display: inline-flex;
+      position: relative;
+      color: inherit;
+      font-size: 1em;
+      width: 1em;
+      max-width: 100%;
+      padding: 0em;
+      margin: 0em;
+      background: transparent;
+      border: 0px none;
+      border-radius: 0px;
+      outline-color: transparent;
+      box-shadow: none;
+    }
+
+    /* fix to clearout search box space */
+    &:not(.multiple) > .ssbox,
+    &.multiple > .no-content > .ssbox {
+      width: 1em;
+      margin-left: -1em;
+      left: 1em;
+    }
+
+    /* searchable select dropdown searchbox sizer */
+    .ddss {
+      letter-spacing: normal;
+      padding: 0em 0.5em;
+      visibility: hidden;
+      position: absolute;
+      white-space: pre;
+      max-width: 100%;
+      overflow: hidden;
+      left: 0px;
+      top: 0px;
+      font-size: inherit;
+    }
+
+    & > .drop.menu,
+    & + .drop.menu {
+      max-height: min(40vh, calc(100vh - 1.5rem));
+    }
+
+    &.indicating:not(.multiple) > .content,
+    &.indicating.multiple > .content > .msitem,
+    &.indicating > .placeholder {
+      display: none;
+    }
+  }
+}
+
+.drop.menu {
+  --icon-pad-offset: -0.25em;
+
+  width: max-content;
+  max-width: calc(100vw - 1rem);
+  max-height: calc(100vh - 1.5rem);
+  overflow-y: auto;
+  padding: 0.25em;
+  gap: 0.25em;
+  text-align: left;
+  font-weight: normal;
+  border: 1px solid var(--color-outline);
+  border-radius: var(--radius-block);
+  box-shadow: var(--shadow-d2);
+  visibility: hidden;
+  opacity: 0;
+  transform: scaleY(0.25);
+  position: fixed;
+  margin: 0em;
+  z-index: var(--z-level-5);
+  pointer-events: none;
+  scroll-behavior: smooth;
+  transition:
+    transform 300ms ease-in 0s,
+    opacity 300ms linear 0s;
+  --spacing: 0.25em;
+
+  &.pointing {
+    overflow: visible;
+    --spacing: 0.875em;
+
+    &:before {
+      content: "";
+      position: absolute;
+      height: 1.125em;
+      width: 1.125em;
+      transform-origin: center;
+      background: inherit;
+      border: inherit;
+      box-shadow: inherit;
+    }
+
+    &[data-view="vertical"] {
+      &:before {
+        left: calc(var(--arrow-center) - 0.5625em);
+      }
+
+      &.upward {
+        transform-origin: bottom center;
+
+        &:before {
+          clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
+          transform: translateY(-53%) rotate(45deg);
+          top: 100%;
+        }
+      }
+
+      &.downward {
+        transform-origin: top center;
+
+        &:before {
+          clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
+          transform: translateY(53%) rotate(45deg);
+          bottom: 100%;
+        }
+      }
+    }
+
+    &[data-view="horizontal"] {
+      &:before {
+        top: calc(var(--arrow-center) - 0.5625em);
+      }
+
+      &.rhs {
+        transform-origin: center left;
+
+        &:before {
+          clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
+          transform: translateX(53%) rotate(-45deg);
+          right: 100%;
+        }
+      }
+
+      &.lhs {
+        transform-origin: center right;
+
+        &:before {
+          clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
+          transform: translateX(-53%) rotate(-45deg);
+          left: 100%;
+        }
+      }
+    }
+  }
+
+  & > .item,
+  & > .items > .item {
+    text-align: left;
+    border-color: transparent;
+    padding: 0.5em 1em;
+
+    &.filtered {
+      display: none;
+    }
+  }
+
+  /* our dropdown only use class-based hover for options if it is selectable */
+  &[role="listbox"] [role="option"]:not(.hovered, .dropdown.active):hover {
+    background-color: transparent;
+
+    &:before {
+      opacity: 0;
+    }
+  }
+
+  &:not(.indicating) > .item.selected,
+  &:not(.indicating) > .items > .item.selected {
+    display: none;
+  }
+
+  &.indicating > .item,
+  &.indicating > .items > .item {
+    &:not(.no-indicator) {
+      padding-left: 2.4em;
+
+      &:after {
+        content: "";
+        position: absolute;
+        width: 1.14em;
+        height: 1.14em;
+        border: 2px solid #aaa;
+        text-align: center;
+        margin-left: -2em;
+        opacity: 1;
+        color: rgba(0, 0, 0, 0.87);
+        transition: transform 0.2s;
+      }
+
+      &.selected,
+      &.active {
+        cursor: pointer;
+
+        &:after {
+          width: 0.7em;
+          height: 1.2em;
+          border: 2px solid transparent;
+          border-right-color: var(--color-primary);
+          border-bottom-color: var(--color-primary);
+          transform: rotate(40deg);
+          backface-visibility: hidden;
+          transform-origin: 100% 100%;
+        }
+      }
+    }
+  }
+
+  & > .ed-msg {
+    color: inherit;
+    opacity: 0.5;
+    display: block;
+    text-align: left;
+    border: 0px none;
+    margin: 0;
+    padding: 0.5em 0.75em;
+
+    &:not(.active) {
+      display: none;
+    }
+  }
+
+  & .divider,
+  & hr {
+    pointer-events: none;
+    padding: 0em;
+    margin: 0.25em 0;
+  }
+
+  &.upward {
+    transform-origin: bottom center;
+  }
+
+  &.downward {
+    transform-origin: top center;
+  }
+
+  &.board {
+    width: 100%;
+    padding: 0.6em 1em;
+  }
+
+  &.tight {
+    margin: 0;
+  }
+
+  &.visible {
+    opacity: 1;
+    pointer-events: initial;
+    transition:
+      transform 300ms ease-in 0s,
+      opacity 300ms linear 0s;
+  }
+
+  &[data-view="vertical"] {
+    transform: scaleY(0.25);
+
+    &.upward {
+      margin-top: calc(0em - var(--spacing));
+    }
+
+    &.downward {
+      margin-top: var(--spacing);
+    }
+
+    &.visible {
+      transform: scaleY(1);
+    }
+  }
+
+  &[data-view="horizontal"] {
+    transform: scaleX(0.25);
+
+    &.rhs {
+      margin-left: var(--spacing);
+    }
+
+    &.lhs {
+      margin-left: calc(0em - var(--spacing));
+    }
+
+    &.visible {
+      transform: scaleX(1);
+    }
+  }
+}
+</style>

@@ -38,13 +38,13 @@ export default {
       </div>
       <div style="flex: 1 1 auto">
         <div class="fcd-displayname">{{ details.bizName }}</div>
-        <div class="opacity-65 fcd-bizcategory">{{ details.bizCategory }}</div>
+        <div class="fcd-bizcategory opacity-65">{{ details.bizCategory }}</div>
       </div>
       <div>
         <LimbDropdown :options="{ directionPriority: { x: 'left', y: 'bottom' } }">
           <SvgIcon name="more_horiz" />
         </LimbDropdown>
-        <div class="drop menu">
+        <div class="dropdown menu">
           <div class="item">Edit review</div>
           <div class="item">Delete review</div>
         </div>

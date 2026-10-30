@@ -9,21 +9,21 @@ const { data: businesses } = await useFetch("/api/user/businesses", {
 });
 </script>
 <template>
-  <main class="max-w-180 auto-contain">
+  <main class="auto-contain max-w-180">
     <div
       v-if="businesses?.length"
       v-for="business in businesses"
-      class="mybiz-card card flex flex-col w-full gap-3 p-2.5"
+      class="mybiz-card card flex w-full flex-col gap-3 p-2.5"
     >
-      <div class="flex gap-4 items-center">
+      <div class="flex items-center gap-4">
         <NuxtImg
           preset="logo"
           :src="business.logo || '/images/bizpic.jpg'"
-          class="flex-none rounded image w-22.5"
+          class="image w-22.5 flex-none rounded"
         />
-        <div class="flex-1 flex flex-col" style="justify-content: space-evenly">
-          <div class="font-bold text-h6">{{ business.business_name }}</div>
-          <div class="flex flex-wrap opacity-65 gap-x-2">
+        <div class="flex flex-1 flex-col" style="justify-content: space-evenly">
+          <div class="text-h6 font-bold">{{ business.business_name }}</div>
+          <div class="flex flex-wrap gap-x-2 opacity-65">
             <NuxtLink
               :to="{ name: 'biz-home', params: { slug: business.slug } }"
               class="truncate"
@@ -34,18 +34,18 @@ const { data: businesses } = await useFetch("/api/user/businesses", {
           </div>
         </div>
       </div>
-      <div class="w-full flex flex-wrap" style="gap: 0.5em">
-        <NuxtLink :to="`/manage/${business.slug}/overview`" class="compact flex-1 button"
+      <div class="flex w-full flex-wrap" style="gap: 0.5em">
+        <NuxtLink :to="`/manage/${business.slug}/overview`" class="compact button flex-1"
           >Manage page</NuxtLink
         >
-        <button class="compact flex-1 button">Create post</button>
+        <button class="compact button flex-1">Create post</button>
         <LimbDropdown
           :options="{ directionPriority: { x: 'left', y: 'bottom' } }"
-          class="as-icon flex-1 compact button"
+          class="as-icon compact button flex-1"
         >
           <Icon name="material-symbols:more-horiz" />
         </LimbDropdown>
-        <div class="drop menu">
+        <div class="dropdown menu">
           <div class="item">
             <Icon name="material-symbols:campaign-outline-rounded" class="lead" />
             Promote
@@ -54,7 +54,7 @@ const { data: businesses } = await useFetch("/api/user/businesses", {
         </div>
       </div>
     </div>
-    <div v-else class="flex flex-col items-center gap-4 my-auto p-8">
+    <div v-else class="my-auto flex flex-col items-center gap-4 p-8">
       <Icon name="material-symbols:storefront-outline-rounded" class="text-6xl opacity-65" />
       <div class="text-center">
         <div class="font-bold">You don't have any shops yet</div>

@@ -4,7 +4,7 @@ export type product = {
   business_id: string;
   category_id: string;
   title: string;
-  photos: string[];
+  pictures: string[];
   video_link?: string;
   base_price: string;
   base_promo_price?: string;
@@ -14,7 +14,7 @@ export type product = {
       label: string;
       price?: string;
       promo_price?: string;
-      photo?: string;
+      picture?: string;
       sub_options?: {
         is_active: boolean;
         label: string;
@@ -27,7 +27,7 @@ export type product = {
   };
   sub_option_group?: {
     title: string;
-    options: { label: string; price?: string; photo?: string }[];
+    options: { label: string; price?: string; picture?: string }[];
   };
   specifications: {
     name: string;

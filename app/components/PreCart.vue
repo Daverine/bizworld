@@ -55,20 +55,20 @@ const toCart = reactive<{
   note: "",
 });
 
-const photos = computed(() => {
+const pictures = computed(() => {
   if (!product.value) return [];
-  let photos = [...product.value.photos];
+  let pictures = [...product.value.pictures];
   if (product.value.option_group) {
     product.value.option_group.options.forEach((item) => {
-      if (item.photo) photos.push(item.photo);
+      if (item.picture) pictures.push(item.picture);
     });
     if (product.value.sub_option_group) {
       product.value.sub_option_group.options.forEach((item) => {
-        if (item.photo) photos.push(item.photo);
+        if (item.picture) pictures.push(item.picture);
       });
     }
   }
-  return photos;
+  return pictures;
 });
 const price = computed(() => {
   if (!product.value) return NaN;
@@ -111,7 +111,7 @@ const promo_price = computed(() => {
           <div class="grid grid-cols-2 gap-3">
             <LimbCarousel :options="{ continuous: false }">
               <div
-                v-for="slide in photos"
+                v-for="slide in pictures"
                 class="cs-slide photo-box aspect-square"
                 :style="`--box-photo: url(${img(slide, { format: 'webp', width: 960 })})`"
               >
@@ -197,9 +197,9 @@ const promo_price = computed(() => {
                     v-model="toCart.spec[0]"
                   />
                   <NuxtImg
-                    v-if="option.photo"
+                    v-if="option.picture"
                     preset="logo"
-                    :src="option.photo"
+                    :src="option.picture"
                     class="thumbnail"
                   />
                   {{ option.label }}
@@ -237,9 +237,9 @@ const promo_price = computed(() => {
                         v-model="toCart.spec[1]"
                       />
                       <NuxtImg
-                        v-if="sub_option.photo"
+                        v-if="sub_option.picture"
                         preset="logo"
-                        :src="sub_option.photo"
+                        :src="sub_option.picture"
                         class="thumbnail"
                       />
                       {{ sub_option.label }}
@@ -351,8 +351,7 @@ const promo_price = computed(() => {
             ></textarea>
           </div>
           <div
-            class="footer bg-surface shadow-b-blend sticky flex flex-col gap-3"
-            style="bottom: 0px; padding: 1rem 0rem; margin-top: 0.5rem"
+            class="footer bg-surface shadow-b-blend sticky bottom-0 mt-2 flex flex-col gap-3 py-4"
           >
             <div class="flex flex-col" style="gap: 0.25rem">
               <div class="flex items-center justify-between gap-3">

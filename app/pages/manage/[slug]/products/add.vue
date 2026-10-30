@@ -14,10 +14,10 @@ const { data: productCategories } = await useFetch("/api/product-categories", {
   key: "product-categories",
 });
 
-const productForm = reactive<{
+const mainForm = reactive<{
   category_id?: string;
   title?: string;
-  photos: (File | string)[];
+  pictures: (File | string)[];
   video_link?: string;
 
   base_price?: string;
@@ -28,7 +28,7 @@ const productForm = reactive<{
       label: string;
       price: string;
       promo_price: string;
-      photo?: File | string;
+      picture?: File | string;
       sub_options?: {
         is_active: boolean;
         label: string;
@@ -41,7 +41,7 @@ const productForm = reactive<{
   };
   sub_option_group?: {
     title: string;
-    options: { label: string; price: string; promo_price: string; photo?: File | string }[];
+    options: { label: string; price: string; promo_price: string; picture?: File | string }[];
   };
 
   specifications: {
@@ -66,7 +66,7 @@ const productForm = reactive<{
   };
   meta: Record<string, any>;
 }>({
-  photos: [],
+  pictures: [],
   specifications: [],
   meta: {},
 });
@@ -75,7 +75,7 @@ const placeholder = reactive<{
     label: string;
     price: string;
     promo_price: string;
-    photo?: File | string;
+    picture?: File | string;
     sub_options?: {
       is_active: boolean;
       label: string;
@@ -133,36 +133,36 @@ const placeholder = reactive<{
 });
 const locationFilled = () => Object.values(placeholder.shipping.location).some((val) => val);
 const validation = {
-  product: useRegle(productForm, {
+  product: useRegle(mainForm, {
     category_id: {
       required: withMessage(required, "Product category is required."),
     },
     title: { required: withMessage(required, "Product title is required.") },
-    photos: {
+    pictures: {
       $each: {},
       minLength: withMessage(
         (value: Maybe<(File | string)[]>) => !!value && value.length > 1,
-        "At least two product photos are required.",
+        "At least two product pictures are required.",
       ),
       size: withMessage(
         (value: Maybe<(File | string)[]>) =>
-          !value || value.every((el) => typeof el === "string" || el.size <= 5 * 1024 * 1024),
-        "Each photo must be less than 5MB in size.",
+          !!value && value.every((el) => typeof el === "string" || el.size <= 5 * 1024 * 1024),
+        "Each picture must be less than 5MB in size.",
       ),
     },
     video_link: { url },
 
     base_price: {
       required: withMessage(
-        (value: Maybe<string>) => !!value && Number(value) > 0,
+        (value: Maybe<string>) => isFilled(value) && Number(value) > 0,
         "A base price is required for the product.",
       ),
       lowestInOptions: withMessage((value: Maybe<string>) => {
-        if (!productForm.option_group) return true;
+        if (!mainForm.option_group) return true;
         let lowestOptionPrice = Math.min(
-          ...productForm.option_group.options.map((option) => Number(option.price) || Infinity),
-          ...(productForm.option_group.options.some((option) => option.sub_options)
-            ? productForm.option_group.options.flatMap(
+          ...mainForm.option_group.options.map((option) => Number(option.price) || Infinity),
+          ...(mainForm.option_group.options.some((option) => option.sub_options)
+            ? mainForm.option_group.options.flatMap(
                 (option) =>
                   option.sub_options?.map((sub_option) => Number(sub_option.price) || Infinity) ||
                   [],
@@ -178,14 +178,14 @@ const validation = {
         (value: Maybe<string>) =>
           !value ||
           (Number(value) > 0 &&
-            (!productForm.base_price || Number(value) < Number(productForm.base_price))),
+            (!mainForm.base_price || Number(value) < Number(mainForm.base_price))),
         "Promotional price must be greater than zero and less than the base price.",
       ),
     },
     option_group: {
       title: {
         required: withMessage(
-          requiredIf(() => utils.isObject(productForm.option_group)),
+          requiredIf(() => utils.isObject(mainForm.option_group)),
           "A title is required for this option group.",
         ),
       },
@@ -200,7 +200,7 @@ const validation = {
     sub_option_group: {
       title: {
         required: withMessage(
-          requiredIf(() => utils.isObject(productForm.sub_option_group)),
+          requiredIf(() => utils.isObject(mainForm.sub_option_group)),
           "A title is required for this option group.",
         ),
       },
@@ -215,8 +215,13 @@ const validation = {
 
     specifications: {
       minLength: withMessage(
-        (value: Maybe<any[]>) => !!value && value.length > 1,
+        (value: Maybe<typeof mainForm.specifications>) => !!value && value.length > 1,
         "At least two product specifications are required.",
+      ),
+      unique: withMessage(
+        (value: Maybe<typeof mainForm.specifications>) =>
+          new Set(value?.map(({ name }) => name)).size === value?.length,
+        "Each specifications name added should be unique.",
       ),
       $each: {
         name: { required },
@@ -239,16 +244,16 @@ const validation = {
       label: {
         unique: withMessage(
           (value: Maybe<string>) =>
-            !!value &&
-            productForm.option_group!.options.every(
+            isFilled(value) &&
+            mainForm.option_group!.options.every(
               (option, index) =>
                 option.label !== value ||
                 (placeholder.modifyingOption &&
                   placeholder.modifyingOption.group === "main" &&
                   placeholder.modifyingOption.index === index),
             ) &&
-            (!productForm.sub_option_group ||
-              productForm.sub_option_group.options.every(
+            (!mainForm.sub_option_group ||
+              mainForm.sub_option_group.options.every(
                 (option, index) =>
                   option.label !== value ||
                   (placeholder.modifyingOption &&
@@ -265,14 +270,14 @@ const validation = {
             (Number(value) > 0 &&
               (!placeholder.option.price ||
                 Number(value) < Number(placeholder.option.price) ||
-                (!placeholder.option.price && Number(value) < Number(productForm.base_price)))),
+                (!placeholder.option.price && Number(value) < Number(mainForm.base_price)))),
           "Promotional price must be greater than zero and less than the option price if present or less than base price.",
         ),
       },
-      photo: {
+      picture: {
         maxSize: withMessage(
           maxFileSize(5 * 1024 * 1024),
-          "Selected photo must be less than 5MB in size.",
+          "Selected picture must be less than 5MB in size.",
         ),
       },
       sub_options: {
@@ -285,7 +290,7 @@ const validation = {
                 (Number(value) > 0 &&
                   (!sub_option.value.price ||
                     Number(value) < Number(sub_option.value.price) ||
-                    (!sub_option.value.price && Number(value) < Number(productForm.base_price)))),
+                    (!sub_option.value.price && Number(value) < Number(mainForm.base_price)))),
               "Promotional price must be greater than zero and less than this sub-option price if present or less than base price.",
             ),
           },
@@ -400,17 +405,17 @@ const specPresets = {
   ],
 };
 
-function handleNewPhoto(event: Event) {
+function handleNewPicture(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files) {
-    [...input.files].forEach((file) => productForm.photos.push(file));
+    [...input.files].forEach((file) => mainForm.pictures.push(file));
     input.value = "";
     nextTick(() => input.scrollIntoView({ behavior: "smooth", block: "center" }));
   }
 }
-async function createproductFormOption() {
-  if (productForm.option_group) {
-    productForm.sub_option_group = {
+async function createOption() {
+  if (mainForm.option_group) {
+    mainForm.sub_option_group = {
       title: "",
       options: [],
     };
@@ -421,7 +426,7 @@ async function createproductFormOption() {
       .getElementById("sub-option-group-title")
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
   } else {
-    productForm.option_group = {
+    mainForm.option_group = {
       title: "",
       options: [],
     };
@@ -433,19 +438,22 @@ async function createproductFormOption() {
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 }
-async function configProductOption({ target, settings }: Dialoger) {
+async function configureOption({ target, settings }: Dialoger) {
   let caller = settings.caller!;
   let callergroup = caller.hasAttribute("data-sub-category") ? "sub" : "main";
 
   if (caller.dataset.optionId !== undefined) {
     let optionId = parseInt(caller.dataset.optionId);
-    const option =
-      callergroup === "sub"
-        ? productForm.sub_option_group?.options[optionId]
-        : productForm.option_group?.options[optionId];
+    const option = JSON.parse(
+      JSON.stringify(
+        callergroup === "sub"
+          ? mainForm.sub_option_group?.options[optionId]
+          : mainForm.option_group?.options[optionId],
+      ),
+    );
     if (option) {
       placeholder.modifyingOption = { group: callergroup, index: optionId };
-      placeholder.option = { ...structuredClone(toRaw(option)) };
+      placeholder.option = option;
     }
   }
 
@@ -458,7 +466,7 @@ async function configProductOption({ target, settings }: Dialoger) {
     cleanupCloseEvent();
   });
 }
-async function processProductOption({ settings, exit }: Dialoger) {
+async function processOption({ settings, exit }: Dialoger) {
   await validation.option.r$.$validate();
   if (validation.option.r$.$invalid) return;
 
@@ -468,29 +476,24 @@ async function processProductOption({ settings, exit }: Dialoger) {
   if (placeholder.modifyingOption) {
     let index = placeholder.modifyingOption.index;
     if (callergroup === "sub") {
-      if (productForm.sub_option_group?.options[index]) {
-        if (placeholder.option.label.trim())
-          productForm.sub_option_group.options[index] = {
-            ...placeholder.option,
-          };
-        else productForm.sub_option_group.options.splice(index, 1);
+      if (mainForm.sub_option_group?.options[index]) {
+        mainForm.sub_option_group.options[index] = {
+          ...placeholder.option,
+        };
       }
     } else if (callergroup === "main") {
-      if (productForm.option_group?.options[index]) {
-        if (placeholder.option.label.trim())
-          productForm.option_group.options[index] = {
-            ...placeholder.option,
-          };
-        else productForm.option_group.options.splice(index, 1);
+      if (mainForm.option_group?.options[index]) {
+        mainForm.option_group.options[index] = {
+          ...placeholder.option,
+        };
       }
     }
-  } else if (placeholder.option.label.trim()) {
+  } else {
     if (callergroup === "sub")
-      productForm.sub_option_group?.options.push({
+      mainForm.sub_option_group?.options.push({
         ...placeholder.option,
       });
-    else if (callergroup === "main")
-      productForm.option_group?.options.push({ ...placeholder.option });
+    else if (callergroup === "main") mainForm.option_group?.options.push({ ...placeholder.option });
   }
 
   validation.product.r$.base_price.$touch();
@@ -498,7 +501,7 @@ async function processProductOption({ settings, exit }: Dialoger) {
 }
 function addSpecification(template?: string[]) {
   if (template) {
-    productForm.specifications = template.map((spec) => ({
+    mainForm.specifications = template.map((spec) => ({
       name: spec,
       value: "",
     }));
@@ -510,7 +513,7 @@ function addSpecification(template?: string[]) {
       )?.focus(),
     );
   } else {
-    productForm.specifications.push({ name: "", value: "" });
+    mainForm.specifications.push({ name: "", value: "" });
     nextTick(() =>
       (
         document.querySelector(
@@ -538,8 +541,8 @@ async function setShippingDetails({ exit }: Dialoger) {
     Object.values(placeholder.shipping.location).some((val) => val) ||
     Object.values(placeholder.shipping.measurements).some((val) => val)
   )
-    productForm.shipping = placeholder.shipping;
-  else productForm.shipping = undefined;
+    mainForm.shipping = placeholder.shipping;
+  else mainForm.shipping = undefined;
 
   exit();
 }
@@ -584,30 +587,32 @@ async function processForm() {
   try {
     // check if files have be uploaded before and upload them if not
     if (
-      productForm.photos.some((photo) => typeof photo !== "string") ||
-      (productForm.option_group &&
-        productForm.option_group.options.some(({ photo }) => photo && typeof photo !== "string")) ||
-      (productForm.sub_option_group &&
-        productForm.sub_option_group.options.some(
-          ({ photo }) => photo && typeof photo !== "string",
+      mainForm.pictures.some((picture) => typeof picture !== "string") ||
+      (mainForm.option_group &&
+        mainForm.option_group.options.some(
+          ({ picture }) => picture && typeof picture !== "string",
         )) ||
-      (productForm.details_attachment && typeof productForm.details_attachment !== "string")
+      (mainForm.sub_option_group &&
+        mainForm.sub_option_group.options.some(
+          ({ picture }) => picture && typeof picture !== "string",
+        )) ||
+      (mainForm.details_attachment && typeof mainForm.details_attachment !== "string")
     ) {
       const formFiles = new FormData();
-      productForm.photos.forEach((photo, index) => {
-        if (typeof photo === "string") return;
-        formFiles.append("photos", photo, index.toString());
+      mainForm.pictures.forEach((picture, index) => {
+        if (typeof picture === "string") return;
+        formFiles.append("pictures", picture, index.toString());
       });
-      productForm.option_group?.options.forEach((option, index) => {
-        if (option.photo && typeof option.photo !== "string")
-          formFiles.append("option_group", option.photo, index.toString());
+      mainForm.option_group?.options.forEach((option, index) => {
+        if (option.picture && typeof option.picture !== "string")
+          formFiles.append("option_group", option.picture, index.toString());
       });
-      productForm.sub_option_group?.options.forEach((option, index) => {
-        if (option.photo && typeof option.photo !== "string")
-          formFiles.append("sub_option_group", option.photo, index.toString());
+      mainForm.sub_option_group?.options.forEach((option, index) => {
+        if (option.picture && typeof option.picture !== "string")
+          formFiles.append("sub_option_group", option.picture, index.toString());
       });
-      if (productForm.details_attachment && typeof productForm.details_attachment !== "string") {
-        formFiles.append("details_attachment", productForm.details_attachment);
+      if (mainForm.details_attachment && typeof mainForm.details_attachment !== "string") {
+        formFiles.append("details_attachment", mainForm.details_attachment);
       }
 
       placeholder.upload.message = "Uploading product files...";
@@ -618,23 +623,23 @@ async function processForm() {
         method: "post",
       });
 
-      if ("photos" in filesURL) {
-        filesURL.photos.forEach((elem) => {
-          productForm.photos[parseInt(elem.filename)] = elem.data;
+      if ("pictures" in filesURL) {
+        filesURL.pictures.forEach((elem) => {
+          mainForm.pictures[parseInt(elem.filename)] = elem.data;
         });
       }
       if ("option_group" in filesURL) {
         filesURL.option_group.forEach((elem) => {
-          productForm.option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
+          mainForm.option_group!.options[parseInt(elem.filename)]!.picture = elem.data;
         });
       }
       if ("sub_option_group" in filesURL) {
         filesURL.sub_option_group.forEach((elem) => {
-          productForm.sub_option_group!.options[parseInt(elem.filename)]!.photo = elem.data;
+          mainForm.sub_option_group!.options[parseInt(elem.filename)]!.picture = elem.data;
         });
       }
       if ("details_attachment" in filesURL) {
-        productForm.details_attachment = filesURL.details_attachment[0]?.data;
+        mainForm.details_attachment = filesURL.details_attachment[0]?.data;
       }
     }
 
@@ -643,7 +648,7 @@ async function processForm() {
       method: "post",
       body: {
         business_slug: route.params.slug,
-        ...structuredClone(toRaw(productForm)),
+        ...structuredClone(toRaw(mainForm)),
       },
     });
     placeholder.upload.message = "Done";
@@ -657,14 +662,14 @@ async function processForm() {
 }
 
 watchEffect(() => {
-  if (productForm.sub_option_group?.options === undefined && productForm.option_group) {
-    productForm.option_group.options.forEach((option) => {
+  if (mainForm.sub_option_group?.options === undefined && mainForm.option_group) {
+    mainForm.option_group.options.forEach((option) => {
       option.sub_options = undefined;
     });
-  } else if (productForm.option_group) {
-    productForm.option_group.options.forEach((option) => {
+  } else if (mainForm.option_group) {
+    mainForm.option_group.options.forEach((option) => {
       option.sub_options = option.sub_options || [];
-      let newMap = productForm.sub_option_group?.options.map((el, index) => ({
+      let newMap = mainForm.sub_option_group?.options.map((el, index) => ({
         is_active:
           option.sub_options![index]?.label === el.label
             ? option.sub_options![index].is_active
@@ -688,7 +693,7 @@ watchEffect(() => {
     });
   }
 });
-useSortable("#prod-photos > .scroll-items", productForm.photos);
+useSortable("#prod-pictures > .scroll-items", mainForm.pictures);
 </script>
 
 <template>
@@ -715,17 +720,17 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
     </header>
     <form
       id="product-form"
-      class="auto-contain no-edge max-w-lg flex-1"
+      class="auto-contain no-edge flex max-w-lg flex-1 flex-col gap-4"
       @submit.prevent="processForm"
     >
       <div class="field">
         <label for="prod-title">Product title</label>
-        <div class="text-sm opacity-65">
+        <p class="text-sm opacity-65">
           It should be as descriptive and unique as possible. Include brand name, model, and key
           features.
-        </div>
+        </p>
         <input
-          v-model="productForm.title"
+          v-model="mainForm.title"
           id="prod-title"
           class="form-item"
           :class="{ error: validation.product.r$.title.$error }"
@@ -742,36 +747,36 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
         </div>
       </div>
       <div class="field">
-        <label for="photo-selector">Add photo</label>
-        <div class="text-sm opacity-65">
-          Photos help customers see the product. Use clear, well-lit images that showcase the
-          product from different angles. A photo can be dragged to re-order it.
-        </div>
+        <label for="picture-selector">Add picture</label>
+        <p class="text-sm opacity-65">
+          Pictures help customers see the product. Use clear, well-lit images that showcase the
+          product from different angles. A picture can be dragged to re-order it.
+        </p>
         <LimbIScroller
-          id="prod-photos"
+          id="prod-pictures"
           :options="{ autoSetup: true }"
           class="[&_.sortable-ghost]:opacity-0"
         >
           <div
-            v-for="(photo, index) in productForm.photos"
+            v-for="(picture, index) in mainForm.pictures"
             class="relative flex flex-col items-center"
           >
-            <img :src="utils.fileToURL(photo)" alt="Product photo" class="thumbnail" />
+            <img :src="utils.fileToURL(picture)" alt="Product picture" class="thumbnail" />
             <button
               type="button"
-              @click="productForm.photos.splice(index, 1)"
+              @click="mainForm.pictures.splice(index, 1)"
               class="compact circular outlined button bg-overlay absolute top-1 right-1 text-xs"
             >
               <Icon name="material-symbols:close-rounded" />
             </button>
-            <div v-if="typeof photo !== 'string'" class="text-sm">
-              {{ (photo.size / 1024 / 1024).toFixed(1) }}MB
+            <div v-if="typeof picture !== 'string'" class="text-sm">
+              {{ (picture.size / 1024 / 1024).toFixed(1) }}MB
             </div>
           </div>
         </LimbIScroller>
         <div
           class="text-error text-sm"
-          v-for="error in validation.product.r$.photos.$self.$errors"
+          v-for="error in validation.product.r$.pictures.$self.$errors"
           :key="error"
         >
           <Icon name="material-symbols:error-rounded" />
@@ -779,13 +784,13 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
         </div>
         <label class="button design-takeover">
           <Icon name="material-symbols:add-a-photo-outline-rounded" />{{
-            productForm.photos.length ? "Add more photos" : "Add photos"
+            mainForm.pictures.length ? "Add more pictures" : "Add pictures"
           }}
           <input
-            id="photo-selector"
+            id="picture-selector"
             type="file"
             multiple
-            @change="handleNewPhoto"
+            @change="handleNewPicture"
             accept="image/*"
           />
         </label>
@@ -793,7 +798,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
       <div class="field">
         <label for="prod-video">Link to YouTube or Facebook video</label>
         <input
-          v-model="productForm.video_link"
+          v-model="mainForm.video_link"
           id="prod-video"
           class="form-item"
           :class="{ error: validation.product.r$.video_link.$error }"
@@ -816,7 +821,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           can also select “Others” from the dropdown to make a new one.
         </p>
         <LimbDropdown
-          v-model="productForm.category_id"
+          v-model="mainForm.category_id"
           type="search select"
           :class="{ error: validation.product.r$.category_id.$error }"
           @change="
@@ -826,7 +831,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           id="prod-category"
           placeholder="Select category"
         />
-        <div class="drop menu">
+        <div class="dropdown menu">
           <template
             v-for="cat in productCategories?.filter((category) => category.parent_id === null)"
             Key="cat.id"
@@ -861,14 +866,14 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           <Icon name="material-symbols:error-rounded" />
           {{ error }}
         </div>
-        <div v-if="productForm.category_id === '-1'" class="field">
+        <div v-if="mainForm.category_id === '-1'" class="field">
           <label for="prod-category-new">New category name</label>
-          <div class="text-sm opacity-65">
+          <p class="text-sm opacity-65">
             Note: Your product will remain in the “Others” category in Explore until the new
             category is reviewed and standardized.
-          </div>
+          </p>
           <input
-            v-model="productForm.meta.new_category"
+            v-model="mainForm.meta.new_category"
             id="prod-category-new"
             class="form-item"
             type="text"
@@ -879,12 +884,12 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
 
       <div class="field">
         <label for="prod-price">Price</label>
-        <div class="text-sm opacity-65">
+        <p class="text-sm opacity-65">
           If there are product options, the price here should be the lowest option price. Price can
           also be set with product options.
-        </div>
+        </p>
         <LimbCurrencyInput
-          v-model="productForm.base_price"
+          v-model="mainForm.base_price"
           @input="validation.product.r$.base_promo_price.$touch"
           id="prod-price"
           class="form-item"
@@ -900,7 +905,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           {{ error }}
         </div>
         <button
-          v-if="!placeholder.priceOption && !productForm.base_promo_price"
+          v-if="!placeholder.priceOption && !mainForm.base_promo_price"
           type="button"
           @click="
             () => {
@@ -921,7 +926,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             enabled.
           </p>
           <LimbCurrencyInput
-            v-model="productForm.base_promo_price"
+            v-model="mainForm.base_promo_price"
             id="base-promo-price"
             class="form-item"
             :class="{ error: validation.product.r$.base_promo_price.$error }"
@@ -939,14 +944,14 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
       </div>
       <div class="field">
         <div class="field-label">Product options</div>
-        <div class="text-sm opacity-65">
+        <p class="text-sm opacity-65">
           Product options are variations of the product, such as color, size, or configuration. You
           can add a maximum of two option groups.
-        </div>
+        </p>
         <button
           type="button"
-          v-if="!productForm.option_group"
-          @click="createproductFormOption"
+          v-if="!mainForm.option_group"
+          @click="createOption"
           class="compact button"
         >
           Add an option group
@@ -956,7 +961,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             <button
               type="button"
               @click="
-                ((productForm.option_group = undefined), (productForm.sub_option_group = undefined))
+                ((mainForm.option_group = undefined), (mainForm.sub_option_group = undefined))
               "
               v-tooltip:aria.unblocking
               aria-label="Remove option group"
@@ -967,7 +972,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             <div class="field">
               <label for="option-group-title">Option group title</label>
               <input
-                v-model="productForm.option_group.title"
+                v-model="mainForm.option_group.title"
                 class="form-item"
                 :class="{
                   error: validation.product.r$.option_group.title.$error,
@@ -987,12 +992,12 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
               <div class="lined sub heading a-block px-3">
                 Add options below for:
                 <div class="trailing">
-                  {{ productForm.option_group.title }}
+                  {{ mainForm.option_group.title }}
                 </div>
               </div>
               <div class="wrappable menu">
                 <div
-                  v-for="(option, index) in productForm.option_group.options"
+                  v-for="(option, index) in mainForm.option_group.options"
                   class="item open-modal"
                   data-target="app-option"
                   :data-option-id="index"
@@ -1000,9 +1005,9 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
                   aria-label="Click to modify"
                 >
                   <img
-                    v-if="option.photo"
-                    :src="utils.fileToURL(option.photo)"
-                    alt="Option photo"
+                    v-if="option.picture"
+                    :src="utils.fileToURL(option.picture)"
+                    alt="Option picture"
                   />
                   <div class="content">
                     <div class="font-bold">{{ option.label }}</div>
@@ -1015,7 +1020,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
                   </div>
                   <button
                     type="button"
-                    @click="productForm.option_group.options.splice(index, 1)"
+                    @click="mainForm.option_group.options.splice(index, 1)"
                     class="circular trailing icon button ex-open-modal text-sm"
                   >
                     <Icon name="material-symbols:delete-outline-rounded" />
@@ -1051,8 +1056,8 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             </div>
             <button
               type="button"
-              v-if="!productForm.sub_option_group"
-              @click="createproductFormOption"
+              v-if="!mainForm.sub_option_group"
+              @click="createOption"
               class="compact button"
             >
               Add a sub-option group
@@ -1060,7 +1065,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             <fieldset v-else class="flex flex-col gap-2">
               <button
                 type="button"
-                @click="productForm.sub_option_group = undefined"
+                @click="mainForm.sub_option_group = undefined"
                 v-tooltip:aria.unblocking
                 aria-label="Remove sub-option group"
                 class="circular icon button ml-auto bg-transparent text-sm"
@@ -1070,7 +1075,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
               <div class="field">
                 <label for="sub-option-group-title">Sub-option group title</label>
                 <input
-                  v-model="productForm.sub_option_group.title"
+                  v-model="mainForm.sub_option_group.title"
                   class="form-item"
                   :class="{
                     error: validation.product.r$.sub_option_group.title.$error,
@@ -1090,21 +1095,21 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
                 <div class="lined sub heading a-block px-3">
                   Add options below for:
                   <div class="trailing">
-                    {{ productForm.sub_option_group.title }}
+                    {{ mainForm.sub_option_group.title }}
                   </div>
                 </div>
                 <div class="wrappable menu">
                   <div
-                    v-for="(option, index) in productForm.sub_option_group.options"
+                    v-for="(option, index) in mainForm.sub_option_group.options"
                     class="item open-modal"
                     data-target="app-option"
                     data-sub-category
                     :data-option-id="index"
                   >
                     <img
-                      v-if="option.photo"
-                      :src="utils.fileToURL(option.photo)"
-                      alt="sub-option photo"
+                      v-if="option.picture"
+                      :src="utils.fileToURL(option.picture)"
+                      alt="sub-option picture"
                     />
                     <div class="content">
                       <div class="font-bold">{{ option.label }}</div>
@@ -1117,7 +1122,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
                     </div>
                     <button
                       type="button"
-                      @click="productForm.sub_option_group.options.splice(index, 1)"
+                      @click="mainForm.sub_option_group.options.splice(index, 1)"
                       class="circular trailing icon button ex-open-modal text-sm"
                     >
                       <Icon name="material-symbols:delete-outline-rounded" />
@@ -1164,7 +1169,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           <span>Or start by selecting a preset:</span>
           <LimbDropdown class="compact button" placeholder="Select a template">
             Choose Preset
-            <div class="drop menu">
+            <div class="dropdown menu">
               <div
                 class="item"
                 v-for="(template, templateName) in specPresets"
@@ -1186,7 +1191,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           <tbody>
             <tr v-for="(spec, index) in validation.product.r$.specifications.$each">
               <td>
-                <div class="field m-0">
+                <div class="field">
                   <input
                     v-model="spec.name.$value"
                     :id="`spec-name${index}`"
@@ -1202,7 +1207,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
                 </div>
               </td>
               <td>
-                <div class="field m-0">
+                <div class="field">
                   <input
                     v-model="spec.value.$value"
                     :id="`spec-value${index}`"
@@ -1220,7 +1225,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
               <td class="text-center">
                 <button
                   type="button"
-                  @click="productForm.specifications.splice(index, 1)"
+                  @click="mainForm.specifications.splice(index, 1)"
                   v-tooltip:aria.unblocking
                   aria-label="Remove specification"
                   class="circular outlined icon button text-sm"
@@ -1257,7 +1262,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           insights and help them make a more informed purchasing decision.
         </p>
         <div
-          v-if="productForm.details_attachment"
+          v-if="mainForm.details_attachment"
           class="relative mb-3 flex w-max flex-col items-center"
         >
           <Icon
@@ -1266,31 +1271,29 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           />
           <button
             type="button"
-            @click="productForm.details_attachment = undefined"
+            @click="mainForm.details_attachment = undefined"
             class="compact circular outlined button bg-overlay absolute top-1 right-1 text-xs"
           >
             <Icon name="material-symbols:close-rounded" />
           </button>
-          <div v-if="typeof productForm.details_attachment === 'string'" class="text-sm">
-            {{ productForm.details_attachment.split("/").at(-1) }}
+          <div v-if="typeof mainForm.details_attachment === 'string'" class="text-sm">
+            {{ mainForm.details_attachment.split("/").at(-1) }}
           </div>
           <template v-else>
-            <div class="text-sm">{{ productForm.details_attachment.name }}</div>
+            <div class="text-sm">{{ mainForm.details_attachment.name }}</div>
             <div class="text-sm">
-              {{ (productForm.details_attachment.size / 1024 / 1024).toFixed(1) }}MB
+              {{ (mainForm.details_attachment.size / 1024 / 1024).toFixed(1) }}MB
             </div>
           </template>
         </div>
         <label for="add-attachment" class="button design-takeover">
           <Icon name="material-symbols:picture-as-pdf-outline-rounded" />{{
-            `${productForm.details_attachment ? "Change attachment" : "Add attachment"}`
+            `${mainForm.details_attachment ? "Change attachment" : "Add attachment"}`
           }}
           <input
             id="add-attachment"
             type="file"
-            @change="
-              productForm.details_attachment = ($event.target as HTMLInputElement).files?.[0]
-            "
+            @change="mainForm.details_attachment = ($event.target as HTMLInputElement).files?.[0]"
             accept="application/pdf, .pdf"
           />
         </label>
@@ -1304,7 +1307,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
         </p>
         <textarea
           id="prod-overview"
-          v-model="productForm.overview"
+          v-model="mainForm.overview"
           class="form-item"
           :class="{ error: validation.product.r$.overview.$error }"
           rows="3"
@@ -1327,7 +1330,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           expect when purchasing the product.
         </p>
         <button
-          v-if="!productForm.shipping"
+          v-if="!mainForm.shipping"
           type="button"
           class="compact button open-modal"
           data-target="prod-shipping"
@@ -1335,21 +1338,21 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
           Specify shipping information
         </button>
         <fieldset class="flex flex-col gap-3" v-else>
-          <div v-if="productForm.shipping?.measurements">
+          <div v-if="mainForm.shipping?.measurements">
             <span class="font-semibold">Measurements: </span>
-            <span v-for="(value, measurement) in productForm.shipping?.measurements">
+            <span v-for="(value, measurement) in mainForm.shipping?.measurements">
               <span class="capitalize">{{ measurement }}: </span> {{ value }} |
             </span>
           </div>
           <div
             v-if="
-              productForm.shipping?.location &&
-              Object.values(productForm.shipping.location).some((el) => isFilled(el))
+              mainForm.shipping?.location &&
+              Object.values(mainForm.shipping.location).some((el) => isFilled(el))
             "
           >
             <span class="font-semibold">Overide pickup location: </span>
             {{
-              `${productForm.shipping?.location?.address}, ${productForm.shipping?.location?.city}, ${productForm.shipping?.location?.state}, ${productForm.shipping?.location?.country}`
+              `${mainForm.shipping?.location?.address}, ${mainForm.shipping?.location?.city}, ${mainForm.shipping?.location?.state}, ${mainForm.shipping?.location?.country}`
             }}
           </div>
           <button type="button" class="compact button open-modal" data-target="prod-shipping">
@@ -1372,11 +1375,11 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
     <LimbModal
       id="app-option"
       :options="{
-        controller: configProductOption,
+        controller: configureOption,
       }"
       v-slot="{ control }"
     >
-      <div class="dialog">
+      <form class="dialog flex flex-col">
         <header class="flex gap-3 px-6 py-4">
           <div class="truncate font-bold">
             {{ placeholder.modifyingOption ? "Modify an option" : "Add an option" }}
@@ -1385,7 +1388,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             <Icon name="material-symbols:close-rounded" />
           </button>
         </header>
-        <form class="px-6 py-4">
+        <div class="flex flex-1 flex-col gap-4 overflow-y-auto px-6 pt-4">
           <div class="field">
             <label for="option-label">Label</label>
             <input
@@ -1456,27 +1459,30 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             </div>
           </div>
           <div class="field">
-            <label for="add-option-photo">Unique option picture (optional)</label>
-            <div v-if="placeholder.option.photo" class="relative flex w-max flex-col items-center">
+            <label for="add-option-picture">Unique option picture (optional)</label>
+            <div
+              v-if="placeholder.option.picture"
+              class="relative flex w-max flex-col items-center"
+            >
               <img
-                :src="utils.fileToURL(placeholder.option.photo)"
-                alt="Product photo"
+                :src="utils.fileToURL(placeholder.option.picture)"
+                alt="Product picture"
                 class="thumbnail"
               />
               <button
                 type="button"
-                @click="placeholder.option.photo = undefined"
+                @click="placeholder.option.picture = undefined"
                 class="compact circular outlined button bg-overlay absolute top-1 right-1 text-xs"
               >
                 <Icon name="material-symbols:close-rounded" />
               </button>
-              <div v-if="typeof placeholder.option.photo !== 'string'" class="text-sm">
-                {{ (placeholder.option.photo.size / 1024 / 1024).toFixed(1) }}MB
+              <div v-if="typeof placeholder.option.picture !== 'string'" class="text-sm">
+                {{ (placeholder.option.picture.size / 1024 / 1024).toFixed(1) }}MB
               </div>
             </div>
             <div
               class="text-error text-sm"
-              v-for="error of validation.option.r$.photo.$errors"
+              v-for="error of validation.option.r$.picture.$errors"
               :key="error"
             >
               <Icon name="material-symbols:error-rounded" />
@@ -1484,24 +1490,26 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             </div>
             <label class="button design-takeover">
               <Icon name="material-symbols:add-a-photo-outline-rounded" />{{
-                `${placeholder.option.photo ? "Change photo" : "Add photo"}`
+                `${placeholder.option.picture ? "Change picture" : "Add picture"}`
               }}
               <input
-                id="add-option-photo"
+                id="add-option-picture"
                 type="file"
-                @change="placeholder.option.photo = ($event.target as HTMLInputElement).files?.[0]"
+                @change="
+                  placeholder.option.picture = ($event.target as HTMLInputElement).files?.[0]
+                "
                 accept="image/*"
               />
             </label>
           </div>
           <div v-if="placeholder.option.sub_options" class="field">
             <div class="field-label">sub-option group</div>
-            <div class="text-sm opacity-65">
+            <p class="text-sm opacity-65">
               Toggle the sub-option you want to add to this option. You can also click on the price
               to modify it.
-            </div>
-            <div v-if="productForm.sub_option_group" class="wrappable menu">
-              <div v-for="(option, index) in productForm.sub_option_group.options" class="item">
+            </p>
+            <div v-if="mainForm.sub_option_group" class="wrappable menu">
+              <div v-for="(option, index) in mainForm.sub_option_group.options" class="item">
                 <div
                   class="icon"
                   :class="{
@@ -1517,9 +1525,9 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
                   <Icon name="material-symbols:check" class="aview" />
                 </div>
                 <img
-                  v-if="option.photo"
-                  :src="utils.fileToURL(option.photo)"
-                  alt="sub-option photo"
+                  v-if="option.picture"
+                  :src="utils.fileToURL(option.picture)"
+                  alt="sub-option picture"
                 />
                 <div class="content flex flex-col">
                   <div class="font-bold">{{ option.label }}</div>
@@ -1566,17 +1574,13 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
               </div>
             </div>
           </div>
-          <div class="field items-end">
-            <button
-              type="submit"
-              class="primary button"
-              @click.prevent="processProductOption(control)"
-            >
+          <footer class="bg-surface shadow-b-blend sticky bottom-0 mt-2 flex justify-end py-4">
+            <button type="submit" class="primary button" @click.prevent="processOption(control)">
               {{ placeholder.modifyingOption ? "Modify option" : "Add option" }}
             </button>
-          </div>
-        </form>
-      </div>
+          </footer>
+        </div>
+      </form>
     </LimbModal>
     <LimbModal
       id="prod-shipping"
@@ -1590,13 +1594,13 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
             <Icon name="material-symbols:close-rounded" />
           </button>
         </header>
-        <div class="flex-1 overflow-y-auto px-6 pt-4 pb-6">
+        <div class="flex flex-1 flex-col gap-6 overflow-y-auto px-6 pt-4">
           <section>
             <div class="lined heading">Measurements</div>
             <p class="text-sm opacity-65">
               All measurements are optional. Make sure to include units when inputting measurements.
             </p>
-            <div class="grid grid-cols-2 gap-x-4">
+            <div class="grid grid-cols-2 gap-4">
               <div class="field">
                 <label for="prod-weight">Weight</label>
                 <input
@@ -1658,7 +1662,7 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
               <Icon name="material-symbols:error-rounded" />
               {{ error }}
             </div>
-            <div class="grid grid-cols-2 gap-x-4">
+            <div class="grid grid-cols-2 gap-4">
               <div class="field">
                 <label for="prod-country">Country</label>
                 <input
@@ -1705,12 +1709,16 @@ useSortable("#prod-photos > .scroll-items", productForm.photos);
               </div>
             </div>
           </section>
+          <footer class="bg-surface shadow-b-blend sticky bottom-0 mt-2 flex justify-end py-4">
+            <button
+              type="submit"
+              @click.prevent="setShippingDetails(control)"
+              class="primary button"
+            >
+              Add Info
+            </button>
+          </footer>
         </div>
-        <footer class="flex justify-end px-6 py-4">
-          <button type="submit" @click.prevent="setShippingDetails(control)" class="primary button">
-            Add Info
-          </button>
-        </footer>
       </form>
     </LimbModal>
     <LimbModal id="upload-status" :options="{ closeOnEsc: false, closeOnWrapperClick: false }">

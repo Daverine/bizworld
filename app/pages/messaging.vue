@@ -13,8 +13,8 @@ definePageMeta({ layout: "details", auth: { only: "user" }, noFab: true });
             <Icon name="material-symbols:expand-more-rounded" class="trailing" />
           </template>
         </LimbDropdown>
-        <div class="drop menu">
-          <div class="active item">
+        <div class="dropdown menu">
+          <LimbOption class="active item">
             <div
               class="lead avatar rounded-full text-xs"
               style="flex: 0 0 auto; background-color: #999"
@@ -27,8 +27,8 @@ definePageMeta({ layout: "details", auth: { only: "user" }, noFab: true });
                 <div class="text-sm opacity-65">Personal Account</div>
               </div>
             </div>
-          </div>
-          <div class="item">
+          </LimbOption>
+          <LimbOption class="item">
             <div
               class="lead avatar rounded-full text-xs"
               style="flex: 0 0 auto; background-color: #999"
@@ -41,7 +41,7 @@ definePageMeta({ layout: "details", auth: { only: "user" }, noFab: true });
                 <div class="text-sm opacity-65">Business Account</div>
               </div>
             </div>
-          </div>
+          </LimbOption>
         </div>
         <label class="transparent input bg-surface-v4">
           <Icon name="material-symbols:search-rounded" />

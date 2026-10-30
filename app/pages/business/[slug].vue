@@ -130,7 +130,7 @@ const { data: bizData } = await useFetch("/api/business/query", {
               >
                 <SvgIcon name="more_horiz" />
               </LimbDropdown>
-              <div class="drop menu">
+              <div class="dropdown menu">
                 <div class="item"><SvgIcon name="follow" class="lead" /> Follow page</div>
                 <div class="item"><SvgIcon name="bookmark_add" class="lead" /> Save card</div>
                 <div class="item"><SvgIcon name="share" class="lead" /> Share</div>

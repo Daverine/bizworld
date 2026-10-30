@@ -4,7 +4,7 @@
   .form-switch,
   .input,
   .input-box,
-  .select.dropdown,
+  .select.dd-toggler,
   .option-group {
     --form-bg-color: var(--color-surface);
     --form-text-color: var(--color-on-surface);
@@ -34,18 +34,18 @@
     }
   }
 
-  .select.dropdown + .drop.menu {
+  .select.dd-toggler + .dropdown.menu {
     --form-focus-bd-color: var(--color-primary);
   }
 
-  .select.dropdown.error + .drop.menu {
+  .select.dd-toggler.error + .dropdown.menu {
     --form-focus-bd-color: var(--color-error);
   }
 
   .form-item,
   .input,
   .input-box,
-  .select.dropdown {
+  .select.dd-toggler {
     font-size: 1rem;
     text-transform: none;
     box-sizing: border-box;
@@ -68,7 +68,7 @@
   .input,
   .input > .subject,
   .input-box > .subject,
-  .select.dropdown {
+  .select.dd-toggler {
     display: inline-flex;
     outline: none;
     text-align: left;
@@ -104,7 +104,7 @@
   }
 
   .form-item::placeholder,
-  .select.dropdown .placeholder {
+  .select.dd-toggler .placeholder {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
@@ -118,8 +118,8 @@
   }
 
   .form-item:focus-within::placeholder,
-  .select.dropdown:focus-within .placeholder,
-  .select.dropdown.active .placeholder {
+  .select.dd-toggler:focus-within .placeholder,
+  .select.dd-toggler.active .placeholder {
     color: inherit;
     opacity: 0.6;
   }
@@ -348,7 +348,7 @@
     }
   }
 
-  .select.dropdown {
+  .select.dd-toggler {
     display: inline-flex;
     align-items: center;
     position: relative;
@@ -357,15 +357,15 @@
       min-width: 4.5em;
     }
 
-    &:not(.no-indicator),
+    /* &:not(.no-indicator),
     &.lined:not(.no-indicator),
     &.input.text-fit:not(.no-indicator) {
       padding-right: 1.625em;
-    }
+    } */
 
     /* class for auto added indicator icon */
     & > .icon.ddico {
-      position: absolute;
+      /* position: absolute;
       top: 50%;
       transform: translateY(-50%);
       right: 0px;
@@ -373,24 +373,26 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0em;
-
+      margin: 0em; */
+      &:last-of-type {
+        margin-right: -0.25em;
+      }
       & > svg {
         max-width: 1.5em;
         max-height: 1.5em;
       }
     }
 
-    &.no-indicator > .ddico {
+    /* &.no-indicator > .ddico {
       display: none;
-    }
+    } */
 
     &:not(.lined, .text-fit) > .lead {
       margin-left: calc(0em - var(--form-lr-padding));
     }
 
-    & > .drop.menu,
-    & + .drop.menu {
+    & > .dropdown.menu,
+    & + .dropdown.menu {
       border: 2px solid var(--form-focus-bd-color);
     }
 
@@ -455,7 +457,7 @@
     }
   }
 
-  .select.dropdown,
+  .select.dd-toggler,
   .input {
     & > .icon {
       display: inline-flex;
@@ -610,7 +612,10 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+
+    & > * {
+      margin: 0;
+    }
 
     & > label,
     & > .field-label {
@@ -625,7 +630,7 @@
   .form-item.lined,
   .input.lined,
   .input-box.lined > .subject,
-  .select.dropdown.lined {
+  .select.dd-toggler.lined {
     background-color: transparent;
     border-style: none;
     border-bottom-style: solid;
@@ -643,7 +648,7 @@
   .form-item.transparent,
   .input.transparent,
   .input-box.transparent .subject,
-  .select.dropdown.transparent {
+  .select.dd-toggler.transparent {
     color: inherit;
     background-color: transparent;
     border-color: transparent;
@@ -654,7 +659,7 @@
   .input.text-fit > .subject,
   .input-box:not([class*="expandable"]).text-fit,
   .input-box:not([class*="expandable"]).text-fit > .subject,
-  .select.dropdown.text-fit {
+  .select.dd-toggler.text-fit {
     field-sizing: content;
     color: inherit;
     height: auto;

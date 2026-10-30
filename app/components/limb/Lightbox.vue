@@ -1175,7 +1175,7 @@ function stopSlideshow() {
         >
           <Icon mode="svg" name="material-symbols:more-vert" class="icon" />
         </LimbDropdown>
-        <div class="drop menu">
+        <div class="dropdown menu">
           <div role="menuitem" class="item active gallery-switch dd-close">
             <Icon mode="svg" name="material-symbols:apps" class="icon" />
             Show All

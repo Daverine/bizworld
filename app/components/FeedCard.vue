@@ -51,7 +51,7 @@ defineProps(["details"]);
       >
         <Icon name="material-symbols:more-horiz" />
       </LimbDropdown>
-      <div class="drop menu">
+      <div class="dropdown menu">
         <div class="item">
           <Icon name="material-symbols:remove-from-queue-outline-rounded" class="lead" />
           Unfollow business

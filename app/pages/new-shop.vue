@@ -415,9 +415,9 @@ const validation = {
   }),
   tab3: useRegle(formData.tab3, {
     coverage: {
-      uniqueCoverage: withMessage(
-        () => new Set(formData.tab3.coverage).size === formData.tab3.coverage.length,
-        "Individual coverage areas added should be unique.",
+      unique: withMessage(
+        (value: Maybe<string[]>) => new Set(value).size === value?.length,
+        "Each coverage areas added should be unique.",
       ),
     },
   }),
@@ -632,7 +632,7 @@ function prevTab() {
             name="biz-category"
             placeholder="Select a category or Industry"
           >
-            <div class="drop menu">
+            <div class="dropdown menu">
               <div
                 class="item"
                 v-for="category in query ? filteredData : businessCategories"
@@ -797,7 +797,7 @@ function prevTab() {
               v-model="formData.tab2.country"
               name="biz-country"
             />
-            <div class="drop menu">
+            <div class="dropdown menu">
               <div class="item">Nigeria</div>
             </div>
             <div
@@ -1029,7 +1029,7 @@ function prevTab() {
           <LimbDropdown :options="{ directionPriority: { x: 'center' } }" class="compact button"
             >Choose preset
           </LimbDropdown>
-          <div class="drop menu">
+          <div class="dropdown menu">
             <div @click="applyHoursPreset('nil')" class="item">Not available</div>
             <div @click="applyHoursPreset('always')" class="item">Always open</div>
             <div @click="applyHoursPreset('selected')" class="item">Open for selected hours</div>
@@ -1047,11 +1047,11 @@ function prevTab() {
                 :name="`${item.day.$value}-avail`"
                 @change="item.hours.$self.$touch()"
               ></LimbDropdown>
-              <div class="drop menu">
-                <div class="item" data-value="nil">Not available</div>
-                <div class="item" data-value="always">Always open</div>
-                <div class="item" data-value="selected">Open for selected hours</div>
-                <div class="item" data-value="appointment">Appointments only</div>
+              <div class="dropdown menu">
+                <LImbOption class="item" data-value="nil">Not available</LImbOption>
+                <LimbOption class="item" data-value="always">Always open</LimbOption>
+                <LimbOption class="item" data-value="selected">Open for selected hours</LimbOption>
+                <LimbOption class="item" data-value="appointment">Appointments only</LimbOption>
               </div>
             </div>
             <div

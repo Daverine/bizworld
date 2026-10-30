@@ -137,7 +137,7 @@ const allChecked = computed({
           <LimbDropdown
             ><Icon name="material-symbols:info-outline-rounded" class="text-primary text-md"
           /></LimbDropdown>
-          <div class="drop menu board">
+          <div class="dropdown menu board">
             <p>
               Organize your products and services into logical categories of your own for easier
               management. We call category here group to diffrentiate it from global categories
@@ -199,7 +199,7 @@ const allChecked = computed({
                 <LimbDropdown class="circular compact transparent button">
                   <Icon name="material-symbols:more-vert" />
                 </LimbDropdown>
-                <div class="drop menu">
+                <div class="dropdown menu">
                   <button
                     class="open-modal item"
                     data-target="setup-group-modal"
@@ -276,7 +276,7 @@ const allChecked = computed({
             </button>
           </div>
         </div>
-        <form v-else @submit.prevent="processGroup(control)">
+        <form v-else @submit.prevent="processGroup(control)" class="flex flex-col gap-4">
           <div class="field">
             <label for="group-name">Group name</label>
             <input
@@ -312,7 +312,7 @@ const allChecked = computed({
           <div class="field">
             <label>Group image (Optional)</label>
             <label class="button design-takeover">
-              <Icon name="material-symbols:add-a-photo-outline-rounded" /> Add photo
+              <Icon name="material-symbols:add-a-photo-outline-rounded" /> Add picture
               <input type="file" accept="image/*" />
             </label>
           </div>
@@ -328,9 +328,9 @@ const allChecked = computed({
               placeholder="Select a parent group..."
               class="form-item"
             />
-            <div class="drop menu">
-              <div class="item" data-value="">No parent group</div>
-              <div
+            <div class="dropdown menu">
+              <LimbOption class="item" data-value="">No parent group</LimbOption>
+              <LimbOption
                 v-if="
                   bizData?.local_groups?.every(
                     (group) => !placeholder.group.id || group.parent_id !== placeholder.group.id,
@@ -346,7 +346,7 @@ const allChecked = computed({
                 class="item"
               >
                 {{ item.name }}
-              </div>
+              </LimbOption>
             </div>
           </div>
           <div class="flex justify-end gap-4">
