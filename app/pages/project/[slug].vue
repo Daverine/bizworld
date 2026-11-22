@@ -1,5 +1,5 @@
 <script setup>
-definePageMeta({ layout: "details", name: "project-page" });
+definePageMeta({ layout: "details", name: "service-page" });
 
 const details = ref({
   type: "service",

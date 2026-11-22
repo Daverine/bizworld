@@ -48,7 +48,7 @@ async function clickAction(e: Event) {
       class="photo-box aspect-square rounded-[inherit]"
       :style="`--box-photo: url(${img(details.pictures[0]!, {}, { preset: 'thumbnail' })})`"
     >
-      <NuxtImg preset="thumbnail" :src="details.pictures[0]" alt="Product image" />
+      <NuxtImg preset="thumbnail" :src="details.pictures[0]" alt="Product picture" />
       <button
         v-if="!manage"
         class="text-on-surface-v3 bg-overlay absolute right-2 bottom-2 text-lg"

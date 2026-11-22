@@ -1,6 +1,19 @@
 <script setup lang="ts">
 definePageMeta({ name: "manage-biz-services", layout: "common", auth: false });
 const data = useBizStore();
+
+const route = useRoute();
+const { data: bizData } = await useFetch("/api/business/query", {
+  key: `biz-${route.params.slug}`,
+  query: { slug: route.params.slug },
+});
+const { data: services } = await useFetch("/api/business/services", {
+  key: `biz-${route.params.slug}-services`,
+  method: "post",
+  query: {
+    slug: route.params.slug,
+  },
+});
 </script>
 <template>
   <main class="auto-contain max-w-180">
@@ -20,12 +33,12 @@ const data = useBizStore();
         </NuxtLink>
       </div>
     </header>
-    <section>
+    <section class="flex flex-col gap-4">
       <p>
         Let customers discover your business by adding services to your Business Page on Bizworld.
       </p>
       <div class="services-grid">
-        <PageService v-for="service in data.projects" :details="service" />
+        <PageService v-for="service in services" :details="service" :key="service.id" manage />
       </div>
     </section>
   </main>

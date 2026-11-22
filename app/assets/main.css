@@ -1,4 +1,4 @@
-@import "tailwindcss" important;
+@import "tailwindcss";
 @import "~/assets/lui/table.css";
 @import "~/assets/lui/form.css";
 @import "~/assets/lui/menu.css";
@@ -9,6 +9,7 @@
 @import "~/assets/lui/divider.css";
 @import "~/assets/lui/note.css";
 @import "~/assets/lui/progress.css";
+@import "~/assets/lui/list.css";
 
 @layer base {
   /* Set the color scheme based on the user's preference. */
@@ -102,6 +103,7 @@
   /* Set default styles for elements. */
 
   html {
+    scroll-padding: 4rem;
     background-color: var(--color-surface-v2);
 
     &.scroll-locked {
@@ -177,11 +179,6 @@
 
   h6 {
     font-size: var(--text-h6);
-  }
-
-  p {
-    margin: 0;
-    margin-bottom: 1rem;
   }
 
   fieldset {
@@ -559,6 +556,8 @@
 
   --scrim-color: var(--color-on-surface-v2);
   --scrim-opacity: 0.7;
+
+  --placeholder-opacity: 0.5;
 
   --default-radius: 0.5em;
   --site-logo-filter: invert(0);

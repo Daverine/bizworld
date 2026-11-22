@@ -222,7 +222,8 @@ onMounted(async () => {
 
       // open dropdown if user typed in the searchBox. And resize searchBox according to it content.
       searchBox.addEventListener("input", () => {
-        userDefinedOption.textContent = searchBox.value;
+        if (props.boundless) userDefinedOption.textContent = searchBox.value;
+
         if (searchBox.value) {
           selectablePlaceholder.classList.add("hidden");
           if (!bb.multipleSelect) selectableContentBox.classList.add("hidden");
@@ -375,10 +376,10 @@ async function modelEffect(newModel: typeof model.value) {
         let itemValue = item.dataset.value || item.textContent;
         let ddid = item.dataset.ddid ?? utils.getUniqueId("ddid");
 
-        if (newModel.includes(itemValue)) {
+        if (newModel!.includes(itemValue)) {
           item.classList.add("selected");
 
-          let index = newModel.indexOf(itemValue);
+          let index = newModel!.indexOf(itemValue);
 
           if (rbb.mSelectContent.every((el) => el.val !== itemValue))
             rbb.mSelectContent.splice(index, 1, {
@@ -433,6 +434,7 @@ async function modelEffect(newModel: typeof model.value) {
             console.warn(
               ddRef.value,
               newModel,
+              items,
               "There's no item that match the selection dropdown value.",
             );
         }
@@ -789,8 +791,10 @@ async function dd_searchEvt() {
   } else {
     rbb.allItemFiltered = false;
     firstItem.classList.add("hovered");
-    if (props.boundless && !bb.multipleSelect && firstItem.classList.contains("user-defined"))
+    if (props.boundless && !bb.multipleSelect && firstItem.classList.contains("user-defined")) {
       model.value = searchBox.value;
+      emit("change", model.value);
+    }
     dropDown.setAttribute("aria-activedescendant", firstItem.textContent);
     firstItem.scrollIntoView({ block: "nearest" });
   }
@@ -1172,6 +1176,8 @@ async function dd_setSelect(item: Element, xClose?: boolean) {
       else model.value = [...model.value, itemValue];
     } else model.value = [itemValue];
 
+    emit("change", model.value);
+
     if (bb.searchable && showDropdown.value) {
       searchBox.value = "";
       utils.triggerEvent(searchBox, "input");
@@ -1217,6 +1223,7 @@ async function dd_setSelect(item: Element, xClose?: boolean) {
     }
 
     model.value = (item as HTMLElement).dataset.value || item.textContent;
+    emit("change", model.value);
   }
 
   if (!xClose) showDropdown.value = false;
@@ -1231,6 +1238,7 @@ async function dd_setDeselect(sItem: HTMLElement) {
   if (!content) return;
 
   model.value = (model.value as string[]).filter((val) => val !== content.val);
+  emit("change", model.value);
 
   if (showDropdown.value) {
     if (bb.searchable) {
@@ -1289,7 +1297,7 @@ async function dd_setDeselect(sItem: HTMLElement) {
         v-if="model && (!Array.isArray(model) || model.length)"
         type="button"
         @click.stop="model = bb.multipleSelect ? [] : ''"
-        class="ddico icon opacity-45"
+        class="ddico icon"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
           <!-- Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE -->
@@ -1299,9 +1307,10 @@ async function dd_setDeselect(sItem: HTMLElement) {
         </svg>
       </button>
       <button v-if="bb.isSelect" ref="ddIcon" type="button" tabindex="-1" class="ddico icon">
-        <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+          <!-- Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE -->
           <path
-            d="m480-222.609 108.913-108.913q13.202-12.696 30.21-12.696 17.007 0 29.138 13.299 12.13 11.734 12.13 29.552 0 17.817-11.13 29.758L509.957-132.87q-6.023 6.131-14.118 9.414-8.095 3.282-16.035 3.282-7.941 0-15.858-3.282-7.918-3.283-12.903-9.414L311.739-271.609q-12.13-12.071-12.13-29.927 0-17.855 12.233-29.769 12.234-12.913 29.834-12.63 17.6.283 29.976 12.413L480-222.609Zm0-512.651L371.087-626.348q-13.202 12.696-30.21 12.696-17.007 0-29.138-13.299-12.13-12.299-12.13-30.116 0-17.818 12.13-30.194l139.304-139.304q5.019-5.182 13.11-9.222 8.09-4.039 16.026-4.039 7.935 0 15.892 4.039 7.957 4.04 13.886 9.222l139.304 139.304q11.13 12.507 11.13 30.362 0 17.856-12.233 30.334-12.234 12.913-29.957 12.348-17.723-.565-29.853-12.696L480-735.26Z"
+            d="m12 18.1l2.325-2.325q.3-.3.725-.3t.725.3t.3.725t-.3.725L12.7 20.3q-.15.15-.325.213t-.375.062t-.375-.062t-.325-.213l-3.075-3.075q-.3-.3-.3-.725t.3-.725t.725-.3t.725.3zM12 6L9.675 8.325q-.3.3-.725.3t-.725-.3t-.3-.725t.3-.725L11.3 3.8q.15-.15.325-.213T12 3.526t.375.063t.325.212l3.075 3.075q.3.3.3.725t-.3.725t-.725.3t-.725-.3z"
           />
         </svg>
       </button>
@@ -1464,134 +1473,9 @@ async function dd_setDeselect(sItem: HTMLElement) {
       transform 300ms ease-in 0s,
       opacity 300ms linear 0s;
 
-    &,
-    &:focus {
-      outline-width: 0px;
-    }
-
-    &.pointing {
-      overflow: visible;
-      --spacing: 0.875em;
-
-      &:before {
-        content: "";
-        position: absolute;
-        height: 1.125em;
-        width: 1.125em;
-        transform-origin: center;
-        background: inherit;
-        border: inherit;
-        box-shadow: inherit;
-      }
-
-      &[data-view="vertical"] {
-        &:before {
-          left: calc(var(--arrow-center) - 0.5625em);
-        }
-
-        &.upward {
-          transform-origin: bottom center;
-
-          &:before {
-            clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
-            transform: translateY(-53%) rotate(45deg);
-            top: 100%;
-          }
-        }
-
-        &.downward {
-          transform-origin: top center;
-
-          &:before {
-            clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
-            transform: translateY(53%) rotate(45deg);
-            bottom: 100%;
-          }
-        }
-      }
-
-      &[data-view="horizontal"] {
-        &:before {
-          top: calc(var(--arrow-center) - 0.5625em);
-        }
-
-        &.rhs {
-          transform-origin: center left;
-
-          &:before {
-            clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
-            transform: translateX(53%) rotate(-45deg);
-            right: 100%;
-          }
-        }
-
-        &.lhs {
-          transform-origin: center right;
-
-          &:before {
-            clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
-            transform: translateX(-53%) rotate(-45deg);
-            left: 100%;
-          }
-        }
-      }
-    }
-
-    &.upward {
-      transform-origin: bottom center;
-    }
-
-    &.downward {
-      transform-origin: top center;
-    }
-
     &.board {
       width: 100%;
       padding: 0.6em 1em;
-    }
-
-    &.tight {
-      margin: 0;
-    }
-
-    &.visible {
-      opacity: 1;
-      pointer-events: initial;
-      transition:
-        transform 300ms ease-in 0s,
-        opacity 300ms linear 0s;
-    }
-
-    &[data-view="vertical"] {
-      transform: scaleY(0.25);
-
-      &.upward {
-        margin-top: calc(0em - var(--spacing));
-      }
-
-      &.downward {
-        margin-top: var(--spacing);
-      }
-
-      &.visible {
-        transform: scaleY(1);
-      }
-    }
-
-    &[data-view="horizontal"] {
-      transform: scaleX(0.25);
-
-      &.rhs {
-        margin-left: var(--spacing);
-      }
-
-      &.lhs {
-        margin-left: calc(0em - var(--spacing));
-      }
-
-      &.visible {
-        transform: scaleX(1);
-      }
     }
 
     &.menu {
@@ -1681,6 +1565,127 @@ async function dd_setDeselect(sItem: HTMLElement) {
         pointer-events: none;
         padding: 0em;
         margin: 0.25em 0;
+      }
+    }
+
+    &,
+    &:focus {
+      outline-width: 0px;
+    }
+
+    &.pointing {
+      overflow: visible;
+      --spacing: 0.875em;
+
+      &:before {
+        content: "";
+        position: absolute;
+        height: 1.125em;
+        width: 1.125em;
+        transform-origin: center;
+        background: inherit;
+        border: inherit;
+        box-shadow: inherit;
+      }
+
+      &[data-view="vertical"] {
+        &:before {
+          left: calc(var(--arrow-center) - 0.5625em);
+        }
+
+        &.upward {
+          transform-origin: bottom center;
+
+          &:before {
+            clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
+            transform: translateY(-53%) rotate(45deg);
+            top: 100%;
+          }
+        }
+
+        &.downward {
+          transform-origin: top center;
+
+          &:before {
+            clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
+            transform: translateY(53%) rotate(45deg);
+            bottom: 100%;
+          }
+        }
+      }
+
+      &[data-view="horizontal"] {
+        &:before {
+          top: calc(var(--arrow-center) - 0.5625em);
+        }
+
+        &.rhs {
+          transform-origin: center left;
+
+          &:before {
+            clip-path: polygon(-50% 150%, -150% -150%, 150% -50%);
+            transform: translateX(53%) rotate(-45deg);
+            right: 100%;
+          }
+        }
+
+        &.lhs {
+          transform-origin: center right;
+
+          &:before {
+            clip-path: polygon(-50% 150%, 150% 150%, 150% -50%);
+            transform: translateX(-53%) rotate(-45deg);
+            left: 100%;
+          }
+        }
+      }
+    }
+
+    &.upward {
+      transform-origin: bottom center;
+    }
+
+    &.downward {
+      transform-origin: top center;
+    }
+
+    &.visible {
+      opacity: 1;
+      pointer-events: initial;
+      transition:
+        transform 300ms ease-in 0s,
+        opacity 300ms linear 0s;
+    }
+
+    &[data-view="vertical"] {
+      transform: scaleY(0.25);
+
+      &.upward {
+        margin-top: calc(0em - var(--spacing));
+      }
+
+      &.downward {
+        margin-top: var(--spacing);
+      }
+
+      &.visible {
+        transform: scaleY(1);
+      }
+    }
+
+    &[data-view="horizontal"] {
+      transform: scaleX(0.25);
+
+      &.rhs {
+        margin-left: var(--spacing);
+      }
+
+      &.lhs {
+        margin-left: calc(0em - var(--spacing));
+      }
+
+      &.visible {
+        transform: scaleX(1);
       }
     }
   }

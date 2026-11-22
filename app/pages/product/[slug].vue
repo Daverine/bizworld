@@ -9,6 +9,9 @@ const { data: product } = await useFetch("/api/product/query", {
 const { data: bizData } = await useFetch("/api/business/query", {
   query: { id: product.value?.business_id },
 });
+const { data: productCategories } = await useFetch("/api/product-categories", {
+  key: "product-categories",
+});
 const [newTemplate, useTemplate] = createReusableTemplate();
 
 const reviews = ref([
@@ -387,7 +390,8 @@ function getItemForCart() {
         class="fluid layout-grid bg-surface z-level-1 shadow-t-blend sticky top-15.75 mb-4 border-b p-2"
       >
         <div class="px-4">
-          Products <Icon name="material-symbols:chevron-right-rounded" /> {{ product.category }}
+          Products <Icon name="material-symbols:chevron-right-rounded" />
+          {{ productCategories?.find((cat) => cat.id === product?.category_id)?.name }}
           <Icon name="material-symbols:chevron-right-rounded" /> {{ product.title }}
         </div>
       </div>

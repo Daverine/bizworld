@@ -12,7 +12,6 @@ const { data: products, refresh } = await useFetch("/api/business/products", {
     slug: route.params.slug,
   },
 });
-const productListVersion = ref(0);
 const configData = reactive<{
   product?: product;
   availability?: string; // "available" | "nil" | "quantity"
@@ -98,10 +97,16 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
     const index = products.value?.findIndex((prod) => prod.id === config.productId);
 
     if (index !== undefined && index > -1) {
-      if (config.action === "delete") products.value?.splice(index, 1);
-      else products.value![index]!.hidden = !products.value![index]!.hidden;
+      if (config.action === "delete")
+        useNuxtData(`biz-${route.params.slug}-products`).data.value?.splice(index, 1);
+      else {
+        useNuxtData(`biz-${route.params.slug}-products`).data.value?.splice(index, 1, {
+          ...products.value![index],
+          hidden: !products.value![index]!.hidden,
+        });
+      }
 
-      productListVersion.value++;
+      triggerRef(products);
     }
   }
 }
@@ -124,11 +129,11 @@ function productsUpdate(config?: { action: "delete" | "toggle-visibility"; produ
         </NuxtLink>
       </div>
     </header>
-    <section>
+    <section class="flex flex-col gap-4">
       <p>
         Let customers discover your business by adding products to your Business Page on Bizworld.
       </p>
-      <div v-if="products?.length" :key="productListVersion" class="products-grid">
+      <div v-if="products?.length" class="products-grid">
         <PageProduct
           v-for="product in products"
           :details="product"

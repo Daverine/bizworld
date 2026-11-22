@@ -196,7 +196,7 @@ export function useDialoger(
     dialoger.value!.removeEventListener("click", exitByClick);
 
     if (settings.hashControl) {
-      unwatch.closeOnRouteChange && unwatch.closeOnRouteChange();
+      if (unwatch.closeOnRouteChange) unwatch.closeOnRouteChange();
       window.removeEventListener("popstate", backToExit);
       if (!bb.exitedWithBrowserBack) window.history.go(-2);
       bb.exitedWithBrowserBack = false;

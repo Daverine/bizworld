@@ -39,24 +39,22 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!to.meta.auth) return;
 
   const redirectOptions = {
-    redirectUserTo: "/",
+    redirectUserTo: to.path === "/login" ? to.query.redirect : "/",
     redirectGuestTo: "/login",
   };
   const { only, redirectUserTo, redirectGuestTo } = defu(to.meta?.auth, redirectOptions);
 
-  // If guest mode, redirect if authenticated
-  if (only === "guest") {
-    if (loggedIn.value) {
+  if (loggedIn.value) {
+    // If guest mode, redirect if authenticated
+    if (only === "guest") {
       // Avoid infinite redirect
       if (to.path === redirectUserTo) return;
 
       return navigateTo(redirectUserTo);
     }
     return;
-  }
-
-  // If not authenticated, redirect to login
-  if (!loggedIn.value) {
+  } else {
+    // If not authenticated, redirect to login
     const redirectTo =
       typeof redirectGuestTo === "string"
         ? { path: redirectGuestTo, query: { redirect: to.path } }

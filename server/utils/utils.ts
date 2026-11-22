@@ -38,10 +38,12 @@ export async function uniqueSlugFrom(text: string, checkIn: string, namespace?: 
 
   return slug;
 }
-export async function getIdFromSlug(slug: string, checkIn: "business" | "product") {
+export async function getIdFromSlug(slug: string, checkIn: "business" | "product" | "service") {
   return (
     await db
-      .selectFrom(checkIn === "business" ? "business" : "product")
+      .selectFrom(
+        checkIn === "business" ? "business" : checkIn === "product" ? "product" : "service",
+      )
       .select("id")
       .where("slug", "=", slug)
       .executeTakeFirst()

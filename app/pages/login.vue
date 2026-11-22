@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+definePageMeta({
+  auth: {
+    only: "guest",
+  },
+});
 const auth = useAuth();
 const callbackURL = (useRoute().query.redirect as string) || "/home";
 const { data, validation } = useSignIn();

@@ -70,7 +70,7 @@ const { loggedIn, user } = useAuth();
             <Icon name="material-symbols:notifications-rounded" />
           </i>
         </LimbDropdown>
-        <Shareables name="notifications_menu" />
+        <NotificationMenu />
         <LimbDropdown
           :options="{ directionPriority: { x: 'left' } }"
           v-tooltip:aria.unblocking
@@ -84,7 +84,7 @@ const { loggedIn, user } = useAuth();
             class="logo rounded-full"
           />
         </LimbDropdown>
-        <Shareables name="profile_menu" />
+        <AccountMenu />
       </template>
       <template v-else>
         <div class="items max-lg:hidden">

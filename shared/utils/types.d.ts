@@ -2,7 +2,7 @@ export type product = {
   id: string;
   slug: string;
   business_id: string;
-  category_id: string;
+  category_id: number;
   title: string;
   pictures: string[];
   video_link?: string;
@@ -58,6 +58,47 @@ export type product = {
   availability: string;
   quantity?: string;
   delivery_options?: string[];
+};
+export type service = {
+  average_rating?: string;
+  bookable?: boolean;
+  business_id: string;
+  created_at: string;
+  description: string;
+  duration?: string;
+  hidden?: boolean;
+  home_service?: boolean;
+  id: string;
+  is_active: boolean;
+  local_group_id?: string;
+  packages?: {
+    label: string;
+    picture?: string;
+    description: string;
+    duration?: string;
+    specifications: {
+      name: string;
+      value: string | boolean;
+    }[];
+    price: string;
+  }[];
+  location?: {
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+  };
+  pictures: string[];
+  price?: string;
+  price_avail: string;
+  review_count?: number;
+  slug: string;
+  specifications: {
+    name: string;
+    value: string | boolean;
+  }[];
+  title: string;
+  video_link?: string;
 };
 
 export type bizData = {

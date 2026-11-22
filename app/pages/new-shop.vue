@@ -633,14 +633,14 @@ function prevTab() {
             placeholder="Select a category or Industry"
           >
             <div class="dropdown menu">
-              <div
+              <LimbOption
                 class="item"
                 v-for="category in query ? filteredData : businessCategories"
                 :key="category.id"
               >
                 {{ category.name }}
-              </div>
-              <div data-value="others" class="item">Others</div>
+              </LimbOption>
+              <LimbOption data-value="others" class="item">Others</LimbOption>
             </div>
           </LimbDropdown>
           <div
@@ -650,27 +650,27 @@ function prevTab() {
           >
             <Icon name="material-symbols:error-rounded" /> {{ error }}
           </div>
-        </div>
-        <div v-if="formData.tab1.category === 'others'" class="field">
-          <label for="biz-category-new">New category name</label>
-          <div class="text-sm opacity-65">
-            Note: Your business will stay in the “Others” category until the new category is
-            reviewed and standardized.
-          </div>
-          <input
-            v-model="formData.tab1.new_category"
-            id="biz-category-new"
-            :class="{ error: validation.tab1.r$.new_category.$error }"
-            class="form-item"
-            type="text"
-            placeholder="Category name"
-          />
-          <div
-            class="text-error text-sm"
-            v-for="error of validation.tab1.r$.new_category.$errors"
-            :key="error"
-          >
-            <Icon name="material-symbols:error-rounded" /> {{ error }}
+          <div v-if="formData.tab1.category === 'others'" class="field">
+            <label for="biz-category-new">New category name</label>
+            <div class="text-sm opacity-65">
+              Note: Your business will stay in the “Others” category until the new category is
+              reviewed and standardized.
+            </div>
+            <input
+              v-model="formData.tab1.new_category"
+              id="biz-category-new"
+              :class="{ error: validation.tab1.r$.new_category.$error }"
+              class="form-item"
+              type="text"
+              placeholder="Category name"
+            />
+            <div
+              class="text-error text-sm"
+              v-for="error of validation.tab1.r$.new_category.$errors"
+              :key="error"
+            >
+              <Icon name="material-symbols:error-rounded" /> {{ error }}
+            </div>
           </div>
         </div>
         <div class="field">
@@ -798,7 +798,7 @@ function prevTab() {
               name="biz-country"
             />
             <div class="dropdown menu">
-              <div class="item">Nigeria</div>
+              <LimbOption class="item">Nigeria</LimbOption>
             </div>
             <div
               class="text-error text-sm"

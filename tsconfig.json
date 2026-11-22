@@ -1,4 +1,29 @@
 {
-  // https://nuxt.com/docs/guide/concepts/typescript
-  "extends": "./.nuxt/tsconfig.json"
+  // "contentMappers": [
+  //   {
+  //     "package": "@vue/content-mapper",
+  //     "extensions": [".vue"],
+  //     "options": {
+  //       "target": 3.5
+  //     }
+  //   }
+  // ],
+
+  "files": [],
+  "references": [
+    {
+      "path": "./.nuxt/tsconfig.app.json"
+    },
+    {
+      "path": "./.nuxt/tsconfig.server.json"
+    },
+    {
+      "path": "./.nuxt/tsconfig.shared.json"
+    },
+    {
+      "path": "./.nuxt/tsconfig.node.json"
+    }
+  ]
+
+  // "extends": "./.nuxt/tsconfig.json"
 }

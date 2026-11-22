@@ -1,37 +1,47 @@
 <script lang="ts" setup>
 const props = defineProps<{
-  details: {
-    id: string;
-    type: string;
-    title: string;
-    photo: string;
-    price: string;
-    priceFigure?: number;
-    description?: string;
-  };
+  details: service;
+  manage?: boolean;
 }>();
+const img = useImage();
+async function clickAction(e: Event) {
+  await utils.safeClick(e, () =>
+    navigateTo({ name: "service-page", params: { slug: props.details.slug } }),
+  );
+}
 </script>
 <template>
-  <NuxtLink :to="`/${details.type}/${details.id}`" class="page-serv item">
-    <NuxtImg class="serv-pic" preset="thumbnail" :src="details.photo" alt="" />
+  <article @click="clickAction" class="page-serv item">
+    <div
+      class="photo-box aspect-square rounded-[inherit]"
+      :style="`--box-photo: url(${img(details.pictures[0]!, {}, { preset: 'thumbnail' })})`"
+    >
+      <NuxtImg preset="thumbnail" :src="details.pictures[0]" alt="Service picture" />
+      <button
+        v-if="!manage"
+        class="text-on-surface-v3 bg-overlay absolute right-2 bottom-2 text-lg"
+      >
+        <Icon name="material-symbols:favorite-outline-rounded" />
+      </button>
+    </div>
     <div class="serv-content">
-      <div
+      <NuxtLink
+        :to="{
+          name: 'service-page',
+          params: { slug: details.slug },
+        }"
         class="serv-title line-clamp-2 font-semibold"
         v-tooltip:aria.unblocking
         :aria-label="details.title"
       >
         {{ details.title }}
-      </div>
-      <div v-if="details.price !== 'No price'">
-        <span v-if="details.price === 'From'" class="label mr-2">From</span>
-        <span class="serv-price">{{
-          ["From", "Fixed"].includes(details.price)
-            ? `₦${details.priceFigure!.toLocaleString()}`
-            : details.price
-        }}</span>
+      </NuxtLink>
+      <div v-if="details.price_avail !== 'on_request'">
+        <span class="label mr-2">From</span>
+        <span class="serv-price">₦{{ Number(details.price).toLocaleString() }}</span>
       </div>
     </div>
-  </NuxtLink>
+  </article>
 </template>
 
 <style>

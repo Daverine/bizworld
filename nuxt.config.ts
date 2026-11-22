@@ -11,9 +11,6 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
-  typescript: {
-    strict: true,
-  },
   modules: [
     "@vueuse/nuxt",
     "@pinia/nuxt",

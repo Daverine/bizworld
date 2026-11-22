@@ -30,7 +30,7 @@ const props = defineProps<{
     <NuxtImg class="itm-display" preset="thumbnail" :src="details.media" alt="" />
     <div class="itm-content">
       <NuxtLink
-        :to="{ name: 'project-page', params: { slug: details.id } }"
+        :to="{ name: 'service-page', params: { slug: details.id } }"
         class="line-clamp-2 font-semibold"
         v-tooltip:aria.unblocking
         :aria-label="details.title"
